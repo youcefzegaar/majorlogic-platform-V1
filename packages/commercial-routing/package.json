@@ -1,0 +1,6 @@
+{
+  "name": "commercial-routing",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "src/index.js"
+}

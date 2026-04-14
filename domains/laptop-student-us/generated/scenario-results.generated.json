@@ -1,0 +1,447 @@
+{
+  "generatedAt": "2026-04-01T22:07:36.590Z",
+  "publishedCatalogSource": "database",
+  "catalogVersion": "v2026-04-01T22-06-52-871Z",
+  "publishRunId": "f96b5c0c-ad78-42e9-8bb1-d8eca0f6a772",
+  "scenarioCount": 10,
+  "scenarios": [
+    {
+      "profileId": "p1_cs_1200_portable",
+      "major": "cs",
+      "budgetUsd": 1200,
+      "status": "ok",
+      "candidateCount": 6,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
+          "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
+          "priceUsd": 949,
+          "resaleScore": 60.25,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+          "priceUsd": 799,
+          "resaleScore": 63.949999999999996,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
+          "title": "HP OmniBook X - Snapdragon X Elite / 16GB / 1TB",
+          "priceUsd": 1099,
+          "resaleScore": 61.75,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
+          "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
+          "priceUsd": 1099,
+          "resaleScore": 88.8,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p2_engineering_1500_vm",
+      "major": "engineering",
+      "budgetUsd": 1500,
+      "status": "ok",
+      "candidateCount": 2,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": 849,
+          "resaleScore": 63.099999999999994,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p3_design_1800_4k",
+      "major": "design",
+      "budgetUsd": 1800,
+      "status": "ok",
+      "candidateCount": 4,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "thinkpad-p1-gen-6-core-i7-32gb-1tb-rtx-4060",
+          "title": "ThinkPad P1 Gen 6 - Core i7 / 32GB / 1TB / RTX 4060",
+          "priceUsd": 1769,
+          "resaleScore": 94.5,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": 849,
+          "resaleScore": 63.099999999999994,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "msi-pulse-16-ai-core-ultra-9-32gb-1tb-rtx-4070",
+          "title": "MSI Pulse 16 AI - Core Ultra 9 / 32GB / 1TB / RTX 4070",
+          "priceUsd": 1549,
+          "resaleScore": 66.64999999999999,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p4_general_800_value",
+      "major": "general",
+      "budgetUsd": 800,
+      "status": "ok",
+      "candidateCount": 1,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+          "priceUsd": 799,
+          "resaleScore": 63.949999999999996,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+          "priceUsd": 799,
+          "resaleScore": 63.949999999999996,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+          "priceUsd": 799,
+          "resaleScore": 63.949999999999996,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+          "priceUsd": 799,
+          "resaleScore": 63.949999999999996,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p5_medical_battery_portable",
+      "major": "medical",
+      "budgetUsd": 1100,
+      "status": "ok",
+      "candidateCount": 5,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
+          "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
+          "priceUsd": 1099,
+          "resaleScore": 88.8,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+          "priceUsd": 799,
+          "resaleScore": 63.949999999999996,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
+          "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
+          "priceUsd": 949,
+          "resaleScore": 60.25,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
+          "title": "HP OmniBook X - Snapdragon X Elite / 16GB / 1TB",
+          "priceUsd": 1099,
+          "resaleScore": 61.75,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p6_cs_heavy_vms_1600",
+      "major": "cs",
+      "budgetUsd": 1600,
+      "status": "ok",
+      "candidateCount": 9,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "msi-pulse-16-ai-core-ultra-9-32gb-1tb-rtx-4070",
+          "title": "MSI Pulse 16 AI - Core Ultra 9 / 32GB / 1TB / RTX 4070",
+          "priceUsd": 1549,
+          "resaleScore": 66.64999999999999,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+          "priceUsd": 799,
+          "resaleScore": 63.949999999999996,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
+          "title": "HP OmniBook X - Snapdragon X Elite / 16GB / 1TB",
+          "priceUsd": 1099,
+          "resaleScore": 61.75,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p7_engineering_low_budget_900",
+      "major": "engineering",
+      "budgetUsd": 900,
+      "status": "ok",
+      "candidateCount": 1,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": 849,
+          "resaleScore": 63.099999999999994,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": 849,
+          "resaleScore": 63.099999999999994,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": 849,
+          "resaleScore": 63.099999999999994,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": 849,
+          "resaleScore": 63.099999999999994,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p8_design_portable_1400",
+      "major": "design",
+      "budgetUsd": 1400,
+      "status": "ok",
+      "candidateCount": 2,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": 849,
+          "resaleScore": 63.099999999999994,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_official",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p9_general_gaming_1300",
+      "major": "general",
+      "budgetUsd": 1300,
+      "status": "ok",
+      "candidateCount": 7,
+      "cards": [
+        {
+          "cardType": "hero",
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": 1149,
+          "resaleScore": 92.7,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "smart_budget",
+          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+          "priceUsd": 799,
+          "resaleScore": 63.949999999999996,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "future_proof",
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": 849,
+          "resaleScore": 63.099999999999994,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        },
+        {
+          "cardType": "no_commission",
+          "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
+          "title": "HP OmniBook X - Snapdragon X Elite / 16GB / 1TB",
+          "priceUsd": 1099,
+          "resaleScore": 61.75,
+          "fitState": "meets_safe",
+          "offerCondition": "new"
+        }
+      ],
+      "noResults": null
+    },
+    {
+      "profileId": "p10_cs_refurb_700",
+      "major": "cs",
+      "budgetUsd": 700,
+      "status": "no_viable_option",
+      "candidateCount": 0,
+      "cards": [],
+      "noResults": {
+        "type": "no_viable_option",
+        "message": "No eligible device remained after applying these constraints: over_budget.",
+        "topReasons": [
+          {
+            "reason": "over_budget",
+            "count": 13
+          }
+        ],
+        "suggestions": [
+          "Increase budget slightly or allow a verified refurbished path.",
+          "Lower the strict workload sliders if they do not reflect your real use.",
+          "Wait for a stronger published catalog refresh if current options remain weak."
+        ],
+        "profileId": "p10_cs_refurb_700"
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "majorlogic-platform-v1",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "demo": "node scripts/demo.js",
+    "catalog:ingest": "node scripts/ingest-domain.js",
+    "catalog:publish": "node scripts/publish-catalog.js",
+    "scenarios:run": "node scripts/run-scenarios.js",
+    "start:api": "node apps/api/src/server.js",
+    "db:check": "node scripts/check-supabase-connection.js",
+    "db:bootstrap": "node scripts/bootstrap-supabase.js",
+    "db:migration:print": "node scripts/print-migrations.js",
+    "test": "node tests/system.test.js",
+    "test:regression": "node tests/regression-v1.test.js"
+  },
+  "dependencies": {
+    "pg": "^8.20.0"
+  }
+}

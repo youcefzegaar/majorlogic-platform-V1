@@ -1,0 +1,1978 @@
+[
+  {
+    "entityId": "thinkpad-p1-gen-6-core-i7-32gb-1tb-rtx-4060",
+    "entityType": "laptop_variant",
+    "title": "ThinkPad P1 Gen 6 - Core i7 / 32GB / 1TB / RTX 4060",
+    "itemName": "ThinkPad P1 Gen 6",
+    "variantName": "Core i7 / 32GB / 1TB / RTX 4060",
+    "brand": "lenovo",
+    "segmentSignals": [
+      "engineering",
+      "cs",
+      "design"
+    ],
+    "specs": {
+      "ramGb": 32,
+      "storageGb": 1024,
+      "gpuClass": "mid_dgpu",
+      "performance": 92,
+      "display": 84,
+      "battery": 63,
+      "portability": 54,
+      "thermals": 82
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "B&H",
+        "priceUsd": 1769,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "B&H",
+          "priceUsd": 1769,
+          "condition": "new",
+          "affiliate": false
+        },
+        {
+          "seller": "Lenovo",
+          "priceUsd": 1799,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.92,
+      "reviewCoverage": 18,
+      "freshnessDays": 4,
+      "confidenceLevel": "high"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "heavy_for_daily_carry",
+          "category": "portability",
+          "severity": "medium",
+          "userFacing": "Heavy for daily campus carry"
+        },
+        {
+          "signal": "battery_below_expectation",
+          "category": "battery",
+          "severity": "high",
+          "userFacing": "Battery doesn't match advertised claims"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.55,
+        "riskLevel": "medium",
+        "dominantCategory": "portability",
+        "signalCount": 2
+      },
+      "primaryWarning": "Battery doesn't match advertised claims",
+      "secondaryWarning": "Heavy for daily campus carry",
+      "hasHighRisk": true
+    },
+    "economicSignals": {
+      "resaleScore": 94.5
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2317335C%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2366C7BF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EThinkPad%20P1%20Gen%206%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ECore%20i7%20%2F%2032GB%20%2F%201TB%20%2F%20RTX%204060%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "meets_safe"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "meets_safe"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.410Z"
+  },
+  {
+    "entityId": "asus-zephyrus-g14-ryzen-9-32gb-1tb-rtx-4070",
+    "entityType": "laptop_variant",
+    "title": "ASUS Zephyrus G14 - Ryzen 9 / 32GB / 1TB / RTX 4070",
+    "itemName": "ASUS Zephyrus G14",
+    "variantName": "Ryzen 9 / 32GB / 1TB / RTX 4070",
+    "brand": "asus",
+    "segmentSignals": [
+      "engineering",
+      "design",
+      "general"
+    ],
+    "specs": {
+      "ramGb": 32,
+      "storageGb": 1024,
+      "gpuClass": "high_dgpu",
+      "performance": 95,
+      "display": 90,
+      "battery": 71,
+      "portability": 78,
+      "thermals": 72
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Best Buy",
+        "priceUsd": 1849,
+        "condition": "new",
+        "affiliate": true
+      },
+      "offers": [
+        {
+          "seller": "Best Buy",
+          "priceUsd": 1849,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.93,
+      "reviewCoverage": 22,
+      "freshnessDays": 7,
+      "confidenceLevel": "high"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "loud_under_load",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Loud Under Load"
+        },
+        {
+          "signal": "limited_ports",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Limited Ports"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.2,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Loud Under Load",
+      "secondaryWarning": "Limited Ports",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 89.95
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23102E68%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%234AB7E8%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EASUS%20Zephyrus%20G14%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ERyzen%209%20%2F%2032GB%20%2F%201TB%20%2F%20RTX%204070%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "meets_safe"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "meets_safe"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.411Z"
+  },
+  {
+    "entityId": "macbook-air-15-m3-16gb-512gb",
+    "entityType": "laptop_variant",
+    "title": "MacBook Air 15 - M3 / 16GB / 512GB",
+    "itemName": "MacBook Air 15",
+    "variantName": "M3 / 16GB / 512GB",
+    "brand": "apple",
+    "segmentSignals": [
+      "general",
+      "medical",
+      "design"
+    ],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 82,
+      "display": 88,
+      "battery": 94,
+      "portability": 91,
+      "thermals": 86
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Apple",
+        "priceUsd": 1399,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Apple",
+          "priceUsd": 1399,
+          "condition": "new",
+          "affiliate": false
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.95,
+      "reviewCoverage": 30,
+      "freshnessDays": 3,
+      "confidenceLevel": "high"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "limited_ports",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Limited Ports"
+        },
+        {
+          "signal": "upgradeability_is_zero",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Upgradeability Is Zero"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.19,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Limited Ports",
+      "secondaryWarning": "Upgradeability Is Zero",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 100
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%230F2B5B%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2350D5D1%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EMacBook%20Air%2015%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3EM3%20%2F%2016GB%20%2F%20512GB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_official"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "below_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "below_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.411Z"
+  },
+  {
+    "entityId": "dell-inspiron-14-core-5-16gb-512gb",
+    "entityType": "laptop_variant",
+    "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
+    "itemName": "Dell Inspiron 14",
+    "variantName": "Core 5 / 16GB / 512GB",
+    "brand": "dell",
+    "segmentSignals": [
+      "general",
+      "medical",
+      "cs"
+    ],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 71,
+      "display": 68,
+      "battery": 76,
+      "portability": 79,
+      "thermals": 70
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Micro Center",
+        "priceUsd": 749,
+        "condition": "open_box",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Micro Center",
+          "priceUsd": 749,
+          "condition": "open_box",
+          "affiliate": false
+        },
+        {
+          "seller": "Dell",
+          "priceUsd": 799,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.84,
+      "reviewCoverage": 11,
+      "freshnessDays": 9,
+      "confidenceLevel": "medium"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "mediocre_display_accuracy",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Mediocre Display Accuracy"
+        },
+        {
+          "signal": "plastic_feel",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Plastic Feel"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.23,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Mediocre Display Accuracy",
+      "secondaryWarning": "Plastic Feel",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 63.949999999999996
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23123B78%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2376C2FF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EDell%20Inspiron%2014%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ECore%205%20%2F%2016GB%20%2F%20512GB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_official"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "below_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "below_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.411Z"
+  },
+  {
+    "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
+    "entityType": "laptop_variant",
+    "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
+    "itemName": "Lenovo ThinkPad T14 Gen 4",
+    "variantName": "Ryzen 7 / 16GB / 512GB",
+    "brand": "lenovo",
+    "segmentSignals": [
+      "cs",
+      "general",
+      "medical"
+    ],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 78,
+      "display": 74,
+      "battery": 83,
+      "portability": 80,
+      "thermals": 81
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Certified Outlet",
+        "priceUsd": 899,
+        "condition": "refurbished",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Certified Outlet",
+          "priceUsd": 899,
+          "condition": "refurbished",
+          "affiliate": false
+        },
+        {
+          "seller": "Lenovo",
+          "priceUsd": 1099,
+          "condition": "new",
+          "affiliate": false
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.9,
+      "reviewCoverage": 16,
+      "freshnessDays": 5,
+      "confidenceLevel": "high"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "display_is_just_ok",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Display Is Just Ok"
+        },
+        {
+          "signal": "speakers_are_average",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Speakers Are Average"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.18,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Display Is Just Ok",
+      "secondaryWarning": "Speakers Are Average",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 88.8
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2317335C%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2366C7BF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3ELenovo%20ThinkPad%20T14%20Gen%204%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ERyzen%207%20%2F%2016GB%20%2F%20512GB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_official"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "below_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "below_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.411Z"
+  },
+  {
+    "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+    "entityType": "laptop_variant",
+    "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+    "itemName": "Acer Nitro V 15",
+    "variantName": "Core i7 / 16GB / 1TB / RTX 4050",
+    "brand": "acer",
+    "segmentSignals": [
+      "engineering",
+      "cs",
+      "general"
+    ],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 1024,
+      "gpuClass": "mid_dgpu",
+      "performance": 84,
+      "display": 69,
+      "battery": 52,
+      "portability": 42,
+      "thermals": 75
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Newegg",
+        "priceUsd": 849,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Newegg",
+          "priceUsd": 849,
+          "condition": "new",
+          "affiliate": false
+        },
+        {
+          "seller": "Acer",
+          "priceUsd": 899,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.88,
+      "reviewCoverage": 24,
+      "freshnessDays": 6,
+      "confidenceLevel": "medium"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "battery_drops_fast",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Battery Drops Fast"
+        },
+        {
+          "signal": "fan_noise_is_obvious",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Fan Noise Is Obvious"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.24,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Battery Drops Fast",
+      "secondaryWarning": "Fan Noise Is Obvious",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 63.099999999999994
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23133E6C%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%235ED6C0%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EAcer%20Nitro%20V%2015%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ECore%20i7%20%2F%2016GB%20%2F%201TB%20%2F%20RTX%204050%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "meets_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "meets_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.411Z"
+  },
+  {
+    "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+    "entityType": "laptop_variant",
+    "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+    "itemName": "Lenovo LOQ 15 Gen 9",
+    "variantName": "Ryzen 7 / 24GB / 1TB / RTX 4060",
+    "brand": "lenovo",
+    "segmentSignals": [
+      "engineering",
+      "cs",
+      "design"
+    ],
+    "specs": {
+      "ramGb": 24,
+      "storageGb": 1024,
+      "gpuClass": "mid_dgpu",
+      "performance": 88,
+      "display": 77,
+      "battery": 58,
+      "portability": 46,
+      "thermals": 80
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "B&H",
+        "priceUsd": 1149,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "B&H",
+          "priceUsd": 1149,
+          "condition": "new",
+          "affiliate": false
+        },
+        {
+          "seller": "Lenovo",
+          "priceUsd": 1199,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.91,
+      "reviewCoverage": 19,
+      "freshnessDays": 4,
+      "confidenceLevel": "high"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "bulky_chassis",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Bulky Chassis"
+        },
+        {
+          "signal": "charger_is_large",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Charger Is Large"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.21,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Bulky Chassis",
+      "secondaryWarning": "Charger Is Large",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 92.7
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2317335C%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2366C7BF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3ELenovo%20LOQ%2015%20Gen%209%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ERyzen%207%20%2F%2024GB%20%2F%201TB%20%2F%20RTX%204060%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "meets_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "meets_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.411Z"
+  },
+  {
+    "entityId": "asus-proart-p16-ryzen-ai-9-32gb-1tb-rtx-4060",
+    "entityType": "laptop_variant",
+    "title": "ASUS ProArt P16 - Ryzen AI 9 / 32GB / 1TB / RTX 4060",
+    "itemName": "ASUS ProArt P16",
+    "variantName": "Ryzen AI 9 / 32GB / 1TB / RTX 4060",
+    "brand": "asus",
+    "segmentSignals": [
+      "design",
+      "engineering",
+      "cs"
+    ],
+    "specs": {
+      "ramGb": 32,
+      "storageGb": 1024,
+      "gpuClass": "mid_dgpu",
+      "performance": 90,
+      "display": 96,
+      "battery": 69,
+      "portability": 72,
+      "thermals": 76
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "B&H",
+        "priceUsd": 1849,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "B&H",
+          "priceUsd": 1849,
+          "condition": "new",
+          "affiliate": false
+        },
+        {
+          "seller": "ASUS",
+          "priceUsd": 1899,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.92,
+      "reviewCoverage": 14,
+      "freshnessDays": 5,
+      "confidenceLevel": "high"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "price_is_aggressive",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Price Is Aggressive"
+        },
+        {
+          "signal": "ram_not_upgradeable",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Ram Not Upgradeable"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.19,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Price Is Aggressive",
+      "secondaryWarning": "Ram Not Upgradeable",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 87.8
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23102E68%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%234AB7E8%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EASUS%20ProArt%20P16%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ERyzen%20AI%209%20%2F%2032GB%20%2F%201TB%20%2F%20RTX%204060%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "meets_safe"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "meets_safe"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.412Z"
+  },
+  {
+    "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
+    "entityType": "laptop_variant",
+    "title": "HP OmniBook X - Snapdragon X Elite / 16GB / 1TB",
+    "itemName": "HP OmniBook X",
+    "variantName": "Snapdragon X Elite / 16GB / 1TB",
+    "brand": "hp",
+    "segmentSignals": [
+      "general",
+      "medical",
+      "cs"
+    ],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 1024,
+      "gpuClass": "integrated",
+      "performance": 79,
+      "display": 81,
+      "battery": 92,
+      "portability": 93,
+      "thermals": 88
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Best Buy",
+        "priceUsd": 1099,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Best Buy",
+          "priceUsd": 1099,
+          "condition": "new",
+          "affiliate": false
+        },
+        {
+          "seller": "HP",
+          "priceUsd": 1149,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.89,
+      "reviewCoverage": 17,
+      "freshnessDays": 4,
+      "confidenceLevel": "medium"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "arm_compatibility_warning",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Arm Compatibility Warning"
+        },
+        {
+          "signal": "port_selection_is_limited",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Port Selection Is Limited"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.22,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Arm Compatibility Warning",
+      "secondaryWarning": "Port Selection Is Limited",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 61.75
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23164E63%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%233DD7D6%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EHP%20OmniBook%20X%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ESnapdragon%20X%20Elite%20%2F%2016GB%20%2F%201TB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "below_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "below_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.412Z"
+  },
+  {
+    "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
+    "entityType": "laptop_variant",
+    "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
+    "itemName": "Acer Swift Go 14",
+    "variantName": "Core Ultra 7 / 16GB / 1TB",
+    "brand": "acer",
+    "segmentSignals": [
+      "general",
+      "medical",
+      "cs"
+    ],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 1024,
+      "gpuClass": "integrated",
+      "performance": 77,
+      "display": 80,
+      "battery": 84,
+      "portability": 88,
+      "thermals": 74
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Amazon",
+        "priceUsd": 949,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Amazon",
+          "priceUsd": 949,
+          "condition": "new",
+          "affiliate": false
+        },
+        {
+          "seller": "Acer",
+          "priceUsd": 999,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.87,
+      "reviewCoverage": 13,
+      "freshnessDays": 8,
+      "confidenceLevel": "medium"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "speakers_are_thin",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Speakers Are Thin"
+        },
+        {
+          "signal": "fan_curve_needs_tuning",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Fan Curve Needs Tuning"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.18,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Speakers Are Thin",
+      "secondaryWarning": "Fan Curve Needs Tuning",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 60.25
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23133E6C%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%235ED6C0%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EAcer%20Swift%20Go%2014%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ECore%20Ultra%207%20%2F%2016GB%20%2F%201TB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "below_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "below_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.412Z"
+  },
+  {
+    "entityId": "macbook-pro-14-m4-pro-24gb-1tb",
+    "entityType": "laptop_variant",
+    "title": "MacBook Pro 14 - M4 Pro / 24GB / 1TB",
+    "itemName": "MacBook Pro 14",
+    "variantName": "M4 Pro / 24GB / 1TB",
+    "brand": "apple",
+    "segmentSignals": [
+      "cs",
+      "design",
+      "general"
+    ],
+    "specs": {
+      "ramGb": 24,
+      "storageGb": 1024,
+      "gpuClass": "integrated",
+      "performance": 94,
+      "display": 95,
+      "battery": 90,
+      "portability": 86,
+      "thermals": 88
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Apple",
+        "priceUsd": 1999,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Apple",
+          "priceUsd": 1999,
+          "condition": "new",
+          "affiliate": false
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.96,
+      "reviewCoverage": 21,
+      "freshnessDays": 2,
+      "confidenceLevel": "high"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "ports_still_need_dongles_for_some_workflows",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Ports Still Need Dongles For Some Workflows"
+        },
+        {
+          "signal": "upgradeability_is_zero",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Upgradeability Is Zero"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.18,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Ports Still Need Dongles For Some Workflows",
+      "secondaryWarning": "Upgradeability Is Zero",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 100
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%230F2B5B%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2350D5D1%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EMacBook%20Pro%2014%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3EM4%20Pro%20%2F%2024GB%20%2F%201TB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "below_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "below_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.412Z"
+  },
+  {
+    "entityId": "msi-pulse-16-ai-core-ultra-9-32gb-1tb-rtx-4070",
+    "entityType": "laptop_variant",
+    "title": "MSI Pulse 16 AI - Core Ultra 9 / 32GB / 1TB / RTX 4070",
+    "itemName": "MSI Pulse 16 AI",
+    "variantName": "Core Ultra 9 / 32GB / 1TB / RTX 4070",
+    "brand": "msi",
+    "segmentSignals": [
+      "engineering",
+      "design"
+    ],
+    "specs": {
+      "ramGb": 32,
+      "storageGb": 1024,
+      "gpuClass": "high_dgpu",
+      "performance": 93,
+      "display": 82,
+      "battery": 55,
+      "portability": 40,
+      "thermals": 79
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Micro Center",
+        "priceUsd": 1549,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Micro Center",
+          "priceUsd": 1549,
+          "condition": "new",
+          "affiliate": false
+        },
+        {
+          "seller": "MSI",
+          "priceUsd": 1599,
+          "condition": "new",
+          "affiliate": true
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.89,
+      "reviewCoverage": 15,
+      "freshnessDays": 6,
+      "confidenceLevel": "medium"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "heavy_power_brick",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Heavy Power Brick"
+        },
+        {
+          "signal": "battery_is_short_off_charger",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Battery Is Short Off Charger"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.23,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Heavy Power Brick",
+      "secondaryWarning": "Battery Is Short Off Charger",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 66.64999999999999
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231C2C5B%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%236F8DFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3EMSI%20Pulse%2016%20AI%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ECore%20Ultra%209%20%2F%2032GB%20%2F%201TB%20%2F%20RTX%204070%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_safe"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "meets_safe"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "meets_safe"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.412Z"
+  },
+  {
+    "entityId": "surface-laptop-7-snapdragon-x-plus-16gb-512gb",
+    "entityType": "laptop_variant",
+    "title": "Surface Laptop 7 - Snapdragon X Plus / 16GB / 512GB",
+    "itemName": "Surface Laptop 7",
+    "variantName": "Snapdragon X Plus / 16GB / 512GB",
+    "brand": "microsoft",
+    "segmentSignals": [
+      "general",
+      "medical"
+    ],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 76,
+      "display": 86,
+      "battery": 91,
+      "portability": 92,
+      "thermals": 90
+    },
+    "market": {
+      "bestOffer": {
+        "seller": "Microsoft",
+        "priceUsd": 1299,
+        "condition": "new",
+        "affiliate": false
+      },
+      "offers": [
+        {
+          "seller": "Microsoft",
+          "priceUsd": 1299,
+          "condition": "new",
+          "affiliate": false
+        }
+      ]
+    },
+    "trust": {
+      "sourceConfidence": 0.88,
+      "reviewCoverage": 12,
+      "freshnessDays": 4,
+      "confidenceLevel": "medium"
+    },
+    "reviewIntelligence": {
+      "signals": [
+        {
+          "signal": "arm_compatibility_warning",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Arm Compatibility Warning"
+        },
+        {
+          "signal": "few_ports_for_desk_use",
+          "category": "unknown",
+          "severity": "low",
+          "userFacing": "Few Ports For Desk Use"
+        }
+      ],
+      "risk": {
+        "compositeRisk": 0.21,
+        "riskLevel": "low",
+        "dominantCategory": "unknown",
+        "signalCount": 2
+      },
+      "primaryWarning": "Arm Compatibility Warning",
+      "secondaryWarning": "Few Ports For Desk Use",
+      "hasHighRisk": false
+    },
+    "economicSignals": {
+      "resaleScore": 60.3
+    },
+    "media": {
+      "productImage": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22620%22%20viewBox%3D%220%200%20960%20620%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FBFDFF%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23EEF5FB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231A3768%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%236FDBDB%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22960%22%20height%3D%22620%22%20rx%3D%2236%22%20fill%3D%22url(%23bg)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22490%22%20cy%3D%22522%22%20rx%3D%22238%22%20ry%3D%2228%22%20fill%3D%22rgba(15%2C43%2C91%2C0.10)%22%20%2F%3E%0A%20%20%20%20%20%20%3Cg%20transform%3D%22translate(240%20120)%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%2220%22%20width%3D%22420%22%20height%3D%22255%22%20rx%3D%2222%22%20fill%3D%22%23DCE6F4%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%226%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22132%22%20y%3D%2242%22%20width%3D%22376%22%20height%3D%22211%22%20rx%3D%2214%22%20fill%3D%22url(%23screen)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20%20294%20L620%20294%20L546%20346%20L95%20346%20Z%22%20fill%3D%22%23DCE4F0%22%20stroke%3D%22%23B9C7DA%22%20stroke-width%3D%225%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M130%20318%20L510%20318%22%20stroke%3D%22%23B6C5D8%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%2286%22%20fill%3D%22%23122033%22%20font-size%3D%2234%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%3ESurface%20Laptop%207%3C%2Ftext%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2272%22%20y%3D%22124%22%20fill%3D%22%23607086%22%20font-size%3D%2222%22%20font-family%3D%22Segoe%20UI%2C%20Arial%2C%20sans-serif%22%3ESnapdragon%20X%20Plus%20%2F%2016GB%20%2F%20512GB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E"
+    },
+    "fitStates": {
+      "general": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Light productivity and browser-heavy workloads."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer multi-year student baseline."
+        },
+        "state": "meets_safe"
+      },
+      "cs": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Compilers, IDEs, containers, and light VM work."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 1024,
+          "notes": "Safer for heavier local tooling and longer lifecycle."
+        },
+        "state": "meets_official"
+      },
+      "engineering": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "CAD and technical software often push GPU needs."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for demanding subfields and thermally heavy workloads."
+        },
+        "state": "below_official"
+      },
+      "design": {
+        "official": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true,
+          "notes": "Creative workloads and color-sensitive work."
+        },
+        "safe": {
+          "minRamGb": 32,
+          "minStorageGb": 1024,
+          "needsDedicatedGpu": true,
+          "notes": "Safer for video, multi-app creative pipelines, and display quality."
+        },
+        "state": "below_official"
+      },
+      "medical": {
+        "official": {
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "notes": "Mostly portability and reliability driven."
+        },
+        "safe": {
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "notes": "Safer balance for battery, tabs, note-taking, and longevity."
+        },
+        "state": "meets_safe"
+      }
+    },
+    "publishedAt": "2026-04-14T17:04:26.412Z"
+  }
+]

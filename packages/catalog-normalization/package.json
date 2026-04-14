@@ -1,0 +1,7 @@
+{
+  "name": "catalog-normalization",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Layer 4: Normalization — توحيد المواصفات والأرقام الخام",
+  "main": "src/index.js"
+}

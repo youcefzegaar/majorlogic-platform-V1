@@ -1,0 +1,22 @@
+{
+  "general": {
+    "official": { "minRamGb": 8, "minStorageGb": 256, "notes": "Light productivity and browser-heavy workloads." },
+    "safe": { "minRamGb": 16, "minStorageGb": 512, "notes": "Safer multi-year student baseline." }
+  },
+  "cs": {
+    "official": { "minRamGb": 16, "minStorageGb": 512, "notes": "Compilers, IDEs, containers, and light VM work." },
+    "safe": { "minRamGb": 16, "minStorageGb": 1024, "notes": "Safer for heavier local tooling and longer lifecycle." }
+  },
+  "engineering": {
+    "official": { "minRamGb": 16, "minStorageGb": 512, "needsDedicatedGpu": true, "notes": "CAD and technical software often push GPU needs." },
+    "safe": { "minRamGb": 32, "minStorageGb": 1024, "needsDedicatedGpu": true, "notes": "Safer for demanding subfields and thermally heavy workloads." }
+  },
+  "design": {
+    "official": { "minRamGb": 16, "minStorageGb": 512, "needsDedicatedGpu": true, "notes": "Creative workloads and color-sensitive work." },
+    "safe": { "minRamGb": 32, "minStorageGb": 1024, "needsDedicatedGpu": true, "notes": "Safer for video, multi-app creative pipelines, and display quality." }
+  },
+  "medical": {
+    "official": { "minRamGb": 8, "minStorageGb": 256, "notes": "Mostly portability and reliability driven." },
+    "safe": { "minRamGb": 16, "minStorageGb": 512, "notes": "Safer balance for battery, tabs, note-taking, and longevity." }
+  }
+}

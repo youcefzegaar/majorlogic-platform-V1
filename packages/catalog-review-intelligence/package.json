@@ -1,0 +1,7 @@
+{
+  "name": "catalog-review-intelligence",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Layer 6: Review Intelligence — تحويل المراجعات الخام لإشارات قرار موثوقة",
+  "main": "src/index.js"
+}

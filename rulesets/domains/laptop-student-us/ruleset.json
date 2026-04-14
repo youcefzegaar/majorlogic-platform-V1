@@ -1,0 +1,157 @@
+{
+  "logicVersion": "1.0.0",
+  "scope": {
+    "audience": "students_only",
+    "category": "laptops_only",
+    "market": "US"
+  },
+  "globalQualityGates": {
+    "minReviewScore": 4.0,
+    "minReviewCount": 80,
+    "minReviewCoverage": 10,
+    "minSourceConfidence": 0.80,
+    "maxFreshnessDays": 14,
+    "blockedSellerTiers": [
+      "unknown",
+      "risky"
+    ],
+    "thermalMinScore": 0.4
+  },
+  "majorBaselines": {
+    "general": {
+      "minRamGb": 8,
+      "minStorageGb": 256,
+      "needsDgpu": false
+    },
+    "cs": {
+      "minRamGb": 16,
+      "minStorageGb": 512,
+      "needsDgpu": false
+    },
+    "engineering": {
+      "minRamGb": 16,
+      "minStorageGb": 512,
+      "needsDgpu": true
+    },
+    "design": {
+      "minRamGb": 16,
+      "minStorageGb": 512,
+      "needsDgpu": true
+    },
+    "medical": {
+      "minRamGb": 8,
+      "minStorageGb": 256,
+      "needsDgpu": false
+    }
+  },
+  "sliderSoftRules": {
+    "virtual_machines": {
+      "gte_70": {
+        "softMinRamGb": 32,
+        "softMinStorageGb": 1024
+      }
+    },
+    "video_4k": {
+      "gte_70": {
+        "softNeedsDedicatedGpu": true,
+        "softMinRamGb": 32
+      }
+    },
+    "gaming": {
+      "gte_70": {
+        "softNeedsDedicatedGpu": true,
+        "softMinDisplayRefreshHz": 120
+      }
+    },
+    "portability": {
+      "gte_70": {
+        "softMaxWeightLbs": 3.0,
+        "softMinBatteryScore": 70,
+        "softMinPortabilityScore": 70
+      }
+    }
+  },
+  "weightsByMajor": {
+    "general": {
+      "performance": 0.20,
+      "display": 0.15,
+      "portability": 0.30,
+      "battery": 0.20,
+      "value": 0.15
+    },
+    "cs": {
+      "performance": 0.35,
+      "keyboard": 0.20,
+      "portability": 0.10,
+      "battery": 0.15,
+      "value": 0.20
+    },
+    "engineering": {
+      "performance": 0.45,
+      "gpu": 0.20,
+      "thermals": 0.10,
+      "battery": 0.10,
+      "value": 0.15
+    },
+    "design": {
+      "display": 0.35,
+      "performance": 0.25,
+      "gpu": 0.15,
+      "portability": 0.10,
+      "value": 0.15
+    },
+    "medical": {
+      "portability": 0.30,
+      "battery": 0.30,
+      "display": 0.15,
+      "performance": 0.10,
+      "value": 0.15
+    }
+  },
+  "policies": {
+    "budgetMustHold": true,
+    "requireBadNews": true
+  },
+  "penalties": {
+    "badNewsSeverity": {
+      "low": 0.03,
+      "med": 0.07,
+      "high": 0.12
+    },
+    "stalePricePenalty": 3,
+    "softGpuMismatchPenalty": 12,
+    "riskPenaltyByTier": {
+      "LOW": 0.0,
+      "MEDIUM": 0.1,
+      "HIGH": 0.3
+    }
+  },
+  "selectionRules": {
+    "cards": [
+      "hero",
+      "smart_budget",
+      "future_proof"
+    ],
+    "hero": {
+      "rule": "highest_match_score_after_risk",
+      "cannotBeOpenBox": true,
+      "cannotBeOutOfStock": true
+    },
+    "smartBudget": {
+      "rule": "lowest_price_meeting_quality_gates",
+      "mustShowTradeoff": true
+    },
+    "futureProof": {
+      "rule": "best_upgrade_delta_within_plus_150_usd",
+      "maxBudgetDeltaUsd": 150
+    },
+
+    "tieBreakersOrder": [
+      "lower_risk",
+      "higher_headroom",
+      "higher_trust",
+      "higher_resale",
+      "lower_price"
+    ]
+  }
+}

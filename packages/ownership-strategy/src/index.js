@@ -1,0 +1,103 @@
+/**
+ * ownership-strategy — Layer 4 (Platform): Ownership Strategy
+ *
+ * الغرض: بعد أن يختار المحرك أفضل الأجهزة، هذه الطبقة تجيب على السؤال:
+ *   "ما أفضل طريقة لامتلاك هذا الجهاز؟"
+ *
+ * تحسب:
+ *   - التكلفة الكلية للملكية (TCO) عبر أفق زمني
+ *   - توصية الملكية (جديد، مجدد، تمويل)
+ *   - تحليل إعادة البيع
+ *
+ * مبدأ: هذه الطبقة تأتي بعد القرار — لا تغيّر الترتيب أبداً.
+ */
+
+/**
+ * يحسب التكلفة الكلية للملكية (Total Cost of Ownership).
+ *
+ * @param {object} params
+ * @param {number} params.purchasePrice  — سعر الشراء
+ * @param {number} params.resaleScore    — تصنيف إعادة البيع (0-100)
+ * @param {number} [params.ownershipYears] — سنوات الامتلاك المتوقعة
+ * @returns {{ tco, estimatedResaleValue, netCost, costPerYear }}
+ */
+function computeLifecycleCost({ purchasePrice, resaleScore, ownershipYears = 4 }) {
+  // تقدير قيمة إعادة البيع بناءً على resaleScore
+  const depreciationRate = 1 - (resaleScore / 100) * 0.65;  // الأجهزة ذات resaleScore عالي تحافظ على قيمتها
+  const estimatedResaleValue = Math.round(purchasePrice * (1 - depreciationRate) * 100) / 100;
+  const netCost = purchasePrice - estimatedResaleValue;
+  const costPerYear = Math.round((netCost / ownershipYears) * 100) / 100;
+
+  return {
+    purchasePrice,
+    ownershipYears,
+    estimatedResaleValue,
+    netCost,
+    costPerYear,
+    tco: netCost  // في المرحلة الأولى، TCO = صافي التكلفة بعد إعادة البيع
+  };
+}
+
+export function buildOwnershipStrategy({ profile, catalog, decision, domainPack }) {
+  if (decision.status !== "ok" || !decision.cards.length) {
+    return {
+      status: "deferred",
+      explanation: "No viable recommendation was made, so ownership strategy is deferred.",
+      strategies: []
+    };
+  }
+
+  const ownershipYears = profile.ownershipYears ?? 4;
+
+  const strategies = decision.cards.map((card) => {
+    const entity = catalog.getEntity
+      ? catalog.getEntity(card.entityId)
+      : catalog.all().find((entry) => entry.entityId === card.entityId);
+
+    if (!entity) {
+      return {
+        cardType: card.cardType,
+        entityId: card.entityId,
+        status: "unresolved"
+      };
+    }
+
+    // حساب التكلفة الحياتية
+    const lifecycle = computeLifecycleCost({
+      purchasePrice: card.priceUsd ?? entity.market.bestOffer.priceUsd,
+      resaleScore: card.resaleScore ?? entity.economicSignals?.resaleScore ?? 50,
+      ownershipYears
+    });
+
+    // توصية الملكية من الدومين (إذا وجدت)
+    const domainRecommendation = domainPack.recommendOwnership
+      ? domainPack.recommendOwnership({
+          profile,
+          entity,
+          heroCard: card
+        })
+      : { mode: "buy_new", explanation: "Default ownership path." };
+
+    return {
+      cardType: card.cardType,
+      entityId: card.entityId,
+      title: card.title,
+      lifecycle,
+      recommendation: domainRecommendation,
+      summary: `${card.title}: $${lifecycle.costPerYear}/year effective cost over ${ownershipYears} years. Resale recovery ~$${lifecycle.estimatedResaleValue}.`
+    };
+  });
+
+  // اختيار أفضل استراتيجية ملكية (الأقل تكلفة سنوية)
+  const bestValue = [...strategies]
+    .filter((s) => s.lifecycle)
+    .sort((a, b) => a.lifecycle.costPerYear - b.lifecycle.costPerYear)[0] ?? null;
+
+  return {
+    status: "ok",
+    ownershipYears,
+    strategies,
+    bestValueCard: bestValue?.cardType ?? null,
+    bestValueSummary: bestValue?.summary ?? null
+  };
+}

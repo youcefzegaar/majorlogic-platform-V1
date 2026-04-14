@@ -1,0 +1,22 @@
+{
+  "id": "demo_engineering_student",
+  "major": "engineering",
+  "budgetUsd": 1900,
+  "preferences": {
+    "portability": 55,
+    "battery": 45,
+    "display": 60,
+    "resale": 70
+  },
+  "sliders": {
+    "virtual_machines": 72,
+    "video_4k": 20,
+    "gaming": 35,
+    "portability": 40
+  },
+  "context": {
+    "acceptsOpenBox": false,
+    "acceptsRefurbished": false,
+    "financingAllowed": true
+  }
+}

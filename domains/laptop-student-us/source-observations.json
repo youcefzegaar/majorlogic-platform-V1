@@ -1,0 +1,140 @@
+[
+  {
+    "itemName": "ThinkPad P1 Gen 6",
+    "variantName": "Core i7 / 32GB / 1TB / RTX 4060",
+    "majorSignals": ["engineering", "cs", "design"],
+    "specs": {
+      "ramGb": 32,
+      "storageGb": 1024,
+      "gpuClass": "mid_dgpu",
+      "performance": 92,
+      "display": 84,
+      "battery": 63,
+      "portability": 54,
+      "thermals": 82
+    },
+    "reviewSummary": {
+      "topCons": ["heavy_for_daily_carry", "battery_below_expectation"],
+      "reviewRiskScore": 0.25
+    },
+    "trust": {
+      "sourceConfidence": 0.92,
+      "reviewCoverage": 18,
+      "freshnessDays": 4
+    },
+    "offers": [
+      { "seller": "Lenovo", "priceUsd": 1799, "condition": "new", "affiliate": true },
+      { "seller": "B&H", "priceUsd": 1769, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "itemName": "ASUS Zephyrus G14",
+    "variantName": "Ryzen 9 / 32GB / 1TB / RTX 4070",
+    "majorSignals": ["engineering", "design", "general"],
+    "specs": {
+      "ramGb": 32,
+      "storageGb": 1024,
+      "gpuClass": "high_dgpu",
+      "performance": 95,
+      "display": 90,
+      "battery": 71,
+      "portability": 78,
+      "thermals": 72
+    },
+    "reviewSummary": {
+      "topCons": ["loud_under_load", "limited_ports"],
+      "reviewRiskScore": 0.21
+    },
+    "trust": {
+      "sourceConfidence": 0.93,
+      "reviewCoverage": 22,
+      "freshnessDays": 7
+    },
+    "offers": [
+      { "seller": "Best Buy", "priceUsd": 1849, "condition": "new", "affiliate": true }
+    ]
+  },
+  {
+    "itemName": "MacBook Air 15",
+    "variantName": "M3 / 16GB / 512GB",
+    "majorSignals": ["general", "medical", "design"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 82,
+      "display": 88,
+      "battery": 94,
+      "portability": 91,
+      "thermals": 86
+    },
+    "reviewSummary": {
+      "topCons": ["limited_ports", "upgradeability_is_zero"],
+      "reviewRiskScore": 0.17
+    },
+    "trust": {
+      "sourceConfidence": 0.95,
+      "reviewCoverage": 30,
+      "freshnessDays": 3
+    },
+    "offers": [
+      { "seller": "Apple", "priceUsd": 1399, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "itemName": "Dell Inspiron 14",
+    "variantName": "Core 5 / 16GB / 512GB",
+    "majorSignals": ["general", "medical", "cs"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 71,
+      "display": 68,
+      "battery": 76,
+      "portability": 79,
+      "thermals": 70
+    },
+    "reviewSummary": {
+      "topCons": ["mediocre_display_accuracy", "plastic_feel"],
+      "reviewRiskScore": 0.28
+    },
+    "trust": {
+      "sourceConfidence": 0.84,
+      "reviewCoverage": 11,
+      "freshnessDays": 9
+    },
+    "offers": [
+      { "seller": "Dell", "priceUsd": 799, "condition": "new", "affiliate": true },
+      { "seller": "Micro Center", "priceUsd": 749, "condition": "open_box", "affiliate": false }
+    ]
+  },
+  {
+    "itemName": "Lenovo ThinkPad T14 Gen 4",
+    "variantName": "Ryzen 7 / 16GB / 512GB",
+    "majorSignals": ["cs", "general", "medical"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 78,
+      "display": 74,
+      "battery": 83,
+      "portability": 80,
+      "thermals": 81
+    },
+    "reviewSummary": {
+      "topCons": ["display_is_just_ok", "speakers_are_average"],
+      "reviewRiskScore": 0.14
+    },
+    "trust": {
+      "sourceConfidence": 0.9,
+      "reviewCoverage": 16,
+      "freshnessDays": 5
+    },
+    "offers": [
+      { "seller": "Lenovo", "priceUsd": 1099, "condition": "new", "affiliate": false },
+      { "seller": "Certified Outlet", "priceUsd": 899, "condition": "refurbished", "affiliate": false }
+    ]
+  }
+]

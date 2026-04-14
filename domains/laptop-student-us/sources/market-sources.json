@@ -1,0 +1,414 @@
+[
+  {
+    "sourceId": "lenovo-p1-official",
+    "sourceType": "manufacturer",
+    "sourceName": "Lenovo",
+    "sourceUrl": "https://example.com/lenovo/thinkpad-p1-gen-6",
+    "itemName": "ThinkPad P1 Gen 6",
+    "variantName": "Core i7 / 32GB / 1TB / RTX 4060",
+    "majorSignals": ["engineering", "cs", "design"],
+    "rawSpecs": {
+      "ram": "32 GB DDR5",
+      "storage": "1 TB SSD",
+      "gpu": "RTX 4060",
+      "performance_score": "92",
+      "display_score": "84",
+      "battery_score": "63",
+      "portability_score": "54",
+      "thermals_score": "82"
+    },
+    "reviewEvidence": {
+      "topCons": ["heavy_for_daily_carry", "battery_below_expectation"],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 18
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.92,
+      "freshnessDays": 4
+    },
+    "offers": [
+      { "seller": "Lenovo", "priceUsd": 1799, "condition": "new", "affiliate": true },
+      { "seller": "B&H", "priceUsd": 1769, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "asus-g14-retail",
+    "sourceType": "retailer",
+    "sourceName": "Best Buy",
+    "sourceUrl": "https://example.com/asus/zephyrus-g14",
+    "itemName": "ASUS Zephyrus G14",
+    "variantName": "Ryzen 9 / 32GB / 1TB / RTX 4070",
+    "majorSignals": ["engineering", "design", "general"],
+    "rawSpecs": {
+      "ram": "32 GB LPDDR5X",
+      "storage": "1 TB SSD",
+      "gpu": "RTX 4070",
+      "performance_score": "95",
+      "display_score": "90",
+      "battery_score": "71",
+      "portability_score": "78",
+      "thermals_score": "72"
+    },
+    "reviewEvidence": {
+      "topCons": ["loud_under_load", "limited_ports"],
+      "reviewRiskScore": 0.21,
+      "reviewCoverage": 22
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.93,
+      "freshnessDays": 7
+    },
+    "offers": [
+      { "seller": "Best Buy", "priceUsd": 1849, "condition": "new", "affiliate": true }
+    ]
+  },
+  {
+    "sourceId": "apple-air-official",
+    "sourceType": "manufacturer",
+    "sourceName": "Apple",
+    "sourceUrl": "https://example.com/apple/macbook-air-15-m3",
+    "itemName": "MacBook Air 15",
+    "variantName": "M3 / 16GB / 512GB",
+    "majorSignals": ["general", "medical", "design"],
+    "rawSpecs": {
+      "ram": "16 GB unified memory",
+      "storage": "512 GB SSD",
+      "gpu": "integrated",
+      "performance_score": "82",
+      "display_score": "88",
+      "battery_score": "94",
+      "portability_score": "91",
+      "thermals_score": "86"
+    },
+    "reviewEvidence": {
+      "topCons": ["limited_ports", "upgradeability_is_zero"],
+      "reviewRiskScore": 0.17,
+      "reviewCoverage": 30
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.95,
+      "freshnessDays": 3
+    },
+    "offers": [
+      { "seller": "Apple", "priceUsd": 1399, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "dell-inspiron-retail",
+    "sourceType": "retailer",
+    "sourceName": "Dell",
+    "sourceUrl": "https://example.com/dell/inspiron-14",
+    "itemName": "Dell Inspiron 14",
+    "variantName": "Core 5 / 16GB / 512GB",
+    "majorSignals": ["general", "medical", "cs"],
+    "rawSpecs": {
+      "ram": "16 GB DDR5",
+      "storage": "512 GB SSD",
+      "gpu": "integrated",
+      "performance_score": "71",
+      "display_score": "68",
+      "battery_score": "76",
+      "portability_score": "79",
+      "thermals_score": "70"
+    },
+    "reviewEvidence": {
+      "topCons": ["mediocre_display_accuracy", "plastic_feel"],
+      "reviewRiskScore": 0.28,
+      "reviewCoverage": 11
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.84,
+      "freshnessDays": 9
+    },
+    "offers": [
+      { "seller": "Dell", "priceUsd": 799, "condition": "new", "affiliate": true },
+      { "seller": "Micro Center", "priceUsd": 749, "condition": "open_box", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "lenovo-t14-official",
+    "sourceType": "manufacturer",
+    "sourceName": "Lenovo",
+    "sourceUrl": "https://example.com/lenovo/thinkpad-t14-gen-4",
+    "itemName": "Lenovo ThinkPad T14 Gen 4",
+    "variantName": "Ryzen 7 / 16GB / 512GB",
+    "majorSignals": ["cs", "general", "medical"],
+    "rawSpecs": {
+      "ram": "16 GB DDR5",
+      "storage": "512 GB SSD",
+      "gpu": "integrated",
+      "performance_score": "78",
+      "display_score": "74",
+      "battery_score": "83",
+      "portability_score": "80",
+      "thermals_score": "81"
+    },
+    "reviewEvidence": {
+      "topCons": ["display_is_just_ok", "speakers_are_average"],
+      "reviewRiskScore": 0.14,
+      "reviewCoverage": 16
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.90,
+      "freshnessDays": 5
+    },
+    "offers": [
+      { "seller": "Lenovo", "priceUsd": 1099, "condition": "new", "affiliate": false },
+      { "seller": "Certified Outlet", "priceUsd": 899, "condition": "refurbished", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "acer-nitro-retail",
+    "sourceType": "retailer",
+    "sourceName": "Acer",
+    "sourceUrl": "https://example.com/acer/nitro-v-15",
+    "itemName": "Acer Nitro V 15",
+    "variantName": "Core i7 / 16GB / 1TB / RTX 4050",
+    "majorSignals": ["engineering", "cs", "general"],
+    "rawSpecs": {
+      "ram": "16 GB DDR5",
+      "storage": "1 TB SSD",
+      "gpu": "RTX 4050",
+      "performance_score": "84",
+      "display_score": "69",
+      "battery_score": "52",
+      "portability_score": "42",
+      "thermals_score": "75"
+    },
+    "reviewEvidence": {
+      "topCons": ["battery_drops_fast", "fan_noise_is_obvious"],
+      "reviewRiskScore": 0.31,
+      "reviewCoverage": 24
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.88,
+      "freshnessDays": 6
+    },
+    "offers": [
+      { "seller": "Acer", "priceUsd": 899, "condition": "new", "affiliate": true },
+      { "seller": "Newegg", "priceUsd": 849, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "lenovo-loq-retail",
+    "sourceType": "retailer",
+    "sourceName": "Lenovo",
+    "sourceUrl": "https://example.com/lenovo/loq-15-gen-9",
+    "itemName": "Lenovo LOQ 15 Gen 9",
+    "variantName": "Ryzen 7 / 24GB / 1TB / RTX 4060",
+    "majorSignals": ["engineering", "cs", "design"],
+    "rawSpecs": {
+      "ram": "24 GB DDR5",
+      "storage": "1 TB SSD",
+      "gpu": "RTX 4060",
+      "performance_score": "88",
+      "display_score": "77",
+      "battery_score": "58",
+      "portability_score": "46",
+      "thermals_score": "80"
+    },
+    "reviewEvidence": {
+      "topCons": ["bulky_chassis", "charger_is_large"],
+      "reviewRiskScore": 0.22,
+      "reviewCoverage": 19
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.91,
+      "freshnessDays": 4
+    },
+    "offers": [
+      { "seller": "Lenovo", "priceUsd": 1199, "condition": "new", "affiliate": true },
+      { "seller": "B&H", "priceUsd": 1149, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "asus-proart-retail",
+    "sourceType": "retailer",
+    "sourceName": "ASUS",
+    "sourceUrl": "https://example.com/asus/proart-p16",
+    "itemName": "ASUS ProArt P16",
+    "variantName": "Ryzen AI 9 / 32GB / 1TB / RTX 4060",
+    "majorSignals": ["design", "engineering", "cs"],
+    "rawSpecs": {
+      "ram": "32 GB LPDDR5X",
+      "storage": "1 TB SSD",
+      "gpu": "RTX 4060",
+      "performance_score": "90",
+      "display_score": "96",
+      "battery_score": "69",
+      "portability_score": "72",
+      "thermals_score": "76"
+    },
+    "reviewEvidence": {
+      "topCons": ["price_is_aggressive", "ram_not_upgradeable"],
+      "reviewRiskScore": 0.18,
+      "reviewCoverage": 14
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.92,
+      "freshnessDays": 5
+    },
+    "offers": [
+      { "seller": "ASUS", "priceUsd": 1899, "condition": "new", "affiliate": true },
+      { "seller": "B&H", "priceUsd": 1849, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "hp-omnibook-retail",
+    "sourceType": "retailer",
+    "sourceName": "HP",
+    "sourceUrl": "https://example.com/hp/omnibook-x",
+    "itemName": "HP OmniBook X",
+    "variantName": "Snapdragon X Elite / 16GB / 1TB",
+    "majorSignals": ["general", "medical", "cs"],
+    "rawSpecs": {
+      "ram": "16 GB LPDDR5X",
+      "storage": "1 TB SSD",
+      "gpu": "integrated",
+      "performance_score": "79",
+      "display_score": "81",
+      "battery_score": "92",
+      "portability_score": "93",
+      "thermals_score": "88"
+    },
+    "reviewEvidence": {
+      "topCons": ["arm_compatibility_warning", "port_selection_is_limited"],
+      "reviewRiskScore": 0.24,
+      "reviewCoverage": 17
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.89,
+      "freshnessDays": 4
+    },
+    "offers": [
+      { "seller": "HP", "priceUsd": 1149, "condition": "new", "affiliate": true },
+      { "seller": "Best Buy", "priceUsd": 1099, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "acer-swift-retail",
+    "sourceType": "retailer",
+    "sourceName": "Acer",
+    "sourceUrl": "https://example.com/acer/swift-go-14",
+    "itemName": "Acer Swift Go 14",
+    "variantName": "Core Ultra 7 / 16GB / 1TB",
+    "majorSignals": ["general", "medical", "cs"],
+    "rawSpecs": {
+      "ram": "16 GB LPDDR5X",
+      "storage": "1 TB SSD",
+      "gpu": "integrated",
+      "performance_score": "77",
+      "display_score": "80",
+      "battery_score": "84",
+      "portability_score": "88",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": ["speakers_are_thin", "fan_curve_needs_tuning"],
+      "reviewRiskScore": 0.16,
+      "reviewCoverage": 13
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.87,
+      "freshnessDays": 8
+    },
+    "offers": [
+      { "seller": "Acer", "priceUsd": 999, "condition": "new", "affiliate": true },
+      { "seller": "Amazon", "priceUsd": 949, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "apple-pro-official",
+    "sourceType": "manufacturer",
+    "sourceName": "Apple",
+    "sourceUrl": "https://example.com/apple/macbook-pro-14-m4-pro",
+    "itemName": "MacBook Pro 14",
+    "variantName": "M4 Pro / 24GB / 1TB",
+    "majorSignals": ["cs", "design", "general"],
+    "rawSpecs": {
+      "ram": "24 GB unified memory",
+      "storage": "1 TB SSD",
+      "gpu": "integrated",
+      "performance_score": "94",
+      "display_score": "95",
+      "battery_score": "90",
+      "portability_score": "86",
+      "thermals_score": "88"
+    },
+    "reviewEvidence": {
+      "topCons": ["ports_still_need_dongles_for_some_workflows", "upgradeability_is_zero"],
+      "reviewRiskScore": 0.15,
+      "reviewCoverage": 21
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.96,
+      "freshnessDays": 2
+    },
+    "offers": [
+      { "seller": "Apple", "priceUsd": 1999, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "msi-pulse-retail",
+    "sourceType": "retailer",
+    "sourceName": "MSI",
+    "sourceUrl": "https://example.com/msi/pulse-16-ai",
+    "itemName": "MSI Pulse 16 AI",
+    "variantName": "Core Ultra 9 / 32GB / 1TB / RTX 4070",
+    "majorSignals": ["engineering", "design"],
+    "rawSpecs": {
+      "ram": "32 GB DDR5",
+      "storage": "1 TB SSD",
+      "gpu": "RTX 4070",
+      "performance_score": "93",
+      "display_score": "82",
+      "battery_score": "55",
+      "portability_score": "40",
+      "thermals_score": "79"
+    },
+    "reviewEvidence": {
+      "topCons": ["heavy_power_brick", "battery_is_short_off_charger"],
+      "reviewRiskScore": 0.27,
+      "reviewCoverage": 15
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.89,
+      "freshnessDays": 6
+    },
+    "offers": [
+      { "seller": "MSI", "priceUsd": 1599, "condition": "new", "affiliate": true },
+      { "seller": "Micro Center", "priceUsd": 1549, "condition": "new", "affiliate": false }
+    ]
+  },
+  {
+    "sourceId": "surface-laptop-retail",
+    "sourceType": "retailer",
+    "sourceName": "Microsoft",
+    "sourceUrl": "https://example.com/microsoft/surface-laptop-7",
+    "itemName": "Surface Laptop 7",
+    "variantName": "Snapdragon X Plus / 16GB / 512GB",
+    "majorSignals": ["general", "medical"],
+    "rawSpecs": {
+      "ram": "16 GB LPDDR5X",
+      "storage": "512 GB SSD",
+      "gpu": "integrated",
+      "performance_score": "76",
+      "display_score": "86",
+      "battery_score": "91",
+      "portability_score": "92",
+      "thermals_score": "90"
+    },
+    "reviewEvidence": {
+      "topCons": ["arm_compatibility_warning", "few_ports_for_desk_use"],
+      "reviewRiskScore": 0.22,
+      "reviewCoverage": 12
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.88,
+      "freshnessDays": 4
+    },
+    "offers": [
+      { "seller": "Microsoft", "priceUsd": 1299, "condition": "new", "affiliate": false }
+    ]
+  }
+]

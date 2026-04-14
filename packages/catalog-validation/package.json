@@ -1,0 +1,7 @@
+{
+  "name": "catalog-validation",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Layer 7: Validation & Truth Resolution — حسم التعارضات وبوابة النشر",
+  "main": "src/index.js"
+}
