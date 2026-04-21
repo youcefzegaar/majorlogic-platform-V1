@@ -1,4 +1,7 @@
+import crypto from "node:crypto";
+
 export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
+  const decisionRunId = crypto.randomUUID();
   const preparedProfile = domainPack.prepareDecisionProfile
     ? domainPack.prepareDecisionProfile({ profile, ruleset, catalog })
     : profile;
@@ -18,6 +21,7 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
 
   if (!eligibleCandidates.length) {
     return {
+      decisionRunId,
       profileId: preparedProfile.profileId ?? preparedProfile.id ?? "anonymous_profile",
       segment: preparedProfile[domainPack.meta.segmentKey],
       evaluatedCount: evaluatedCandidates.length,
@@ -75,6 +79,7 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
   }
 
   return {
+    decisionRunId,
     profileId: preparedProfile.profileId ?? preparedProfile.id ?? "anonymous_profile",
     segment: preparedProfile[domainPack.meta.segmentKey],
     evaluatedCount: evaluatedCandidates.length,

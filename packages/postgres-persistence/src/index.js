@@ -46,6 +46,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0003_catalog_ingestion.sql",
       "database/migrations/0004_catalog_publish_runs.sql",
       "database/migrations/0005_decision_catalog_trace.sql",
+      "database/migrations/0006_telemetry.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -452,5 +453,36 @@ export class PostgresPlatformRepository {
     );
 
     return result.rows;
+  }
+
+  async saveGuardrailEvents() {
+    // No-Op for now, reserved for governance tracking
+  }
+
+  async saveGrowthArtifacts() {
+    // No-Op for now, reserved for SEO artifact tracking
+  }
+
+  async saveDecisionRun({ domainId, profile, ruleset, decision, ownership, trust, catalogVersion, publishRunId }) {
+    await this.client.query(
+      `INSERT INTO ml_telemetry.decision_runs (id, domain_id, profile_id, segment, payload_json)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        decision.decisionRunId, 
+        domainId, 
+        profile.id ?? decision.profileId ?? "anonymous", 
+        decision.segment ?? "unknown", 
+        JSON.stringify({ profile, ruleset, decision, ownership, trust, catalogVersion, publishRunId })
+      ]
+    );
+  }
+
+  async saveTelemetryClick({ decisionRunId, entityId, clickType }) {
+    await this.client.query(
+      `INSERT INTO ml_telemetry.telemetry_clicks (decision_run_id, entity_id, click_type)
+       VALUES ($1, $2, $3)`,
+      [decisionRunId, entityId, clickType]
+    );
   }
 }

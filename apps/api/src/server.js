@@ -47,6 +47,27 @@ fastify.post("/api/v1/:domain/decision/run", async (request, reply) => {
   }
 });
 
+fastify.post("/api/v1/:domain/telemetry/click", async (request, reply) => {
+  const { domain } = request.params;
+  const { decisionRunId, entityId, clickType = "buy_now_clicked" } = request.body;
+
+  if (!decisionRunId || !entityId) {
+    return reply.status(400).send({ error: "missing_telemetry_fields", message: "decisionRunId and entityId required" });
+  }
+
+  try {
+    const { getRepository } = await import("./db/repository.js");
+    const repository = await getRepository();
+    if (repository) {
+      await repository.saveTelemetryClick({ decisionRunId, entityId, clickType });
+      return { ok: true, logged: true, entityId };
+    }
+    return reply.status(503).send({ error: "db_offline_for_telemetry" });
+  } catch (err) {
+    reply.status(500).send({ error: "telemetry_logging_failed", message: err.message });
+  }
+});
+
 fastify.get("/api/v1/:domain/admin/dashboard", async (request, reply) => {
   const { domain } = request.params;
   try {
