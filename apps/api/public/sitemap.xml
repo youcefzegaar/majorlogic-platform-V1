@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://majorlogic.ai/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://majorlogic.ai/search</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/computer-science/under-1200</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/computer-science/under-1500</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/computer-science/under-2000</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/computer-science</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/engineering/under-1200</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/engineering/under-1500</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/engineering/under-2000</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/engineering</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/design/under-1200</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/design/under-1500</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/design/under-2000</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/design</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/medical/under-1200</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/medical/under-1500</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/medical/under-2000</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/medical</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/general/under-1200</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/general/under-1500</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/general/under-2000</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://majorlogic.ai/laptops/general</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+</urlset>

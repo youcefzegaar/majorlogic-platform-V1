@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs   from "node:fs";
 import { fileURLToPath } from "node:url";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
@@ -10,6 +11,7 @@ import { getDomainController } from "./registry.js";
 import { renderSearchPage, renderResultsPage } from "./views/templates.js";
 import { renderDashboardHtml, renderOverviewHtml, renderLatestDecisionHtml, renderGrowthLeadsHtml } from "./views/admin.js";
 import { sendWelcomeEmail } from "../../../packages/email-service/src/index.js";
+import { renderSeoPage } from "./views/seo-page.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
@@ -44,6 +46,22 @@ const DEFAULT_DOMAIN = "laptop-student-us";
 // ─────────────────────────────────────────────
 fastify.get("/api/v1/health", async (request, reply) => {
   return { ok: true, service: "majorlogic-api" };
+});
+
+// robots.txt (served before rate limiter)
+fastify.get("/robots.txt", async (request, reply) => {
+  reply.type("text/plain").send(
+    `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nSitemap: https://majorlogic.ai/sitemap.xml`
+  );
+});
+
+// sitemap.xml
+fastify.get("/sitemap.xml", async (request, reply) => {
+  const sitemapPath = path.join(__dirname, "..", "public", "sitemap.xml");
+  if (!fs.existsSync(sitemapPath)) {
+    return reply.status(404).send("Sitemap not generated yet. Run catalog-build.");
+  }
+  reply.type("application/xml").send(fs.readFileSync(sitemapPath, "utf8"));
 });
 
 fastify.post("/api/v1/:domain/decision/run", async (request, reply) => {
@@ -367,6 +385,75 @@ fastify.get("/go/:domain/:entityId", async (request, reply) => {
   }
 });
 
+
+// ─────────────────────────────────────────────────────────────────
+// Programmatic SEO Landing Pages
+// /laptops/:major           → best laptops for that major (any budget)
+// /laptops/:major/:budget   → best laptops for major + budget tier
+// ─────────────────────────────────────────────────────────────────
+
+const SEO_PAGES_DIR = path.join(root, "domains/laptop-student-us/generated/seo-pages");
+
+function loadSeoPage(major, budget = "any-budget") {
+  const filePath = path.join(SEO_PAGES_DIR, `${major}__${budget}.json`);
+  if (!fs.existsSync(filePath)) return null;
+  try { return JSON.parse(fs.readFileSync(filePath, "utf8")); }
+  catch { return null; }
+}
+
+// /laptops/:major  (e.g. /laptops/computer-science)
+fastify.get("/laptops/:major", async (request, reply) => {
+  const { major } = request.params;
+  const pageData = loadSeoPage(major, "any-budget");
+  if (!pageData) {
+    return reply.status(404).type("text/html").send(`
+      <html><body style="font-family:sans-serif;background:#0d0d1a;color:#e0e0e0;padding:32px;text-align:center;">
+        <h1>🔍 Generating results for "${major}"...</h1>
+        <p>Run <code>node scripts/catalog-build.js --domain=laptop-student-us</code> to generate SEO pages.</p>
+        <a href="/search" style="color:#7C3AED;">← Use the interactive tool instead</a>
+      </body></html>`);
+  }
+  reply.type("text/html; charset=utf-8").send(renderSeoPage(pageData));
+});
+
+// /laptops/:major/:budget  (e.g. /laptops/computer-science/under-1500)
+fastify.get("/laptops/:major/:budget", async (request, reply) => {
+  const { major, budget } = request.params;
+  const pageData = loadSeoPage(major, budget);
+  if (!pageData) {
+    // Redirect to the major page as a graceful fallback
+    return reply.redirect(302, `/laptops/${major}`);
+  }
+  reply.type("text/html; charset=utf-8").send(renderSeoPage(pageData));
+});
+
+// /laptops  → index of all available landing pages
+fastify.get("/laptops", async (request, reply) => {
+  const indexPath = path.join(SEO_PAGES_DIR, "_index.json");
+  let pages = [];
+  if (fs.existsSync(indexPath)) {
+    try { pages = JSON.parse(fs.readFileSync(indexPath, "utf8")).pages ?? []; } catch {}
+  }
+  const links = pages.map(p =>
+    `<li><a href="${p.canonical}" style="color:#7C3AED;text-decoration:none;">${escapeHtml(p.h1)}</a></li>`
+  ).join("");
+
+  reply.type("text/html; charset=utf-8").send(`<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"/>
+  <title>Laptop Guides by Major — MajorLogic</title>
+  <meta name="description" content="Find the best laptop for your college major. Independent, spec-based recommendations for CS, engineering, design, medical, and more."/>
+  <link rel="canonical" href="https://majorlogic.ai/laptops"/>
+  <style>body{font-family:system-ui,sans-serif;background:#0d0d1a;color:#e0e0e0;max-width:800px;margin:0 auto;padding:32px 20px;}
+  a{color:#7C3AED;} h1{color:#fff;} li{margin-bottom:10px;font-size:16px;}</style>
+</head><body>
+  <a href="/" style="font-size:14px;">← MajorLogic</a>
+  <h1 style="margin-top:16px;">📚 Laptop Guides by Major & Budget</h1>
+  <p style="color:#9ca3af;">Algorithm-generated. Affiliate-disclosed. Updated weekly.</p>
+  <ul style="list-style:none;padding:0;margin-top:24px;">${links || "<li>No pages generated yet. Run catalog-build.</li>"}</ul>
+  <a href="/search" style="display:inline-block;background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:24px;">🎯 Get Personalized Recommendation</a>
+</body></html>`);
+});
 
 // Start Server
 const start = async () => {
