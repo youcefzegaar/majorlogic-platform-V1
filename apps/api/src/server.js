@@ -68,6 +68,88 @@ fastify.post("/api/v1/:domain/telemetry/click", async (request, reply) => {
   }
 });
 
+// ─────────────────────────────────────────────
+// Growth & Lead Capture Routes (3 Ethical Nets)
+// ─────────────────────────────────────────────
+
+fastify.post("/api/v1/:domain/growth/lead", async (request, reply) => {
+  const { domain } = request.params;
+  const { email, leadType, optedIn = false, trackingData = {} } = request.body;
+
+  const VALID_LEAD_TYPES = ["save_results", "price_alert", "interstitial_gate"];
+
+  if (!email || !leadType) {
+    return reply.status(400).send({ error: "missing_lead_fields", message: "email and leadType are required" });
+  }
+  if (!VALID_LEAD_TYPES.includes(leadType)) {
+    return reply.status(400).send({ error: "invalid_lead_type", message: `leadType must be one of: ${VALID_LEAD_TYPES.join(", ")}` });
+  }
+  // Basic email format guard
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+    return reply.status(400).send({ error: "invalid_email_format" });
+  }
+
+  try {
+    const { getRepository } = await import("./db/repository.js");
+    const repository = await getRepository();
+    if (!repository) {
+      return reply.status(503).send({ error: "db_offline" });
+    }
+    const lead = await repository.saveGrowthLead({
+      domainId: domain,
+      email,
+      leadType,
+      metadata: trackingData,
+      optedIn
+    });
+    return { ok: true, leadId: lead.id, leadType, message: "Lead captured. Thank you!" };
+  } catch (err) {
+    reply.status(500).send({ error: "lead_capture_failed", message: err.message });
+  }
+});
+
+// CSV Export for Admin use (basic auth guard via secret query param)
+fastify.get("/api/v1/:domain/growth/leads/export", async (request, reply) => {
+  const { domain } = request.params;
+  const { leadType = null, secret } = request.query;
+
+  // Simple shared-secret guard — replace with proper auth in production
+  if (secret !== (process.env.ADMIN_EXPORT_SECRET ?? "majorlogic-admin")) {
+    return reply.status(401).send({ error: "unauthorized" });
+  }
+
+  try {
+    const { getRepository } = await import("./db/repository.js");
+    const repository = await getRepository();
+    if (!repository) return reply.status(503).send({ error: "db_offline" });
+
+    const leads = await repository.getGrowthLeads({ domainId: domain, leadType });
+
+    // Build CSV
+    const header = "id,email,lead_type,opted_in,decision_run_id,entity_id,created_at";
+    const rows = leads.map(l => {
+      const meta = l.metadata || {};
+      return [
+        l.id,
+        l.email,
+        l.lead_type,
+        l.opted_in,
+        meta.decisionRunId ?? "",
+        meta.entityId ?? "",
+        l.created_at
+      ].join(",");
+    });
+
+    const csv = [header, ...rows].join("\n");
+    reply
+      .header("Content-Type", "text/csv")
+      .header("Content-Disposition", `attachment; filename=leads-${domain}-${Date.now()}.csv`)
+      .send(csv);
+  } catch (err) {
+    reply.status(500).send({ error: "export_failed", message: err.message });
+  }
+});
+
 fastify.get("/api/v1/:domain/admin/dashboard", async (request, reply) => {
   const { domain } = request.params;
   try {

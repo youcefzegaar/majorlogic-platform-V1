@@ -47,6 +47,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0004_catalog_publish_runs.sql",
       "database/migrations/0005_decision_catalog_trace.sql",
       "database/migrations/0006_telemetry.sql",
+      "database/migrations/0007_growth_leads.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -484,5 +485,29 @@ export class PostgresPlatformRepository {
        VALUES ($1, $2, $3)`,
       [decisionRunId, entityId, clickType]
     );
+  }
+
+  async saveGrowthLead({ domainId, email, leadType, metadata = {}, optedIn = false }) {
+    const result = await this.client.query(
+      `INSERT INTO ml_growth.leads (domain_id, email, lead_type, metadata, opted_in)
+       VALUES ($1, $2, $3, $4::jsonb, $5)
+       RETURNING id, created_at`,
+      [domainId, email.toLowerCase().trim(), leadType, JSON.stringify(metadata), optedIn]
+    );
+    return result.rows[0];
+  }
+
+  async getGrowthLeads({ domainId, leadType = null, limit = 500 }) {
+    const typeFilter = leadType ? "AND lead_type = $3" : "";
+    const params = leadType ? [domainId, limit, leadType] : [domainId, limit];
+    const result = await this.client.query(
+      `SELECT id, email, lead_type, metadata, opted_in, created_at
+       FROM ml_growth.leads
+       WHERE domain_id = $1 ${typeFilter}
+       ORDER BY created_at DESC
+       LIMIT $2`,
+      params
+    );
+    return result.rows;
   }
 }
