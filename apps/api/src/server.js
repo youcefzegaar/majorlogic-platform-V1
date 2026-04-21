@@ -262,7 +262,7 @@ fastify.get("/web/results", async (request, reply) => {
   
   const state = controller.buildSearchState(url.searchParams, defaultProfile);
   const result = await controller.runPipeline(state.profile);
-  const html = renderResultsPage({ state, result });
+  const html = renderResultsPage({ state, result, requestUrl: url.toString() });
   reply.type("text/html; charset=utf-8").send(html);
 });
 

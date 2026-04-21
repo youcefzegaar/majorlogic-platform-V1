@@ -7,13 +7,29 @@ export function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function renderShell({ title, body, pageClass = "" }) {
+function renderShell({ title, body, pageClass = "", ogParams = null }) {
+  const ogTitle = ogParams?.title ?? escapeHtml(title);
+  const ogDesc = ogParams?.description ?? "Find your perfect college laptop in 30 seconds with MajorLogic.";
+  const ogUrl = ogParams?.url ?? "https://majorlogic.ai/";
+  const ogImage = "https://majorlogic.ai/public/og-image.jpg"; // Placeholder viral image
+  
   return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(title)}</title>
+    
+    <!-- Open Graph for Viral Sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${ogTitle}" />
+    <meta property="og:description" content="${ogDesc}" />
+    <meta property="og:url" content="${ogUrl}" />
+    <meta property="og:image" content="${ogImage}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${ogTitle}" />
+    <meta name="twitter:description" content="${ogDesc}" />
+    
     <link rel="stylesheet" href="/public/styles.css" />
   </head>
   <body class="${pageClass}">
@@ -166,7 +182,7 @@ function metricText(card, index) {
   return { performance: "Good", battery: "Var.", portability: "Var." };
 }
 
-export function renderResultsPage({ state, result }) {
+export function renderResultsPage({ state, result, requestUrl = "" }) {
   if (!result || result.error) {
     return renderShell({ 
       title: "Error", 
@@ -210,6 +226,17 @@ export function renderResultsPage({ state, result }) {
           <button onclick="captureLeadSave()" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer;">Save 📨</button>
         </div>
         <div id="save-msg" style="color:#4ade80;font-size:13px;display:none;">✅ Saved! Check your inbox.</div>
+      </div>
+
+      <!-- 🗣️ Viral Share Widget -->
+      <div style="background:#1e1e38;border:1px dashed #7C3AED;border-radius:12px;padding:16px;margin-bottom:32px;text-align:center;">
+        <h3 style="color:#fff;margin:0 0 8px;font-size:16px;">🔥 Share your custom results</h3>
+        <p style="color:#9ca3af;font-size:13px;margin:0 0 16px;">Help a classmate find their perfect laptop. They'll see the exact recommendations tailored to your inputs.</p>
+        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+          <button onclick="copyResultsUrl()" style="background:#374151;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;">📋 Copy Link <span id="share-check" style="display:none;color:#4ade80;margin-left:4px;">✅</span></button>
+          <button onclick="shareWhatsApp()" style="background:#25D366;color:#111;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;">📱 WhatsApp</button>
+          <button onclick="shareTwitter()" style="background:#1DA1F2;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;">🐦 Twitter</button>
+        </div>
       </div>
 
       <div class="results-layout">
@@ -410,8 +437,49 @@ export function renderResultsPage({ state, result }) {
           });
         } catch(e) { console.warn("Lead capture failed:", e); }
       }
+
+      // 🗣️ Viral Share Loop
+      function copyResultsUrl() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+          document.getElementById('share-check').style.display = 'inline';
+          setTimeout(() => document.getElementById('share-check').style.display = 'none', 3000);
+          sendShareTelemetry("copy_link");
+        });
+      }
+      
+      function shareWhatsApp() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent("I just found my perfect laptop recommendation on MajorLogic! Check out my results: ");
+        window.open('https://api.whatsapp.com/send?text=' + text + url, '_blank');
+        sendShareTelemetry("whatsapp");
+      }
+      
+      function shareTwitter() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent("Check out my custom laptop recommendation from MajorLogic 💻🔥 ");
+        window.open('https://twitter.com/intent/tweet?url=' + url + '&text=' + text, '_blank');
+        sendShareTelemetry("twitter");
+      }
+      
+      function sendShareTelemetry(platform) {
+        fetch("/api/v1/" + DOMAIN + "/telemetry/click", { 
+          method: "POST", 
+          headers: {"Content-Type":"application/json"}, 
+          body: JSON.stringify({ decisionRunId: DECISION_RUN_ID, entityId: "share_action", clickType: "shared_" + platform }) 
+        });
+      }
     </script>
   `;
   
-  return renderShell({ title: "MajorLogic - Results", body });
+  // Prepare computed OG Params for Viral Loop
+  const heroTitle = hero ? escapeHtml(hero.title) : "My Perfect Laptop";
+  const majorName = state.uiState.majorLabel || "my college major";
+  const ogParams = {
+    title: `Top Laptop for ${majorName} | MajorLogic`,
+    description: `MajorLogic's AI just matched me with the ${heroTitle} as the best laptop for my budget. See my full results!`,
+    url: requestUrl
+  };
+
+  return renderShell({ title: "MajorLogic - Your Results", body, ogParams });
 }
