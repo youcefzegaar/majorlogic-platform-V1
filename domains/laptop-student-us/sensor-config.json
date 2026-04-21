@@ -1,0 +1,54 @@
+{
+  "automationMode": "auto",
+  "watchTargets": {
+    "engineering": {
+      "sources": [
+        "https://engineering.stanford.edu/students/it-requirements",
+        "https://mit.edu/engineering/laptop-specs"
+      ],
+      "prompt": "Extract the required hardware specifications. Crucially, return TWO profiles: an 'official' profile reflecting the bare minimum the universities ask for, and a 'safe' profile that multiplies these RAM and Storage requirements by 2 or adds protective measures for 4-year longevity.",
+      "extractionSchema": {
+        "properties": {
+          "official": {
+             "properties": {
+               "minRamGb": { "type": "number", "description": "Minimum gigabytes of RAM" },
+               "minStorageGb": { "type": "number", "description": "Minimum gigabytes of storage" },
+               "needsDedicatedGpu": { "type": "boolean", "description": "Whether a dedicated graphics card is explicitly required or recommended" }
+             }
+          },
+          "safe": {
+             "properties": {
+               "minRamGb": { "type": "number" },
+               "minStorageGb": { "type": "number" },
+               "needsDedicatedGpu": { "type": "boolean" }
+             }
+          }
+        }
+      }
+    },
+    "cs": {
+      "sources": [
+        "https://cs.stanford.edu/laptop-requirements"
+      ],
+      "prompt": "Extract the required hardware specifications. Return both 'official' (the bare minimum) and 'safe' (a 2x doubled margin for RAM/Storage to guarantee student reliability).",
+      "extractionSchema": {
+        "properties": {
+          "official": {
+             "properties": {
+               "minRamGb": { "type": "number" },
+               "minStorageGb": { "type": "number" },
+               "needsDedicatedGpu": { "type": "boolean" }
+             }
+          },
+          "safe": {
+             "properties": {
+               "minRamGb": { "type": "number" },
+               "minStorageGb": { "type": "number" },
+               "needsDedicatedGpu": { "type": "boolean" }
+             }
+          }
+        }
+      }
+    }
+  }
+}

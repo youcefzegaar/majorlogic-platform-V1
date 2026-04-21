@@ -96,29 +96,27 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
@@ -151,7 +149,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.410Z"
+    "publishedAt": "2026-04-21T19:37:16.793Z"
   },
   {
     "entityId": "asus-zephyrus-g14-ryzen-9-32gb-1tb-rtx-4070",
@@ -244,29 +242,27 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
@@ -299,7 +295,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.411Z"
+    "publishedAt": "2026-04-21T19:37:16.794Z"
   },
   {
     "entityId": "macbook-air-15-m3-16gb-512gb",
@@ -392,31 +388,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_official"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "below_official"
+        "state": "meets_official"
       },
       "design": {
         "official": {
@@ -447,7 +441,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.411Z"
+    "publishedAt": "2026-04-21T19:37:16.794Z"
   },
   {
     "entityId": "dell-inspiron-14-core-5-16gb-512gb",
@@ -546,31 +540,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_official"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "below_official"
+        "state": "meets_official"
       },
       "design": {
         "official": {
@@ -601,7 +593,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.411Z"
+    "publishedAt": "2026-04-21T19:37:16.795Z"
   },
   {
     "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
@@ -700,31 +692,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_official"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "below_official"
+        "state": "meets_official"
       },
       "design": {
         "official": {
@@ -755,7 +745,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.411Z"
+    "publishedAt": "2026-04-21T19:37:16.796Z"
   },
   {
     "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
@@ -854,31 +844,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "meets_official"
+        "state": "meets_safe"
       },
       "design": {
         "official": {
@@ -909,7 +897,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.411Z"
+    "publishedAt": "2026-04-21T19:37:16.796Z"
   },
   {
     "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
@@ -1008,31 +996,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "meets_official"
+        "state": "meets_safe"
       },
       "design": {
         "official": {
@@ -1063,7 +1049,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.411Z"
+    "publishedAt": "2026-04-21T19:37:16.797Z"
   },
   {
     "entityId": "asus-proart-p16-ryzen-ai-9-32gb-1tb-rtx-4060",
@@ -1162,29 +1148,27 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
@@ -1217,7 +1201,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.412Z"
+    "publishedAt": "2026-04-21T19:37:16.798Z"
   },
   {
     "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
@@ -1316,31 +1300,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "meets_safe"
+        "state": "meets_official"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "below_official"
+        "state": "meets_official"
       },
       "design": {
         "official": {
@@ -1371,7 +1353,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.412Z"
+    "publishedAt": "2026-04-21T19:37:16.799Z"
   },
   {
     "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
@@ -1470,31 +1452,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "meets_safe"
+        "state": "meets_official"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "below_official"
+        "state": "meets_official"
       },
       "design": {
         "official": {
@@ -1525,7 +1505,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.412Z"
+    "publishedAt": "2026-04-21T19:37:16.801Z"
   },
   {
     "entityId": "macbook-pro-14-m4-pro-24gb-1tb",
@@ -1618,31 +1598,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "meets_safe"
+        "state": "meets_official"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "below_official"
+        "state": "meets_official"
       },
       "design": {
         "official": {
@@ -1673,7 +1651,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.412Z"
+    "publishedAt": "2026-04-21T19:37:16.802Z"
   },
   {
     "entityId": "msi-pulse-16-ai-core-ultra-9-32gb-1tb-rtx-4070",
@@ -1771,29 +1749,27 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_safe"
       },
@@ -1826,7 +1802,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.412Z"
+    "publishedAt": "2026-04-21T19:37:16.802Z"
   },
   {
     "entityId": "surface-laptop-7-snapdragon-x-plus-16gb-512gb",
@@ -1918,31 +1894,29 @@
       },
       "cs": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "notes": "Compilers, IDEs, containers, and light VM work."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
           "minRamGb": 16,
-          "minStorageGb": 1024,
-          "notes": "Safer for heavier local tooling and longer lifecycle."
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
         "state": "meets_official"
       },
       "engineering": {
         "official": {
-          "minRamGb": 16,
-          "minStorageGb": 512,
-          "needsDedicatedGpu": true,
-          "notes": "CAD and technical software often push GPU needs."
+          "minRamGb": 8,
+          "minStorageGb": 256,
+          "needsDedicatedGpu": false
         },
         "safe": {
-          "minRamGb": 32,
-          "minStorageGb": 1024,
-          "needsDedicatedGpu": true,
-          "notes": "Safer for demanding subfields and thermally heavy workloads."
+          "minRamGb": 16,
+          "minStorageGb": 512,
+          "needsDedicatedGpu": true
         },
-        "state": "below_official"
+        "state": "meets_official"
       },
       "design": {
         "official": {
@@ -1973,6 +1947,6 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-14T17:04:26.412Z"
+    "publishedAt": "2026-04-21T19:37:16.802Z"
   }
 ]

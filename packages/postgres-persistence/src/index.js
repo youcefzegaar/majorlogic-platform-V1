@@ -27,6 +27,9 @@ export async function createPostgresClient(connectionString = process.env.DATABA
 
   const { Client } = await importPg();
   const client = new Client({ connectionString });
+  client.on("error", (err) => {
+    console.error("Supabase DB connection error:", err.message);
+  });
   await client.connect();
   return client;
 }
@@ -52,23 +55,30 @@ export class PostgresPlatformRepository {
   }
 
   async saveSourceObservations({ domainId, observations }) {
-    for (const observation of observations) {
-      await this.client.query(
-        `insert into ml_raw.source_observations (
-          id, domain_id, source_name, source_url, observation_type, raw_payload, fetched_at
-        ) values ($1, $2, $3, $4, $5, $6::jsonb, now())
-        on conflict (id) do update set
-          raw_payload = excluded.raw_payload,
-          fetched_at = excluded.fetched_at`,
-        [
-          randomUUID(),
-          domainId,
-          observation.sourceName ?? "seed_source",
-          observation.sourceUrl ?? "local://seed",
-          observation.observationType ?? "domain_observation",
-          JSON.stringify(observation)
-        ]
-      );
+    await this.client.query('BEGIN');
+    try {
+      for (const observation of observations) {
+        await this.client.query(
+          `insert into ml_raw.source_observations (
+            id, domain_id, source_name, source_url, observation_type, raw_payload, fetched_at
+          ) values ($1, $2, $3, $4, $5, $6::jsonb, now())
+          on conflict (id) do update set
+            raw_payload = excluded.raw_payload,
+            fetched_at = excluded.fetched_at`,
+          [
+            randomUUID(),
+            domainId,
+            observation.sourceName ?? "seed_source",
+            observation.sourceUrl ?? "local://seed",
+            observation.observationType ?? "domain_observation",
+            JSON.stringify(observation)
+          ]
+        );
+      }
+      await this.client.query('COMMIT');
+    } catch (err) {
+      await this.client.query('ROLLBACK');
+      throw err;
     }
   }
 
@@ -187,32 +197,39 @@ export class PostgresPlatformRepository {
   }
 
   async publishEntities({ domainId, entities, publishRunId = null, catalogVersion = null }) {
-    for (const entity of entities) {
-      await this.client.query(
-        `insert into ml_catalog.published_entities (
-          entity_id, domain_id, publish_run_id, catalog_version, entity_type, title, entity_payload, fit_states, trust, published_at
-        ) values ($1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, $10)
-        on conflict (entity_id) do update set
-          publish_run_id = excluded.publish_run_id,
-          catalog_version = excluded.catalog_version,
-          title = excluded.title,
-          entity_payload = excluded.entity_payload,
-          fit_states = excluded.fit_states,
-          trust = excluded.trust,
-          published_at = excluded.published_at`,
-        [
-          entity.entityId,
-          domainId,
-          publishRunId,
-          catalogVersion,
-          entity.entityType,
-          entity.title,
-          JSON.stringify(entity),
-          JSON.stringify(entity.fitStates),
-          JSON.stringify(entity.trust),
-          entity.publishedAt
-        ]
-      );
+    await this.client.query('BEGIN');
+    try {
+      for (const entity of entities) {
+        await this.client.query(
+          `insert into ml_catalog.published_entities (
+            entity_id, domain_id, publish_run_id, catalog_version, entity_type, title, entity_payload, fit_states, trust, published_at
+          ) values ($1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, $10)
+          on conflict (entity_id) do update set
+            publish_run_id = excluded.publish_run_id,
+            catalog_version = excluded.catalog_version,
+            title = excluded.title,
+            entity_payload = excluded.entity_payload,
+            fit_states = excluded.fit_states,
+            trust = excluded.trust,
+            published_at = excluded.published_at`,
+          [
+            entity.entityId,
+            domainId,
+            publishRunId,
+            catalogVersion,
+            entity.entityType,
+            entity.title,
+            JSON.stringify(entity),
+            JSON.stringify(entity.fitStates),
+            JSON.stringify(entity.trust),
+            entity.publishedAt
+          ]
+        );
+      }
+      await this.client.query('COMMIT');
+    } catch (err) {
+      await this.client.query('ROLLBACK');
+      throw err;
     }
   }
 
