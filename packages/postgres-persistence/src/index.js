@@ -48,6 +48,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0005_decision_catalog_trace.sql",
       "database/migrations/0006_telemetry.sql",
       "database/migrations/0007_growth_leads.sql",
+      "database/migrations/0008_growth_leads_dedup.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -491,10 +492,14 @@ export class PostgresPlatformRepository {
     const result = await this.client.query(
       `INSERT INTO ml_growth.leads (domain_id, email, lead_type, metadata, opted_in)
        VALUES ($1, $2, $3, $4::jsonb, $5)
-       RETURNING id, created_at`,
+       ON CONFLICT (email, domain_id, lead_type) DO UPDATE
+         SET metadata = EXCLUDED.metadata, opted_in = EXCLUDED.opted_in
+       RETURNING id, created_at, xmax`,
       [domainId, email.toLowerCase().trim(), leadType, JSON.stringify(metadata), optedIn]
     );
-    return result.rows[0];
+    const row = result.rows[0];
+    // xmax=0 means it was a fresh INSERT (not an update)
+    return { id: row.id, created_at: row.created_at, isDuplicate: row.xmax !== "0" };
   }
 
   async getGrowthLeads({ domainId, leadType = null, limit = 500 }) {
@@ -507,6 +512,22 @@ export class PostgresPlatformRepository {
        ORDER BY created_at DESC
        LIMIT $2`,
       params
+    );
+    return result.rows;
+  }
+
+  async getLeadStats({ domainId }) {
+    const result = await this.client.query(
+      `SELECT
+        lead_type,
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE opted_in = true) as opted_in_count,
+        MAX(created_at) as latest_at
+       FROM ml_growth.leads
+       WHERE domain_id = $1
+       GROUP BY lead_type
+       ORDER BY total DESC`,
+      [domainId]
     );
     return result.rows;
   }

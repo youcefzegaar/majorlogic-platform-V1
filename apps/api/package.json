@@ -1,5 +1,9 @@
 {
   "name": "@majorlogic/api",
   "version": "0.1.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@fastify/rate-limit": "^10.3.0",
+    "nodemailer": "^8.0.5"
+  }
 }

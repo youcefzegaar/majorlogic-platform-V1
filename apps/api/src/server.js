@@ -8,7 +8,8 @@ import { loadEnvFile } from "../../../scripts/env.js";
 import { loadJsonSync } from "./db/repository.js";
 import { getDomainController } from "./registry.js";
 import { renderSearchPage, renderResultsPage } from "./views/templates.js";
-import { renderDashboardHtml, renderOverviewHtml, renderLatestDecisionHtml } from "./views/admin.js";
+import { renderDashboardHtml, renderOverviewHtml, renderLatestDecisionHtml, renderGrowthLeadsHtml } from "./views/admin.js";
+import { sendWelcomeEmail } from "../../../packages/email-service/src/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
@@ -20,6 +21,16 @@ const port = Number(process.env.PORT ?? 3010);
 const fastify = Fastify({ logger: true });
 
 fastify.register(cors, { origin: true });
+
+// Rate Limiting: protect growth and telemetry routes from spam bots
+import fastifyRateLimit from "@fastify/rate-limit";
+await fastify.register(fastifyRateLimit, {
+  max: 30,
+  timeWindow: "1 minute",
+  // Only rate-limit mutation routes
+  hook: "preHandler",
+  keyGenerator: (req) => req.ip
+});
 
 fastify.register(fastifyStatic, {
   root: path.join(__dirname, "..", "public"),
@@ -102,7 +113,15 @@ fastify.post("/api/v1/:domain/growth/lead", async (request, reply) => {
       metadata: trackingData,
       optedIn
     });
-    return { ok: true, leadId: lead.id, leadType, message: "Lead captured. Thank you!" };
+
+    // Fire-and-forget welcome email (won't block response)
+    sendWelcomeEmail({ email, leadType, metadata: trackingData })
+      .catch(err => console.error("[Email] Failed:", err.message));
+
+    const msg = lead.isDuplicate
+      ? "Updated your preferences. Thanks!"
+      : "Lead captured. Thank you!";
+    return { ok: true, leadId: lead.id, leadType, isDuplicate: lead.isDuplicate, message: msg };
   } catch (err) {
     reply.status(500).send({ error: "lead_capture_failed", message: err.message });
   }
@@ -218,6 +237,15 @@ fastify.get("/admin/decision-latest", async (request, reply) => {
   const data = await controller.buildAdminDashboardData();
   if (!data) return reply.type("text/html").send("<h1>DB missing</h1>");
   const html = renderLatestDecisionHtml(data.latestDecision);
+  reply.type("text/html; charset=utf-8").send(html);
+});
+
+fastify.get("/admin/growth", async (request, reply) => {
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.type("text/html").send("<h1>DB unavailable</h1>");
+  const stats = await repository.getLeadStats({ domainId: DEFAULT_DOMAIN });
+  const html = renderGrowthLeadsHtml(stats);
   reply.type("text/html; charset=utf-8").send(html);
 });
 

@@ -1,0 +1,116 @@
+/**
+ * Email Service — packages/email-service/src/index.js
+ *
+ * Sends emails via SMTP (nodemailer).
+ * Config via env: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM
+ * Falls back to silent no-op if SMTP not configured (dev mode).
+ */
+
+let transporter = null;
+
+async function getTransporter() {
+  if (transporter) return transporter;
+
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+    console.warn("[EmailService] No SMTP config found. Emails will be logged only.");
+    return null;
+  }
+
+  const nodemailer = await import("nodemailer");
+  transporter = nodemailer.default.createTransport({
+    host: SMTP_HOST,
+    port: Number(SMTP_PORT ?? 587),
+    secure: Number(SMTP_PORT) === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS }
+  });
+
+  return transporter;
+}
+
+async function send({ to, subject, html }) {
+  const from = process.env.EMAIL_FROM ?? "MajorLogic <hello@majorlogic.ai>";
+  const t = await getTransporter();
+
+  if (!t) {
+    console.log(`[EmailService] Would send to: ${to} | Subject: ${subject}`);
+    return { simulated: true };
+  }
+
+  return t.sendMail({ from, to, subject, html });
+}
+
+// ── Templates ──────────────────────────────────────────────
+
+export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
+  const msgs = {
+    save_results: {
+      subject: "📚 Your MajorLogic Results Are Saved",
+      body: `
+        <h2>Your laptop shortlist is ready</h2>
+        <p>We've saved your personalized results. Return anytime to review your top picks for <strong>${metadata.segment ?? "your major"}</strong>.</p>
+        <p style="margin-top:24px;">
+          <a href="https://majorlogic.ai/web/results" style="background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">
+            View My Results →
+          </a>
+        </p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">You're receiving this because you requested it. No spam, ever. <a href="#">Unsubscribe</a>.</p>
+      `
+    },
+    price_alert: {
+      subject: "🔔 Price Alert Confirmed — We're Watching",
+      body: `
+        <h2>We're on price watch for you!</h2>
+        <p>As soon as <strong>${metadata.entityId ?? "your saved laptop"}</strong> drops in price, you'll be the first to know.</p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">Unsubscribe anytime. No spam, ever. <a href="#">Unsubscribe</a>.</p>
+      `
+    },
+    interstitial_gate: {
+      subject: "🛡️ Your 5-Step Laptop Inspection Guide",
+      body: `
+        <h2>Don't get a defective unit — use this checklist</h2>
+        <ol>
+          <li>Boot and check for dead pixels (all-white, all-black screen test)</li>
+          <li>Test all USB ports and headphone jack</li>
+          <li>Run battery calibration on first charge</li>
+          <li>Check keyboard and trackpad for wobble</li>
+          <li>Verify serial number on manufacturer website</li>
+        </ol>
+        <p style="color:#888;font-size:12px;margin-top:32px;">Happy with your purchase? Share MajorLogic with a classmate. <a href="#">Unsubscribe</a>.</p>
+      `
+    }
+  };
+
+  const template = msgs[leadType] ?? msgs.save_results;
+
+  return send({
+    to: email,
+    subject: template.subject,
+    html: `
+      <!DOCTYPE html>
+      <html><body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
+        <div style="margin-bottom:24px;">
+          <strong style="font-size:20px;">🧭 MajorLogic</strong>
+        </div>
+        ${template.body}
+      </body></html>
+    `
+  });
+}
+
+export async function sendPriceDropAlert({ email, entityId, oldPrice, newPrice, buyUrl }) {
+  return send({
+    to: email,
+    subject: `🔥 Price Drop Alert — ${entityId} just got cheaper!`,
+    html: `
+      <!DOCTYPE html>
+      <html><body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
+        <h2>Price Drop Detected!</h2>
+        <p>The laptop you're watching just dropped from <s>$${oldPrice}</s> to <strong style="color:#16a34a;">$${newPrice}</strong>.</p>
+        ${buyUrl ? `<p><a href="${buyUrl}" style="background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">Buy Now →</a></p>` : ""}
+        <p style="color:#888;font-size:12px;margin-top:32px;"><a href="#">Unsubscribe from price alerts</a></p>
+      </body></html>
+    `
+  });
+}

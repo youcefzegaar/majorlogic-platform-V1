@@ -177,8 +177,16 @@ export function renderResultsPage({ state, result }) {
   const cards = result.decision?.cards || [];
   const hero = cards.find(c => c.cardType === "hero") || cards[0];
   const alternatives = cards.filter(c => c !== hero);
+  const decisionRunId = result.decision?.decisionRunId ?? "";
+  const domain = "laptop-student-us";
 
-  const heroImage = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80"; // Placeholder premium laptop
+  // Build affiliate UTM link for hero
+  function buildBuyUrl(entityId, cardType) {
+    const base = `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}`;
+    return `${base}&tag=majorlogic-20&utm_source=majorlogic&utm_medium=recommendation&utm_campaign=${cardType}&utm_content=${entityId}`;
+  }
+
+  const heroImage = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80";
 
   const body = `
     <div class="container">
@@ -193,7 +201,17 @@ export function renderResultsPage({ state, result }) {
           <div class="trust-badge">Rule-Based.</div>
         </div>
       </header>
-      
+
+      <!-- ✉️ Net 1: Save Results Bar -->
+      <div id="save-bar" style="background:linear-gradient(90deg,#1a1a2e,#2a1a4e);border-radius:12px;padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div style="color:#c4b5fd;font-size:14px;">📚 <strong>Don't lose these results!</strong> Send your shortlist to your inbox.</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="save-email" type="email" placeholder="Your university email" style="padding:8px 14px;border-radius:8px;border:1px solid #7C3AED;background:#0d0d1a;color:#fff;font-size:14px;width:240px;">
+          <button onclick="captureLeadSave()" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer;">Save 📨</button>
+        </div>
+        <div id="save-msg" style="color:#4ade80;font-size:13px;display:none;">✅ Saved! Check your inbox.</div>
+      </div>
+
       <div class="results-layout">
         
         <!-- Hero Column -->
@@ -228,10 +246,17 @@ export function renderResultsPage({ state, result }) {
               </div>
             ` : ''}
             
-            <div>
-              <a href="#" class="btn-primary">
+            <!-- 🚪 Net 3: Interstitial Gate on Buy Button -->
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <button onclick="openInterstitial('${escapeHtml(hero.entityId ?? hero.title)}','${buildBuyUrl(hero.entityId ?? hero.title, 'hero')}')"
+                class="btn-primary" id="hero-buy-btn" style="cursor:pointer;">
                 🛒 Buy Now &rarr;
-              </a>
+              </button>
+              <!-- 🔔 Net 2: Price Alert Bell -->
+              <button onclick="openPriceAlert('${escapeHtml(hero.entityId ?? hero.title)}')"
+                style="background:transparent;border:1px solid #2563EB;color:#93C5FD;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px;">
+                🔔 Alert me if price drops
+              </button>
             </div>
           ` : '<p>No matching laptops found.</p>'}
         </div>
@@ -243,6 +268,7 @@ export function renderResultsPage({ state, result }) {
             const icons = ["💰", "🔮", "⚖️", "✨"];
             const label = labels[idx] || labels[3];
             const icon = icons[idx] || icons[3];
+            const buyUrl = buildBuyUrl(card.entityId ?? card.title, card.cardType ?? label.toLowerCase());
             
             return `
               <div class="alt-card">
@@ -257,12 +283,12 @@ export function renderResultsPage({ state, result }) {
                     </div>
                   ` : ''}
                   
-                  <div>
-                    <a href="#" class="btn-outline">🛒 Buy Now</a>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button onclick="openInterstitial('${escapeHtml(card.entityId ?? card.title)}','${buyUrl}')" class="btn-outline" style="cursor:pointer;">🛒 Buy Now</button>
+                    <button onclick="openPriceAlert('${escapeHtml(card.entityId ?? card.title)}')" style="background:transparent;border:1px solid #374151;color:#9CA3AF;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:12px;">🔔</button>
                   </div>
                 </div>
                 <div class="alt-image-wrapper">
-                  <!-- Small thumb image -->
                   <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=300&q=80" alt="${escapeHtml(card.title)}" class="alt-image">
                 </div>
               </div>
@@ -272,6 +298,105 @@ export function renderResultsPage({ state, result }) {
         
       </div>
     </div>
+
+    <!-- 🔔 Price Alert Modal -->
+    <div id="price-modal" style="display:none;position:fixed;inset:0;background:#000a;z-index:9999;align-items:center;justify-content:center;">
+      <div style="background:#1a1a2e;border:1px solid #7C3AED;border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;">
+        <div style="font-size:40px;margin-bottom:12px;">🔔</div>
+        <h3 style="color:#fff;margin-bottom:8px;">Price Drop Alert</h3>
+        <p id="price-modal-name" style="color:#c4b5fd;margin-bottom:20px;font-size:14px;"></p>
+        <p style="color:#888;font-size:13px;margin-bottom:16px;">We'll email you the moment this laptop drops in price. No spam, ever.</p>
+        <input id="price-email" type="email" placeholder="your@email.com" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid #7C3AED;background:#0d0d1a;color:#fff;font-size:14px;margin-bottom:12px;box-sizing:border-box;">
+        <div style="display:flex;gap:10px;">
+          <button onclick="submitPriceAlert()" style="flex:1;background:#2563EB;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700;cursor:pointer;">Notify Me 🔔</button>
+          <button onclick="closeModals()" style="flex:1;background:transparent;color:#888;border:1px solid #374151;border-radius:8px;padding:10px;cursor:pointer;">No thanks</button>
+        </div>
+        <div id="price-msg" style="color:#4ade80;font-size:13px;margin-top:12px;display:none;">✅ You'll be the first to know!</div>
+      </div>
+    </div>
+
+    <!-- 🚪 Interstitial Gate Modal -->
+    <div id="interstitial-modal" style="display:none;position:fixed;inset:0;background:#000a;z-index:9999;align-items:center;justify-content:center;">
+      <div style="background:#1a1a2e;border:1px solid #16a34a;border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;">
+        <div style="font-size:40px;margin-bottom:12px;">🛡️</div>
+        <h3 style="color:#fff;margin-bottom:8px;">One more thing before you go...</h3>
+        <p style="color:#c4b5fd;font-size:14px;margin-bottom:16px;">Get our <strong>5-Step Laptop Inspection Checklist</strong> — so you know the unit you receive is flawless.</p>
+        <input id="gate-email" type="email" placeholder="your@email.com" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid #16a34a;background:#0d0d1a;color:#fff;font-size:14px;margin-bottom:12px;box-sizing:border-box;">
+        <div style="display:flex;gap:10px;">
+          <button onclick="submitGate()" style="flex:1;background:#16a34a;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700;cursor:pointer;">Send Checklist &amp; Go 🛒</button>
+          <button onclick="skipGate()" style="flex:1;background:transparent;color:#888;border:1px solid #374151;border-radius:8px;padding:10px;cursor:pointer;font-size:13px;">No thanks, go directly</button>
+        </div>
+        <div id="gate-msg" style="color:#4ade80;font-size:13px;margin-top:12px;display:none;">📨 Sending guide... redirecting in 2s</div>
+      </div>
+    </div>
+
+    <!-- Client-side Lead Capture JS -->
+    <script>
+      const DOMAIN = "${domain}";
+      const DECISION_RUN_ID = "${decisionRunId}";
+      let _buyUrl = "";
+      let _entityId = "";
+
+      function closeModals() {
+        document.getElementById("price-modal").style.display = "none";
+        document.getElementById("interstitial-modal").style.display = "none";
+      }
+
+      // Net 1: Save Results
+      async function captureLeadSave() {
+        const email = document.getElementById("save-email").value;
+        if (!email) return;
+        await sendLead(email, "save_results", { decisionRunId: DECISION_RUN_ID, segment: "${escapeHtml(result.decision?.segment ?? '')}" }, true);
+        document.getElementById("save-msg").style.display = "block";
+        document.getElementById("save-email").disabled = true;
+      }
+
+      // Net 2: Price Alert
+      function openPriceAlert(entityId) {
+        _entityId = entityId;
+        document.getElementById("price-modal-name").innerText = entityId;
+        document.getElementById("price-modal").style.display = "flex";
+      }
+      async function submitPriceAlert() {
+        const email = document.getElementById("price-email").value;
+        if (!email) return;
+        await sendLead(email, "price_alert", { entityId: _entityId, decisionRunId: DECISION_RUN_ID }, true);
+        document.getElementById("price-msg").style.display = "block";
+        setTimeout(closeModals, 2000);
+      }
+
+      // Net 3: Interstitial Gate
+      function openInterstitial(entityId, buyUrl) {
+        _entityId = entityId;
+        _buyUrl = buyUrl;
+        document.getElementById("interstitial-modal").style.display = "flex";
+      }
+      async function submitGate() {
+        const email = document.getElementById("gate-email").value;
+        if (!email) return;
+        document.getElementById("gate-msg").style.display = "block";
+        await sendLead(email, "interstitial_gate", { entityId: _entityId, decisionRunId: DECISION_RUN_ID, clickType: "buy_now_clicked" }, false);
+        // Also fire telemetry click
+        fetch("/api/v1/" + DOMAIN + "/telemetry/click", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ decisionRunId: DECISION_RUN_ID, entityId: _entityId, clickType: "buy_now_clicked" }) });
+        setTimeout(() => { window.open(_buyUrl, "_blank"); closeModals(); }, 2000);
+      }
+      function skipGate() {
+        // Telemetry: skipped gate
+        fetch("/api/v1/" + DOMAIN + "/telemetry/click", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ decisionRunId: DECISION_RUN_ID, entityId: _entityId, clickType: "buy_skipped_gate" }) });
+        window.open(_buyUrl, "_blank");
+        closeModals();
+      }
+
+      async function sendLead(email, leadType, trackingData, optedIn) {
+        try {
+          await fetch("/api/v1/" + DOMAIN + "/growth/lead", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, leadType, optedIn, trackingData })
+          });
+        } catch(e) { console.warn("Lead capture failed:", e); }
+      }
+    </script>
   `;
   
   return renderShell({ title: "MajorLogic - Results", body });
