@@ -12,7 +12,8 @@ import { renderSearchPage, renderResultsPage } from "./views/templates.js";
 import { renderDashboardHtml, renderOverviewHtml, renderLatestDecisionHtml, renderGrowthLeadsHtml } from "./views/admin.js";
 import { sendWelcomeEmail } from "../../../packages/email-service/src/index.js";
 import { renderSeoPage } from "./views/seo-page.js";
-
+import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure } from "./views/legal.js";
+import fastifyBasicAuth from "@fastify/basic-auth";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
 loadEnvFile(path.join(root, ".env"));
@@ -40,6 +41,29 @@ fastify.register(fastifyStatic, {
 });
 
 const DEFAULT_DOMAIN = "laptop-student-us";
+
+// ─────────────────────────────────────────────
+// Admin Authentication (Basic Auth)
+// ─────────────────────────────────────────────
+fastify.register(fastifyBasicAuth, {
+  validate: async function (username, password, req, reply) {
+    const validUser = process.env.ADMIN_USER || "youcef";
+    const validPass = process.env.ADMIN_PASSWORD || "strongpassword123";
+    if (username !== validUser || password !== validPass) {
+      return new Error("Unauthorized");
+    }
+  },
+  authenticate: true // Prompts the browser for credentials
+});
+
+fastify.after(() => {
+  fastify.addHook("onRequest", async (req, reply) => {
+    // Protect all /admin routes
+    if (req.raw.url.startsWith("/admin")) {
+      await fastify.basicAuth(req, reply);
+    }
+  });
+});
 
 // ─────────────────────────────────────────────
 // Headless API Routes (JSON only)
@@ -209,6 +233,18 @@ fastify.get("/", async (request, reply) => {
 fastify.get("/search", async (request, reply) => reply.redirect("/web/search"));
 fastify.get("/results", async (request, reply) => reply.redirect(request.raw.url.replace("/results", "/web/results")));
 
+// ─────────────────────────────────────────────
+// Legal Pages
+// ─────────────────────────────────────────────
+fastify.get("/privacy", async (request, reply) => {
+  reply.type("text/html; charset=utf-8").send(renderPrivacyPolicy());
+});
+fastify.get("/terms", async (request, reply) => {
+  reply.type("text/html; charset=utf-8").send(renderTermsOfUse());
+});
+fastify.get("/disclosure", async (request, reply) => {
+  reply.type("text/html; charset=utf-8").send(renderDisclosure());
+});
 fastify.get("/web/search", async (request, reply) => {
   const controller = getDomainController(DEFAULT_DOMAIN);
   const host = request.headers.host ?? `localhost:${port}`;

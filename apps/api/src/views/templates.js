@@ -336,8 +336,12 @@ export function renderResultsPage({ state, result }) {
         <strong style="color:#4ade80;">💚 Affiliate Disclosure:</strong>
         Some "Buy Now" links on this page are affiliate links. If you make a purchase through these links, MajorLogic may earn a small commission at no additional cost to you.
         <strong>This commission never influences our recommendations</strong>, which are determined entirely by an independent algorithm based on specs, fit, and student needs — never by affiliate relationships.
-        Sellers with no affiliate program appear alongside affiliate sellers with equal weight.
+        <a href="/disclosure" target="_blank" style="color:#7C3AED;">Read full disclosure →</a>
       </p>
+      <div style="max-width:900px;margin:16px auto 0;display:flex;gap:16px;font-size:12px;">
+        <a href="/privacy" target="_blank" style="color:#9ca3af;text-decoration:none;">Privacy Policy</a>
+        <a href="/terms" target="_blank" style="color:#9ca3af;text-decoration:none;">Terms of Use</a>
+      </div>
     </div>
 
     <!-- Client-side Lead Capture JS -->

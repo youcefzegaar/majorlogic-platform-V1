@@ -274,6 +274,10 @@ export function renderSeoPage(pageData) {
       <strong>This commission never influences our rankings</strong>, which are determined by an independent algorithm evaluating specs, value, and fitness for your major.
       <a href="/disclosure" style="color:#7C3AED;margin-left:4px;">Read our full disclosure →</a>
     </p>
+    <div style="margin-top:12px;display:flex;gap:16px;font-size:12px;">
+      <a href="/privacy" style="color:#9ca3af;text-decoration:none;">Privacy Policy</a>
+      <a href="/terms" style="color:#9ca3af;text-decoration:none;">Terms of Use</a>
+    </div>
   </footer>
 </div>
 
