@@ -249,6 +249,51 @@ fastify.get("/admin/growth", async (request, reply) => {
   reply.type("text/html; charset=utf-8").send(html);
 });
 
+fastify.get("/admin/affiliate", async (request, reply) => {
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.type("text/html").send("<h1>DB unavailable</h1>");
+  const settings = await repository.getAffiliateSettings();
+  const { renderAffiliateSettingsHtml } = await import("./views/admin.js");
+  reply.type("text/html; charset=utf-8").send(renderAffiliateSettingsHtml(settings));
+});
+
+// Save affiliate tag from admin form (POST)
+fastify.post("/admin/affiliate", async (request, reply) => {
+  const secret = request.headers["x-admin-secret"] ?? request.body?.secret;
+  if (secret !== (process.env.ADMIN_EXPORT_SECRET ?? "majorlogic-admin")) {
+    return reply.status(401).send({ error: "unauthorized" });
+  }
+  const { seller, affiliateTag, isActive, notes } = request.body;
+  if (!seller) return reply.status(400).send({ error: "seller is required" });
+
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.status(503).send({ error: "db_offline" });
+
+  await repository.saveAffiliateTag({
+    seller,
+    affiliateTag: affiliateTag ?? "",
+    isActive: isActive !== "false" && isActive !== false,
+    notes: notes ?? null
+  });
+
+  reply.redirect(302, "/admin/affiliate?saved=1");
+});
+
+// JSON API for affiliate settings (for external tools)
+fastify.get("/api/v1/admin/affiliate-settings", async (request, reply) => {
+  const { secret } = request.query;
+  if (secret !== (process.env.ADMIN_EXPORT_SECRET ?? "majorlogic-admin")) {
+    return reply.status(401).send({ error: "unauthorized" });
+  }
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.status(503).send({ error: "db_offline" });
+  const settings = await repository.getAffiliateSettings();
+  return settings;
+});
+
 // ─────────────────────────────────────────────
 // Ethical Affiliate Gateway (logs click → 302 to real URL)
 // ─────────────────────────────────────────────
@@ -261,25 +306,39 @@ fastify.get("/go/:domain/:entityId", async (request, reply) => {
     const { getRepository } = await import("./db/repository.js");
     const repository = await getRepository();
 
-    // Load catalog to find the real affiliate URL
-    const controller = getDomainController(domain);
-    const ruleset = await (await import("./db/repository.js")).getRuleset(`rulesets/domains/${domain}/ruleset.json`);
-
-    // Resolve affiliate URL from published catalog in DB
     let affiliateUrl = null;
+    let targetOffer = null;
+
     if (repository) {
+      // 🔑 Load live affiliate tags from admin dashboard settings
+      const affiliateTagMap = await repository.getAffiliateTagMap();
+
       const entities = await repository.getPublishedEntities({ domainId: domain, limit: 500 });
       const entity = entities.find(e => e.entityId === entityId || e.title === entityId);
+
       if (entity) {
         const offers = entity.market?.offers || [];
-        const targetOffer = seller
+        targetOffer = seller
           ? offers.find(o => o.seller === seller)
           : offers.sort((a, b) => a.priceUsd - b.priceUsd)[0];
 
         if (targetOffer) {
           affiliateUrl = targetOffer.affiliateUrl || null;
 
-          // Log the affiliate click (fire-and-forget)
+          // 🔄 Override/inject affiliate tag dynamically from DB settings
+          if (affiliateUrl && affiliateTagMap[targetOffer.seller]) {
+            const { tag, paramKey } = affiliateTagMap[targetOffer.seller];
+            try {
+              const url = new URL(affiliateUrl);
+              url.searchParams.set(paramKey, tag);   // overrides any hardcoded tag
+              affiliateUrl = url.toString();
+            } catch {
+              // URL parse failed — use as-is
+            }
+          }
+
+          // 📊 Log affiliate click with which tag was actually used
+          const usedTag = affiliateTagMap[targetOffer.seller]?.tag ?? null;
           repository.client.query(
             `INSERT INTO ml_telemetry.affiliate_clicks
              (domain_id, entity_id, seller, seller_type, price_usd, condition, is_affiliate)
@@ -292,8 +351,12 @@ fastify.get("/go/:domain/:entityId", async (request, reply) => {
     }
 
     if (!affiliateUrl) {
-      // Fallback: send to Amazon search (not ideal but graceful)
-      affiliateUrl = `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=majorlogic-20`;
+      // Fallback: Amazon search with live tag from DB or default
+      const { getRepository: gr } = await import("./db/repository.js");
+      const repo2 = await gr();
+      const tagMap = repo2 ? await repo2.getAffiliateTagMap() : {};
+      const amazonTag = tagMap["Amazon"]?.tag ?? "majorlogic-20";
+      affiliateUrl = `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=${amazonTag}`;
     }
 
     reply.redirect(302, affiliateUrl);
@@ -303,6 +366,7 @@ fastify.get("/go/:domain/:entityId", async (request, reply) => {
     reply.redirect(302, `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=majorlogic-20`);
   }
 });
+
 
 // Start Server
 const start = async () => {

@@ -180,3 +180,133 @@ export function renderGrowthLeadsHtml(stats = []) {
 </body>
 </html>`;
 }
+
+export function renderAffiliateSettingsHtml(settings = [], saved = false) {
+  const SELLER_ICONS = {
+    "Amazon":   "🛒",
+    "Best Buy": "💙",
+    "B&H":      "📷",
+    "Newegg":   "⚡",
+    "Framework":"🔧",
+    "Apple":    "🍎",
+    "Dell":     "💻",
+    "Lenovo":   "🖥️"
+  };
+
+  const rows = settings.map(s => {
+    const icon = SELLER_ICONS[s.seller] ?? "🏪";
+    const isActive = s.is_active;
+    const hasTag = s.affiliate_tag && s.affiliate_tag.length > 0;
+    const statusBadge = hasTag
+      ? `<span style="background:#14532d;color:#4ade80;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700;">✅ Active</span>`
+      : `<span style="background:#3b1010;color:#f87171;padding:2px 10px;border-radius:99px;font-size:11px;">⚠️ No Tag</span>`;
+
+    return `
+    <div style="background:#12122a;border:1px solid ${hasTag ? '#1e3a1e' : '#3b1010'};border-radius:12px;padding:24px;margin-bottom:16px;">
+      <form method="POST" action="/admin/affiliate" style="display:grid;grid-template-columns:1fr 1fr auto;gap:16px;align-items:end;">
+        <input type="hidden" name="secret" value="majorlogic-admin">
+        <input type="hidden" name="seller" value="${s.seller}">
+
+        <div>
+          <div style="font-size:20px;margin-bottom:8px;">${icon} <strong style="color:#e2d9f3;">${s.seller_display_name ?? s.seller}</strong> ${statusBadge}</div>
+          <p style="color:#6b7280;font-size:12px;margin:0;">${s.notes ?? ""}</p>
+        </div>
+
+        <div>
+          <label style="display:block;color:#9ca3af;font-size:12px;margin-bottom:6px;">
+            Affiliate Tag / Code
+            <span style="color:#555;"> (param: <code style="color:#7C3AED;">${s.affiliate_param_key ?? 'tag'}</code>)</span>
+          </label>
+          <input
+            type="text"
+            name="affiliateTag"
+            value="${s.affiliate_tag ?? ''}"
+            placeholder="e.g. majorlogic-20"
+            style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid ${hasTag ? '#7C3AED' : '#4b5563'};background:#0d0d1a;color:#fff;font-size:14px;font-family:monospace;box-sizing:border-box;"
+          >
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;">
+          <label style="display:flex;align-items:center;gap:6px;color:#9ca3af;font-size:12px;cursor:pointer;">
+            <input type="checkbox" name="isActive" value="true" ${isActive ? 'checked' : ''}
+              style="width:16px;height:16px;accent-color:#7C3AED;">
+            Active
+          </label>
+          <button type="submit"
+            style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:14px;white-space:nowrap;">
+            💾 Save
+          </button>
+        </div>
+      </form>
+    </div>`;
+  }).join("");
+
+  const savedBanner = saved
+    ? `<div style="background:#14532d;border:1px solid #16a34a;border-radius:8px;padding:12px 20px;margin-bottom:24px;color:#4ade80;">✅ Affiliate settings saved successfully!</div>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Affiliate Settings — MajorLogic Admin</title>
+  <link rel="stylesheet" href="/public/styles.css"/>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0d0d1a; color: #e0e0e0; padding: 32px; max-width: 900px; margin: 0 auto; }
+    h1  { color: #7C3AED; margin-bottom: 4px; }
+    nav a { color: #7C3AED; margin-right: 16px; text-decoration: none; font-size: 14px; }
+    code { background: #1a1a2e; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <nav style="margin-bottom:32px;">
+    <a href="/admin/dashboard">← Dashboard</a>
+    <a href="/admin/growth">📊 Growth</a>
+    <a href="/admin/affiliate">🔗 Affiliate</a>
+  </nav>
+
+  <h1>🔗 Affiliate Code Manager</h1>
+  <p style="color:#888;margin-bottom:8px;">
+    Update your affiliate codes here without touching any code.
+    Changes take effect <strong style="color:#c4b5fd;">instantly</strong> on the next user click through the <code>/go/</code> gateway.
+  </p>
+  <p style="background:#1a1a2e;border:1px solid #2d2d4e;border-radius:8px;padding:12px 16px;font-size:13px;color:#9ca3af;margin-bottom:24px;">
+    💡 <strong style="color:#c4b5fd;">How it works:</strong> When a student clicks "Buy Now", our server loads the tag saved here and injects it into the redirect URL — no redeploy needed.
+  </p>
+
+  ${savedBanner}
+  ${rows || '<p style="color:#888;">No affiliate settings found. Run DB migrations first.</p>'}
+
+  <div style="margin-top:32px;padding:20px;background:#0a0a1a;border-radius:12px;border:1px solid #1e1e3a;">
+    <h3 style="color:#7C3AED;margin-top:0;">➕ Add a New Store</h3>
+    <form method="POST" action="/admin/affiliate" style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
+      <input type="hidden" name="secret" value="majorlogic-admin">
+      <div>
+        <label style="display:block;color:#9ca3af;font-size:12px;margin-bottom:6px;">Seller Name (exact)</label>
+        <input type="text" name="seller" placeholder="e.g. Costco" required
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #4b5563;background:#0d0d1a;color:#fff;font-size:14px;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="display:block;color:#9ca3af;font-size:12px;margin-bottom:6px;">Affiliate Tag</label>
+        <input type="text" name="affiliateTag" placeholder="e.g. majorlogic-21"
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #4b5563;background:#0d0d1a;color:#fff;font-size:14px;font-family:monospace;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="display:block;color:#9ca3af;font-size:12px;margin-bottom:6px;">Notes (optional)</label>
+        <input type="text" name="notes" placeholder="e.g. Via Impact.com"
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #4b5563;background:#0d0d1a;color:#fff;font-size:14px;box-sizing:border-box;">
+      </div>
+      <button type="submit"
+        style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:14px;">
+        ➕ Add
+      </button>
+    </form>
+  </div>
+
+  <p style="margin-top:24px;font-size:12px;color:#555;">
+    🔒 This page is protected by your <code>ADMIN_EXPORT_SECRET</code>.
+    The gateway (<code>/go/:domain/:entityId</code>) reads these settings on every click.
+  </p>
+</body>
+</html>`;
+}

@@ -50,6 +50,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0007_growth_leads.sql",
       "database/migrations/0008_growth_leads_dedup.sql",
       "database/migrations/0009_affiliate_clicks.sql",
+      "database/migrations/0010_affiliate_settings.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -531,5 +532,47 @@ export class PostgresPlatformRepository {
       [domainId]
     );
     return result.rows;
+  }
+
+  // ─────────────────────────────────────────────
+  // Affiliate Settings CRUD
+  // ─────────────────────────────────────────────
+
+  async getAffiliateSettings() {
+    const result = await this.client.query(
+      `SELECT id, seller, seller_display_name, affiliate_tag, affiliate_param_key, is_active, notes, updated_at
+       FROM ml_commercial.affiliate_settings
+       ORDER BY seller ASC`
+    );
+    return result.rows;
+  }
+
+  async saveAffiliateTag({ seller, affiliateTag, isActive = true, notes = null }) {
+    await this.client.query(
+      `INSERT INTO ml_commercial.affiliate_settings
+         (seller, affiliate_tag, is_active, notes, updated_at)
+       VALUES ($1, $2, $3, $4, now())
+       ON CONFLICT (seller) DO UPDATE SET
+         affiliate_tag = EXCLUDED.affiliate_tag,
+         is_active     = EXCLUDED.is_active,
+         notes         = COALESCE(EXCLUDED.notes, ml_commercial.affiliate_settings.notes),
+         updated_at    = now()`,
+      [seller, affiliateTag, isActive, notes]
+    );
+  }
+
+  // Cache affiliate map for the /go/ gateway (refreshed per request, could be cached server-side)
+  async getAffiliateTagMap() {
+    const rows = await this.getAffiliateSettings();
+    const map = {};
+    for (const row of rows) {
+      if (row.is_active && row.affiliate_tag) {
+        map[row.seller] = {
+          tag: row.affiliate_tag,
+          paramKey: row.affiliate_param_key ?? 'tag'
+        };
+      }
+    }
+    return map;
   }
 }
