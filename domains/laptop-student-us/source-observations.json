@@ -17,14 +17,25 @@
       "topCons": ["heavy_for_daily_carry", "battery_below_expectation"],
       "reviewRiskScore": 0.25
     },
-    "trust": {
-      "sourceConfidence": 0.92,
-      "reviewCoverage": 18,
-      "freshnessDays": 4
-    },
+    "trust": { "sourceConfidence": 0.92, "reviewCoverage": 18, "freshnessDays": 4 },
     "offers": [
-      { "seller": "Lenovo", "priceUsd": 1799, "condition": "new", "affiliate": true },
-      { "seller": "B&H", "priceUsd": 1769, "condition": "new", "affiliate": false }
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1799, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CRVPTWG1?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "B&H", "sellerType": "retailer",
+        "priceUsd": 1769, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.bhphotovideo.com/c/product/1811234/lenovo_thinkpad_p1_gen6.html?BI=20&KBID=16434",
+        "commissionRate": 0.02
+      },
+      {
+        "seller": "Lenovo", "sellerType": "brand_direct",
+        "priceUsd": 1849, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      }
     ]
   },
   {
@@ -45,13 +56,26 @@
       "topCons": ["loud_under_load", "limited_ports"],
       "reviewRiskScore": 0.21
     },
-    "trust": {
-      "sourceConfidence": 0.93,
-      "reviewCoverage": 22,
-      "freshnessDays": 7
-    },
+    "trust": { "sourceConfidence": 0.93, "reviewCoverage": 22, "freshnessDays": 7 },
     "offers": [
-      { "seller": "Best Buy", "priceUsd": 1849, "condition": "new", "affiliate": true }
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1799, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CL5KNB9H?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Best Buy", "sellerType": "retailer",
+        "priceUsd": 1849, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.bestbuy.com/site/asus-zephyrus-g14/6570259.p?irclickid=majorlogic",
+        "commissionRate": 0.015
+      },
+      {
+        "seller": "Newegg", "sellerType": "marketplace",
+        "priceUsd": 1789, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.newegg.com/p/N82E16834235615?Item=N82E16834235615&cm_mmc=aff",
+        "commissionRate": 0.01
+      }
     ]
   },
   {
@@ -72,13 +96,25 @@
       "topCons": ["limited_ports", "upgradeability_is_zero"],
       "reviewRiskScore": 0.17
     },
-    "trust": {
-      "sourceConfidence": 0.95,
-      "reviewCoverage": 30,
-      "freshnessDays": 3
-    },
+    "trust": { "sourceConfidence": 0.95, "reviewCoverage": 30, "freshnessDays": 3 },
     "offers": [
-      { "seller": "Apple", "priceUsd": 1399, "condition": "new", "affiliate": false }
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1299, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CX2NLK89?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Apple", "sellerType": "brand_direct",
+        "priceUsd": 1399, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      },
+      {
+        "seller": "Best Buy", "sellerType": "retailer",
+        "priceUsd": 1299, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.bestbuy.com/site/apple-macbook-air-15/6534606.p?irclickid=majorlogic",
+        "commissionRate": 0.015
+      }
     ]
   },
   {
@@ -99,14 +135,24 @@
       "topCons": ["mediocre_display_accuracy", "plastic_feel"],
       "reviewRiskScore": 0.28
     },
-    "trust": {
-      "sourceConfidence": 0.84,
-      "reviewCoverage": 11,
-      "freshnessDays": 9
-    },
+    "trust": { "sourceConfidence": 0.84, "reviewCoverage": 11, "freshnessDays": 9 },
     "offers": [
-      { "seller": "Dell", "priceUsd": 799, "condition": "new", "affiliate": true },
-      { "seller": "Micro Center", "priceUsd": 749, "condition": "open_box", "affiliate": false }
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 749, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0D2M3WBVY?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Dell", "sellerType": "brand_direct",
+        "priceUsd": 799, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      },
+      {
+        "seller": "Micro Center", "sellerType": "retailer",
+        "priceUsd": 729, "condition": "open_box", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      }
     ]
   },
   {
@@ -127,14 +173,315 @@
       "topCons": ["display_is_just_ok", "speakers_are_average"],
       "reviewRiskScore": 0.14
     },
-    "trust": {
-      "sourceConfidence": 0.9,
-      "reviewCoverage": 16,
-      "freshnessDays": 5
-    },
+    "trust": { "sourceConfidence": 0.9, "reviewCoverage": 16, "freshnessDays": 5 },
     "offers": [
-      { "seller": "Lenovo", "priceUsd": 1099, "condition": "new", "affiliate": false },
-      { "seller": "Certified Outlet", "priceUsd": 899, "condition": "refurbished", "affiliate": false }
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1049, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CNNTJF5Q?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Lenovo", "sellerType": "brand_direct",
+        "priceUsd": 1099, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      },
+      {
+        "seller": "Certified Outlet", "sellerType": "certified_reseller",
+        "priceUsd": 899, "condition": "refurbished", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      }
+    ]
+  },
+  {
+    "itemName": "HP Spectre x360 14",
+    "variantName": "Core Ultra 7 / 16GB / 1TB / OLED",
+    "majorSignals": ["design", "general", "medical"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 1024,
+      "gpuClass": "integrated",
+      "performance": 80,
+      "display": 96,
+      "battery": 85,
+      "portability": 82,
+      "thermals": 77
+    },
+    "reviewSummary": {
+      "topCons": ["premium_price", "fan_noise_on_sustained_load"],
+      "reviewRiskScore": 0.18
+    },
+    "trust": { "sourceConfidence": 0.91, "reviewCoverage": 19, "freshnessDays": 6 },
+    "offers": [
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1599, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CQXZLV8F?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "HP", "sellerType": "brand_direct",
+        "priceUsd": 1649, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      },
+      {
+        "seller": "Best Buy", "sellerType": "retailer",
+        "priceUsd": 1579, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.bestbuy.com/site/hp-spectre-x360/6570188.p?irclickid=majorlogic",
+        "commissionRate": 0.015
+      }
+    ]
+  },
+  {
+    "itemName": "Framework Laptop 16",
+    "variantName": "Ryzen 7 / 32GB / 1TB / RX 7700S",
+    "majorSignals": ["cs", "engineering"],
+    "specs": {
+      "ramGb": 32,
+      "storageGb": 1024,
+      "gpuClass": "mid_dgpu",
+      "performance": 87,
+      "display": 82,
+      "battery": 66,
+      "portability": 62,
+      "thermals": 78
+    },
+    "reviewSummary": {
+      "topCons": ["heavy_chassis", "battery_life_trade_off"],
+      "reviewRiskScore": 0.19
+    },
+    "trust": { "sourceConfidence": 0.88, "reviewCoverage": 14, "freshnessDays": 8 },
+    "offers": [
+      {
+        "seller": "Framework", "sellerType": "brand_direct",
+        "priceUsd": 1649, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://frame.work/products/laptop16-diy-amd-7040?ref=majorlogic",
+        "commissionRate": 0.03
+      },
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1699, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CWJ9V71D?tag=majorlogic-20",
+        "commissionRate": 0.04
+      }
+    ]
+  },
+  {
+    "itemName": "Acer Nitro V 15",
+    "variantName": "Core i5 / 16GB / 512GB / RTX 3050",
+    "majorSignals": ["engineering", "cs", "general"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "entry_dgpu",
+      "performance": 76,
+      "display": 72,
+      "battery": 62,
+      "portability": 65,
+      "thermals": 68
+    },
+    "reviewSummary": {
+      "topCons": ["loud_fans", "mediocre_display", "plasticky_build"],
+      "reviewRiskScore": 0.33
+    },
+    "trust": { "sourceConfidence": 0.80, "reviewCoverage": 13, "freshnessDays": 12 },
+    "offers": [
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 699, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CWNMCPPF?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Acer", "sellerType": "brand_direct",
+        "priceUsd": 729, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      }
+    ]
+  },
+  {
+    "itemName": "Microsoft Surface Laptop 5",
+    "variantName": "Core i7 / 16GB / 512GB",
+    "majorSignals": ["general", "design", "medical"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 77,
+      "display": 91,
+      "battery": 82,
+      "portability": 85,
+      "thermals": 80
+    },
+    "reviewSummary": {
+      "topCons": ["no_usb_a_port", "limited_upgradeability"],
+      "reviewRiskScore": 0.20
+    },
+    "trust": { "sourceConfidence": 0.89, "reviewCoverage": 17, "freshnessDays": 10 },
+    "offers": [
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1199, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0BGZ4V97M?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Microsoft", "sellerType": "brand_direct",
+        "priceUsd": 1299, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      },
+      {
+        "seller": "Best Buy", "sellerType": "retailer",
+        "priceUsd": 1149, "condition": "open_box", "affiliate": true,
+        "affiliateUrl": "https://www.bestbuy.com/site/microsoft-surface-laptop-5/6519343.p?irclickid=majorlogic",
+        "commissionRate": 0.015
+      }
+    ]
+  },
+  {
+    "itemName": "ASUS VivoBook S 15",
+    "variantName": "Snapdragon X Elite / 16GB / 512GB",
+    "majorSignals": ["general", "cs", "medical"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 74,
+      "display": 79,
+      "battery": 91,
+      "portability": 89,
+      "thermals": 84
+    },
+    "reviewSummary": {
+      "topCons": ["arm_app_compatibility_gaps", "warm_display_calibration"],
+      "reviewRiskScore": 0.22
+    },
+    "trust": { "sourceConfidence": 0.83, "reviewCoverage": 9, "freshnessDays": 11 },
+    "offers": [
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 899, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0D1J9M5KX?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Best Buy", "sellerType": "retailer",
+        "priceUsd": 899, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.bestbuy.com/site/asus-vivobook-s15/6585912.p?irclickid=majorlogic",
+        "commissionRate": 0.015
+      }
+    ]
+  },
+  {
+    "itemName": "LG Gram 16",
+    "variantName": "Core i7 / 16GB / 1TB",
+    "majorSignals": ["general", "medical", "cs"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 1024,
+      "gpuClass": "integrated",
+      "performance": 76,
+      "display": 85,
+      "battery": 93,
+      "portability": 94,
+      "thermals": 79
+    },
+    "reviewSummary": {
+      "topCons": ["below_average_speakers", "flex_in_display_lid"],
+      "reviewRiskScore": 0.16
+    },
+    "trust": { "sourceConfidence": 0.88, "reviewCoverage": 15, "freshnessDays": 7 },
+    "offers": [
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1199, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CKQ3YY7L?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Best Buy", "sellerType": "retailer",
+        "priceUsd": 1249, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.bestbuy.com/site/lg-gram-16/6578432.p?irclickid=majorlogic",
+        "commissionRate": 0.015
+      }
+    ]
+  },
+  {
+    "itemName": "MacBook Pro 14",
+    "variantName": "M4 Pro / 24GB / 512GB",
+    "majorSignals": ["cs", "design", "engineering"],
+    "specs": {
+      "ramGb": 24,
+      "storageGb": 512,
+      "gpuClass": "integrated",
+      "performance": 97,
+      "display": 98,
+      "battery": 96,
+      "portability": 83,
+      "thermals": 92
+    },
+    "reviewSummary": {
+      "topCons": ["extreme_premium_price", "limited_gaming"],
+      "reviewRiskScore": 0.09
+    },
+    "trust": { "sourceConfidence": 0.97, "reviewCoverage": 35, "freshnessDays": 2 },
+    "offers": [
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1999, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CQXZM1GL?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Apple", "sellerType": "brand_direct",
+        "priceUsd": 1999, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      },
+      {
+        "seller": "B&H", "sellerType": "retailer",
+        "priceUsd": 1949, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.bhphotovideo.com/c/product/1843321/apple_macbook_pro_14.html?BI=20&KBID=16434",
+        "commissionRate": 0.02
+      }
+    ]
+  },
+  {
+    "itemName": "Dell XPS 15",
+    "variantName": "Core i7 / 16GB / 512GB / RTX 4060",
+    "majorSignals": ["design", "cs", "engineering"],
+    "specs": {
+      "ramGb": 16,
+      "storageGb": 512,
+      "gpuClass": "mid_dgpu",
+      "performance": 88,
+      "display": 95,
+      "battery": 74,
+      "portability": 72,
+      "thermals": 74
+    },
+    "reviewSummary": {
+      "topCons": ["thermal_throttle_under_heavy_load", "premium_pricing"],
+      "reviewRiskScore": 0.23
+    },
+    "trust": { "sourceConfidence": 0.90, "reviewCoverage": 21, "freshnessDays": 5 },
+    "offers": [
+      {
+        "seller": "Amazon", "sellerType": "marketplace",
+        "priceUsd": 1799, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.amazon.com/dp/B0CGJBBZV3?tag=majorlogic-20",
+        "commissionRate": 0.04
+      },
+      {
+        "seller": "Dell", "sellerType": "brand_direct",
+        "priceUsd": 1849, "condition": "new", "affiliate": false,
+        "affiliateUrl": null, "commissionRate": 0
+      },
+      {
+        "seller": "Best Buy", "sellerType": "retailer",
+        "priceUsd": 1749, "condition": "new", "affiliate": true,
+        "affiliateUrl": "https://www.bestbuy.com/site/dell-xps-15/6578291.p?irclickid=majorlogic",
+        "commissionRate": 0.015
+      }
     ]
   }
 ]

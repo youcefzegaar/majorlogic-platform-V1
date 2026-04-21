@@ -249,6 +249,61 @@ fastify.get("/admin/growth", async (request, reply) => {
   reply.type("text/html; charset=utf-8").send(html);
 });
 
+// ─────────────────────────────────────────────
+// Ethical Affiliate Gateway (logs click → 302 to real URL)
+// ─────────────────────────────────────────────
+
+fastify.get("/go/:domain/:entityId", async (request, reply) => {
+  const { domain, entityId } = request.params;
+  const { seller = "", ref = "results" } = request.query;
+
+  try {
+    const { getRepository } = await import("./db/repository.js");
+    const repository = await getRepository();
+
+    // Load catalog to find the real affiliate URL
+    const controller = getDomainController(domain);
+    const ruleset = await (await import("./db/repository.js")).getRuleset(`rulesets/domains/${domain}/ruleset.json`);
+
+    // Resolve affiliate URL from published catalog in DB
+    let affiliateUrl = null;
+    if (repository) {
+      const entities = await repository.getPublishedEntities({ domainId: domain, limit: 500 });
+      const entity = entities.find(e => e.entityId === entityId || e.title === entityId);
+      if (entity) {
+        const offers = entity.market?.offers || [];
+        const targetOffer = seller
+          ? offers.find(o => o.seller === seller)
+          : offers.sort((a, b) => a.priceUsd - b.priceUsd)[0];
+
+        if (targetOffer) {
+          affiliateUrl = targetOffer.affiliateUrl || null;
+
+          // Log the affiliate click (fire-and-forget)
+          repository.client.query(
+            `INSERT INTO ml_telemetry.affiliate_clicks
+             (domain_id, entity_id, seller, seller_type, price_usd, condition, is_affiliate)
+             VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+            [domain, entityId, targetOffer.seller, targetOffer.sellerType ?? null,
+             targetOffer.priceUsd, targetOffer.condition, targetOffer.affiliate === true]
+          ).catch(err => console.error("[AffiliateGateway] Click log failed:", err.message));
+        }
+      }
+    }
+
+    if (!affiliateUrl) {
+      // Fallback: send to Amazon search (not ideal but graceful)
+      affiliateUrl = `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=majorlogic-20`;
+    }
+
+    reply.redirect(302, affiliateUrl);
+
+  } catch (err) {
+    console.error("[AffiliateGateway] Error:", err.message);
+    reply.redirect(302, `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=majorlogic-20`);
+  }
+});
+
 // Start Server
 const start = async () => {
   try {

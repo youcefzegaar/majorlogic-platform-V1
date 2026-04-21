@@ -49,6 +49,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0006_telemetry.sql",
       "database/migrations/0007_growth_leads.sql",
       "database/migrations/0008_growth_leads_dedup.sql",
+      "database/migrations/0009_affiliate_clicks.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 

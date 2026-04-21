@@ -197,8 +197,8 @@ export function renderResultsPage({ state, result }) {
         </a>
         <div class="trust-badges">
           <div class="trust-badge">No Ads.</div>
-          <div class="trust-badge">No Commission.</div>
-          <div class="trust-badge">Rule-Based.</div>
+          <div class="trust-badge">Specs-Based.</div>
+          <div class="trust-badge" style="background:#1a3a1a;color:#4ade80;border-color:#16a34a;" title="We earn a small commission on some links. It never changes our recommendations.">✅ Affiliate Disclosed.</div>
         </div>
       </header>
 
@@ -248,7 +248,7 @@ export function renderResultsPage({ state, result }) {
             
             <!-- 🚪 Net 3: Interstitial Gate on Buy Button -->
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-              <button onclick="openInterstitial('${escapeHtml(hero.entityId ?? hero.title)}','${buildBuyUrl(hero.entityId ?? hero.title, 'hero')}')"
+              <button onclick="openInterstitial('${escapeHtml(hero.entityId ?? hero.title)}','/go/laptop-student-us/${encodeURIComponent(hero.entityId ?? hero.title)}?seller=Amazon')"
                 class="btn-primary" id="hero-buy-btn" style="cursor:pointer;">
                 🛒 Buy Now &rarr;
               </button>
@@ -328,6 +328,16 @@ export function renderResultsPage({ state, result }) {
         </div>
         <div id="gate-msg" style="color:#4ade80;font-size:13px;margin-top:12px;display:none;">📨 Sending guide... redirecting in 2s</div>
       </div>
+    </div>
+
+    <!-- 📣 Ethical Affiliate Disclosure Footer -->
+    <div style="background:#0a1a0a;border-top:1px solid #16a34a22;padding:20px 32px;margin-top:32px;">
+      <p style="color:#6b7280;font-size:12px;max-width:900px;margin:0 auto;line-height:1.6;">
+        <strong style="color:#4ade80;">💚 Affiliate Disclosure:</strong>
+        Some "Buy Now" links on this page are affiliate links. If you make a purchase through these links, MajorLogic may earn a small commission at no additional cost to you.
+        <strong>This commission never influences our recommendations</strong>, which are determined entirely by an independent algorithm based on specs, fit, and student needs — never by affiliate relationships.
+        Sellers with no affiliate program appear alongside affiliate sellers with equal weight.
+      </p>
     </div>
 
     <!-- Client-side Lead Capture JS -->
