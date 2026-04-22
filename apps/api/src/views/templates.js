@@ -247,8 +247,13 @@ export function renderResultsPage({ state, result, requestUrl = "" }) {
           <p class="hero-subheading">${cards.length} choices. No bias. Zero regret.</p>
           
           ${hero ? `
-            <div class="hero-badge">
-              <span class="icon">🥇</span> HERO
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
+              <div class="hero-badge">
+                <span class="icon">🥇</span> HERO
+              </div>
+              <div style="background:${hero.transparency?.isAffiliate ? 'rgba(33,110,225,0.08)' : 'rgba(16,163,74,0.1)'}; color:${hero.transparency?.isAffiliate ? '#216EE1' : '#16A34A'}; padding:4px 12px; border-radius:99px; font-size:0.8rem; font-weight:700; border:1px solid ${hero.transparency?.isAffiliate ? 'rgba(33,110,225,0.2)' : 'rgba(16,163,74,0.3)'}; display:flex; align-items:center; gap:6px;" title="${hero.transparency?.isAffiliate ? 'We earn a commission if you buy this.' : 'Zero commission. Purely independent.'}">
+                ${hero.transparency?.badge ?? '🛡️'} ${hero.transparency?.label ?? 'Independent'}
+              </div>
             </div>
             <h2 class="hero-title">${escapeHtml(hero.title)}</h2>
             <p class="hero-subtitle">Best for ${state.uiState.majorLabel}</p>
@@ -300,8 +305,13 @@ export function renderResultsPage({ state, result, requestUrl = "" }) {
             return `
               <div class="alt-card">
                 <div class="alt-card-content">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                   <div class="alt-badge"><span class="icon">${icon}</span> ${label}</div>
-                  <h3 class="alt-title">${escapeHtml(card.title)}</h3>
+                  <div style="color:${card.transparency?.isAffiliate ? '#94A3B8' : '#16A34A'}; font-size:0.75rem; font-weight:600; display:flex; align-items:center; gap:4px;">
+                    ${card.transparency?.badge ?? ''} ${card.transparency?.label ?? ''}
+                  </div>
+                </div>
+                <h3 class="alt-title">${escapeHtml(card.title)}</h3>
                   <p class="alt-subtitle">${escapeHtml(card.tradeoff || "Solid alternative option")}</p>
                   
                   ${card.badNews ? `
@@ -360,10 +370,11 @@ export function renderResultsPage({ state, result, requestUrl = "" }) {
     <!-- 📣 Ethical Affiliate Disclosure Footer -->
     <div style="background:#0a1a0a;border-top:1px solid #16a34a22;padding:20px 32px;margin-top:32px;">
       <p style="color:#6b7280;font-size:12px;max-width:900px;margin:0 auto;line-height:1.6;">
-        <strong style="color:#4ade80;">💚 Affiliate Disclosure:</strong>
-        Some "Buy Now" links on this page are affiliate links. If you make a purchase through these links, MajorLogic may earn a small commission at no additional cost to you.
-        <strong>This commission never influences our recommendations</strong>, which are determined entirely by an independent algorithm based on specs, fit, and student needs — never by affiliate relationships.
-        <a href="/disclosure" target="_blank" style="color:#7C3AED;">Read full disclosure →</a>
+        <strong style="color:#4ade80;">🛡️ Radical Transparency:</strong>
+        MajorLogic is built on an **Independent Decision Engine**. 
+        Products are ranked 100% based on technical specifications and student fit. 
+        Some links are affiliate links (labeled as "Verified Partner" 🤝), but **Zero-Commission products** (labeled as "Pure Recommendation" 💎) are treated with the exact same mathematical weight.
+        <a href="/disclosure" target="_blank" style="color:#7C3AED;">How our algorithm stays bias-free →</a>
       </p>
       <div style="max-width:900px;margin:16px auto 0;display:flex;gap:16px;font-size:12px;">
         <a href="/privacy" target="_blank" style="color:#9ca3af;text-decoration:none;">Privacy Policy</a>

@@ -750,7 +750,12 @@ export const laptopStudentUsDomainPack = {
       tradeoff: selection.entity.reviewIntelligence.secondaryWarning ?? "Secondary tradeoff pending richer review mining.",
       resaleScore: selection.componentScores.resale,
       fitState: selection.fitState,
-      imageUrl: selection.entity.media?.productImage ?? null
+      imageUrl: selection.entity.media?.productImage ?? null,
+      transparency: {
+        isAffiliate: Boolean(offer?.affiliate),
+        label: offer?.affiliate ? "Verified Partner" : "Pure Recommendation",
+        badge: offer?.affiliate ? "🤝" : "🛡️"
+      }
     };
   },
 
