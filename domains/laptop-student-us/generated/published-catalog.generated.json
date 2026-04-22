@@ -14,12 +14,12 @@
     "specs": {
       "ramGb": 32,
       "storageGb": 1024,
-      "gpuClass": "mid_dgpu",
       "performance": 92,
       "display": 84,
       "battery": 63,
       "portability": 54,
-      "thermals": 82
+      "thermals": 82,
+      "gpuClass": "mid_dgpu"
     },
     "market": {
       "bestOffer": {
@@ -149,7 +149,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.619Z"
+    "publishedAt": "2026-04-22T18:21:22.478Z"
   },
   {
     "entityId": "asus-zephyrus-g14-ryzen-9-32gb-1tb-rtx-4070",
@@ -166,12 +166,12 @@
     "specs": {
       "ramGb": 32,
       "storageGb": 1024,
-      "gpuClass": "high_dgpu",
       "performance": 95,
       "display": 90,
       "battery": 71,
       "portability": 78,
-      "thermals": 72
+      "thermals": 72,
+      "gpuClass": "high_dgpu"
     },
     "market": {
       "bestOffer": {
@@ -295,7 +295,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.621Z"
+    "publishedAt": "2026-04-22T18:21:22.479Z"
   },
   {
     "entityId": "macbook-air-15-m3-16gb-512gb",
@@ -312,12 +312,12 @@
     "specs": {
       "ramGb": 16,
       "storageGb": 512,
-      "gpuClass": "integrated",
       "performance": 82,
       "display": 88,
       "battery": 94,
       "portability": 91,
-      "thermals": 86
+      "thermals": 86,
+      "gpuClass": "integrated"
     },
     "market": {
       "bestOffer": {
@@ -441,7 +441,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.622Z"
+    "publishedAt": "2026-04-22T18:21:22.479Z"
   },
   {
     "entityId": "dell-inspiron-14-core-5-16gb-512gb",
@@ -458,12 +458,12 @@
     "specs": {
       "ramGb": 16,
       "storageGb": 512,
-      "gpuClass": "integrated",
       "performance": 71,
       "display": 68,
       "battery": 76,
       "portability": 79,
-      "thermals": 70
+      "thermals": 70,
+      "gpuClass": "integrated"
     },
     "market": {
       "bestOffer": {
@@ -593,7 +593,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.622Z"
+    "publishedAt": "2026-04-22T18:21:22.479Z"
   },
   {
     "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
@@ -610,12 +610,12 @@
     "specs": {
       "ramGb": 16,
       "storageGb": 512,
-      "gpuClass": "integrated",
       "performance": 78,
       "display": 74,
       "battery": 83,
       "portability": 80,
-      "thermals": 81
+      "thermals": 81,
+      "gpuClass": "integrated"
     },
     "market": {
       "bestOffer": {
@@ -745,7 +745,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.623Z"
+    "publishedAt": "2026-04-22T18:21:22.479Z"
   },
   {
     "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
@@ -762,12 +762,12 @@
     "specs": {
       "ramGb": 16,
       "storageGb": 1024,
-      "gpuClass": "mid_dgpu",
       "performance": 84,
       "display": 69,
       "battery": 52,
       "portability": 42,
-      "thermals": 75
+      "thermals": 75,
+      "gpuClass": "mid_dgpu"
     },
     "market": {
       "bestOffer": {
@@ -897,7 +897,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.624Z"
+    "publishedAt": "2026-04-22T18:21:22.480Z"
   },
   {
     "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
@@ -914,12 +914,12 @@
     "specs": {
       "ramGb": 24,
       "storageGb": 1024,
-      "gpuClass": "mid_dgpu",
       "performance": 88,
       "display": 77,
       "battery": 58,
       "portability": 46,
-      "thermals": 80
+      "thermals": 80,
+      "gpuClass": "mid_dgpu"
     },
     "market": {
       "bestOffer": {
@@ -1049,7 +1049,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.625Z"
+    "publishedAt": "2026-04-22T18:21:22.480Z"
   },
   {
     "entityId": "asus-proart-p16-ryzen-ai-9-32gb-1tb-rtx-4060",
@@ -1066,12 +1066,12 @@
     "specs": {
       "ramGb": 32,
       "storageGb": 1024,
-      "gpuClass": "mid_dgpu",
       "performance": 90,
       "display": 96,
       "battery": 69,
       "portability": 72,
-      "thermals": 76
+      "thermals": 76,
+      "gpuClass": "mid_dgpu"
     },
     "market": {
       "bestOffer": {
@@ -1201,7 +1201,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.626Z"
+    "publishedAt": "2026-04-22T18:21:22.480Z"
   },
   {
     "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
@@ -1218,12 +1218,12 @@
     "specs": {
       "ramGb": 16,
       "storageGb": 1024,
-      "gpuClass": "integrated",
       "performance": 79,
       "display": 81,
       "battery": 92,
       "portability": 93,
-      "thermals": 88
+      "thermals": 88,
+      "gpuClass": "integrated"
     },
     "market": {
       "bestOffer": {
@@ -1353,7 +1353,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.627Z"
+    "publishedAt": "2026-04-22T18:21:22.481Z"
   },
   {
     "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
@@ -1370,12 +1370,12 @@
     "specs": {
       "ramGb": 16,
       "storageGb": 1024,
-      "gpuClass": "integrated",
       "performance": 77,
       "display": 80,
       "battery": 84,
       "portability": 88,
-      "thermals": 74
+      "thermals": 74,
+      "gpuClass": "integrated"
     },
     "market": {
       "bestOffer": {
@@ -1505,7 +1505,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.628Z"
+    "publishedAt": "2026-04-22T18:21:22.481Z"
   },
   {
     "entityId": "macbook-pro-14-m4-pro-24gb-1tb",
@@ -1522,12 +1522,12 @@
     "specs": {
       "ramGb": 24,
       "storageGb": 1024,
-      "gpuClass": "integrated",
       "performance": 94,
       "display": 95,
       "battery": 90,
       "portability": 86,
-      "thermals": 88
+      "thermals": 88,
+      "gpuClass": "integrated"
     },
     "market": {
       "bestOffer": {
@@ -1651,7 +1651,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.628Z"
+    "publishedAt": "2026-04-22T18:21:22.481Z"
   },
   {
     "entityId": "msi-pulse-16-ai-core-ultra-9-32gb-1tb-rtx-4070",
@@ -1667,12 +1667,12 @@
     "specs": {
       "ramGb": 32,
       "storageGb": 1024,
-      "gpuClass": "high_dgpu",
       "performance": 93,
       "display": 82,
       "battery": 55,
       "portability": 40,
-      "thermals": 79
+      "thermals": 79,
+      "gpuClass": "high_dgpu"
     },
     "market": {
       "bestOffer": {
@@ -1802,7 +1802,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.629Z"
+    "publishedAt": "2026-04-22T18:21:22.481Z"
   },
   {
     "entityId": "surface-laptop-7-snapdragon-x-plus-16gb-512gb",
@@ -1818,12 +1818,12 @@
     "specs": {
       "ramGb": 16,
       "storageGb": 512,
-      "gpuClass": "integrated",
       "performance": 76,
       "display": 86,
       "battery": 91,
       "portability": 92,
-      "thermals": 90
+      "thermals": 90,
+      "gpuClass": "integrated"
     },
     "market": {
       "bestOffer": {
@@ -1947,6 +1947,6 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T16:31:11.629Z"
+    "publishedAt": "2026-04-22T18:21:22.481Z"
   }
 ]

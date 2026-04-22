@@ -302,6 +302,7 @@ export const laptopStudentUsDomainPack = {
 
     const specs = hasRawSpecs
       ? {
+          platform:    sourceRecord.rawSpecs.cpu ?? "unknown",
           ramGb:       parseCapacity(sourceRecord.rawSpecs.ram),
           storageGb:   parseCapacity(sourceRecord.rawSpecs.storage),
           gpuClass:    normalizeGpuClass(sourceRecord.rawSpecs.gpu),
@@ -312,6 +313,7 @@ export const laptopStudentUsDomainPack = {
           thermals:    Number(sourceRecord.rawSpecs.thermals_score)
         }
       : {
+          platform:    sourceRecord.specs?.platform ?? sourceRecord.specs?.cpu ?? "unknown",
           ramGb:       Number(sourceRecord.specs?.ramGb     ?? 0),
           storageGb:   Number(sourceRecord.specs?.storageGb  ?? 0),
           gpuClass:    sourceRecord.specs?.gpuClass  ?? "integrated",
@@ -359,13 +361,14 @@ export const laptopStudentUsDomainPack = {
     };
   },
 
-  publishEntity(observation, { fitContexts }) {
+  publishEntity(observation, { fitContexts, resolvedSpecs = null }) {
+    const specs = resolvedSpecs || observation.specs;
     const entityId = normalizeId(observation.itemName, observation.variantName);
     const offers = [...observation.offers].sort((left, right) => left.priceUsd - right.priceUsd);
     const bestOffer = offers[0];
     const resaleScore = estimateResaleScore({
       itemName: observation.itemName,
-      specs: observation.specs,
+      specs: specs,
       trust: observation.trust
     });
     const brand = detectBrand(observation.itemName);
@@ -378,7 +381,7 @@ export const laptopStudentUsDomainPack = {
       variantName: observation.variantName,
       brand,
       segmentSignals: observation.majorSignals,
-      specs: observation.specs,
+      specs: specs,
       market: {
         bestOffer,
         offers
@@ -409,7 +412,7 @@ export const laptopStudentUsDomainPack = {
       fitStates: Object.fromEntries(
         Object.keys(fitContexts).map((segment) => [
           segment,
-          resolveFitContext(observation, segment, fitContexts)
+          resolveFitContext({ ...observation, specs }, segment, fitContexts)
         ])
       ),
       publishedAt: new Date().toISOString()
@@ -418,6 +421,41 @@ export const laptopStudentUsDomainPack = {
 
   entityFitsProfile(entity, profile) {
     return Boolean(entity.fitStates[profile.major]);
+  },
+
+  /**
+   * Layer 3 Delegate — Spec-based Identity
+   */
+  buildEntityFingerprint(observation) {
+    const specs = observation.specs || {};
+    const brand = (detectBrand(observation.itemName) || "unk").toLowerCase();
+    const ram = specs.ramGb || 0;
+    const storage = specs.storageGb || 0;
+    const gpu = (specs.gpuClass || "integrated").toLowerCase();
+    const platform = (specs.platform || "unk").toLowerCase().replace(/\s+/g, "_");
+    return `${brand}__${platform}__${ram}gb__${storage}gb__${gpu}`;
+  },
+
+  /**
+   * Layer 7 Delegate — Field Resolution (Truth Resolution)
+   */
+  resolveEntityFields(observations) {
+    const numericKeys = ["performance", "display", "battery", "portability", "thermals"];
+    const resolvedSpecs = { ...observations[0].specs };
+
+    for (const key of numericKeys) {
+      const values = observations
+        .map((obs) => obs.specs?.[key])
+        .filter((v) => typeof v === "number");
+      
+      if (values.length > 0) {
+        // Median resolution
+        const sorted = [...values].sort((a, b) => a - b);
+        resolvedSpecs[key] = sorted[Math.floor(sorted.length / 2)];
+      }
+    }
+
+    return { resolvedSpecs };
   },
 
   /**

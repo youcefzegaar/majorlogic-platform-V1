@@ -71,10 +71,11 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
   // بناء خريطة سريعة للـ Observations المؤهلة بعد الـ Fit Gate
   const eligibleEntityIds = new Set(
     fitEligible.map((obs) => {
-      // نستخدم buildEntityFingerprint إن وُجد، وإلا نبني id أولياً من اسم الـ observation
-      return domainPack.buildEntityFingerprint
-        ? domainPack.buildEntityFingerprint(obs)
-        : `${obs.itemName ?? ""}-${obs.variantName ?? ""}`;
+      // نستخدم بصمة الدومين حصراً لضمان التوافق بين الطبقات
+      if (typeof domainPack.buildEntityFingerprint !== "function") {
+          throw new Error(`Domain Pack [${domainPack.meta?.domainId}] must implement buildEntityFingerprint for Layer 5 consistency.`);
+      }
+      return domainPack.buildEntityFingerprint(obs);
     })
   );
 
@@ -86,9 +87,7 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
     , sourceEntity?.observations?.[0]) ?? null;
 
     if (!bestObs) return false;
-    const fp = domainPack.buildEntityFingerprint
-      ? domainPack.buildEntityFingerprint(bestObs)
-      : `${bestObs.itemName ?? ""}-${bestObs.variantName ?? ""}`;
+    const fp = domainPack.buildEntityFingerprint(bestObs);
     return eligibleEntityIds.has(fp);
   });
 
@@ -102,7 +101,10 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
 
     if (!bestObservation) return null;
 
-    return domainPack.publishEntity(bestObservation, domainContext);
+    return domainPack.publishEntity(bestObservation, { 
+        ...domainContext, 
+        resolvedSpecs: truth.resolvedSpecs 
+    });
   }).filter(Boolean);
 
   const pipelineReport = {
