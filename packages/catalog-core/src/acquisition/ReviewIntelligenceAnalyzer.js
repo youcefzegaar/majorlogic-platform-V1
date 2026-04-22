@@ -11,49 +11,59 @@ export class ReviewIntelligenceAnalyzer {
    * تحليل مجموعة من المراجعات واستخراج العيوب والتحذيرات.
    */
   async analyze(productName, rawSignals) {
+    if (!rawSignals || rawSignals.length < 10) {
+      return { primaryWarning: "Insufficient review data for deep analysis.", topCons: [], riskScore: 0 };
+    }
+
     console.log(`[AI Analyzer] Processing intelligence for: ${productName} (Provider: ${this.provider})`);
 
-    // هنا يتم الاتصال بـ Gemma (محلياً عبر Ollama أو عروض سحابية)
-    // سنقوم بمحاكاة منطق التحليل العميق حالياً
-    const prompt = `Analyze these reviews for ${productName} and extract:
-    1. Primary Warning (Critical issue)
-    2. Top 3 Cons (Technical flaws)
-    
-    Signals: ${rawSignals.substring(0, 1000)}`;
+    // المهام في المرحلة الصناعية:
+    // 1. بناء الـ Prompt للذكاء الاصطناعي (Gemini/Gemma)
+    const prompt = `Analyze professional and user reviews for the "${productName}". 
+    Extract the 3 most significant technical flaws (cons) and one critical "Primary Warning" for students.
+    Raw Review Text: ${rawSignals.substring(0, 2000)}`;
 
-    // محاكاة استجابة Gemma المنظمة
-    const aiResponse = this.simulateGemmaResponse(productName, rawSignals);
+    // 2. إرسال الطلب للـ Model (هنا نقوم بمحاكاة منطق التحليل اللغوي الحقيقي)
+    const response = await this._callLanguageModel(prompt, rawSignals);
     
-    return aiResponse;
+    return response;
   }
 
-  simulateGemmaResponse(productName, signals) {
-    const lowerSignals = signals.toLowerCase();
+  /**
+   * محاكاة ذكية لاتصال الـ API (تتجنب الـ False Positives البسيطة).
+   */
+  async _callLanguageModel(prompt, context) {
+    const lower = context.toLowerCase();
+    const cons = [];
+    let warning = "No major technical red flags detected.";
+
+    // تحسين الـ Regex ليكون أكثر مرونة
+    const batteryIssue = /battery.*(poor|short|bad|awful|disappointing|weak)/i.test(lower) || 
+                        /(poor|short|bad|awful|disappointing|weak).*(battery)/i.test(lower);
     
-    let primaryWarning = "No critical manufacturing defects found in professional reviews.";
-    const topCons = [];
+    if (batteryIssue) {
+      cons.push("diminished_battery_endurance");
+    }
+    
+    const fanIssue = /(loud|noisy|whine|jet).*(fan|noise)/i.test(lower) || 
+                     /(fan|noise).*(loud|noisy|whine|jet)/i.test(lower);
 
-    if (lowerSignals.includes("battery")) {
-      topCons.push("battery_life_shorter_than_advertised");
-    }
-    if (lowerSignals.includes("fan") || lowerSignals.includes("noise")) {
-      topCons.push("noisy_under_heavy_load");
-      primaryWarning = "Acoustic profile is aggressive; may not be suitable for silent libraries.";
-    }
-    if (lowerSignals.includes("flex") || lowerSignals.includes("build")) {
-      topCons.push("minor_chassis_flex");
-    }
-    if (lowerSignals.includes("heat") || lowerSignals.includes("hot")) {
-      topCons.push("thermal_throttling_potential");
-      primaryWarning = "Thermal headroom is limited; expect clock speed drops during sustained 4K rendering.";
+    if (fanIssue) {
+      cons.push("aggressive_fan_profile");
+      warning = "High acoustic output under load; potentially disruptive in quiet environments.";
     }
 
-    if (topCons.length === 0) topCons.push("generic_high_price_premium");
+    const heatIssue = /(throttling|overheating|gets\s+hot|thermal|burning)/i.test(lower);
+
+    if (heatIssue) {
+      cons.push("thermal_management_limitations");
+      warning = "Sustained performance may be capped due to thermal design.";
+    }
 
     return {
-      primaryWarning,
-      topCons: topCons.slice(0, 3),
-      riskScore: topCons.length * 0.15
+      primaryWarning: warning,
+      topCons: cons.slice(0, 3),
+      riskScore: cons.length * 0.2
     };
   }
 }

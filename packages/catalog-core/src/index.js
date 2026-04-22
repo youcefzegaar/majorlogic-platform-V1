@@ -29,16 +29,21 @@ export function acquireAndStage({ sourceRecords, domainPack, meta = {} }) {
   const sourceId   = meta.sourceId   ?? "unknown_source";
 
   const rawObservations = sourceRecords.map((record, index) => {
-    const observation = domainPack.acquireRawObservation(record);
-    return {
-      ...observation,
-      _acquisition: {
-        sourceId,
-        acquiredAt,
-        originalIndex: index
-      }
-    };
-  });
+    try {
+      const observation = domainPack.acquireRawObservation(record);
+      return {
+        ...observation,
+        _acquisition: {
+          sourceId,
+          acquiredAt,
+          originalIndex: index
+        }
+      };
+    } catch (err) {
+      console.error(`[catalog-core] Failed to acquire record at index ${index}:`, err.message);
+      return null;
+    }
+  }).filter(Boolean);
 
   const stagingResult = {
     sourceId,

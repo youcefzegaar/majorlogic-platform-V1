@@ -9,16 +9,29 @@ export class ReviewFetcher {
     this.analyzer = new ReviewIntelligenceAnalyzer();
   }
 
+
+
   /**
    * جلب مراجعات منتج من Reddit.
    */
   async fetchRedditSignals(productName) {
     console.log(`[ReviewFetcher] Searching Reddit for: ${productName}`);
-    return [
-      "The battery life is amazing for office work.",
-      "Gets a bit loud under heavy gaming load.",
-      "The screen is peak quality."
-    ];
+    // استخدام الـ fetcher لجلب البيانات الحقيقية من واجهة برمجية
+    try {
+      const searchUrl = `https://www.reddit.com/search.json?q=${encodeURIComponent(productName)}+review`;
+      const result = await this.fetcher.fetch(searchUrl);
+      const data = JSON.parse(result.body);
+      
+      // استخراج النصوص من النتائج
+      return data.data.children.map(child => child.data.selftext || child.data.title);
+    } catch (err) {
+      console.warn(`[ReviewFetcher] Reddit fetch failed, using fallback data: ${err.message}`);
+      return [
+        "The battery life is poor on this model.",
+        "Gets very loud under heavy gaming load.",
+        "The OLED screen is high quality but glossy."
+      ];
+    }
   }
 
   /**
@@ -26,7 +39,16 @@ export class ReviewFetcher {
    */
   async fetchYouTubeTranscripts(productName) {
     console.log(`[ReviewFetcher] Fetching YouTube transcripts for: ${productName}`);
-    return "This laptop is solid, but the keyboard flex is noticeable.";
+    // محاكاة جلب الترجمات عبر الـ fetcher
+    try {
+      // في الواقع سنستخدم YouTube Data API أو خدمة محددة
+      const mockYtUrl = `https://example.com/yt-transcript?q=${encodeURIComponent(productName)}`;
+      const result = await this.fetcher.fetch(mockYtUrl);
+      return result.body;
+    } catch (err) {
+      console.warn(`[ReviewFetcher] YouTube fetch failed, using fallback: ${err.message}`);
+      return "This laptop is solid, but the fans are jet engines under load.";
+    }
   }
 
   /**

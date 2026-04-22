@@ -28,12 +28,19 @@ export class AmazonAdapter {
       storageGb = html.toLowerCase().includes("tb") && val < 10 ? val * 1024 : val;
     }
 
+    // استخراج اسم المنتج الحقيقي من الـ HTML
+    const titleMatch = html.match(/<span[^>]*id="productTitle"[^>]*>(.*?)<\/span>/s) || 
+                       html.match(/<meta\s+name="title"\s+content="(.*?)"/i) ||
+                       html.match(/<title>(.*?)<\/title>/i);
+    
+    const itemName = titleMatch ? titleMatch[1].trim().replace(/\n/g, "") : "Unknown Amazon Product";
+
     return {
-      sourceId: `amazon-${Date.now()}`,
+      sourceId: `amazon-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       sourceType: this.sourceType,
       sourceName: this.sourceName,
       sourceUrl: productUrl,
-      itemName: "Extracted Item Name", 
+      itemName, 
       variantName: "Standard",
       specs: {
         ramGb,
