@@ -1,3 +1,12 @@
+export * from "./acquisition/Fetcher.js";
+export * from "./acquisition/AmazonAdapter.js";
+export * from "./acquisition/CatalogGenerator.js";
+export * from "./acquisition/ReviewFetcher.js";
+export * from "./acquisition/ReviewIntelligenceAnalyzer.js";
+
+
+
+
 /**
  * catalog-core — Layer 1 & 2: Source Acquisition + Raw Staging
  *
