@@ -52,10 +52,14 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
   // تُحذف أي entities لا تحقق الحد الأدنى "official" لأي سياق دراسي واحد على الأقل.
   // مُفوَّض بالكامل إلى domainPack.meetsMinimumFitContext — لا منطق دومين هنا.
   // إذا لم يُعرَّف meetsMinimumFitContext أو fitContexts → Graceful Degradation (تمرر الجميع).
+  // إنشاء خريطة سريعة للكيانات (O(1) lookup) لتجنب O(n^2)
+  const entityMap = new Map(entities.map((e) => [e.entityId, e]));
+
+  // ── Layer 5: Fit Context Gate (Pre-Publish Standards Filter) ──────────────
+  // تُحذف أي entities لا تحقق الحد الأدنى "official" لأي سياق دراسي واحد على الأقل.
   const { eligible: fitEligible, excluded: excludedByFitGate } = filterByFitContexts(
-    // نُمرر الـ observations الخام للكيانات المتحققة (نختار أفضل observation لكل entity)
     validatedEntities.map((truth) => {
-      const sourceEntity = entities.find((e) => e.entityId === truth.entityId);
+      const sourceEntity = entityMap.get(truth.entityId);
       return sourceEntity?.observations?.reduce((best, obs) =>
         (obs.trust?.sourceConfidence ?? 0) > (best.trust?.sourceConfidence ?? 0) ? obs : best
       , sourceEntity?.observations?.[0]) ?? null;
@@ -71,7 +75,6 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
   // بناء خريطة سريعة للـ Observations المؤهلة بعد الـ Fit Gate
   const eligibleEntityIds = new Set(
     fitEligible.map((obs) => {
-      // نستخدم بصمة الدومين حصراً لضمان التوافق بين الطبقات
       if (typeof domainPack.buildEntityFingerprint !== "function") {
           throw new Error(`Domain Pack [${domainPack.meta?.domainId}] must implement buildEntityFingerprint for Layer 5 consistency.`);
       }
@@ -81,7 +84,7 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
 
   // نُصفي validatedEntities لتبقي فقط من اجتاز الـ Fit Gate
   const fitPassedEntities = validatedEntities.filter((truth) => {
-    const sourceEntity = entities.find((e) => e.entityId === truth.entityId);
+    const sourceEntity = entityMap.get(truth.entityId);
     const bestObs = sourceEntity?.observations?.reduce((best, obs) =>
       (obs.trust?.sourceConfidence ?? 0) > (best.trust?.sourceConfidence ?? 0) ? obs : best
     , sourceEntity?.observations?.[0]) ?? null;
@@ -93,8 +96,7 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
 
   // Layer 8: Publish — تحويل كل كيان تحقق إلى entity منشورة
   const publishedEntities = fitPassedEntities.map((truth) => {
-    // أوجد أفضل observation لهذا الكيان (الأعلى confidence) لتمريرها لـ publishEntity
-    const sourceEntity = entities.find((e) => e.entityId === truth.entityId);
+    const sourceEntity = entityMap.get(truth.entityId);
     const bestObservation = sourceEntity?.observations?.reduce((best, obs) => {
       return (obs.trust?.sourceConfidence ?? 0) > (best.trust?.sourceConfidence ?? 0) ? obs : best;
     }, sourceEntity?.observations?.[0]) ?? null;

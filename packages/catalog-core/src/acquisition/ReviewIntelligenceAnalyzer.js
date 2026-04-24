@@ -37,27 +37,34 @@ export class ReviewIntelligenceAnalyzer {
     const cons = [];
     let warning = "No major technical red flags detected.";
 
-    // تحسين الـ Regex ليكون أكثر مرونة
-    const batteryIssue = /battery.*(poor|short|bad|awful|disappointing|weak)/i.test(lower) || 
-                        /(poor|short|bad|awful|disappointing|weak).*(battery)/i.test(lower);
-    
-    if (batteryIssue) {
-      cons.push("diminished_battery_endurance");
+    // تحسين الـ Regex ليكون أكثر مرونة مع إضافة "درع الإيجابية" (Positive Shield)
+    const hasPositiveBattery = /(amazing|excellent|good|great|long|stellar)\s+battery/i.test(lower);
+    const hasPositiveThermal = /(excellent|cool|cold|great|perfect)\s+(thermal|heat|cooling)/i.test(lower);
+    const hasPositiveAcoustic = /(quiet|silent|no\s+noise|hush)\s+(fan|noise)/i.test(lower);
+
+    // 1. تحليل البطارية
+    if (!hasPositiveBattery) {
+      if (/battery.*(poor|short|bad|awful|disappointing|weak)/i.test(lower) || 
+          /(poor|short|bad|awful|disappointing|weak).*(battery)/i.test(lower)) {
+        cons.push("diminished_battery_endurance");
+      }
     }
     
-    const fanIssue = /(loud|noisy|whine|jet).*(fan|noise)/i.test(lower) || 
-                     /(fan|noise).*(loud|noisy|whine|jet)/i.test(lower);
-
-    if (fanIssue) {
-      cons.push("aggressive_fan_profile");
-      warning = "High acoustic output under load; potentially disruptive in quiet environments.";
+    // 2. تحليل الضجيج
+    if (!hasPositiveAcoustic) {
+      if (/(loud|noisy|whine|jet).*(fan|noise)/i.test(lower) || 
+          /(fan|noise).*(loud|noisy|whine|jet)/i.test(lower)) {
+        cons.push("aggressive_fan_profile");
+        warning = "High acoustic output under load; potentially disruptive in quiet environments.";
+      }
     }
 
-    const heatIssue = /(throttling|overheating|gets\s+hot|thermal|burning)/i.test(lower);
-
-    if (heatIssue) {
-      cons.push("thermal_management_limitations");
-      warning = "Sustained performance may be capped due to thermal design.";
+    // 3. تحليل الحرارة
+    if (!hasPositiveThermal) {
+      if (/(throttling|overheating|gets\s+hot|thermal|burning)/i.test(lower)) {
+        cons.push("thermal_management_limitations");
+        warning = "Sustained performance may be capped due to thermal design.";
+      }
     }
 
     return {

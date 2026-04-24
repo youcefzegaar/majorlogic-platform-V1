@@ -14,14 +14,43 @@ import { sendWelcomeEmail } from "../../../packages/email-service/src/index.js";
 import { renderSeoPage } from "./views/seo-page.js";
 import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure } from "./views/legal.js";
 import fastifyBasicAuth from "@fastify/basic-auth";
+import fastifyHelmet from "@fastify/helmet";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
 loadEnvFile(path.join(root, ".env"));
 
+function escapeHtml(text) {
+  if (!text) return "";
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 const defaultProfile = loadJsonSync("examples/profile.json");
 const port = Number(process.env.PORT ?? 3010);
+const isProd = process.env.NODE_ENV === "production";
 
-const fastify = Fastify({ logger: true });
+const fastify = Fastify({ 
+  logger: {
+    level: process.env.LOG_LEVEL ?? (isProd ? "info" : "debug"),
+    transport: isProd ? undefined : { target: 'pino-pretty' }
+  } 
+});
+
+// Production security: Security Headers
+fastify.register(fastifyHelmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+    },
+  },
+});
 
 fastify.register(cors, { origin: true });
 
@@ -47,8 +76,14 @@ const DEFAULT_DOMAIN = "laptop-student-us";
 // ─────────────────────────────────────────────
 fastify.register(fastifyBasicAuth, {
   validate: async function (username, password, req, reply) {
-    const validUser = process.env.ADMIN_USER || "youcef";
-    const validPass = process.env.ADMIN_PASSWORD || "strongpassword123";
+    const validUser = process.env.ADMIN_USER;
+    const validPass = process.env.ADMIN_PASSWORD;
+
+    if (!validUser || !validPass) {
+      req.log.error("ADMIN_USER or ADMIN_PASSWORD not set in environment!");
+      return new Error("Server configuration error");
+    }
+
     if (username !== validUser || password !== validPass) {
       return new Error("Unauthorized");
     }
@@ -96,8 +131,22 @@ fastify.post("/api/v1/:domain/decision/run", async (request, reply) => {
     const result = await controller.runPipeline(profile);
     return result;
   } catch (err) {
-    reply.status(500).send({ error: "decision_run_failed", message: err.message });
+    request.log.error({ err, domain }, "Decision run failed");
+    reply.status(500).send({ error: "decision_run_failed", message: isProd ? "Internal Server Error" : err.message });
   }
+});
+
+// Global Error Handler
+fastify.setErrorHandler((error, request, reply) => {
+  request.log.error(error);
+  if (error.validation) {
+    reply.status(400).send({ error: "validation_error", details: error.validation });
+    return;
+  }
+  reply.status(500).send({ 
+    error: "internal_error", 
+    message: isProd ? "A server error occurred. Please try again later." : error.message 
+  });
 });
 
 fastify.post("/api/v1/:domain/telemetry/click", async (request, reply) => {
@@ -174,8 +223,8 @@ fastify.get("/api/v1/:domain/growth/leads/export", async (request, reply) => {
   const { domain } = request.params;
   const { leadType = null, secret } = request.query;
 
-  // Simple shared-secret guard — replace with proper auth in production
-  if (secret !== (process.env.ADMIN_EXPORT_SECRET ?? "majorlogic-admin")) {
+  const exportSecret = process.env.ADMIN_EXPORT_SECRET;
+  if (!exportSecret || secret !== exportSecret) {
     return reply.status(401).send({ error: "unauthorized" });
   }
 
@@ -314,8 +363,8 @@ fastify.get("/admin/affiliate", async (request, reply) => {
 
 // Save affiliate tag from admin form (POST)
 fastify.post("/admin/affiliate", async (request, reply) => {
-  const secret = request.headers["x-admin-secret"] ?? request.body?.secret;
-  if (secret !== (process.env.ADMIN_EXPORT_SECRET ?? "majorlogic-admin")) {
+  const exportSecret = process.env.ADMIN_EXPORT_SECRET;
+  if (!exportSecret || secret !== exportSecret) {
     return reply.status(401).send({ error: "unauthorized" });
   }
   const { seller, affiliateTag, isActive, notes } = request.body;
@@ -337,8 +386,8 @@ fastify.post("/admin/affiliate", async (request, reply) => {
 
 // JSON API for affiliate settings (for external tools)
 fastify.get("/api/v1/admin/affiliate-settings", async (request, reply) => {
-  const { secret } = request.query;
-  if (secret !== (process.env.ADMIN_EXPORT_SECRET ?? "majorlogic-admin")) {
+  const exportSecret = process.env.ADMIN_EXPORT_SECRET;
+  if (!exportSecret || secret !== exportSecret) {
     return reply.status(401).send({ error: "unauthorized" });
   }
   const { getRepository } = await import("./db/repository.js");
@@ -409,7 +458,7 @@ fastify.get("/go/:domain/:entityId", async (request, reply) => {
       const { getRepository: gr } = await import("./db/repository.js");
       const repo2 = await gr();
       const tagMap = repo2 ? await repo2.getAffiliateTagMap() : {};
-      const amazonTag = tagMap["Amazon"]?.tag ?? "majorlogic-20";
+      const amazonTag = tagMap["Amazon"]?.tag ?? process.env.DEFAULT_AFFILIATE_TAG ?? "majorlogic-20";
       affiliateUrl = `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=${amazonTag}`;
     }
 

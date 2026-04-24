@@ -25,18 +25,36 @@ export async function createPostgresClient(connectionString = process.env.DATABA
     return null;
   }
 
-  const { Client } = await importPg();
-  const client = new Client({ connectionString });
-  client.on("error", (err) => {
-    console.error("Supabase DB connection error:", err.message);
+  const { Pool } = await importPg();
+  const pool = new Pool({
+    connectionString,
+    max: 20, // Maximum number of clients in the pool
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
   });
-  await client.connect();
-  return client;
+
+  pool.on("error", (err) => {
+    console.error("Unexpected error on idle client", err);
+  });
+
+  return pool;
 }
 
 export class PostgresPlatformRepository {
-  constructor(client) {
-    this.client = client;
+  constructor(pool) {
+    this.pool = pool;
+  }
+
+  /**
+   * Helper to execute queries. Uses the pool directly for simple queries,
+   * but can be used with a specific client for transactions.
+   */
+  async query(text, params) {
+    return this.pool.query(text, params);
+  }
+
+  async shutdown() {
+    await this.pool.end();
   }
 
   async applyMigrations() {
@@ -54,16 +72,27 @@ export class PostgresPlatformRepository {
       "database/seeds/0001_domain_registry.sql"
     ];
 
-    for (const file of migrationFiles) {
-      await this.client.query(readSql(file));
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      for (const file of migrationFiles) {
+        await client.query(readSql(file));
+      }
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
     }
   }
 
   async saveSourceObservations({ domainId, observations }) {
-    await this.client.query('BEGIN');
+    const client = await this.pool.connect();
     try {
+      await client.query('BEGIN');
       for (const observation of observations) {
-        await this.client.query(
+        await client.query(
           `insert into ml_raw.source_observations (
             id, domain_id, source_name, source_url, observation_type, raw_payload, fetched_at
           ) values ($1, $2, $3, $4, $5, $6::jsonb, now())
@@ -80,15 +109,17 @@ export class PostgresPlatformRepository {
           ]
         );
       }
-      await this.client.query('COMMIT');
+      await client.query('COMMIT');
     } catch (err) {
-      await this.client.query('ROLLBACK');
+      await client.query('ROLLBACK');
       throw err;
+    } finally {
+      client.release();
     }
   }
 
   async getLatestSourceObservations({ domainId, limit = 200 }) {
-    const result = await this.client.query(
+    const result = await this.pool.query(
       `select raw_payload
        from ml_raw.source_observations
        where domain_id = $1
@@ -101,7 +132,7 @@ export class PostgresPlatformRepository {
   }
 
   async getPublishedEntities({ domainId, limit = 500 }) {
-    const result = await this.client.query(
+    const result = await this.pool.query(
       `select entity_payload
        from ml_catalog.published_entities
        where domain_id = $1
@@ -114,7 +145,7 @@ export class PostgresPlatformRepository {
   }
 
   async getLatestPublishRun({ domainId }) {
-    const result = await this.client.query(
+    const result = await this.pool.query(
       `select publish_run_id, domain_id, catalog_version, source_observation_count, published_entity_count,
                observation_source, status, created_at, completed_at
        from ml_catalog.active_publish_runs
@@ -128,7 +159,7 @@ export class PostgresPlatformRepository {
 
   async registerSources({ domainId, sourceRecords }) {
     for (const source of sourceRecords) {
-      await this.client.query(
+      await this.pool.query(
         `insert into ml_raw.source_registry (
           source_id, domain_id, source_type, source_name, source_url, metadata
         ) values ($1, $2, $3, $4, $5, $6::jsonb)
@@ -154,7 +185,7 @@ export class PostgresPlatformRepository {
 
   async createIngestionRun({ domainId, sourceCount }) {
     const runId = randomUUID();
-    await this.client.query(
+    await this.pool.query(
       `insert into ml_raw.ingestion_runs (
         id, domain_id, source_count, status
       ) values ($1, $2, $3, 'running')`,
@@ -164,7 +195,7 @@ export class PostgresPlatformRepository {
   }
 
   async completeIngestionRun({ runId, normalizedCount, status = "completed" }) {
-    await this.client.query(
+    await this.pool.query(
       `update ml_raw.ingestion_runs
        set normalized_count = $2,
            status = $3,
@@ -181,7 +212,7 @@ export class PostgresPlatformRepository {
     observationSource
   }) {
     const runId = randomUUID();
-    await this.client.query(
+    await this.pool.query(
       `insert into ml_catalog.publish_runs (
         id, domain_id, catalog_version, source_observation_count, observation_source, status
       ) values ($1, $2, $3, $4, $5, 'running')`,
@@ -191,7 +222,7 @@ export class PostgresPlatformRepository {
   }
 
   async completePublishRun({ runId, publishedEntityCount, status = "completed" }) {
-    await this.client.query(
+    await this.pool.query(
       `update ml_catalog.publish_runs
        set published_entity_count = $2,
            status = $3,
@@ -202,10 +233,11 @@ export class PostgresPlatformRepository {
   }
 
   async publishEntities({ domainId, entities, publishRunId = null, catalogVersion = null }) {
-    await this.client.query('BEGIN');
+    const client = await this.pool.connect();
     try {
+      await client.query('BEGIN');
       for (const entity of entities) {
-        await this.client.query(
+        await client.query(
           `insert into ml_catalog.published_entities (
             entity_id, domain_id, publish_run_id, catalog_version, entity_type, title, entity_payload, fit_states, trust, published_at
           ) values ($1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, $10)
@@ -231,10 +263,12 @@ export class PostgresPlatformRepository {
           ]
         );
       }
-      await this.client.query('COMMIT');
+      await client.query('COMMIT');
     } catch (err) {
-      await this.client.query('ROLLBACK');
+      await client.query('ROLLBACK');
       throw err;
+    } finally {
+      client.release();
     }
   }
 
@@ -248,11 +282,14 @@ export class PostgresPlatformRepository {
     catalogVersion = null,
     publishRunId = null
   }) {
-    const decisionRunId = randomUUID();
-    await this.client.query(
+    const decisionRunId = decision.decisionRunId ?? randomUUID();
+    
+    // 1. القيد في جدول القرارات الأساسي (Source of Truth)
+    await this.pool.query(
       `insert into ml_decision.decision_runs (
         id, domain_id, publish_run_id, catalog_version, profile_payload, logic_version, cards_payload
-      ) values ($1, $2, $3, $4, $5::jsonb, $6, $7::jsonb)`,
+      ) values ($1, $2, $3, $4, $5::jsonb, $6, $7::jsonb)
+       on conflict (id) do nothing`,
       [
         decisionRunId,
         domainId,
@@ -264,14 +301,29 @@ export class PostgresPlatformRepository {
       ]
     );
 
-    await this.client.query(
+    // 2. القيد في جدول التليمتري (لتحليل المسار لاحقاً)
+    await this.pool.query(
+      `INSERT INTO ml_telemetry.decision_runs (id, domain_id, profile_id, segment, payload_json)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        decisionRunId, 
+        domainId, 
+        profile.id ?? decision.profileId ?? "anonymous", 
+        decision.segment ?? "unknown", 
+        JSON.stringify({ profile, ruleset, decision, ownership, trust, catalogVersion, publishRunId })
+      ]
+    );
+
+    // 3. حفظ توصيات الملكية والتدقيقات (الذاكرة المفقودة سابقاً)
+    await this.pool.query(
       `insert into ml_decision.ownership_recommendations (
         id, decision_run_id, strategy_payload
       ) values ($1, $2, $3::jsonb)`,
       [randomUUID(), decisionRunId, JSON.stringify(ownership)]
     );
 
-    await this.client.query(
+    await this.pool.query(
       `insert into ml_decision.trust_audits (
         id, decision_run_id, audit_payload, audit_ok
       ) values ($1, $2, $3::jsonb, $4)`,
@@ -281,7 +333,7 @@ export class PostgresPlatformRepository {
 
   async saveGrowthArtifacts({ domainId, growth }) {
     if (growth.seoPagePayload) {
-      await this.client.query(
+      await this.pool.query(
         `insert into ml_growth.page_payloads (
           id, domain_id, surface_type, slug, payload_json
         ) values ($1, $2, $3, $4, $5::jsonb)`,
@@ -296,7 +348,7 @@ export class PostgresPlatformRepository {
     }
 
     if (growth.shareArtifact) {
-      await this.client.query(
+      await this.pool.query(
         `insert into ml_growth.share_artifacts (
           id, domain_id, artifact_type, artifact_payload
         ) values ($1, $2, $3, $4::jsonb)`,
@@ -316,7 +368,7 @@ export class PostgresPlatformRepository {
     }
 
     for (const violation of governance.violations) {
-      await this.client.query(
+      await this.pool.query(
         `insert into ml_governance.guardrail_events (
           id, domain_id, layer_name, event_type, details
         ) values ($1, $2, $3, $4, $5::jsonb)`,
@@ -332,7 +384,7 @@ export class PostgresPlatformRepository {
   }
 
   async getAdminOverview({ domainId }) {
-    const countsResult = await this.client.query(
+    const countsResult = await this.pool.query(
       `select 'source_observations' as metric, count(*)::int as row_count
        from ml_raw.source_observations
        where domain_id = $1
@@ -347,7 +399,7 @@ export class PostgresPlatformRepository {
       [domainId]
     );
 
-    const latestIngestionResult = await this.client.query(
+    const latestIngestionResult = await this.pool.query(
       `select id, source_count, normalized_count, status, started_at, finished_at
        from ml_raw.ingestion_runs
        where domain_id = $1
@@ -356,7 +408,7 @@ export class PostgresPlatformRepository {
       [domainId]
     );
 
-    const latestPublishResult = await this.client.query(
+    const latestPublishResult = await this.pool.query(
       `select id as publish_run_id, catalog_version, source_observation_count, published_entity_count,
               observation_source, status, created_at, completed_at
        from ml_catalog.publish_runs
@@ -366,7 +418,7 @@ export class PostgresPlatformRepository {
       [domainId]
     );
 
-    const latestDecisionResult = await this.client.query(
+    const latestDecisionResult = await this.pool.query(
       `select id as decision_run_id, catalog_version, publish_run_id, logic_version, created_at
        from ml_decision.decision_runs
        where domain_id = $1
@@ -389,7 +441,7 @@ export class PostgresPlatformRepository {
   }
 
   async getLatestDecisionDetails({ domainId }) {
-    const decisionResult = await this.client.query(
+    const decisionResult = await this.pool.query(
       `select id as decision_run_id, catalog_version, publish_run_id, profile_payload, logic_version,
               cards_payload, created_at
        from ml_decision.decision_runs
@@ -404,7 +456,7 @@ export class PostgresPlatformRepository {
       return null;
     }
 
-    const ownershipResult = await this.client.query(
+    const ownershipResult = await this.pool.query(
       `select strategy_payload
        from ml_decision.ownership_recommendations
        where decision_run_id = $1
@@ -412,7 +464,7 @@ export class PostgresPlatformRepository {
       [decision.decision_run_id]
     );
 
-    const trustResult = await this.client.query(
+    const trustResult = await this.pool.query(
       `select audit_payload, audit_ok
        from ml_decision.trust_audits
        where decision_run_id = $1
@@ -440,7 +492,7 @@ export class PostgresPlatformRepository {
   }
 
   async getPublishedEntitySnapshot({ domainId, limit = 8 }) {
-    const result = await this.client.query(
+    const result = await this.pool.query(
       `select entity_id, title, catalog_version, published_at,
               entity_payload->'economicSignals'->>'resaleScore' as resale_score,
               entity_payload->'market'->'bestOffer'->>'priceUsd' as price_usd,
@@ -459,31 +511,8 @@ export class PostgresPlatformRepository {
     return result.rows;
   }
 
-  async saveGuardrailEvents() {
-    // No-Op for now, reserved for governance tracking
-  }
-
-  async saveGrowthArtifacts() {
-    // No-Op for now, reserved for SEO artifact tracking
-  }
-
-  async saveDecisionRun({ domainId, profile, ruleset, decision, ownership, trust, catalogVersion, publishRunId }) {
-    await this.client.query(
-      `INSERT INTO ml_telemetry.decision_runs (id, domain_id, profile_id, segment, payload_json)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (id) DO NOTHING`,
-      [
-        decision.decisionRunId, 
-        domainId, 
-        profile.id ?? decision.profileId ?? "anonymous", 
-        decision.segment ?? "unknown", 
-        JSON.stringify({ profile, ruleset, decision, ownership, trust, catalogVersion, publishRunId })
-      ]
-    );
-  }
-
   async saveTelemetryClick({ decisionRunId, entityId, clickType }) {
-    await this.client.query(
+    await this.pool.query(
       `INSERT INTO ml_telemetry.telemetry_clicks (decision_run_id, entity_id, click_type)
        VALUES ($1, $2, $3)`,
       [decisionRunId, entityId, clickType]
@@ -491,7 +520,7 @@ export class PostgresPlatformRepository {
   }
 
   async saveGrowthLead({ domainId, email, leadType, metadata = {}, optedIn = false }) {
-    const result = await this.client.query(
+    const result = await this.pool.query(
       `INSERT INTO ml_growth.leads (domain_id, email, lead_type, metadata, opted_in)
        VALUES ($1, $2, $3, $4::jsonb, $5)
        ON CONFLICT (email, domain_id, lead_type) DO UPDATE
@@ -507,7 +536,7 @@ export class PostgresPlatformRepository {
   async getGrowthLeads({ domainId, leadType = null, limit = 500 }) {
     const typeFilter = leadType ? "AND lead_type = $3" : "";
     const params = leadType ? [domainId, limit, leadType] : [domainId, limit];
-    const result = await this.client.query(
+    const result = await this.pool.query(
       `SELECT id, email, lead_type, metadata, opted_in, created_at
        FROM ml_growth.leads
        WHERE domain_id = $1 ${typeFilter}
@@ -519,7 +548,7 @@ export class PostgresPlatformRepository {
   }
 
   async getLeadStats({ domainId }) {
-    const result = await this.client.query(
+    const result = await this.pool.query(
       `SELECT
         lead_type,
         COUNT(*) as total,
@@ -539,7 +568,7 @@ export class PostgresPlatformRepository {
   // ─────────────────────────────────────────────
 
   async getAffiliateSettings() {
-    const result = await this.client.query(
+    const result = await this.pool.query(
       `SELECT id, seller, seller_display_name, affiliate_tag, affiliate_param_key, is_active, notes, updated_at
        FROM ml_commercial.affiliate_settings
        ORDER BY seller ASC`
@@ -548,7 +577,7 @@ export class PostgresPlatformRepository {
   }
 
   async saveAffiliateTag({ seller, affiliateTag, isActive = true, notes = null }) {
-    await this.client.query(
+    await this.pool.query(
       `INSERT INTO ml_commercial.affiliate_settings
          (seller, affiliate_tag, is_active, notes, updated_at)
        VALUES ($1, $2, $3, $4, now())

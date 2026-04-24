@@ -108,7 +108,18 @@ function readGeneratedScenarioResults() {
 // ─────────────────────────────────────────────
 
 
+function escapeHtml(text) {
+  if (!text) return "";
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export { renderDashboardHtml, renderOverviewHtml, renderLatestDecisionHtml };
+
 
 export function renderGrowthLeadsHtml(stats = []) {
   const typeLabels = {
@@ -175,7 +186,8 @@ export function renderGrowthLeadsHtml(stats = []) {
 
   <p style="margin-top:24px;font-size:12px;color:#888;">
     Export all leads as CSV:
-    <a href="/api/v1/laptop-student-us/growth/leads/export?secret=majorlogic-admin" style="color:#7C3AED;">Download CSV →</a>
+    <a href="/api/v1/laptop-student-us/growth/leads/export?secret=${encodeURIComponent(process.env.ADMIN_EXPORT_SECRET ?? "")}" style="color:#7C3AED;">Download CSV →</a>
+
   </p>
 </body>
 </html>`;
@@ -204,12 +216,12 @@ export function renderAffiliateSettingsHtml(settings = [], saved = false) {
     return `
     <div style="background:#12122a;border:1px solid ${hasTag ? '#1e3a1e' : '#3b1010'};border-radius:12px;padding:24px;margin-bottom:16px;">
       <form method="POST" action="/admin/affiliate" style="display:grid;grid-template-columns:1fr 1fr auto;gap:16px;align-items:end;">
-        <input type="hidden" name="secret" value="majorlogic-admin">
-        <input type="hidden" name="seller" value="${s.seller}">
+        <input type="hidden" name="secret" value="${escapeHtml(process.env.ADMIN_EXPORT_SECRET ?? "")}">
+        <input type="hidden" name="seller" value="${escapeHtml(s.seller)}">
 
         <div>
-          <div style="font-size:20px;margin-bottom:8px;">${icon} <strong style="color:#e2d9f3;">${s.seller_display_name ?? s.seller}</strong> ${statusBadge}</div>
-          <p style="color:#6b7280;font-size:12px;margin:0;">${s.notes ?? ""}</p>
+          <div style="font-size:20px;margin-bottom:8px;">${icon} <strong style="color:#e2d9f3;">${escapeHtml(s.seller_display_name ?? s.seller)}</strong> ${statusBadge}</div>
+          <p style="color:#6b7280;font-size:12px;margin:0;">${escapeHtml(s.notes ?? "")}</p>
         </div>
 
         <div>
@@ -280,7 +292,8 @@ export function renderAffiliateSettingsHtml(settings = [], saved = false) {
   <div style="margin-top:32px;padding:20px;background:#0a0a1a;border-radius:12px;border:1px solid #1e1e3a;">
     <h3 style="color:#7C3AED;margin-top:0;">➕ Add a New Store</h3>
     <form method="POST" action="/admin/affiliate" style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
-      <input type="hidden" name="secret" value="majorlogic-admin">
+      <input type="hidden" name="secret" value="${escapeHtml(process.env.ADMIN_EXPORT_SECRET ?? "")}">
+
       <div>
         <label style="display:block;color:#9ca3af;font-size:12px;margin-bottom:6px;">Seller Name (exact)</label>
         <input type="text" name="seller" placeholder="e.g. Costco" required

@@ -149,7 +149,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.549Z"
+    "publishedAt": "2026-04-24T18:33:02.879Z"
   },
   {
     "entityId": "asus-zephyrus-g14-ryzen-9-32gb-1tb-rtx-4070",
@@ -295,7 +295,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.549Z"
+    "publishedAt": "2026-04-24T18:33:02.881Z"
   },
   {
     "entityId": "macbook-air-15-m3-16gb-512gb",
@@ -441,7 +441,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.550Z"
+    "publishedAt": "2026-04-24T18:33:02.881Z"
   },
   {
     "entityId": "dell-inspiron-14-core-5-16gb-512gb",
@@ -593,7 +593,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.550Z"
+    "publishedAt": "2026-04-24T18:33:02.882Z"
   },
   {
     "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
@@ -745,7 +745,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.550Z"
+    "publishedAt": "2026-04-24T18:33:02.883Z"
   },
   {
     "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
@@ -897,7 +897,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.550Z"
+    "publishedAt": "2026-04-24T18:33:02.883Z"
   },
   {
     "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
@@ -1049,7 +1049,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.550Z"
+    "publishedAt": "2026-04-24T18:33:02.884Z"
   },
   {
     "entityId": "asus-proart-p16-ryzen-ai-9-32gb-1tb-rtx-4060",
@@ -1201,7 +1201,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.550Z"
+    "publishedAt": "2026-04-24T18:33:02.885Z"
   },
   {
     "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
@@ -1353,7 +1353,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.551Z"
+    "publishedAt": "2026-04-24T18:33:02.886Z"
   },
   {
     "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
@@ -1505,7 +1505,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.551Z"
+    "publishedAt": "2026-04-24T18:33:02.887Z"
   },
   {
     "entityId": "macbook-pro-14-m4-pro-24gb-1tb",
@@ -1651,7 +1651,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.551Z"
+    "publishedAt": "2026-04-24T18:33:02.888Z"
   },
   {
     "entityId": "msi-pulse-16-ai-core-ultra-9-32gb-1tb-rtx-4070",
@@ -1802,7 +1802,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.551Z"
+    "publishedAt": "2026-04-24T18:33:02.889Z"
   },
   {
     "entityId": "surface-laptop-7-snapdragon-x-plus-16gb-512gb",
@@ -1947,6 +1947,6 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-04-22T20:11:06.551Z"
+    "publishedAt": "2026-04-24T18:33:02.889Z"
   }
 ]
