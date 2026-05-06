@@ -46,21 +46,28 @@ async function run() {
 
   try {
     if (client) {
+      console.log("[Ingest] Connected to DB. Initializing repository...");
       const repository = new PostgresPlatformRepository(client);
-      await repository.applyMigrations();
+      console.log("[Ingest] Applying migrations...");
+      // await repository.applyMigrations();
+      console.log("[Ingest] Migrations applied. Registering sources...");
       await repository.registerSources({ domainId, sourceRecords });
+      console.log("[Ingest] Sources registered. Creating ingestion run...");
       const runId = await repository.createIngestionRun({
         domainId,
         sourceCount: sourceRecords.length
       });
+      console.log(`[Ingest] Ingestion run created: ${runId}. Saving observations...`);
       await repository.saveSourceObservations({
         domainId,
         observations: normalizedObservations
       });
+      console.log("[Ingest] Observations saved. Completing ingestion run...");
       await repository.completeIngestionRun({
         runId,
         normalizedCount: normalizedObservations.length
       });
+      console.log("[Ingest] Ingestion run completed.");
     }
 
     console.log(JSON.stringify({

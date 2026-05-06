@@ -38,7 +38,7 @@ async function run() {
   if (process.env.DATABASE_URL) {
     client = await createPostgresClient(process.env.DATABASE_URL);
     repository = new PostgresPlatformRepository(client);
-    await repository.applyMigrations();
+    // await repository.applyMigrations();
   }
 
   console.log("Running pipeline...");

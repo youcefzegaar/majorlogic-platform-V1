@@ -30,7 +30,7 @@ export async function createPostgresClient(connectionString = process.env.DATABA
     connectionString,
     max: 20, // Maximum number of clients in the pool
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 60000,
   });
 
   pool.on("error", (err) => {
@@ -72,50 +72,35 @@ export class PostgresPlatformRepository {
       "database/seeds/0001_domain_registry.sql"
     ];
 
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
-      for (const file of migrationFiles) {
-        await client.query(readSql(file));
-      }
-      await client.query('COMMIT');
-    } catch (err) {
-      await client.query('ROLLBACK');
-      throw err;
-    } finally {
-      client.release();
+    console.log(`[Repository] Applying ${migrationFiles.length} migration files...`);
+    for (const file of migrationFiles) {
+      console.log(`[Repository] Executing ${file}...`);
+      await this.pool.query(readSql(file));
     }
+    console.log("[Repository] All migrations applied successfully.");
   }
 
   async saveSourceObservations({ domainId, observations }) {
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
-      for (const observation of observations) {
-        await client.query(
-          `insert into ml_raw.source_observations (
-            id, domain_id, source_name, source_url, observation_type, raw_payload, fetched_at
-          ) values ($1, $2, $3, $4, $5, $6::jsonb, now())
-          on conflict (id) do update set
-            raw_payload = excluded.raw_payload,
-            fetched_at = excluded.fetched_at`,
-          [
-            randomUUID(),
-            domainId,
-            observation.sourceName ?? "seed_source",
-            observation.sourceUrl ?? "local://seed",
-            observation.observationType ?? "domain_observation",
-            JSON.stringify(observation)
-          ]
-        );
-      }
-      await client.query('COMMIT');
-    } catch (err) {
-      await client.query('ROLLBACK');
-      throw err;
-    } finally {
-      client.release();
+    console.log(`[Repository] Saving ${observations.length} observations to raw staging...`);
+    for (const observation of observations) {
+      await this.pool.query(
+        `insert into ml_raw.source_observations (
+          id, domain_id, source_name, source_url, observation_type, raw_payload, fetched_at
+        ) values ($1, $2, $3, $4, $5, $6::jsonb, now())
+        on conflict (id) do update set
+          raw_payload = excluded.raw_payload,
+          fetched_at = excluded.fetched_at`,
+        [
+          randomUUID(),
+          domainId,
+          observation.sourceName ?? "seed_source",
+          observation.sourceUrl ?? "local://seed",
+          observation.observationType ?? "domain_observation",
+          JSON.stringify(observation)
+        ]
+      );
     }
+    console.log("[Repository] All observations saved successfully.");
   }
 
   async getLatestSourceObservations({ domainId, limit = 200 }) {
@@ -233,43 +218,36 @@ export class PostgresPlatformRepository {
   }
 
   async publishEntities({ domainId, entities, publishRunId = null, catalogVersion = null }) {
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
-      for (const entity of entities) {
-        await client.query(
-          `insert into ml_catalog.published_entities (
-            entity_id, domain_id, publish_run_id, catalog_version, entity_type, title, entity_payload, fit_states, trust, published_at
-          ) values ($1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, $10)
-          on conflict (entity_id) do update set
-            publish_run_id = excluded.publish_run_id,
-            catalog_version = excluded.catalog_version,
-            title = excluded.title,
-            entity_payload = excluded.entity_payload,
-            fit_states = excluded.fit_states,
-            trust = excluded.trust,
-            published_at = excluded.published_at`,
-          [
-            entity.entityId,
-            domainId,
-            publishRunId,
-            catalogVersion,
-            entity.entityType,
-            entity.title,
-            JSON.stringify(entity),
-            JSON.stringify(entity.fitStates),
-            JSON.stringify(entity.trust),
-            entity.publishedAt
-          ]
-        );
-      }
-      await client.query('COMMIT');
-    } catch (err) {
-      await client.query('ROLLBACK');
-      throw err;
-    } finally {
-      client.release();
+    console.log(`[Repository] Publishing ${entities.length} entities to catalog...`);
+    for (const entity of entities) {
+      // console.log(`[Repository] Publishing entity: ${entity.entityId}`);
+      await this.pool.query(
+        `insert into ml_catalog.published_entities (
+          entity_id, domain_id, publish_run_id, catalog_version, entity_type, title, entity_payload, fit_states, trust, published_at
+        ) values ($1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, $10)
+        on conflict (entity_id) do update set
+          publish_run_id = excluded.publish_run_id,
+          catalog_version = excluded.catalog_version,
+          title = excluded.title,
+          entity_payload = excluded.entity_payload,
+          fit_states = excluded.fit_states,
+          trust = excluded.trust,
+          published_at = excluded.published_at`,
+        [
+          entity.entityId,
+          domainId,
+          publishRunId,
+          catalogVersion,
+          entity.entityType,
+          entity.title,
+          JSON.stringify(entity),
+          JSON.stringify(entity.fitStates),
+          JSON.stringify(entity.trust),
+          entity.publishedAt
+        ]
+      );
     }
+    console.log("[Repository] All entities published successfully.");
   }
 
   async saveDecisionRun({

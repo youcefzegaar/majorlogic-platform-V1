@@ -1,125 +1,93 @@
 /**
- * MajorLogic API Server — HTTP Router
- *
- * هذا الملف مسؤول عن شيء واحد فقط: استقبال الطلبات وتوجيهها.
- * لا يحتوي على أي منطق خاص بمجال اللابتوبات أو قوالب HTML.
- *
- * المسؤوليات:
- *   - تقديم الملفات الثابتة (public/)
- *   - توجيه الطلبات للـ Controllers
- *   - إدارة الـ Error Boundaries على مستوى الـ HTTP
+ * Admin Views — MajorLogic
+ * 
+ * Provides HTML templates for the admin dashboard.
  */
 
-import http from "node:http";
-import fs   from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { loadEnvFile }   from "../../../scripts/env.js";
+import { escapeHtml } from "./templates.js";
+import { renderAuditDashboard } from "./admin_templates.js";
 
-// Controllers
-import {
-  buildSearchState,
-  runPipeline,
-  buildAdminDashboardData,
-  DOMAIN_ID
-} from "./controllers/laptop-student-us.js";
+/**
+ * Main Admin Dashboard Wrapper
+ */
+export function renderDashboardHtml(data) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Admin Dashboard — MajorLogic</title>
+  <link rel="stylesheet" href="/public/styles.css"/>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0d0d1a; color: #e0e0e0; padding: 32px; }
+    .card { background: #1a1a2e; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #2d2d4e; }
+    h1 { color: #7C3AED; }
+    h2 { margin-top: 0; font-size: 1.2rem; color: #c4b5fd; }
+    nav a { color: #7C3AED; margin-right: 16px; text-decoration: none; font-size: 14px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .stat-item { background: #12122a; padding: 16px; border-radius: 8px; text-align: center; }
+    .stat-value { font-size: 24px; font-weight: 700; color: #fff; }
+    .stat-label { font-size: 12px; color: #888; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <nav style="margin-bottom:32px;">
+    <a href="/admin/dashboard">Dashboard</a>
+    <a href="/admin/overview">Overview</a>
+    <a href="/admin/growth">📊 Growth</a>
+    <a href="/admin/affiliate">🔗 Affiliate</a>
+    <a href="/web/search" target="_blank">View Site ↗</a>
+  </nav>
 
-// DB
-import { getRepository, loadJsonSync } from "./db/repository.js";
+  <h1>🛡️ MajorLogic Admin</h1>
 
-// Views
-import { renderSearchPage, renderResultsPage } from "./views/templates.js";
-import { renderAuditDashboard }                from "./views/admin_templates.js";
+  <div class="card">
+    <h2>System Health & Counts</h2>
+    <div class="stat-grid">
+      <div class="stat-item">
+        <div class="stat-value">${data.counts.source_observations ?? 0}</div>
+        <div class="stat-label">Source Observations</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${data.counts.published_entities ?? 0}</div>
+        <div class="stat-label">Published Entities</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${data.counts.decision_runs ?? 0}</div>
+        <div class="stat-label">Decision Runs</div>
+      </div>
+    </div>
+  </div>
 
-// ─────────────────────────────────────────────
-// Bootstrap
-// ─────────────────────────────────────────────
+  <div class="card">
+    <h2>Latest Ingestion</h2>
+    ${data.latestIngestionRun ? `
+      <p>ID: <code>${data.latestIngestionRun.id}</code></p>
+      <p>Status: <span style="color:${data.latestIngestionRun.status === 'completed' ? '#4ade80' : '#f87171'}">${data.latestIngestionRun.status}</span></p>
+      <p>Sources: ${data.latestIngestionRun.source_count} | Normalized: ${data.latestIngestionRun.normalized_count}</p>
+    ` : '<p style="color:#888;">No ingestion runs yet.</p>'}
+  </div>
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root      = path.resolve(__dirname, "../../..");
-const port      = Number(process.env.PORT ?? 3010);
-const HTML_SENTINEL = "__html_sent__";
+  <div class="card">
+    <h2>Latest Decision</h2>
+    ${data.latestDecision ? `
+      <p>Run ID: <code>${data.latestDecision.decisionRunId}</code></p>
+      <p>Major: ${data.latestDecision.profile?.major ?? 'unknown'}</p>
+      <p><a href="/admin/decision-latest" style="color:#7C3AED;">View Decision Trace →</a></p>
+    ` : '<p style="color:#888;">No decisions logged yet.</p>'}
+  </div>
 
-loadEnvFile(path.join(root, ".env"));
-
-// Load default profile once at startup (sync is fine here — runs before first request)
-const defaultProfile   = loadJsonSync("examples/profile.json");
-const scenarioProfiles = loadJsonSync("examples/scenario-profiles.json");
-
-// ─────────────────────────────────────────────
-// Response Helpers
-// ─────────────────────────────────────────────
-
-function sendJson(res, statusCode, payload) {
-  res.writeHead(statusCode, { "content-type": "application/json" });
-  res.end(JSON.stringify(payload, null, 2));
+</body>
+</html>`;
 }
 
-function sendHtml(res, html) {
-  res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
-  res.end(html);
+export function renderOverviewHtml(overview) {
+  // Simple redirect to main dashboard or a list of runs
+  return renderDashboardHtml({ counts: overview.counts, latestIngestionRun: overview.latestIngestionRun, latestDecision: overview.latestDecisionRun });
 }
 
-// ─────────────────────────────────────────────
-// Route Handler Wrapper (DB-gated routes)
-// ─────────────────────────────────────────────
-
-async function handle(res, fn) {
-  try {
-    const payload = await fn();
-    if (payload === HTML_SENTINEL) return;
-    if (payload === null) {
-      sendJson(res, 503, {
-        error: "database_unavailable",
-        message: "Set DATABASE_URL before using this endpoint."
-      });
-      return;
-    }
-    sendJson(res, 200, payload);
-  } catch (err) {
-    console.error("[handle] Unhandled error:", err.message);
-    sendJson(res, 500, { error: "internal_error", message: err.message });
-  }
+export function renderLatestDecisionHtml(latestDecision) {
+  return renderAuditDashboard({ details: latestDecision, lang: "ar" });
 }
-
-// ─────────────────────────────────────────────
-// Static File Helper
-// ─────────────────────────────────────────────
-
-function serveStatic(res, filePath) {
-  const ext  = path.extname(filePath);
-  const mime = { ".css": "text/css", ".js": "application/javascript" }[ext] ?? "application/octet-stream";
-  res.writeHead(200, { "content-type": mime });
-  res.end(fs.readFileSync(filePath));
-}
-
-// ─────────────────────────────────────────────
-// Scenario Results Helper
-// ─────────────────────────────────────────────
-
-function readGeneratedScenarioResults() {
-  const file = path.join(root, "domains/laptop-student-us/generated/scenario-results.generated.json");
-  if (!fs.existsSync(file)) return null;
-  return JSON.parse(fs.readFileSync(file, "utf8"));
-}
-
-// ─────────────────────────────────────────────
-// Request Router
-// ─────────────────────────────────────────────
-
-
-function escapeHtml(text) {
-  if (!text) return "";
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-export { renderDashboardHtml, renderOverviewHtml, renderLatestDecisionHtml };
-
 
 export function renderGrowthLeadsHtml(stats = []) {
   const typeLabels = {
@@ -134,7 +102,7 @@ export function renderGrowthLeadsHtml(stats = []) {
       <tr style="border-bottom:1px solid #2a2a4a;">
         <td style="padding:16px;">${meta.icon} <strong style="color:${meta.color}">${meta.label}</strong></td>
         <td style="padding:16px;text-align:center;font-size:24px;font-weight:700;">${s.total}</td>
-        <td style="padding:16px;text-align:center;">${s.opted_in_count} <span style="color:#888;font-size:12px;">(${Math.round(s.opted_in_count/s.total*100)}% opted-in)</span></td>
+        <td style="padding:16px;text-align:center;">${s.opted_in_count} <span style="color:#888;font-size:12px;">(${Math.round(s.opted_in_count/(s.total||1)*100)}% opted-in)</span></td>
         <td style="padding:16px;color:#888;font-size:12px;">${new Date(s.latest_at).toLocaleString()}</td>
       </tr>`;
   }).join("");
@@ -159,8 +127,8 @@ export function renderGrowthLeadsHtml(stats = []) {
 <body>
   <nav style="margin-bottom:32px;">
     <a href="/admin/dashboard">← Dashboard</a>
-    <a href="/admin/overview">Overview</a>
     <a href="/admin/growth">📊 Growth</a>
+    <a href="/admin/affiliate">🔗 Affiliate</a>
   </nav>
   <h1>📊 Growth & Lead Intelligence</h1>
   <p style="color:#888;margin-bottom:24px;">Real-time view of all email leads captured via the 3 ethical nets.</p>
@@ -187,7 +155,6 @@ export function renderGrowthLeadsHtml(stats = []) {
   <p style="margin-top:24px;font-size:12px;color:#888;">
     Export all leads as CSV:
     <a href="/api/v1/laptop-student-us/growth/leads/export?secret=${encodeURIComponent(process.env.ADMIN_EXPORT_SECRET ?? "")}" style="color:#7C3AED;">Download CSV →</a>
-
   </p>
 </body>
 </html>`;

@@ -147,7 +147,7 @@ async function run() {
 
   const client     = process.env.DATABASE_URL ? await createPostgresClient(process.env.DATABASE_URL) : null;
   const repository = client ? new PostgresPlatformRepository(client) : null;
-  if (repository) await repository.applyMigrations();
+  // if (repository) await repository.applyMigrations();
 
   const catalogState = await resolvePublishedCatalog({
     repository,
