@@ -69,6 +69,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0008_growth_leads_dedup.sql",
       "database/migrations/0009_affiliate_clicks.sql",
       "database/migrations/0010_affiliate_settings.sql",
+      "database/migrations/0011_admin_users.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -581,5 +582,31 @@ export class PostgresPlatformRepository {
       }
     }
     return map;
+  }
+
+  // ─────────────────────────────────────────────
+  // Admin Users
+  // ─────────────────────────────────────────────
+
+  async getAdminUser(username) {
+    const result = await this.pool.query(
+      `SELECT id, username, password_hash FROM ml_commercial.admin_users WHERE username = $1 LIMIT 1`,
+      [username]
+    );
+    return result.rows[0] || null;
+  }
+
+  async createAdminUser(username, passwordHash) {
+    await this.pool.query(
+      `INSERT INTO ml_commercial.admin_users (username, password_hash) VALUES ($1, $2) ON CONFLICT (username) DO NOTHING`,
+      [username, passwordHash]
+    );
+  }
+
+  async updateAdminPassword(username, newPasswordHash) {
+    await this.pool.query(
+      `UPDATE ml_commercial.admin_users SET password_hash = $2, updated_at = now() WHERE username = $1`,
+      [username, newPasswordHash]
+    );
   }
 }

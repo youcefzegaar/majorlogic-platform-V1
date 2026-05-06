@@ -35,6 +35,7 @@ export function renderDashboardHtml(data) {
     <a href="/admin/overview">Overview</a>
     <a href="/admin/growth">📊 Growth</a>
     <a href="/admin/affiliate">🔗 Affiliate</a>
+    <a href="/admin/account">⚙️ Account</a>
     <a href="/web/search" target="_blank">View Site ↗</a>
   </nav>
 
@@ -44,15 +45,15 @@ export function renderDashboardHtml(data) {
     <h2>System Health & Counts</h2>
     <div class="stat-grid">
       <div class="stat-item">
-        <div class="stat-value">${data.counts.source_observations ?? 0}</div>
+        <div class="stat-value">${data?.overview?.counts?.source_observations ?? 0}</div>
         <div class="stat-label">Source Observations</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value">${data.counts.published_entities ?? 0}</div>
+        <div class="stat-value">${data?.overview?.counts?.published_entities ?? 0}</div>
         <div class="stat-label">Published Entities</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value">${data.counts.decision_runs ?? 0}</div>
+        <div class="stat-value">${data?.overview?.counts?.decision_runs ?? 0}</div>
         <div class="stat-label">Decision Runs</div>
       </div>
     </div>
@@ -60,10 +61,10 @@ export function renderDashboardHtml(data) {
 
   <div class="card">
     <h2>Latest Ingestion</h2>
-    ${data.latestIngestionRun ? `
-      <p>ID: <code>${data.latestIngestionRun.id}</code></p>
-      <p>Status: <span style="color:${data.latestIngestionRun.status === 'completed' ? '#4ade80' : '#f87171'}">${data.latestIngestionRun.status}</span></p>
-      <p>Sources: ${data.latestIngestionRun.source_count} | Normalized: ${data.latestIngestionRun.normalized_count}</p>
+    ${data?.overview?.latestIngestionRun ? `
+      <p>ID: <code>${data.overview.latestIngestionRun.id}</code></p>
+      <p>Status: <span style="color:${data.overview.latestIngestionRun.status === 'completed' ? '#4ade80' : '#f87171'}">${data.overview.latestIngestionRun.status}</span></p>
+      <p>Sources: ${data.overview.latestIngestionRun.source_count} | Normalized: ${data.overview.latestIngestionRun.normalized_count}</p>
     ` : '<p style="color:#888;">No ingestion runs yet.</p>'}
   </div>
 
@@ -129,6 +130,7 @@ export function renderGrowthLeadsHtml(stats = []) {
     <a href="/admin/dashboard">← Dashboard</a>
     <a href="/admin/growth">📊 Growth</a>
     <a href="/admin/affiliate">🔗 Affiliate</a>
+    <a href="/admin/account">⚙️ Account</a>
   </nav>
   <h1>📊 Growth & Lead Intelligence</h1>
   <p style="color:#888;margin-bottom:24px;">Real-time view of all email leads captured via the 3 ethical nets.</p>
@@ -242,6 +244,7 @@ export function renderAffiliateSettingsHtml(settings = [], saved = false) {
     <a href="/admin/dashboard">← Dashboard</a>
     <a href="/admin/growth">📊 Growth</a>
     <a href="/admin/affiliate">🔗 Affiliate</a>
+    <a href="/admin/account">⚙️ Account</a>
   </nav>
 
   <h1>🔗 Affiliate Code Manager</h1>
@@ -287,6 +290,65 @@ export function renderAffiliateSettingsHtml(settings = [], saved = false) {
     🔒 This page is protected by your <code>ADMIN_EXPORT_SECRET</code>.
     The gateway (<code>/go/:domain/:entityId</code>) reads these settings on every click.
   </p>
+</body>
+</html>`;
+}
+
+export function renderAccountSettingsHtml({ username, message, error }) {
+  const messageBanner = message
+    ? `<div style="background:#14532d;border:1px solid #16a34a;border-radius:8px;padding:12px 20px;margin-bottom:24px;color:#4ade80;">✅ ${escapeHtml(message)}</div>`
+    : "";
+  const errorBanner = error
+    ? `<div style="background:#3b1010;border:1px solid #f87171;border-radius:8px;padding:12px 20px;margin-bottom:24px;color:#fca5a5;">❌ ${escapeHtml(error)}</div>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Account Settings — MajorLogic</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0d0d1a; color: #e0e0e0; padding: 32px; max-width: 600px; margin: 0 auto; }
+    .card { background: #1a1a2e; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #2d2d4e; }
+    h1 { color: #7C3AED; margin-bottom: 8px; }
+    nav a { color: #7C3AED; margin-right: 16px; text-decoration: none; font-size: 14px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-size: 14px; color: #a0a0b0; }
+    .form-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #0d0d1a; color: #fff; box-sizing: border-box; }
+    .btn { background: #7C3AED; color: #fff; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; }
+    .btn:hover { background: #6D28D9; }
+  </style>
+</head>
+<body>
+  <nav style="margin-bottom:32px;">
+    <a href="/admin/dashboard">← Dashboard</a>
+    <a href="/admin/logout" style="float:right;color:#f87171;">🚪 Logout</a>
+  </nav>
+
+  <h1>⚙️ Account Settings</h1>
+  <p style="color:#888;">Manage your administrator account.</p>
+
+  ${messageBanner}
+  ${errorBanner}
+
+  <div class="card">
+    <h2 style="margin-top:0;">Change Password for <strong style="color:#fff;">${escapeHtml(username)}</strong></h2>
+    <form action="/admin/account/password" method="POST">
+      <div class="form-group">
+        <label>Current Password</label>
+        <input type="password" name="currentPassword" required>
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" name="newPassword" minlength="8" required>
+      </div>
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <input type="password" name="confirmPassword" minlength="8" required>
+      </div>
+      <button type="submit" class="btn">Update Password</button>
+    </form>
+  </div>
 </body>
 </html>`;
 }

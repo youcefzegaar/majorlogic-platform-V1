@@ -13,8 +13,12 @@ import { renderDashboardHtml, renderOverviewHtml, renderLatestDecisionHtml, rend
 import { sendWelcomeEmail } from "../../../packages/email-service/src/index.js";
 import { renderSeoPage } from "./views/seo-page.js";
 import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure } from "./views/legal.js";
-import fastifyBasicAuth from "@fastify/basic-auth";
 import fastifyHelmet from "@fastify/helmet";
+import fastifyFormbody from "@fastify/formbody";
+import fastifyJwt from "@fastify/jwt";
+import fastifyCookie from "@fastify/cookie";
+import bcrypt from "bcrypt";
+import { renderLoginHtml } from "./views/login.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
 loadEnvFile(path.join(root, ".env"));
@@ -54,12 +58,25 @@ fastify.register(fastifyHelmet, {
 
 fastify.register(cors, { origin: true });
 
+fastify.register(fastifyFormbody);
+fastify.register(fastifyJwt, {
+  secret: process.env.JWT_SECRET || 'majorlogic-default-secret-key-change-me',
+  cookie: {
+    cookieName: 'admin_token',
+    signed: false
+  }
+});
+fastify.register(fastifyCookie, {
+  secret: process.env.COOKIE_SECRET || "majorlogic-cookie-secret",
+  hook: 'onRequest'
+});
+
 // Rate Limiting: protect growth and telemetry routes from spam bots
 import fastifyRateLimit from "@fastify/rate-limit";
 await fastify.register(fastifyRateLimit, {
   max: 30,
   timeWindow: "1 minute",
-  // Only rate-limit mutation routes
+  // Only rate-limit mutation routes, but protect login even more
   hook: "preHandler",
   keyGenerator: (req) => req.ip
 });
@@ -72,32 +89,121 @@ fastify.register(fastifyStatic, {
 const DEFAULT_DOMAIN = "laptop-student-us";
 
 // ─────────────────────────────────────────────
-// Admin Authentication (Basic Auth)
+// Admin Authentication (JWT)
 // ─────────────────────────────────────────────
-fastify.register(fastifyBasicAuth, {
-  validate: async function (username, password, req, reply) {
-    const validUser = process.env.ADMIN_USER;
-    const validPass = process.env.ADMIN_PASSWORD;
 
-    if (!validUser || !validPass) {
-      req.log.error("ADMIN_USER or ADMIN_PASSWORD not set in environment!");
-      return new Error("Server configuration error");
-    }
-
-    if (username !== validUser || password !== validPass) {
-      return new Error("Unauthorized");
-    }
-  },
-  authenticate: true // Prompts the browser for credentials
+fastify.get("/admin/login", async (request, reply) => {
+  reply.type("text/html").send(renderLoginHtml({ error: null }));
 });
 
-fastify.after(() => {
-  fastify.addHook("onRequest", async (req, reply) => {
-    // Protect all /admin routes
-    if (req.raw.url.startsWith("/admin")) {
-      await fastify.basicAuth(req, reply);
+fastify.post("/admin/login", async (request, reply) => {
+  console.log("[LOGIN] Body:", request.body);
+  const { username, password } = request.body || {};
+  const envUser = process.env.ADMIN_USER;
+  const envHash = process.env.ADMIN_PASSWORD_HASH;
+  const envPass = process.env.ADMIN_PASSWORD;
+
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) {
+    return reply.type("text/html").send(renderLoginHtml({ error: "Database offline" }));
+  }
+
+  let dbUser = await repository.getAdminUser(username);
+
+  // Seeder logic: If no user in DB, and credentials match .env, seed it.
+  if (!dbUser && username === envUser && (envHash || envPass)) {
+    let isValidEnv = false;
+    if (envHash) {
+      isValidEnv = await bcrypt.compare(password, envHash);
+    } else if (envPass) {
+      isValidEnv = password === envPass;
     }
-  });
+    
+    if (isValidEnv) {
+      const hashToSave = envHash || await bcrypt.hash(envPass, 10);
+      await repository.createAdminUser(username, hashToSave);
+      dbUser = await repository.getAdminUser(username);
+    }
+  }
+
+  let isValid = false;
+  if (dbUser) {
+    isValid = await bcrypt.compare(password, dbUser.password_hash);
+  }
+
+  if (!isValid) {
+    return reply.type("text/html").send(renderLoginHtml({ error: "Invalid username or password" }));
+  }
+
+  const token = fastify.jwt.sign({ username });
+  reply
+    .setCookie('admin_token', token, {
+      domain: isProd ? 'majorlogic.ai' : undefined,
+      path: '/',
+      secure: isProd,
+      httpOnly: true,
+      sameSite: true,
+      maxAge: 86400 // 1 day
+    })
+    .redirect("/admin/dashboard");
+});
+
+fastify.get("/admin/logout", async (request, reply) => {
+  reply.clearCookie('admin_token', { path: '/' }).redirect("/admin/login");
+});
+
+fastify.addHook("onRequest", async (req, reply) => {
+  // Protect all /admin routes except login
+  if (req.raw.url.startsWith("/admin") && !req.raw.url.startsWith("/admin/login")) {
+    try {
+      const token = req.cookies.admin_token;
+      if (!token) throw new Error("No token");
+      const decoded = fastify.jwt.verify(token);
+      req.user = decoded;
+    } catch (err) {
+      req.log.error(`[AUTH ERROR] ${err.message}`);
+      reply.redirect("/admin/login");
+    }
+  }
+});
+
+fastify.get("/admin/account", async (request, reply) => {
+  const { renderAccountSettingsHtml } = await import("./views/admin.js");
+  reply.type("text/html; charset=utf-8").send(renderAccountSettingsHtml({ 
+    username: request.user?.username || "Admin",
+    message: request.query.msg,
+    error: request.query.err
+  }));
+});
+
+fastify.post("/admin/account/password", async (request, reply) => {
+  const { currentPassword, newPassword, confirmPassword } = request.body;
+  const username = request.user?.username;
+  
+  if (!username) return reply.redirect("/admin/login");
+  if (newPassword !== confirmPassword) {
+    return reply.redirect("/admin/account?err=" + encodeURIComponent("New passwords do not match."));
+  }
+  if (newPassword.length < 8) {
+    return reply.redirect("/admin/account?err=" + encodeURIComponent("Password must be at least 8 characters."));
+  }
+
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  const dbUser = await repository.getAdminUser(username);
+  
+  if (!dbUser) return reply.redirect("/admin/login");
+
+  const isValid = await bcrypt.compare(currentPassword, dbUser.password_hash);
+  if (!isValid) {
+    return reply.redirect("/admin/account?err=" + encodeURIComponent("Current password is incorrect."));
+  }
+
+  const newHash = await bcrypt.hash(newPassword, 10);
+  await repository.updateAdminPassword(username, newHash);
+  
+  reply.redirect("/admin/account?msg=" + encodeURIComponent("Password updated successfully."));
 });
 
 // ─────────────────────────────────────────────
@@ -363,10 +469,6 @@ fastify.get("/admin/affiliate", async (request, reply) => {
 
 // Save affiliate tag from admin form (POST)
 fastify.post("/admin/affiliate", async (request, reply) => {
-  const exportSecret = process.env.ADMIN_EXPORT_SECRET;
-  if (!exportSecret || secret !== exportSecret) {
-    return reply.status(401).send({ error: "unauthorized" });
-  }
   const { seller, affiliateTag, isActive, notes } = request.body;
   if (!seller) return reply.status(400).send({ error: "seller is required" });
 
