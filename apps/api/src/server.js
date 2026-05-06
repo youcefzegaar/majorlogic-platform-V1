@@ -56,7 +56,23 @@ fastify.register(fastifyHelmet, {
   },
 });
 
-fastify.register(cors, { origin: true });
+// CORS: restrict to known origins only
+const ALLOWED_ORIGINS = [
+  "https://majorlogic.ai",
+  "https://www.majorlogic.ai",
+  ...(isProd ? [] : ["http://localhost:3010", "http://127.0.0.1:3010"])
+];
+fastify.register(cors, {
+  origin: (origin, cb) => {
+    // Allow same-origin requests (no origin header) and whitelisted domains
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`CORS: origin '${origin}' not allowed`), false);
+    }
+  },
+  credentials: true
+});
 
 fastify.register(fastifyFormbody);
 fastify.register(fastifyJwt, {
@@ -71,14 +87,17 @@ fastify.register(fastifyCookie, {
   hook: 'onRequest'
 });
 
-// Rate Limiting: protect growth and telemetry routes from spam bots
+// Rate Limiting: global protection against spam and DDoS
 import fastifyRateLimit from "@fastify/rate-limit";
 await fastify.register(fastifyRateLimit, {
-  max: 30,
+  global: true,
+  max: 120,
   timeWindow: "1 minute",
-  // Only rate-limit mutation routes, but protect login even more
-  hook: "preHandler",
-  keyGenerator: (req) => req.ip
+  keyGenerator: (req) => req.ip,
+  errorResponseBuilder: () => ({
+    error: "too_many_requests",
+    message: "Too many requests. Please slow down."
+  })
 });
 
 fastify.register(fastifyStatic, {
@@ -96,8 +115,20 @@ fastify.get("/admin/login", async (request, reply) => {
   reply.type("text/html").send(renderLoginHtml({ error: null }));
 });
 
-fastify.post("/admin/login", async (request, reply) => {
-  console.log("[LOGIN] Body:", request.body);
+fastify.post("/admin/login", {
+  config: {
+    rateLimit: {
+      max: 5,
+      timeWindow: "1 minute",
+      keyGenerator: (req) => req.ip,
+      errorResponseBuilder: (req, context) => {
+        const retryAfter = Math.ceil(context.ttl / 1000);
+        req.log.warn({ ip: req.ip }, "[BRUTE FORCE] Login rate limit exceeded");
+        return renderLoginHtml({ error: `Too many failed attempts. Please wait ${retryAfter} seconds before trying again.` });
+      }
+    }
+  }
+}, async (request, reply) => {
   const { username, password } = request.body || {};
   const envUser = process.env.ADMIN_USER;
   const envHash = process.env.ADMIN_PASSWORD_HASH;
