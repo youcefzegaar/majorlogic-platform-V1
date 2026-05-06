@@ -75,15 +75,32 @@ fastify.register(cors, {
 });
 
 fastify.register(fastifyFormbody);
+
+// Validate required secrets at startup — never allow fallback defaults in any environment
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret || jwtSecret.length < 32) {
+  throw new Error(
+    '[FATAL] JWT_SECRET is not set or too short. ' +
+    'Generate one with: node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"'
+  );
+}
+const cookieSecret = process.env.COOKIE_SECRET;
+if (!cookieSecret || cookieSecret.length < 32) {
+  throw new Error(
+    '[FATAL] COOKIE_SECRET is not set or too short. ' +
+    'Generate one with: node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"'
+  );
+}
+
 fastify.register(fastifyJwt, {
-  secret: process.env.JWT_SECRET || 'majorlogic-default-secret-key-change-me',
+  secret: jwtSecret,
   cookie: {
     cookieName: 'admin_token',
     signed: false
   }
 });
 fastify.register(fastifyCookie, {
-  secret: process.env.COOKIE_SECRET || "majorlogic-cookie-secret",
+  secret: cookieSecret,
   hook: 'onRequest'
 });
 
@@ -158,14 +175,34 @@ fastify.post("/admin/login", {
     }
   }
 
+  // Check DB-level account lockout
+  if (dbUser?.locked_until && new Date() < new Date(dbUser.locked_until)) {
+    const remaining = Math.ceil((new Date(dbUser.locked_until) - new Date()) / 60000);
+    return reply.type("text/html").send(
+      renderLoginHtml({ error: `Account locked. Try again in ${remaining} minute(s).` })
+    );
+  }
+
   let isValid = false;
   if (dbUser) {
     isValid = await bcrypt.compare(password, dbUser.password_hash);
   }
 
   if (!isValid) {
+    // Track failed attempts and lock after 5 failures for 15 minutes
+    if (dbUser) {
+      const attempts = (dbUser.failed_login_attempts || 0) + 1;
+      const lockedUntil = attempts >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null;
+      await repository.updateLoginAttempts(username, attempts, lockedUntil);
+      if (lockedUntil) {
+        request.log.warn({ ip: request.ip, username }, "[SECURITY] Account locked after 5 failed attempts");
+      }
+    }
     return reply.type("text/html").send(renderLoginHtml({ error: "Invalid username or password" }));
   }
+
+  // Reset failed attempts on successful login
+  await repository.resetLoginAttempts(username);
 
   const token = fastify.jwt.sign({ username });
   reply
@@ -213,11 +250,18 @@ fastify.post("/admin/account/password", async (request, reply) => {
   const username = request.user?.username;
   
   if (!username) return reply.redirect("/admin/login");
-  if (newPassword !== confirmPassword) {
-    return reply.redirect("/admin/account?err=" + encodeURIComponent("New passwords do not match."));
-  }
-  if (newPassword.length < 8) {
-    return reply.redirect("/admin/account?err=" + encodeURIComponent("Password must be at least 8 characters."));
+  
+  // Strong password policy: 12+ chars, uppercase, lowercase, number, symbol
+  const pwErrors = [];
+  if (newPassword.length < 12) pwErrors.push("At least 12 characters");
+  if (!/[A-Z]/.test(newPassword)) pwErrors.push("At least one uppercase letter");
+  if (!/[a-z]/.test(newPassword)) pwErrors.push("At least one lowercase letter");
+  if (!/[0-9]/.test(newPassword)) pwErrors.push("At least one number");
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)) pwErrors.push("At least one symbol");
+  if (newPassword !== confirmPassword) pwErrors.push("Passwords do not match");
+  
+  if (pwErrors.length > 0) {
+    return reply.redirect("/admin/account?err=" + encodeURIComponent(pwErrors.join(" · ")));
   }
 
   const { getRepository } = await import("./db/repository.js");

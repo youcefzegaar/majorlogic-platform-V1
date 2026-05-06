@@ -70,6 +70,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0009_affiliate_clicks.sql",
       "database/migrations/0010_affiliate_settings.sql",
       "database/migrations/0011_admin_users.sql",
+      "database/migrations/0012_admin_users_security.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -590,7 +591,8 @@ export class PostgresPlatformRepository {
 
   async getAdminUser(username) {
     const result = await this.pool.query(
-      `SELECT id, username, password_hash FROM ml_commercial.admin_users WHERE username = $1 LIMIT 1`,
+      `SELECT id, username, password_hash, failed_login_attempts, locked_until, last_login_at
+       FROM ml_commercial.admin_users WHERE username = $1 LIMIT 1`,
       [username]
     );
     return result.rows[0] || null;
@@ -605,8 +607,27 @@ export class PostgresPlatformRepository {
 
   async updateAdminPassword(username, newPasswordHash) {
     await this.pool.query(
-      `UPDATE ml_commercial.admin_users SET password_hash = $2, updated_at = now() WHERE username = $1`,
+      `UPDATE ml_commercial.admin_users SET password_hash = $2, updated_at = now(),
+       failed_login_attempts = 0, locked_until = NULL WHERE username = $1`,
       [username, newPasswordHash]
+    );
+  }
+
+  async updateLoginAttempts(username, attempts, lockedUntil) {
+    await this.pool.query(
+      `UPDATE ml_commercial.admin_users
+       SET failed_login_attempts = $2, locked_until = $3
+       WHERE username = $1`,
+      [username, attempts, lockedUntil]
+    );
+  }
+
+  async resetLoginAttempts(username) {
+    await this.pool.query(
+      `UPDATE ml_commercial.admin_users
+       SET failed_login_attempts = 0, locked_until = NULL, last_login_at = now()
+       WHERE username = $1`,
+      [username]
     );
   }
 }
