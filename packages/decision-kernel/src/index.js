@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 /**
  * Decision Kernel (DDVM) — Universal Execution Runtime
  */
@@ -18,7 +20,13 @@ export class DecisionKernel {
 
     return {
       results: entities.map((entity) => {
+        // بصمة المدخلات لضمان ثبات البيانات (Input Snapshot Hash)
+        const inputHash = createHash("sha256").update(JSON.stringify(entity)).digest("hex");
+
         const trace = {
+          decisionId: createHash("md5").update(ir.irHash + inputHash).digest("hex"),
+          irHash: ir.irHash,
+          inputHash,
           entityId: entity.entityId || entity.id,
           steps: [],
           exclusions: [],

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { DECISION_TYPES, OPERATOR_REGISTRY, inferType } from "./types.js";
 
 export class DecisionCompiler {
@@ -23,12 +24,20 @@ export class DecisionCompiler {
     // Pass 5: Semantic Validation
     this._validateGraph(nodes, executionPlan);
 
+    // Pass 6: Generate IR Hash for Version Locking
+    const irContent = JSON.stringify({
+        nodes: executionPlan,
+        identityRules: config.identityRules || {}
+    });
+    const irHash = createHash("sha256").update(irContent).digest("hex");
+
     return {
       id: config.domainId,
+      irHash, // بصمة المنطق لضمان التتبع التاريخي
       version: config.version || "1.0.0",
       compiledAt: new Date().toISOString(),
       identityRules: config.identityRules || {},
-      executionPlan: executionPlan.map(n => Object.freeze(n)) // Make IR Immutable
+      executionPlan: executionPlan.map(n => Object.freeze(n))
     };
   }
 
@@ -153,22 +162,31 @@ export class DecisionCompiler {
     for (const node of plan) {
       node.resultType = inferType(node, nodeMap);
       
-      if (node.formula) {
-        const op = OPERATOR_REGISTRY[node.formula.op];
-        if (op) {
-            const inputTypes = (node.dependsOn || []).map(id => nodeMap[id]?.resultType);
-            
-            // Check if inputs match operator requirements
-            const isValid = inputTypes.every(t => op.accepts.includes(t));
-            if (!isValid) {
-                throw new Error(`TYPE MISMATCH: Node '${node.id}' uses operator '${node.formula.op}' with incompatible input types: [${inputTypes.join(", ")}]`);
-            }
+      const checkOperator = (opId, inputNodes) => {
+          const op = OPERATOR_REGISTRY[opId];
+          if (!op) return;
 
-            // Check semantic validation (e.g., Dimensional Safety for 'add')
-            if (op.validate && !op.validate(inputTypes)) {
-                throw new Error(`SEMANTIC ERROR: Node '${node.id}' attempts to combine incompatible dimensions: [${inputTypes.join(", ")}]`);
-            }
-        }
+          const inputTypes = inputNodes.map(id => nodeMap[id]?.resultType || DECISION_TYPES.NUMERIC);
+          
+          // 1. Base Types Check
+          const inputErrors = inputTypes.filter(t => !op.accepts.includes(t));
+          if (inputErrors.length > 0) {
+              throw new Error(`CONTRACT VIOLATION: Node '${node.id}' uses '${opId}' with unsupported types: [${inputErrors.join(", ")}]. Accepted: [${op.accepts.join(", ")}]`);
+          }
+
+          // 2. Semantic Validation
+          const validation = op.validate(inputTypes);
+          if (!validation.valid) {
+              throw new Error(`SEMANTIC CONTRACT VIOLATION: Node '${node.id}' failed '${op.name}' contract check: ${validation.error}`);
+          }
+      };
+
+      if (node.formula) {
+          checkOperator(node.formula.op, node.dependsOn || []);
+      }
+      
+      if (node.condition) {
+          checkOperator(node.condition.op, [node.condition.left, node.condition.right]);
       }
       
       this.logger.log(`[Compiler] Inferred type for '${node.id}': ${node.resultType}`);

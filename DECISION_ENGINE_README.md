@@ -12,20 +12,27 @@ A domain-agnostic execution engine that processes a **Decision Intermediate Repr
 - **Causal Tracing**: Generates a detailed audit trail of every decision step.
 - **Penalty & Reward System**: Allows for non-linear scoring adjustments based on qualitative signals.
 
-### 2. Decision Compiler (Semantic)
+### 2. Decision Compiler (Semantic & Typed)
 A multi-pass compiler that transforms human-readable configurations into the execution IR. It validates:
 - **Cycle Detection**: Prevents infinite loops and deadlocks in logic.
 - **Semantic Type System**: Enforces mathematical safety (e.g., preventing $Currency + Duration$).
+- **Type Contracts**: Strict input/output validation for all math primitives via an Operator Registry.
 - **Type Inference**: Automatically deduces resulting data types from complex formulas.
-- **Operator Contracts**: Strict input/output validation for all math primitives.
 
-### 3. Decision Explainer (Narrative Layer)
+### 3. Decision Governance & Replay
+A dedicated layer for transparency, auditability, and production stability:
+- **IR Version Locking**: Every logic version is hashed (`irHash`) to ensure historical consistency.
+- **Input Snapshotting**: Every decision captures an immutable `inputHash` of the data used.
+- **Decision Ledger**: A unique `decisionId` is generated for every execution, linking logic and data.
+- **Deterministic Reconstructor**: Allows for 100% accurate re-execution (Replay) of past decisions for verification.
+
+### 4. Decision Explainer (Narrative Layer)
 Turns raw execution traces into human-readable stories.
 - **Bilingual Support**: English (default) and Arabic.
 - **Reasoning Atlas**: Maps technical node IDs to friendly terms.
 - **Context-Aware**: Explains why a product was chosen or why it was rejected.
 
-### 4. Identity Manager
+### 5. Identity Manager
 A robust deduplication engine that merges products from multiple sources (Amazon, BestBuy, etc.) using:
 - **Strict Identifiers**: MPN, SKU.
 - **Fuzzy Matching**: Intelligent name normalization.
