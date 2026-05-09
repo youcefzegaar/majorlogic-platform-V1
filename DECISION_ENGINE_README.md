@@ -7,17 +7,17 @@ This update transforms the MajorLogic platform from a domain-specific recommenda
 
 ### 1. Decision Kernel (DDVM)
 A domain-agnostic execution engine that processes a **Decision Intermediate Representation (IR)**. It supports:
-- **Topological Sorting**: Handles complex attribute dependencies.
-- **Mathematical Operators**: Add, Multiply, Inverse, and Comparison.
+- **Topological Execution**: Guaranteed deterministic order of operations using Kahn's algorithm.
+- **Immutable Execution Plan**: Pre-compiled and frozen at start-up.
 - **Causal Tracing**: Generates a detailed audit trail of every decision step.
 - **Penalty & Reward System**: Allows for non-linear scoring adjustments based on qualitative signals.
 
-### 2. Decision Compiler
-A tool that transforms human-readable YAML/JSON configurations into the execution IR. It validates:
-- Attribute types.
-- Dependency cycles.
-- Metric formulas.
-- Quality gate conditions.
+### 2. Decision Compiler (Semantic)
+A multi-pass compiler that transforms human-readable configurations into the execution IR. It validates:
+- **Cycle Detection**: Prevents infinite loops and deadlocks in logic.
+- **Semantic Type System**: Enforces mathematical safety (e.g., preventing $Currency + Duration$).
+- **Type Inference**: Automatically deduces resulting data types from complex formulas.
+- **Operator Contracts**: Strict input/output validation for all math primitives.
 
 ### 3. Decision Explainer (Narrative Layer)
 Turns raw execution traces into human-readable stories.

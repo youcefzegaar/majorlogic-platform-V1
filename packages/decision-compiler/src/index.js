@@ -1,106 +1,184 @@
-/**
- * Decision Compiler — Transforming Declarative Configs into Decision IR
- *
- * الغرض: تحويل ملفات الدومين (YAML/JSON) إلى رسم بياني تنفيذي (Decision IR).
- * المراحل: Parsing -> Validation -> Dependency Resolution -> IR Emission.
- */
+import { DECISION_TYPES, OPERATOR_REGISTRY, inferType } from "./types.js";
 
 export class DecisionCompiler {
-  constructor(options = {}) {
-    this.logger = options.logger || console;
+  constructor(logger = console) {
+    this.logger = logger;
   }
 
-  /**
-   * ترجمة إعدادات الدومين إلى IR.
-   *
-   * @param {object} config - إعدادات الدومين الخام
-   * @returns {object} Decision IR جاهز للتنفيذ
-   */
   compile(config) {
     this.logger.log(`[Compiler] Compiling domain: ${config.domainId}`);
 
-    const nodes = [];
+    // Pass 1: Symbol Extraction & Node Building
+    const nodes = this._buildNodes(config);
 
-    // 1. تحويل الـ Attributes (Inputs)
-    // في الـ IR المتقدم، الـ Inputs هي مجرد مرجع للبيانات الخام
+    // Pass 2: Explicit Dependency Discovery
+    this._extractDependencies(nodes);
 
-    // 2. تحويل الـ Derived Metrics
-    if (config.metrics) {
-      for (const [id, metric] of Object.entries(config.metrics)) {
-        nodes.push({
-          id,
-          type: "DERIVE",
-          formula: metric.formula,
-          metadata: {
-            label: metric.label,
-            category: metric.category
-          }
-        });
-      }
-    }
+    // Pass 3: Topological Sort & Cycle Detection
+    const executionPlan = this._buildExecutionPlan(nodes);
 
-    // 3. تحويل الـ Constraints (Gates)
-    if (config.gates) {
-      for (const [id, gate] of Object.entries(config.gates)) {
-        nodes.push({
-          id,
-          type: "CONSTRAINT",
-          condition: gate.condition,
-          reason: gate.reason
-        });
-      }
-    }
+    // Pass 4: Semantic Type Checking & Inference
+    this._typeCheckPass(executionPlan);
 
-    // 4. تحويل الـ Rulesets (Scoring)
-    // في الـ IR، الـ Ruleset هو مجرد Scoring Node
-    if (config.rulesets) {
-      for (const [id, ruleset] of Object.entries(config.rulesets)) {
-        nodes.push({
-          id: `score_${id}`,
-          type: "SCORE",
-          inputs: ruleset.weights,
-          isFinal: ruleset.isDefault || false,
-          metadata: {
-            profile: id
-          }
-        });
-
-        // إضافة الـ Penalties المرتبطة بالـ Ruleset
-        if (ruleset.penalties) {
-          for (const [pId, penalty] of Object.entries(ruleset.penalties)) {
-            nodes.push({
-              id: `${id}_penalty_${pId}`,
-              type: "PENALTY",
-              condition: penalty.condition,
-              amount: penalty.amount,
-              reason: penalty.reason
-            });
-          }
-        }
-      }
-    }
-
-    // 5. التحقق من الصحة (Semantic Validation)
-    this._validateGraph(nodes);
+    // Pass 5: Semantic Validation
+    this._validateGraph(nodes, executionPlan);
 
     return {
       id: config.domainId,
       version: config.version || "1.0.0",
       compiledAt: new Date().toISOString(),
-      identityRules: config.identityRules || {}, // إضافة قواعد الهوية
-      nodes
+      identityRules: config.identityRules || {},
+      executionPlan: executionPlan.map(n => Object.freeze(n)) // Make IR Immutable
     };
   }
 
-  _validateGraph(nodes) {
-    const ids = new Set(nodes.map(n => n.id));
-    
-    // التحقق من تكرار الـ IDs
-    if (ids.size !== nodes.length) {
-      throw new Error("Duplicate node IDs detected in domain config.");
+  _buildNodes(config) {
+    const nodes = [];
+
+    // 1. Attributes (Inputs)
+    if (config.attributes) {
+      for (const [id, attr] of Object.entries(config.attributes)) {
+        nodes.push({ ...attr, id, type: "attribute" });
+      }
     }
 
-    // هنا يمكن إضافة التحقق من الحلقات المفرغة (Circular Dependency)
-    // عبر بناء Adjacency List وتشغيل DFS.
+    // 2. Metrics (Derived)
+    if (config.metrics) {
+      for (const [id, metric] of Object.entries(config.metrics)) {
+        nodes.push({ id, type: "derived", ...metric });
+      }
+    }
+
+    // 3. Gates (Constraints)
+    if (config.gates) {
+      for (const [id, gate] of Object.entries(config.gates)) {
+        nodes.push({ id, type: "gate", ...gate });
+      }
+    }
+
+    // 4. Rulesets (Scoring)
+    if (config.rulesets) {
+      for (const [id, ruleset] of Object.entries(config.rulesets)) {
+        nodes.push({ 
+            id: `score_${id}`, 
+            type: "score", 
+            weights: ruleset.weights, 
+            penalties: ruleset.penalties,
+            isFinal: ruleset.isDefault || false 
+        });
+      }
+    }
+
+    return nodes;
+  }
+
+  _extractDependencies(nodes) {
+    const nodeIds = new Set(nodes.map(n => n.id));
+
+    for (const node of nodes) {
+      const deps = new Set();
+
+      if (node.formula) this._findSymbols(node.formula, deps);
+      if (node.condition) this._findSymbols(node.condition, deps);
+      
+      if (node.penalties) {
+          Object.values(node.penalties).forEach(p => this._findSymbols(p.condition, deps));
+      }
+
+      if (node.weights) {
+          Object.keys(node.weights).forEach(w => deps.add(w));
+      }
+
+      // Filter out symbols that are not defined as nodes (external context like 'budget' or 'major')
+      node.dependsOn = Array.from(deps).filter(d => nodeIds.has(d));
+    }
+  }
+
+  _findSymbols(obj, found) {
+    if (!obj) return;
+    if (typeof obj === "string") {
+        found.add(obj);
+        return;
+    }
+    if (typeof obj !== "object") return;
+    
+    if (obj.arg) this._findSymbols(obj.arg, found);
+    if (obj.left) this._findSymbols(obj.left, found);
+    if (obj.right) this._findSymbols(obj.right, found);
+    if (obj.args) obj.args.forEach(a => this._findSymbols(a, found));
+  }
+
+  _buildExecutionPlan(nodes) {
+    const plan = [];
+    const inDegree = {};
+    const adj = {};
+    const nodeMap = {};
+
+    nodes.forEach(n => {
+      nodeMap[n.id] = n;
+      inDegree[n.id] = 0;
+      adj[n.id] = [];
+    });
+
+    nodes.forEach(n => {
+      n.dependsOn.forEach(dep => {
+        adj[dep].push(n.id);
+        inDegree[n.id]++;
+      });
+    });
+
+    const queue = nodes.filter(n => inDegree[n.id] === 0).map(n => n.id);
+
+    while (queue.length > 0) {
+      const u = queue.shift();
+      plan.push(nodeMap[u]);
+
+      adj[u].forEach(v => {
+        inDegree[v]--;
+        if (inDegree[v] === 0) queue.push(v);
+      });
+    }
+
+    if (plan.length !== nodes.length) {
+      throw new Error("CRITICAL: Cycle detected in Decision Graph. Execution is impossible.");
+    }
+
+    return plan;
+  }
+
+  _typeCheckPass(plan) {
+    const nodeMap = {};
+    plan.forEach(n => nodeMap[n.id] = n);
+
+    for (const node of plan) {
+      node.resultType = inferType(node, nodeMap);
+      
+      if (node.formula) {
+        const op = OPERATOR_REGISTRY[node.formula.op];
+        if (op) {
+            const inputTypes = (node.dependsOn || []).map(id => nodeMap[id]?.resultType);
+            
+            // Check if inputs match operator requirements
+            const isValid = inputTypes.every(t => op.accepts.includes(t));
+            if (!isValid) {
+                throw new Error(`TYPE MISMATCH: Node '${node.id}' uses operator '${node.formula.op}' with incompatible input types: [${inputTypes.join(", ")}]`);
+            }
+
+            // Check semantic validation (e.g., Dimensional Safety for 'add')
+            if (op.validate && !op.validate(inputTypes)) {
+                throw new Error(`SEMANTIC ERROR: Node '${node.id}' attempts to combine incompatible dimensions: [${inputTypes.join(", ")}]`);
+            }
+        }
+      }
+      
+      this.logger.log(`[Compiler] Inferred type for '${node.id}': ${node.resultType}`);
+    }
+  }
+
+  _validateGraph(nodes, plan) {
+    // Basic validation for now
+    if (nodes.length > 0 && plan.length === 0) {
+        throw new Error("Compiler Error: Failed to generate execution plan.");
+    }
   }
 }
