@@ -1,5 +1,18 @@
 import { normalizeId, CARD_TYPES, clamp } from "../../packages/shared-kernel/src/index.js";
 import { produceReviewIntelligence } from "../../packages/catalog-review-intelligence/src/index.js";
+import { DecisionKernel, DecisionCompiler, DecisionExplainer } from "../../packages/catalog-core/src/index.js";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const configPath = path.join(__dirname, "decision-config.json");
+const rawConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
+const compiler = new DecisionCompiler();
+const kernel = new DecisionKernel();
+const explainer = new DecisionExplainer();
+const decisionIR = compiler.compile(rawConfig);
 
 function parseCapacity(rawValue) {
   const value = String(rawValue ?? "").toLowerCase();
@@ -276,6 +289,8 @@ function rankCandidates(entries, tieBreakersOrder) {
 export const laptopStudentUsDomainPack = {
   meta: {
     domainId: "laptop-student-us",
+    version: "2.0.0",
+    identityRules: decisionIR.identityRules,
     entityType: "laptop_variant",
     segmentKey: "major",
     scope: "student laptop buying decisions in the US"
@@ -473,154 +488,42 @@ export const laptopStudentUsDomainPack = {
     return normalizeDecisionProfile(profile);
   },
 
-  evaluateCandidate({ profile, entity, ruleset }) {
-    const fit = entity.fitStates[profile.major];
-    const weights = ruleset.weightsByMajor[profile.major] ?? ruleset.weightsByMajor.general;
-    const qualityGates = ruleset.globalQualityGates ?? {};
-    const offerChoices = chooseOffer(entity, profile);
-    const selectedOffer = offerChoices.baselineOffer;
-    const exclusionReasons = [];
-
-    if (!selectedOffer) {
-      exclusionReasons.push("no_allowed_offer");
-    }
-
-    if (fit?.state === "below_official") {
-      exclusionReasons.push("below_official_baseline");
-    }
-
-    if ((entity.trust.reviewCoverage ?? 0) < (qualityGates.minReviewCoverage ?? 0)) {
-      exclusionReasons.push("insufficient_review_coverage");
-    }
-
-    if ((entity.trust.sourceConfidence ?? 0) < (qualityGates.minSourceConfidence ?? 0)) {
-      exclusionReasons.push("low_source_confidence");
-    }
-
-    if ((entity.specs.thermals ?? 0) < (qualityGates.thermalMinScore ?? 0)) {
-      exclusionReasons.push("thermal_floor_failed");
-    }
-
-    if (ruleset.policies?.requireBadNews && !entity.reviewIntelligence.primaryWarning) {
-      exclusionReasons.push("missing_bad_news");
-    }
-
-    if (ruleset.policies?.budgetMustHold && selectedOffer && selectedOffer.priceUsd > profile.budgetUsd) {
-      exclusionReasons.push("over_budget");
-    }
-
-    const softRequirements = buildSoftRequirements(profile, fit ?? {
-      official: { minRamGb: 0, minStorageGb: 0 },
-      safe: { minRamGb: 0, minStorageGb: 0 }
-    }, ruleset);
-    const componentScores = {
-      performance: entity.specs.performance,
-      display: entity.specs.display,
-      battery: entity.specs.battery,
-      portability: entity.specs.portability,
-      thermals: entity.specs.thermals,
-      gpu: scoreGpu(entity.specs.gpuClass),
-      trust: Math.round((entity.trust.sourceConfidence ?? 0) * 100),
-      resale: entity.economicSignals?.resaleScore ?? 50,
-      value: selectedOffer
-        ? clamp(100 - ((selectedOffer.priceUsd / Math.max(profile.budgetUsd, 1)) * 45))
-        : 0,
-      ram_headroom: scoreHeadroom(entity.specs.ramGb, softRequirements.minRamGb),
-      storage_headroom: scoreHeadroom(entity.specs.storageGb, softRequirements.minStorageGb)
+  evaluateCandidate({ profile, entity }) {
+    // 1. استدعاء النواة الشمولية (Kernel) للتنفيذ الرياضي
+    // نقوم بتسطيح البيانات (Flattening) لتسهيل الوصول إليها في الـ IR
+    const flattenedEntity = {
+        ...entity,
+        price: entity.market?.bestOffer?.priceUsd ?? 9999,
+        battery: entity.specs?.battery ?? 0,
+        weight: entity.specs?.weight ?? 2,
+        performance: entity.specs?.performance ?? 0,
+        ramGb: entity.specs?.ramGb ?? 0,
+        display: entity.specs?.display ?? 0,
+        thermals: entity.specs?.thermals ?? 50
     };
 
-    const effectiveWeights = {
-      ...weights,
-      performance: (weights.performance ?? 0) + (profile.sliders.virtualMachines / 100) * 0.08,
-      gpu: (weights.gpu ?? 0) + ((profile.sliders.gaming + profile.sliders.video4k) / 100) * 0.06,
-      display: (weights.display ?? 0) + (profile.preferences.display / 100) * 0.08 + (profile.sliders.video4k / 100) * 0.04,
-      battery: (weights.battery ?? 0) + (profile.preferences.battery / 100) * 0.08 + (profile.sliders.portability / 100) * 0.03,
-      portability: (weights.portability ?? 0) + (profile.preferences.portability / 100) * 0.08 + (profile.sliders.portability / 100) * 0.05,
-      resale: (weights.resale ?? 0) + (profile.preferences.resale / 100) * 0.1,
-      ram_headroom: (weights.ram_headroom ?? 0) + (profile.sliders.virtualMachines / 100) * 0.1,
-      storage_headroom: (weights.storage_headroom ?? 0) + (profile.sliders.virtualMachines / 100) * 0.08
-    };
-
-    const weightedScore = Object.entries(effectiveWeights).reduce((total, [metric, weight]) => {
-      return total + ((componentScores[metric] ?? 0) * weight);
-    }, 0);
-
-    const penalties = [];
-    const riskPenalty = clamp((entity.reviewIntelligence.risk?.compositeRisk ?? 0) * 35); // زيادة الأثر من 20 إلى 35
-    penalties.push({
-      key: "review_risk",
-      amount: riskPenalty
+    const kernelResult = kernel.execute(decisionIR, [flattenedEntity], { 
+      budget: profile.budgetUsd,
+      major: profile.major 
+    }, {
+      targetScoreId: rawConfig.rulesets[profile.major] ? `score_${profile.major}` : "score_general"
     });
 
-    // إضافة "مكافأة الثقة البشرية" (Human Trust Bonus)
-    let bonus = 0;
-    if (entity.trust.sourceConfidence >= 0.95) {
-      bonus += 5; // مكافأة للمصادر فائقة الموثوقية
-    }
+    const result = kernelResult.results[0];
+    const trace = result.trace;
 
-    if (entity.trust.freshnessDays > (qualityGates.maxFreshnessDays ?? 14)) {
-      penalties.push({
-        key: "stale_catalog_signal",
-        amount: ruleset.penalties?.stalePricePenalty ?? 3
-      });
-    }
-
-    if (softRequirements.needsDedicatedGpu && entity.specs.gpuClass === "integrated") {
-      penalties.push({
-        key: "soft_gpu_mismatch",
-        amount: ruleset.penalties?.softGpuMismatchPenalty ?? 12
-      });
-    }
-
-    if ((entity.specs.ramGb ?? 0) < softRequirements.minRamGb) {
-      penalties.push({
-        key: "soft_ram_shortfall",
-        amount: clamp((softRequirements.minRamGb - entity.specs.ramGb) * 1.5, 0, 12)
-      });
-    }
-
-    if ((entity.specs.storageGb ?? 0) < softRequirements.minStorageGb) {
-      penalties.push({
-        key: "soft_storage_shortfall",
-        amount: clamp(((softRequirements.minStorageGb - entity.specs.storageGb) / 128) * 3, 0, 12)
-      });
-    }
-
-    if ((entity.specs.battery ?? 0) < softRequirements.batteryFloor) {
-      penalties.push({
-        key: "battery_soft_floor",
-        amount: clamp((softRequirements.batteryFloor - entity.specs.battery) * 0.5, 0, 8)
-      });
-    }
-
-    if ((entity.specs.portability ?? 0) < softRequirements.portabilityFloor) {
-      penalties.push({
-        key: "portability_soft_floor",
-        amount: clamp((softRequirements.portabilityFloor - entity.specs.portability) * 0.5, 0, 8)
-      });
-    }
-
-    const penaltyScore = penalties.reduce((total, penalty) => total + penalty.amount, 0);
-    const score = clamp(weightedScore - penaltyScore + bonus);
-    const heroEligible =
-      Boolean(offerChoices.heroOffer) &&
-      (!ruleset.selectionRules?.hero?.cannotBeOpenBox || offerChoices.heroOffer.condition !== "open_box");
-
+    // 2. تحويل مخرجات النواة إلى الشكل الذي تتوقعه المنصة (Object Mapping)
     return {
       entity,
-      fitState: fit?.state ?? "unknown",
-      eligible: exclusionReasons.length === 0,
-      exclusionReasons,
-      selectedOffer,
-      heroOffer: offerChoices.heroOffer,
-      softRequirements,
-      componentScores,
-      effectiveWeights,
-      penalties,
-      penaltyScore,
-      score: Number(score.toFixed(2)),
-      headroomScore: Number(((componentScores.ram_headroom + componentScores.storage_headroom + componentScores.performance) / 3).toFixed(2)),
-      heroEligible
+      eligible: result.eligible,
+      exclusionReasons: trace.exclusions,
+      score: result.score,
+      trace: trace, // الاحتفاظ بالتتبع السببي كاملاً
+      componentScores: trace.scores,
+      penalties: trace.steps.filter(s => s.type === "penalty"),
+      penaltyScore: trace.steps.filter(s => s.type === "penalty").reduce((sum, p) => sum + p.penalty, 0),
+      fitState: entity.fitStates[profile.major]?.state ?? "unknown",
+      heroEligible: result.eligible // تبسيط للـ Migration
     };
   },
 
@@ -635,7 +538,7 @@ export const laptopStudentUsDomainPack = {
 
     return {
       type: "no_viable_option",
-      message: summarizeExclusions(allReasons),
+      message: "No eligible device remained after applying the current rules.",
       topReasons: reasonsCount.slice(0, 3).map(([reason, count]) => ({ reason, count })),
       suggestions: [
         "Increase budget slightly or allow a verified refurbished path.",
@@ -646,100 +549,36 @@ export const laptopStudentUsDomainPack = {
     };
   },
 
-  chooseCard(cardType, eligibleCandidates, profile, ruleset, selectionContext = {}) {
-    const usedIds = new Set(selectionContext.selectedEntityIds ?? []);
-    const candidates = selectionContext.allowDuplicates
-      ? [...eligibleCandidates]
-      : eligibleCandidates.filter((candidate) => !usedIds.has(candidate.entity.entityId));
-    const tieBreakers = ruleset.selectionRules?.tieBreakersOrder ?? [];
-
-    if (!candidates.length) {
-      return null;
-    }
-
-    if (cardType === "hero") {
-      return rankCandidates(
-        candidates
-          .filter((candidate) => candidate.heroEligible)
-          .map((candidate) => ({
-            ...candidate,
-            selectedOffer: candidate.heroOffer ?? candidate.selectedOffer
-          })),
-        tieBreakers
-      )[0] ?? null;
-    }
-
+  chooseCard(cardType, eligibleCandidates) {
+    if (!eligibleCandidates.length) return null;
+    const sorted = [...eligibleCandidates].sort((a, b) => b.score - a.score);
+    if (cardType === "hero") return sorted[0];
     if (cardType === "smart_budget") {
-      return [...candidates]
-        .sort((left, right) => {
-          const priceDelta = (left.selectedOffer?.priceUsd ?? Number.POSITIVE_INFINITY) - (right.selectedOffer?.priceUsd ?? Number.POSITIVE_INFINITY);
-          if (priceDelta !== 0) {
-            return priceDelta;
-          }
-
-          return right.score - left.score;
-        })[0] ?? null;
+        return [...eligibleCandidates].sort((a, b) => 
+            (a.entity.market.bestOffer?.priceUsd ?? 9999) - (b.entity.market.bestOffer?.priceUsd ?? 9999)
+        )[0];
     }
-
-    if (cardType === "future_proof") {
-      const heroPrice = selectionContext.heroCandidate?.selectedOffer?.priceUsd ?? Number.POSITIVE_INFINITY;
-      const maxDelta = ruleset.selectionRules?.futureProof?.maxBudgetDeltaUsd ?? 150;
-      const withinDelta = candidates.filter((candidate) => {
-        if (!candidate.selectedOffer) {
-          return false;
-        }
-
-        if (!Number.isFinite(heroPrice)) {
-          return true;
-        }
-
-        return candidate.selectedOffer.priceUsd <= heroPrice + maxDelta;
-      });
-
-      return rankCandidates(
-        withinDelta.length ? withinDelta.map((candidate) => ({
-          ...candidate,
-          score: clamp((candidate.componentScores.performance * 0.45) + (candidate.headroomScore * 0.35) + (candidate.componentScores.resale * 0.2) - candidate.penaltyScore)
-        })) : candidates,
-        tieBreakers
-      )[0] ?? null;
-    }
-
-
-
-    return null;
+    return sorted[1] || sorted[0];
   },
 
   buildCard(cardType, selection, profile) {
-    const offer = selection.selectedOffer;
-    const reasonsByCard = {
-      hero: `Best overall fit for ${profile.major} after applying hard constraints and risk penalties.`,
-      smart_budget: "Lowest-cost option that still survives the quality and baseline gates.",
-      future_proof: "Stronger long-term headroom for future workload growth and resale resilience."
-    };
-
+    const entity = selection.entity;
     return {
       cardType,
-      entityId: selection.entity.entityId,
-      title: selection.entity.title,
-      priceUsd: offer?.priceUsd ?? selection.entity.market.bestOffer.priceUsd,
-      offerCondition: offer?.condition ?? selection.entity.market.bestOffer.condition,
-      score: Number(selection.score.toFixed(2)),
-      whyThis: reasonsByCard[cardType] ?? "Chosen by the deterministic ruleset.",
-      badNews: selection.entity.reviewIntelligence.primaryWarning ?? "No critical warning.",
-      tradeoff: selection.entity.reviewIntelligence.secondaryWarning ?? "Secondary tradeoff pending richer review mining.",
-      userVoice: selection.entity.reviewIntelligence.userSignals?.[0] ?? null,
-      topPros: selection.entity.reviewIntelligence.topPros ?? [],
-      resaleScore: selection.componentScores.resale,
-      fitState: selection.fitState,
-      imageUrl: selection.entity.media?.productImage ?? null,
-      transparency: {
-        isAffiliate: Boolean(offer?.affiliate),
-        label: offer?.affiliate ? "Verified Partner" : "Pure Recommendation",
-        badge: offer?.affiliate ? "🤝" : "🛡️"
-      }
+      entityId: entity.entityId,
+      title: entity.title,
+      priceUsd: entity.market.bestOffer?.priceUsd ?? 0,
+      score: selection.score,
+      whyThis: explainer.explain(selection.trace, entity.title),
+      badNews: entity.reviewIntelligence.primaryWarning ?? "No critical warning.",
+      tradeoff: entity.reviewIntelligence.secondaryWarning ?? "Tradeoff detected.",
+      userVoice: entity.reviewIntelligence.userSignals?.[0] ?? null,
+      topPros: entity.reviewIntelligence.topPros ?? [],
+      imageUrl: entity.media?.productImage ?? null
     };
   },
+
+
 
   recommendOwnership({ profile, entity, heroCard }) {
     const refurbishedOffer = entity.market.offers.find((offer) => offer.condition === "refurbished");

@@ -1,9 +1,13 @@
+export { DecisionKernel } from "../../decision-kernel/src/index.js";
+export { DecisionCompiler } from "../../decision-compiler/src/index.js";
+export { DecisionExplainer } from "../../decision-explanation/src/index.js";
+export { IdentityManager } from "../../catalog-identity/src/index.js";
 export * from "./acquisition/Fetcher.js";
 export * from "./acquisition/AmazonAdapter.js";
 export * from "./acquisition/CatalogGenerator.js";
 export * from "./acquisition/ReviewFetcher.js";
 export * from "./acquisition/ReviewIntelligenceAnalyzer.js";
-export * from "./orchestration/PipelineManager.js";
+export { PipelineManager } from "./orchestration/PipelineManager.js";
 
 
 

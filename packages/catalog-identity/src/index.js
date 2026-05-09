@@ -1,63 +1,106 @@
 /**
- * catalog-identity — Layer 3: Product Identity Resolution
+ * catalog-identity — Advanced Product Identity Resolution Engine
  *
- * الغرض: حل مشكلة تكرار المنتجات عبر المصادر المختلفة.
- * المتجران قد يبيعان نفس اللابتوب بأسماء مختلفة قليلاً.
- * هذه الطبقة تكشف ذلك وتدمجهما تحت كيان (entity) واحد موحد.
- *
- * مبدأ: لا يُرسل لطبقة النشر أي منتج بدون entityId ثابت.
+ * الغرض: دمج السجلات المتكررة (Deduplication) عبر مصادر متعددة.
+ * الاستراتيجية: مطابقة متدرجة (Identifiers -> Core Specs -> Fuzzy Name).
  */
 
-/**
- * بناء fingerprint قابل للمقارنة لكل observation.
- * يعتمد على: المعالج + RAM + Storage + GPU class + brand
- * (وليس على الاسم الكامل لأنه قد يختلف بين متجرين).
- */
-function buildFingerprint(normalized) {
-  const brand   = (normalized.brand   ?? "unk").toLowerCase().replace(/\s+/g, "_");
-  const ram     = String(normalized.specs?.ramGb     ?? 0);
-  const storage = String(normalized.specs?.storageGb ?? 0);
-  const gpu     = (normalized.specs?.gpuClass ?? "unk").toLowerCase();
-  const cpu     = (normalized.specs?.platform ?? normalized.specs?.cpu ?? "unk").toLowerCase().replace(/\s+/g, "_");
+export class IdentityManager {
+  constructor(options = {}) {
+    this.logger = options.logger || console;
+    this.similarityThreshold = options.similarityThreshold || 0.85;
+  }
 
-  return `${brand}__${cpu}__${ram}gb__${storage}gb__${gpu}`;
+  /**
+   * دمج الملاحظات في كيانات موحدة.
+   *
+   * @param {Array} observations - قائمة الملاحظات المُطبعة
+   * @param {object} domainRules - قواعد الهوية الخاصة بالدومين
+   */
+  resolve(observations, domainRules = {}) {
+    this.logger.log(`[Identity] Resolving ${observations.length} observations...`);
+    
+    const entities = new Map();
+
+    for (const obs of observations) {
+      const fingerprint = this._generateFingerprint(obs, domainRules);
+      
+      if (!entities.has(fingerprint)) {
+        entities.set(fingerprint, {
+          entityId: `ent_${fingerprint}`,
+          fingerprint,
+          observations: [],
+          coreSpecs: obs.specs // حفظ المواصفات الأساسية للمقارنة اللاحقة
+        });
+      }
+      
+      entities.get(fingerprint).observations.push(obs);
+    }
+
+    const result = [...entities.values()];
+
+    return {
+      entities: result,
+      stats: {
+        total: observations.length,
+        unique: result.length,
+        collapsed: observations.length - result.length
+      }
+    };
+  }
+
+  /**
+   * توليد بصمة الهوية.
+   * المبدأ: الجمع بين المعرفات الصارمة (IDs) والمواصفات التي لا تتغير.
+   */
+  _generateFingerprint(obs, rules) {
+    // 1. استخدام المعرفات الصريحة إذا وجدت (MPN, SKU)
+    if (obs.identifiers?.mpn) return `mpn_${obs.identifiers.mpn.toLowerCase()}`;
+    
+    // 2. البصمة القائمة على المواصفات (Core Specs)
+    // نأخذ الحقول التي حددها الدومين كـ "حقول هوية"
+    const idFields = rules.identityFields || ["brand", "ramGb", "storageGb", "cpu"];
+    
+    const parts = idFields.map(field => {
+        const val = obs.specs?.[field] || obs[field] || "unk";
+        return String(val).toLowerCase().replace(/\s+/g, "");
+    });
+
+    // 3. إضافة جزء من الاسم (برموز مبسطة) لمنع التصادم
+    // نقوم بإزالة المسافات، الأرقام بين قوسين، والسنوات المشهورة
+    const namePart = (obs.itemName || "")
+        .toLowerCase()
+        .replace(/\(\d+\)/g, "") // إزالة (2024) مثلاً
+        .replace(/\d{4}/g, "")   // إزالة أي 4 أرقام متتالية (سنة)
+        .replace(/[^a-z0-9]/g, "")
+        .substring(0, 10);
+
+    return parts.join("_") + "__" + namePart;
+  }
 }
 
 /**
- * يستقبل قائمة من الـ normalized observations
- * ويُعيد قائمة entity groups كل منها يمثل منتجاً فريداً
- * ويضم جميع observations التي تخصه.
- *
- * @param {Array} normalizedObservations
- * @param {object} [options]
- * @param {Function} [options.fingerprintFn] — دالة بصمة مخصصة من الدومين
- * @returns {Array<{ entityId: string, fingerprint: string, observations: Array }>}
+ * دالة مساعدة لدمج الحقول المتعارضة (Conflict Resolution).
+ * تستخدم الاستراتيجية الموزونة بناءً على ثقة المصدر.
  */
-export function resolveIdentities(normalizedObservations, options = {}) {
-  const fingerprintFn = options.fingerprintFn ?? buildFingerprint;
-
-  const groups = new Map();
-
-  for (const observation of normalizedObservations) {
-    const fingerprint = fingerprintFn(observation);
-
-    if (!groups.has(fingerprint)) {
-      groups.set(fingerprint, {
-        fingerprint,
-        entityId: `entity__${fingerprint}`,
-        observations: []
-      });
+export function resolveConflicts(entityGroup) {
+    const observations = entityGroup.observations;
+    const resolved = {};
+    
+    // الحصول على كافة مفاتيح المواصفات المتاحة
+    const allKeys = new Set(observations.flatMap(o => Object.keys(o.specs || {})));
+    
+    for (const key of allKeys) {
+        resolved[key] = _getWeightedBest(observations, key);
     }
+    
+    return resolved;
+}
 
-    groups.get(fingerprint).observations.push(observation);
-  }
-
-  const resolved = [...groups.values()];
-
-  return {
-    entities: resolved,
-    totalObservations: normalizedObservations.length,
-    uniqueEntities: resolved.length,
-    collapsedCount: normalizedObservations.length - resolved.length
-  };
+function _getWeightedBest(observations, key) {
+    // استراتيجية: القيمة القادمة من مصدر أعلى ثقة تفوز
+    const sorted = [...observations].sort((a, b) => 
+        (b.trust?.sourceConfidence || 0.5) - (a.trust?.sourceConfidence || 0.5)
+    );
+    return sorted[0].specs[key];
 }

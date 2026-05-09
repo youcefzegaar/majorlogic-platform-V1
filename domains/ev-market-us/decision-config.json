@@ -1,0 +1,53 @@
+{
+  "domainId": "ev-market-us",
+  "version": "1.0.0",
+  "identityRules": {
+    "identityFields": ["brand", "model", "battery_size_kwh"],
+    "similarityThreshold": 0.85
+  },
+  "attributes": {
+    "price": { "type": "numeric", "label": "MSRP" },
+    "range_miles": { "type": "numeric", "label": "EPA Range" },
+    "accel_0_60": { "type": "numeric", "label": "0-60 mph (sec)" },
+    "charging_kw": { "type": "numeric", "label": "Max Charging Speed" }
+  },
+  "metrics": {
+    "range_per_dollar": {
+      "label": "Economic Range Index",
+      "formula": { "op": "multiply", "args": ["range_miles", { "op": "inverse", "arg": "price" }] }
+    },
+    "performance_index": {
+      "label": "Performance Score",
+      "formula": { "op": "add", "args": [10, { "op": "multiply", "args": ["accel_0_60", -1.5] }] }
+    }
+  },
+  "gates": {
+    "range_floor": {
+      "reason": "Range Anxiety: Distance too short for US highways",
+      "condition": { "op": "gte", "left": "range_miles", "right": 200 }
+    }
+  },
+  "rulesets": {
+    "family_commuter": {
+      "isDefault": true,
+      "weights": {
+        "range_miles": 0.5,
+        "range_per_dollar": 0.3,
+        "charging_kw": 0.2
+      }
+    },
+    "performance": {
+      "weights": {
+        "performance_index": 0.7,
+        "charging_kw": 0.3
+      },
+      "penalties": {
+        "legacy_penalty": {
+          "condition": { "op": "lt", "left": "charging_kw", "right": 100 },
+          "amount": 20,
+          "reason": "Outdated charging technology for a performance car"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "domainId": "laptop-student-us",
+  "version": "2.0.0",
+  "identityRules": {
+    "identityFields": ["brand", "ramGb", "storageGb", "gpuClass"],
+    "similarityThreshold": 0.9
+  },
+  "attributes": {
+    "price": { "type": "numeric", "label": "Price USD" },
+    "ramGb": { "type": "numeric", "label": "RAM" },
+    "storageGb": { "type": "numeric", "label": "Storage" },
+    "performance": { "type": "numeric", "label": "Performance Score" }
+  },
+  "metrics": {
+    "portability_score": {
+      "label": "Portability Index",
+      "formula": { "op": "add", "args": ["battery", { "op": "multiply", "args": ["weight", -5] }] }
+    },
+    "value_score": {
+      "label": "Price/Performance Value",
+      "formula": { "op": "add", "args": [100, { "op": "multiply", "args": ["price", -0.05] }] }
+    }
+  },
+  "gates": {
+    "within_budget": {
+      "reason": "Over User Budget",
+      "condition": { "op": "lte", "left": "price", "right": "budget" }
+    },
+    "min_ram": {
+      "reason": "Insufficient RAM",
+      "condition": { "op": "gte", "left": "ramGb", "right": 8 }
+    }
+  },
+  "rulesets": {
+    "general": {
+      "isDefault": true,
+      "weights": {
+        "performance": 0.4,
+        "portability_score": 0.3,
+        "value_score": 0.3
+      },
+      "penalties": {
+        "thermal_throttle": {
+          "condition": { "op": "gt", "left": "thermals", "right": 85 },
+          "amount": 12,
+          "reason": "Aggressive thermal throttling detected in reviews"
+        }
+      }
+    },
+    "computer_science": {
+      "weights": {
+        "performance": 0.6,
+        "portability_score": 0.2,
+        "value_score": 0.2
+      }
+    },
+    "graphic_design": {
+      "weights": {
+        "performance": 0.3,
+        "portability_score": 0.2,
+        "display": 0.5
+      }
+    }
+  }
+}

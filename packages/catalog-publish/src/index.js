@@ -11,8 +11,7 @@
  * مبدأ: النشر بوابة صارمة — لا ينشر أي كيان لم يجتز جميع الطبقات.
  */
 
-import { acquireAndStage }              from "../../catalog-core/src/index.js";
-import { resolveIdentities }            from "../../catalog-identity/src/index.js";
+import { acquireAndStage, IdentityManager }              from "../../catalog-core/src/index.js";
 import { normalizeObservations, filterMinimumViable, filterByFitContexts } from "../../catalog-normalization/src/index.js";
 import { resolveAndValidateCatalog }    from "../../catalog-validation/src/index.js";
 
@@ -37,10 +36,10 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
   // Min-viable filter before identity resolution
   const { valid: viableObservations, rejected: rejectedMinViable } = filterMinimumViable(normalized);
 
-  // Layer 3: Identity Resolution — دمج المنتجات المتكررة
-  const { entities, totalObservations, uniqueEntities, collapsedCount } = resolveIdentities(viableObservations, {
-    fingerprintFn: domainPack.buildEntityFingerprint ?? undefined
-  });
+  // Layer 3: Identity Resolution — دمج المنتجات المتكررة عبر محرك الهوية الشمولي
+  const identityManager = new IdentityManager();
+  const { entities, stats } = identityManager.resolve(viableObservations, domainPack.meta.identityRules);
+  const { uniqueEntities, collapsedCount, total } = stats;
 
   // Layer 7: Truth Resolution + Quality Gates
   const { resolved: validatedEntities, blocked } = resolveAndValidateCatalog(entities, {
@@ -113,7 +112,7 @@ export function runCatalogPipeline({ sourceRecords, domainPack, domainContext = 
     stagingResult,
     normalizationErrors,
     rejectedMinViable: rejectedMinViable.length,
-    totalObservations,
+    totalObservations: total,
     uniqueEntities,
     collapsedCount,
     blockedEntities: blocked.length,
