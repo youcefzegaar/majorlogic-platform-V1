@@ -38,7 +38,7 @@ select
   published_at
 from ml_catalog.published_entities;
 
-drop view if exists ml_catalog.active_publish_runs;
+drop view if exists ml_catalog.active_publish_runs cascade;
 create or replace view ml_catalog.active_publish_runs as
 select distinct on (domain_id)
   domain_id,

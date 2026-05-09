@@ -3,6 +3,8 @@ export * from "./acquisition/AmazonAdapter.js";
 export * from "./acquisition/CatalogGenerator.js";
 export * from "./acquisition/ReviewFetcher.js";
 export * from "./acquisition/ReviewIntelligenceAnalyzer.js";
+export * from "./orchestration/PipelineManager.js";
+
 
 
 

@@ -19,20 +19,25 @@ const SIGNAL_TAXONOMY = {
   runs_hot_under_load:        { category: "thermals",    severity: "high",   userFacing: "Gets hot under heavy workloads" },
   fan_noise_under_load:       { category: "thermals",    severity: "medium", userFacing: "Fan noise during intensive tasks" },
   slow_cold_boot:             { category: "performance", severity: "low",    userFacing: "Slightly slow cold boot" },
+  aggressive_fan_profile:     { category: "thermals",    severity: "high",   userFacing: "Aggressive fan noise under load" },
+  thermal_management_limitations: { category: "thermals", severity: "high", userFacing: "Potential thermal throttling" },
 
   // بطارية
   battery_below_expectation:  { category: "battery",     severity: "high",   userFacing: "Battery doesn't match advertised claims" },
   short_battery_life:         { category: "battery",     severity: "high",   userFacing: "Short battery life" },
   fast_battery_drain_gaming:  { category: "battery",     severity: "medium", userFacing: "Battery drains fast during gaming" },
+  diminished_battery_endurance: { category: "battery",   severity: "high",   userFacing: "Poor real-world battery endurance" },
 
   // شاشة / عرض
   dim_display_outdoors:       { category: "display",     severity: "medium", userFacing: "Display hard to see outdoors" },
   limited_color_accuracy:     { category: "display",     severity: "medium", userFacing: "Color accuracy below creative standards" },
+  limited_display_luminance:  { category: "display",     severity: "medium", userFacing: "Screen brightness is limited" },
 
   // بناء / تصميم
   cheap_build_quality:        { category: "build",       severity: "high",   userFacing: "Build quality feels below price point" },
   keyboard_flex:              { category: "build",       severity: "medium", userFacing: "Keyboard flex during typing" },
   trackpad_inconsistency:     { category: "input",       severity: "medium", userFacing: "Trackpad isn't always responsive" },
+  structural_rigidity_concerns: { category: "build",    severity: "medium", userFacing: "Minor chassis flexibility noticed" },
 
   // قيمة / اقتصاد
   overpriced_for_specs:       { category: "value",       severity: "high",   userFacing: "Priced above what specs justify" },

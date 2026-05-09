@@ -331,7 +331,10 @@ export const laptopStudentUsDomainPack = {
         }
       : {
           topCons:         sourceRecord.reviewSummary?.topCons ?? [],
-          reviewRiskScore: sourceRecord.reviewSummary?.reviewRiskScore ?? 0
+          topPros:         sourceRecord.reviewSummary?.topPros ?? [],
+          userSignals:     sourceRecord.reviewSummary?.userSignals ?? [],
+          reviewRiskScore: sourceRecord.reviewSummary?.reviewRiskScore ?? 0,
+          sentiment:       sourceRecord.reviewSummary?.sentiment ?? "neutral"
         };
 
     const trust = hasRawSpecs
@@ -395,10 +398,14 @@ export const laptopStudentUsDomainPack = {
             observation.trust.sourceConfidence >= 0.8 ? "medium" :
               "low"
       },
-      reviewIntelligence: produceReviewIntelligence({
-        topCons: observation.reviewSummary?.topCons ?? [],
-        reviewRiskScore: observation.reviewSummary?.reviewRiskScore ?? 0
-      }),
+      reviewIntelligence: {
+        ...produceReviewIntelligence({
+          topCons: observation.reviewSummary?.topCons ?? [],
+          reviewRiskScore: observation.reviewSummary?.reviewRiskScore ?? 0
+        }),
+        topPros: observation.reviewSummary?.topPros ?? [],
+        userSignals: observation.reviewSummary?.userSignals ?? []
+      },
       economicSignals: {
         resaleScore
       },
@@ -539,11 +546,17 @@ export const laptopStudentUsDomainPack = {
     }, 0);
 
     const penalties = [];
-    const riskPenalty = clamp((entity.reviewIntelligence.risk?.compositeRisk ?? 0) * 20);
+    const riskPenalty = clamp((entity.reviewIntelligence.risk?.compositeRisk ?? 0) * 35); // زيادة الأثر من 20 إلى 35
     penalties.push({
       key: "review_risk",
       amount: riskPenalty
     });
+
+    // إضافة "مكافأة الثقة البشرية" (Human Trust Bonus)
+    let bonus = 0;
+    if (entity.trust.sourceConfidence >= 0.95) {
+      bonus += 5; // مكافأة للمصادر فائقة الموثوقية
+    }
 
     if (entity.trust.freshnessDays > (qualityGates.maxFreshnessDays ?? 14)) {
       penalties.push({
@@ -588,7 +601,7 @@ export const laptopStudentUsDomainPack = {
     }
 
     const penaltyScore = penalties.reduce((total, penalty) => total + penalty.amount, 0);
-    const score = clamp(weightedScore - penaltyScore);
+    const score = clamp(weightedScore - penaltyScore + bonus);
     const heroEligible =
       Boolean(offerChoices.heroOffer) &&
       (!ruleset.selectionRules?.hero?.cannotBeOpenBox || offerChoices.heroOffer.condition !== "open_box");
@@ -715,6 +728,8 @@ export const laptopStudentUsDomainPack = {
       whyThis: reasonsByCard[cardType] ?? "Chosen by the deterministic ruleset.",
       badNews: selection.entity.reviewIntelligence.primaryWarning ?? "No critical warning.",
       tradeoff: selection.entity.reviewIntelligence.secondaryWarning ?? "Secondary tradeoff pending richer review mining.",
+      userVoice: selection.entity.reviewIntelligence.userSignals?.[0] ?? null,
+      topPros: selection.entity.reviewIntelligence.topPros ?? [],
       resaleScore: selection.componentScores.resale,
       fitState: selection.fitState,
       imageUrl: selection.entity.media?.productImage ?? null,

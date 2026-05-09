@@ -71,6 +71,8 @@ export class PostgresPlatformRepository {
       "database/migrations/0010_affiliate_settings.sql",
       "database/migrations/0011_admin_users.sql",
       "database/migrations/0012_admin_users_security.sql",
+      "database/migrations/0013_pipeline_orchestration.sql",
+      "database/migrations/0014_generic_active_views.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -628,6 +630,44 @@ export class PostgresPlatformRepository {
        SET failed_login_attempts = 0, locked_until = NULL, last_login_at = now()
        WHERE username = $1`,
       [username]
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // Pipeline Orchestration
+  // ─────────────────────────────────────────────
+
+  async createPipelineRun({ id, domainId }) {
+    await this.pool.query(
+      `insert into ml_catalog.pipeline_runs (id, domain_id, status, started_at)
+       values ($1, $2, 'running', now())`,
+      [id, domainId]
+    );
+  }
+
+  async updatePipelineRunStatus({ id, status, errorMessage = null }) {
+    await this.pool.query(
+      `update ml_catalog.pipeline_runs
+       set status = $2, error_message = $3, completed_at = case when $2 in ('completed', 'failed') then now() else completed_at end
+       where id = $1`,
+      [id, status, errorMessage]
+    );
+  }
+
+  async createPipelineStage({ id, runId, stageName }) {
+    await this.pool.query(
+      `insert into ml_catalog.pipeline_stages (id, run_id, stage_name, status, started_at)
+       values ($1, $2, $3, 'running', now())`,
+      [id, runId, stageName]
+    );
+  }
+
+  async updatePipelineStageStatus({ id, status, metadata = {}, errorMessage = null }) {
+    await this.pool.query(
+      `update ml_catalog.pipeline_stages
+       set status = $2, metadata = metadata || $3::jsonb, error_message = $4, completed_at = case when $2 in ('completed', 'failed') then now() else completed_at end
+       where id = $1`,
+      [id, status, JSON.stringify(metadata), errorMessage]
     );
   }
 }
