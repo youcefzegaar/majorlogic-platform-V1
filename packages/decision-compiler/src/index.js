@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { DECISION_TYPES, OPERATOR_REGISTRY, inferType } from "./types.js";
+import { DomainConfigSchema } from "./schema.js";
 
 export class DecisionCompiler {
   constructor(logger = console) {
@@ -7,10 +8,17 @@ export class DecisionCompiler {
   }
 
   compile(config) {
-    this.logger.log(`[Compiler] Compiling domain: ${config.domainId}`);
+    this.logger.log(`[Compiler] Validating and Compiling domain: ${config.domainId}`);
+
+    // Pass 0: Strict Schema Validation
+    const validation = DomainConfigSchema.safeParse(config);
+    if (!validation.success) {
+      this.logger.error(`[Compiler] Validation Error: ${validation.error.message}`);
+      throw new Error(`Invalid Domain Configuration: ${validation.error.message}`);
+    }
 
     // Pass 1: Symbol Extraction & Node Building
-    const nodes = this._buildNodes(config);
+    const nodes = this._buildNodes(validation.data);
 
     // Pass 2: Explicit Dependency Discovery
     this._extractDependencies(nodes);

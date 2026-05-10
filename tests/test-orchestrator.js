@@ -1,15 +1,20 @@
 import { DecisionOrchestrator } from "../packages/decision-orchestrator/src/index.js";
+import { GeminiProvider } from "../packages/ai-provider-gemini/src/index.js";
+import "dotenv/config";
 
 // Mock Logger
 const silentLogger = { log: () => {}, error: console.error };
 
-// Mock AI Provider with Logger to see the "Cognitive Prompt"
-const mockAIProvider = {
+let lastPrompt = "";
+// Wrap the Gemini Provider to spy on the prompt
+const baseGemini = new GeminiProvider(process.env.GEMINI_API_KEY, { logger: silentLogger });
+const aiProvider = {
     generate: async (prompt) => {
+        lastPrompt = prompt;
         console.log("\n--- [🚀 COGNITIVE PROMPT SENT TO AI] ---");
         console.log(prompt);
         console.log("-----------------------------------------\n");
-        return "This is a simulated expert narrative based on the cognitive state.";
+        return baseGemini.generate(prompt);
     }
 };
 
@@ -77,7 +82,7 @@ const laptopConfig = {
 
 const entities = [
   { id: "mbp-14", entityId: "mbp-14", title: "MacBook Pro 14", price: 1999, weightKg: 1.6, benchmarkScore: 92 },
-  { id: "mba-13", entityId: "mba-13", title: "MacBook Air 13", price: 1099, weightKg: 1.2, benchmarkScore: 75 },
+  { id: "mba-13", entityId: "mba-13", title: "MacBook Air 13", price: 1099, weightKg: 1.6, benchmarkScore: 75 },
   { id: "xps-15", entityId: "xps-15", title: "Dell XPS 15", price: 1599, weightKg: 2.0, benchmarkScore: 85 }
 ];
 
@@ -97,7 +102,7 @@ async function runTest() {
 
     const orchestrator = new DecisionOrchestrator({ 
         logger: silentLogger,
-        explainer: { aiProvider: mockAIProvider }
+        explainer: { aiProvider: aiProvider }
     });
     const result = await orchestrator.run(laptopConfig, entities, userProfile);
 
@@ -129,7 +134,7 @@ async function runTest() {
 
     check("Intent 'creative_nomad' resolved", result.intentId === "creative_nomad");
     check("Conflict detected (Performance vs Portability)", result.confidence.score < 100);
-    check("XPS 15 excluded due to weight (Nomad constraint)", result.topExcludedStories.some(s => s.entityId === "xps-15" && s.reason.includes("heavy")));
+    check("Recovery Engine activated (gate_weight relaxed in prompt)", lastPrompt.includes("RELAXATION: You MUST explicitly tell the user that we had to ignore the constraint"));
 
     console.log(`\n══════════════════════════════════════════════════`);
     console.log(`  ${allPassed ? "ALL TESTS PASSED ✅" : "SOME TESTS FAILED ❌"}`);

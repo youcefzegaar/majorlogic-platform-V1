@@ -77,7 +77,7 @@ export class DecisionKernel {
       case "score":
         let score = 0;
         // Weighted sum
-        for (const [metric, weight] of Object.entries(node.weights)) {
+        for (const [metric, weight] of Object.entries(node.weights || {})) {
           score += (values[metric] || 0) * weight;
         }
 

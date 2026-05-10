@@ -80,7 +80,10 @@ export class DecisionExplainer {
    * This is the "Brain-to-Voice" bridge.
    */
   buildPrompt(trace, name, context) {
-    const { expertIdentity, locale, atlas, intent, confidence } = context;
+    const { expertIdentity = "Expert", locale = "en", atlas = {} } = context;
+    const intent = context.intent || { title: "General Intent", futureProjection: null };
+    const confidence = context.confidence || { level: "high", score: 100, conflicts: [] };
+    const relaxedConstraint = context.relaxedConstraint || null;
     
     const cognitiveState = {
         subject: name,
@@ -89,6 +92,7 @@ export class DecisionExplainer {
         confidenceLevel: confidence.level,
         confidenceScore: confidence.score,
         conflictsFound: confidence.conflicts.map(c => c.pair),
+        relaxedConstraint: relaxedConstraint,
         futureProjection: intent.futureProjection,
         technicalTrace: {
             scores: trace.scores,
@@ -115,9 +119,10 @@ export class DecisionExplainer {
       WRITING RULES:
       1. PERSPECTIVE: Speak as a human expert, not a machine.
       2. LOGIC: Explain WHY this choice is logical despite the conflicts: ${cognitiveState.conflictsFound.join(", ")}.
-      3. FUTURE: Incorporate this projection: "${intent.futureProjection || "N/A"}".
-      4. INTEGRITY: Never invent specifications not in the technical trace.
-      5. TONE: Calm, objective, and deeply helpful.
+      ${relaxedConstraint ? `3. RELAXATION: You MUST explicitly tell the user that we had to ignore the constraint "${relaxedConstraint}" to find this option.` : `3. CONSTRAINTS: All constraints were met.`}
+      4. FUTURE: Incorporate this projection: "${intent.futureProjection || "N/A"}".
+      5. INTEGRITY: Never invent specifications not in the technical trace.
+      6. TONE: Calm, objective, and deeply helpful.
       
       RESPONSE FORMAT: One or two highly impactful paragraphs.
     `;
