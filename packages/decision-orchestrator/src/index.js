@@ -4,6 +4,10 @@ import { DecisionExplainer } from "../../decision-explanation/src/index.js";
 import { produceReviewIntelligence } from "../../catalog-review-intelligence/src/index.js";
 import { createHash, randomUUID } from "node:crypto";
 
+import { IntentEngine } from "./modules/IntentEngine.js";
+import { CognitiveAnalyzer } from "./modules/CognitiveAnalyzer.js";
+import { RecoveryEngine } from "./modules/RecoveryEngine.js";
+
 /**
  * Universal Decision Orchestrator
  * 
@@ -17,6 +21,11 @@ export class DecisionOrchestrator {
     this.kernel = new DecisionKernel(this.logger);
     this.explainer = new DecisionExplainer(options.explainer || {});
     this.irCache = new Map(); // Performance: Cache compiled IRs
+
+    // Cognitive Sub-Modules
+    this.intentEngine = new IntentEngine(this.logger);
+    this.cognitiveAnalyzer = new CognitiveAnalyzer(this.logger);
+    this.recoveryEngine = new RecoveryEngine(this.kernel, this.logger);
   }
 
   /**
@@ -39,6 +48,7 @@ export class DecisionOrchestrator {
       eligible: [],
       excluded: [],
       relaxedConstraint: null,
+      integrityScore: 100, // Starts at 100% integrity
       confidence: null,
       topExcludedStories: [],
       cards: [],
@@ -71,7 +81,7 @@ export class DecisionOrchestrator {
   // ── PIPELINE STEPS ──
 
   async _stepIntentResolution(ctx) {
-      const { resolvedConfig, intentContext } = this._resolveIntent(ctx.config, ctx.userProfile);
+      const { resolvedConfig, intentContext } = this.intentEngine.resolve(ctx.config, ctx.userProfile);
       ctx.resolvedConfig = resolvedConfig;
       ctx.domainContext = {
           atlas: resolvedConfig.atlas || {},
@@ -83,7 +93,7 @@ export class DecisionOrchestrator {
   }
 
   async _stepConfidenceAnalysis(ctx) {
-      ctx.confidence = this._analyzeConfidence(ctx.userProfile, ctx.resolvedConfig);
+      ctx.confidence = this.cognitiveAnalyzer.analyze(ctx.userProfile, ctx.resolvedConfig);
       ctx.domainContext.confidence = ctx.confidence;
   }
 
@@ -102,13 +112,15 @@ export class DecisionOrchestrator {
   async _stepZeroResultRecovery(ctx) {
       if (ctx.eligible.length === 0 && ctx.excluded.length > 0) {
           this.logger.log(`[Orchestrator] Zero results. Initiating Recovery Engine...`);
-          const recoveryResult = this._attemptRecovery(ctx.ir, ctx.entities, ctx.mappedProfile, ctx.excluded);
+          const recoveryResult = this.recoveryEngine.attemptRecovery(ctx.ir, ctx.entities, ctx.mappedProfile, ctx.excluded);
           if (recoveryResult) {
               ctx.execution = recoveryResult.execution;
               ctx.eligible = recoveryResult.eligible;
               ctx.excluded = recoveryResult.excluded;
               ctx.relaxedConstraint = recoveryResult.relaxedGateId;
+              ctx.integrityScore = recoveryResult.integrityScore;
               ctx.domainContext.relaxedConstraint = ctx.relaxedConstraint;
+              ctx.domainContext.integrityScore = ctx.integrityScore;
               this.logger.log(`[Orchestrator] Recovery successful by relaxing: ${ctx.relaxedConstraint}`);
           }
       }
@@ -180,93 +192,6 @@ export class DecisionOrchestrator {
       };
   }
 
-  /**
-   * Resolve Intent Graph: Merge base config with intent-specific logic.
-   */
-  _resolveIntent(config, profile) {
-    const intentId = profile.intentId || config.defaultIntentId || "general";
-    const locale = profile.locale || config.defaultLocale || "en";
-    const intentNode = config.intentGraph?.[intentId] || { id: "general" };
-
-    this.logger.log(`[Orchestrator] Resolving Intent: ${intentId} (${locale})`);
-
-    // Pick localized strings if they exist, otherwise fallback to string
-    const getLocalized = (val, loc) => (val && typeof val === "object") ? (val[loc] || val["en"]) : val;
-
-    const resolved = {
-        ...config,
-        gates: { ...(config.gates || {}), ...(intentNode.gates || {}) },
-        scores: { ...(config.scores || {}), ...(intentNode.scores || {}) },
-        expertIdentity: getLocalized(intentNode.expertIdentity, locale) || config.expertIdentity
-    };
-
-    return { 
-        resolvedConfig: resolved, 
-        intentContext: { 
-            id: intentId, 
-            title: getLocalized(intentNode.title, locale) || intentId,
-            futureProjection: getLocalized(intentNode.futureProjection, locale) || null
-        } 
-    };
-  }
-
-  /**
-   * Analyze Conflict & Confidence (Cognitive Layer).
-   */
-  _analyzeConfidence(profile, config) {
-    let conflictScore = 0;
-    const conflicts = [];
-
-    if (config.conflictMap) {
-        for (const [pair, impact] of Object.entries(config.conflictMap)) {
-            const [a, b] = pair.split(":");
-            // Logic: if user wants both A and B at high levels
-            if (profile[a] > 70 && profile[b] > 70) {
-                conflictScore += impact;
-                conflicts.push({ pair, impact });
-            }
-        }
-    }
-
-    return {
-        level: conflictScore > 50 ? "low" : conflictScore > 20 ? "medium" : "high",
-        score: 100 - conflictScore,
-        conflicts
-    };
-  }
-
-  /**
-   * Zero-Result Recovery Engine (Relaxation Algorithm)
-   * Finds the most restrictive constraint and temporarily disables it.
-   */
-  _attemptRecovery(ir, entities, context, excluded) {
-    // 1. Find the most common exclusion gate (the biggest bottleneck)
-    const gateCounts = {};
-    for (const ex of excluded) {
-      for (const gate of ex.trace.exclusions) {
-        gateCounts[gate] = (gateCounts[gate] || 0) + 1;
-      }
-    }
-
-    if (Object.keys(gateCounts).length === 0) return null;
-
-    const mostCommonGate = Object.keys(gateCounts).sort((a, b) => gateCounts[b] - gateCounts[a])[0];
-
-    // 2. Create a modified IR plan without this gate
-    const relaxedPlan = ir.executionPlan.filter(node => node.id !== mostCommonGate);
-    const relaxedIr = { ...ir, executionPlan: relaxedPlan };
-
-    // 3. Re-execute Kernel with relaxed rules
-    const execution = this.kernel.execute(relaxedIr, entities, context);
-    const eligible = execution.results.filter(r => r.eligible);
-    const excludedNew = execution.results.filter(r => !r.eligible);
-
-    if (eligible.length > 0) {
-        return { execution, eligible, excluded: excludedNew, relaxedGateId: mostCommonGate };
-    }
-
-    return null; // Even with relaxation, no results
-  }
 
   _validateInput(config, entities, userProfile) {
     if (!config || !config.domainId) throw new Error("Orchestrator Error: Missing config.domainId");

@@ -117,14 +117,14 @@ export class DecisionExplainer {
       DICTIONARY: ${JSON.stringify(atlas[locale])}
       
       WRITING RULES:
-      1. PERSPECTIVE: Speak as a human expert, not a machine.
-      2. LOGIC: Explain WHY this choice is logical despite the conflicts: ${cognitiveState.conflictsFound.join(", ")}.
-      ${relaxedConstraint ? `3. RELAXATION: You MUST explicitly tell the user that we had to ignore the constraint "${relaxedConstraint}" to find this option.` : `3. CONSTRAINTS: All constraints were met.`}
-      4. FUTURE: Incorporate this projection: "${intent.futureProjection || "N/A"}".
-      5. INTEGRITY: Never invent specifications not in the technical trace.
-      6. TONE: Calm, objective, and deeply helpful.
+      1. PERSPECTIVE: Speak as an objective human expert, not a machine.
+      2. OBSERVATION: Describe the cognitive state and the trade-offs factually based on the conflicts: ${cognitiveState.conflictsFound.join(", ")}. Do not invent justifications or defend the choice if it is a compromise.
+      ${relaxedConstraint ? `3. COMPROMISE: You MUST explicitly state that the constraint "${relaxedConstraint}" was compromised (relaxed) to find this option. Inform the user clearly.` : `3. CONSTRAINTS: All constraints were met perfectly.`}
+      4. FUTURE: Incorporate this projection into your observation: "${intent.futureProjection || "N/A"}".
+      5. INTEGRITY: Never invent specifications or features not present in the technical trace. Be completely honest.
+      6. TONE: Calm, objective, transparent, and deeply helpful.
       
-      RESPONSE FORMAT: One or two highly impactful paragraphs.
+      RESPONSE FORMAT: One or two highly impactful, honest paragraphs.
     `;
   }
 

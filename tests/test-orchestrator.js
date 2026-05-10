@@ -134,7 +134,7 @@ async function runTest() {
 
     check("Intent 'creative_nomad' resolved", result.intentId === "creative_nomad");
     check("Conflict detected (Performance vs Portability)", result.confidence.score < 100);
-    check("Recovery Engine activated (gate_weight relaxed in prompt)", lastPrompt.includes("RELAXATION: You MUST explicitly tell the user that we had to ignore the constraint"));
+    check("Recovery Engine activated (gate_weight relaxed in prompt)", lastPrompt.includes("COMPROMISE: You MUST explicitly state that the constraint"));
 
     console.log(`\n══════════════════════════════════════════════════`);
     console.log(`  ${allPassed ? "ALL TESTS PASSED ✅" : "SOME TESTS FAILED ❌"}`);
