@@ -1,5 +1,7 @@
 import { DecisionCompiler } from "../../decision-compiler/src/index.js";
 import { DecisionKernel } from "../../decision-kernel/src/index.js";
+import { DecisionExplainer } from "../../decision-explanation/src/index.js";
+import { produceReviewIntelligence } from "../../catalog-review-intelligence/src/index.js";
 import { createHash, randomUUID } from "node:crypto";
 
 /**
@@ -7,55 +9,63 @@ import { createHash, randomUUID } from "node:crypto";
  * 
  * The "brain" that sits on top of the domain-blind Kernel.
  * Driven entirely by a decision-config.json — no domain-specific JS required.
- * 
- * Pipeline:
- *   decision-config.json → Compiler → IR
- *   user profile + entities → Kernel (per entity) → scored results
- *   selection strategy (from config) → ranked cards
- *   output templates (from config) → final decision
  */
-
 export class DecisionOrchestrator {
   constructor(options = {}) {
     this.logger = options.logger || console;
     this.compiler = new DecisionCompiler(this.logger);
     this.kernel = new DecisionKernel(this.logger);
+    this.explainer = new DecisionExplainer(options.explainer || {});
+    this.irCache = new Map(); // Performance: Cache compiled IRs
   }
 
   /**
    * Execute a full decision pipeline from config + data.
-   * 
-   * @param {object} config     — The decision-config.json (domain-agnostic)
-   * @param {Array}  entities   — Array of catalog entities
-   * @param {object} userProfile — Raw user profile input
-   * @returns {object} Full decision result with cards, traces, and governance
    */
   run(config, entities, userProfile) {
+    this._validateInput(config, entities, userProfile);
+    
     const decisionRunId = randomUUID();
     this.logger.log(`[Orchestrator] Starting decision run: ${decisionRunId}`);
 
     // ── Phase 1: Profile Mapping ──
     const mappedProfile = this._mapProfile(userProfile, config.profileMapping || {});
 
-    // ── Phase 2: Compile domain config into IR ──
-    const ir = this.compiler.compile(config);
+    // ── Phase 2: Compile domain config into IR (with Caching) ──
+    const ir = this._getCompiledIR(config);
 
     // ── Phase 3: Execute Kernel for every entity ──
     const context = { ...mappedProfile };
     const execution = this.kernel.execute(ir, entities, context);
 
-    // ── Phase 4: Filter eligible entities ──
+    // ── Phase 4: Filter & Analyze Exclusions (Transparency) ──
     const eligible = execution.results.filter(r => r.eligible);
     const excluded = execution.results.filter(r => !r.eligible);
+
+    // Transparency: Explain why top candidates were excluded
+    const topExcludedStories = excluded
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+        .map(ex => {
+            const title = entities.find(e => (e.entityId || e.id) === ex.entityId)?.title || ex.entityId;
+            return {
+                entityId: ex.entityId,
+                title,
+                reason: this.explainer.explainExclusion(ex.trace, title)
+            };
+        });
 
     this.logger.log(`[Orchestrator] ${eligible.length} eligible, ${excluded.length} excluded`);
 
     if (eligible.length === 0) {
-      return this._buildNoResult(decisionRunId, ir, execution, config);
+      return {
+          ...this._buildNoResult(decisionRunId, ir, execution, config),
+          topExcludedStories
+      };
     }
 
-    // ── Phase 5: Card Selection (from config strategy) ──
-    const cards = this._selectCards(eligible, config.selectionStrategy || {}, config.outputTemplate || {}, entities);
+    // ── Phase 5: Card Selection & Signal Integration ──
+    const cards = this._selectCards(eligible, config.selectionStrategy || {}, config.outputTemplate || {}, entities, config.taxonomy || {}, userProfile);
 
     // ── Phase 6: Governance Trace ──
     const inputHash = createHash("sha256").update(JSON.stringify(userProfile)).digest("hex");
@@ -67,6 +77,7 @@ export class DecisionOrchestrator {
       evaluatedCount: execution.results.length,
       candidateCount: eligible.length,
       excludedCount: excluded.length,
+      topExcludedStories, // Transparency layer
       cards,
       governance: {
         irHash: ir.irHash,
@@ -77,15 +88,22 @@ export class DecisionOrchestrator {
     };
   }
 
-  /**
-   * Phase 1: Map raw user profile fields to kernel attribute names.
-   * Driven by config.profileMapping.
-   * 
-   * Example config:
-   *   { "budget": "max_price", "major": "segment" }
-   * Transforms:
-   *   { budget: 1000 } → { max_price: 1000 }
-   */
+  _validateInput(config, entities, userProfile) {
+    if (!config || !config.domainId) throw new Error("Orchestrator Error: Missing config.domainId");
+    if (!Array.isArray(entities)) throw new Error("Orchestrator Error: entities must be an array");
+    if (!userProfile) throw new Error("Orchestrator Error: Missing userProfile");
+  }
+
+  _getCompiledIR(config) {
+    const configHash = createHash("md5").update(JSON.stringify(config)).digest("hex");
+    if (this.irCache.has(configHash)) {
+      return this.irCache.get(configHash);
+    }
+    const ir = this.compiler.compile(config);
+    this.irCache.set(configHash, ir);
+    return ir;
+  }
+
   _mapProfile(rawProfile, mapping) {
     const mapped = { ...rawProfile };
     for (const [from, to] of Object.entries(mapping)) {
@@ -97,57 +115,46 @@ export class DecisionOrchestrator {
     return mapped;
   }
 
-  /**
-   * Phase 5: Select cards based on strategy from config.
-   * 
-   * Example strategy:
-   *   {
-   *     cardSlots: [
-   *       { type: "hero",   pickBy: "highest_score" },
-   *       { type: "budget", pickBy: "lowest_price", priceField: "price" },
-   *       { type: "value",  pickBy: "best_ratio", scoreField: "score", priceField: "price" }
-   *     ],
-   *     noDuplicates: true
-   *   }
-   */
-  _selectCards(eligible, strategy, outputTemplate, rawEntities) {
+  _selectCards(eligible, strategy, outputTemplate, rawEntities, taxonomy, userProfile) {
     const slots = strategy.cardSlots || [{ type: "hero", pickBy: "highest_score" }];
     const noDuplicates = strategy.noDuplicates !== false;
     const selectedIds = new Set();
     const cards = [];
 
-    // Build entity lookup for raw data access
     const entityLookup = new Map();
     for (const e of rawEntities) {
       entityLookup.set(e.entityId || e.id, e);
     }
 
     for (const slot of slots) {
-      // Filter out already selected entities if noDuplicates
       let candidates = noDuplicates
         ? eligible.filter(r => !selectedIds.has(r.entityId))
         : [...eligible];
 
       if (candidates.length === 0) continue;
 
-      // Pick the best candidate for this slot
       const picked = this._pickCandidate(candidates, slot, entityLookup);
       if (!picked) continue;
 
       selectedIds.add(picked.entityId);
 
-      // Build the card using the output template
       const rawEntity = entityLookup.get(picked.entityId) || {};
-      const card = this._buildCard(slot.type, picked, rawEntity, outputTemplate);
+      
+      // Integrate Review Intelligence Signals
+      const intelligence = produceReviewIntelligence({
+        topCons: rawEntity.topCons || [],
+        reviewRiskScore: rawEntity.market?.reviewRiskScore || 0,
+        taxonomy,
+        reviewCount: rawEntity.market?.reviewCount || 0
+      });
+
+      const card = this._buildCard(slot.type, picked, rawEntity, outputTemplate, intelligence, userProfile);
       cards.push(card);
     }
 
     return cards;
   }
 
-  /**
-   * Pick the best candidate for a given card slot.
-   */
   _pickCandidate(candidates, slot, entityLookup) {
     const priceField = slot.priceField || "price";
     const getPrice = (r) => {
@@ -158,45 +165,41 @@ export class DecisionOrchestrator {
     switch (slot.pickBy) {
       case "highest_score":
         return candidates.sort((a, b) => b.score - a.score)[0];
-
       case "lowest_price":
         return candidates.sort((a, b) => getPrice(a) - getPrice(b))[0];
-
       case "best_ratio": {
-        // Score per dollar — higher is better
         return candidates.sort((a, b) => {
           const ratioA = a.score / Math.max(getPrice(a), 1);
           const ratioB = b.score / Math.max(getPrice(b), 1);
           return ratioB - ratioA;
         })[0];
       }
-
       default:
         return candidates[0];
     }
   }
 
-  /**
-   * Build a card from template + data.
-   * 
-   * Template uses {field} interpolation:
-   *   { title: "{entity.title}", score: "{score}" }
-   */
-  _buildCard(cardType, kernelResult, rawEntity, template) {
+  _buildCard(cardType, kernelResult, rawEntity, template, intelligence, userProfile) {
     const card = {
       cardType,
       entityId: kernelResult.entityId,
       score: Math.round(kernelResult.score * 100) / 100,
       eligible: kernelResult.eligible,
+      intelligence, // Full review intelligence payload
       trace: kernelResult.trace
     };
 
-    // Apply template interpolation
+    const story = this.explainer.explain(kernelResult.trace, rawEntity.title || rawEntity.itemName || kernelResult.entityId, userProfile);
+    const tradeoff = this.explainer.explainTradeoff(kernelResult.trace, rawEntity) || intelligence.primaryWarning;
+
     const context = {
       entity: rawEntity,
       score: kernelResult.score,
       scores: kernelResult.trace.scores,
-      entityId: kernelResult.entityId
+      entityId: kernelResult.entityId,
+      intel: intelligence,
+      story,
+      tradeoff
     };
 
     for (const [key, pattern] of Object.entries(template)) {
@@ -205,31 +208,25 @@ export class DecisionOrchestrator {
       }
     }
 
-    // Add entity raw fields for downstream use
     card.title = card.title || rawEntity.title || rawEntity.itemName || kernelResult.entityId;
     card.price = rawEntity.price || rawEntity.market?.bestOffer?.priceUsd || null;
+    card.tradeoff = card.tradeoff || tradeoff;
 
     return card;
   }
 
-  /**
-   * Simple template interpolation: "{entity.title}" → "MacBook Pro"
-   */
   _interpolate(template, context) {
     return template.replace(/\{([^}]+)\}/g, (match, path) => {
       const parts = path.split(".");
       let value = context;
       for (const part of parts) {
         value = value?.[part];
-        if (value === undefined) return match; // Keep original if not found
+        if (value === undefined) return match;
       }
       return String(value);
     });
   }
 
-  /**
-   * Build no-result response.
-   */
   _buildNoResult(decisionRunId, ir, execution, config) {
     return {
       decisionRunId,
@@ -246,3 +243,4 @@ export class DecisionOrchestrator {
     };
   }
 }
+

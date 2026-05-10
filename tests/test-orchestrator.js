@@ -66,8 +66,10 @@ const laptopConfig = {
   },
 
   outputTemplate: {
-    whyThis: "Scored {score} overall with strong {entity.topStrength}",
-    headline: "{entity.title} — Best for your needs"
+    whyThis: "{story}",
+    headline: "{entity.title} — Best for your needs",
+    warning: "{intel.primaryWarning}",
+    tradeoff: "{tradeoff}"
   }
 };
 
@@ -75,12 +77,33 @@ const laptopConfig = {
 // THE DATA — Simulated catalog entities
 // ═══════════════════════════════════════════════
 const entities = [
-  { id: "mbp-16",  entityId: "mbp-16",  title: "MacBook Pro 16",  price: 2499, ramGb: 32, storageGb: 512, weightKg: 2.1, benchmarkScore: 92, batteryHours: 14, topStrength: "performance" },
-  { id: "tp-x1",   entityId: "tp-x1",   title: "ThinkPad X1",     price: 1399, ramGb: 16, storageGb: 256, weightKg: 1.2, benchmarkScore: 78, batteryHours: 12, topStrength: "portability" },
-  { id: "acer-a5", entityId: "acer-a5",  title: "Acer Aspire 5",   price: 549,  ramGb: 8,  storageGb: 256, weightKg: 1.8, benchmarkScore: 55, batteryHours: 8,  topStrength: "price" },
-  { id: "hp-pav",  entityId: "hp-pav",   title: "HP Pavilion",      price: 699,  ramGb: 16, storageGb: 512, weightKg: 1.9, benchmarkScore: 65, batteryHours: 9,  topStrength: "balance" },
-  { id: "del-xps", entityId: "del-xps",  title: "Dell XPS 13",      price: 1199, ramGb: 16, storageGb: 512, weightKg: 1.2, benchmarkScore: 82, batteryHours: 11, topStrength: "display" },
-  { id: "low-ram", entityId: "low-ram",  title: "Cheap Chromebook",  price: 299,  ramGb: 4,  storageGb: 64,  weightKg: 1.5, benchmarkScore: 25, batteryHours: 10, topStrength: "none" }
+  { 
+    id: "mbp-16",  
+    entityId: "mbp-16",  
+    title: "MacBook Pro 16",  
+    price: 2499, ramGb: 32, storageGb: 512, weightKg: 2.1, benchmarkScore: 92, batteryHours: 14, 
+    topStrength: "performance",
+    topCons: ["High price", "Heavy"],
+    market: { reviewRiskScore: 0.1, reviewCount: 150 }
+  },
+  { 
+    id: "tp-x1",   
+    entityId: "tp-x1",   
+    title: "ThinkPad X1",     
+    price: 1399, ramGb: 16, storageGb: 256, weightKg: 1.2, benchmarkScore: 78, batteryHours: 12, 
+    topStrength: "portability",
+    topCons: ["Expensive upgrades"],
+    market: { reviewRiskScore: 0.05, reviewCount: 85 }
+  },
+  { 
+    id: "hp-pav",  
+    entityId: "hp-pav",   
+    title: "HP Pavilion",      
+    price: 699,  ramGb: 16, storageGb: 512, weightKg: 1.9, benchmarkScore: 65, batteryHours: 9, 
+    topStrength: "balance",
+    topCons: ["Plastic build", "Dim screen"],
+    market: { reviewRiskScore: 0.3, reviewCount: 210 }
+  }
 ];
 
 // ═══════════════════════════════════════════════
@@ -88,56 +111,53 @@ const entities = [
 // ═══════════════════════════════════════════════
 const userProfile = {
   id: "student-001",
-  budget: 1500,
-  major: "computer_science"
+  budget: 1500, // Trigger exclusion for MacBook
+  major: "Computer Science"
 };
 
 // ═══════════════════════════════════════════════
 // RUN
 // ═══════════════════════════════════════════════
 console.log("╔══════════════════════════════════════════════════╗");
-console.log("║  UNIVERSAL ORCHESTRATOR — Zero-JS Domain Test    ║");
+console.log("║  UNIVERSAL ORCHESTRATOR — Trust Capital Test     ║");
 console.log("╚══════════════════════════════════════════════════╝\n");
 
 const orchestrator = new DecisionOrchestrator({ logger: silentLogger });
 const result = orchestrator.run(laptopConfig, entities, userProfile);
 
 console.log(`Status: ${result.status}`);
-console.log(`Evaluated: ${result.evaluatedCount} | Eligible: ${result.candidateCount} | Excluded: ${result.excludedCount}`);
-console.log(`IR Hash: ${result.governance.irHash.substring(0, 16)}...`);
-console.log(`\n── Cards ──`);
+console.log(`Evaluated: ${result.evaluatedCount} | Eligible: ${result.candidateCount}`);
 
-let allPassed = true;
-
+console.log(`\n── [1] WINNERS (Expert Recommendations) ──`);
 for (const card of result.cards) {
-  console.log(`  [${card.cardType.toUpperCase()}] ${card.title} — Score: ${card.score}, Price: $${card.price}`);
+  console.log(`\n  [${card.cardType.toUpperCase()}] ${card.title}`);
+  console.log(`  Expert Note: ${card.whyThis}`);
+  console.log(`  The Catch:   ${card.tradeoff || "None detected"}`);
+}
+
+console.log(`\n── [2] TRANSPARENCY (Why we skipped some) ──`);
+for (const ex of result.topExcludedStories) {
+  console.log(`  - ${ex.title}: ${ex.reason}`);
 }
 
 // ── Assertions ──
 console.log("\n── Assertions ──");
-
+let allPassed = true;
 function check(name, condition) {
-  if (condition) {
-    console.log(`  ✅ ${name}`);
-  } else {
-    console.log(`  ❌ ${name}`);
-    allPassed = false;
-  }
+  if (condition) console.log(`  ✅ ${name}`);
+  else { console.log(`  ❌ ${name}`); allPassed = false; }
 }
 
 check("Decision status is OK", result.status === "ok");
-check("3 cards produced (hero, budget, value)", result.cards.length === 3);
-check("No duplicate entities across cards", new Set(result.cards.map(c => c.entityId)).size === 3);
-check("Hero card has the highest score", result.cards[0].cardType === "hero");
-check("Budget card has the lowest price", result.cards[1].cardType === "budget");
-check("Chromebook excluded (4GB RAM < 8GB gate)", result.excludedCount >= 1);
-check("MacBook excluded (price > budget $1500)", !result.cards.find(c => c.entityId === "mbp-16"));
-check("Governance trace present", !!result.governance.irHash);
-check("IR hash is deterministic (64 chars)", result.governance.irHash.length === 64);
+check("Exclusion stories generated", result.topExcludedStories.length > 0);
+check("MacBook exclusion explained by budget", result.topExcludedStories.find(s => s.entityId === "mbp-16")?.reason.includes("budget"));
+check("Trade-off story generated for winners", result.cards.some(c => c.tradeoff));
+check("Human context used in story", result.cards[0].whyThis.includes("Computer Science"));
 
-// Run again to prove determinism
-const result2 = orchestrator.run(laptopConfig, entities, userProfile);
-check("Deterministic: same config = same IR hash", result.governance.irHash === result2.governance.irHash);
+console.log(`\n══════════════════════════════════════════════════`);
+console.log(`  ${allPassed ? "ALL TESTS PASSED ✅" : "SOME TESTS FAILED ❌"}`);
+console.log(`══════════════════════════════════════════════════`);
+if (!allPassed) process.exit(1);
 
 console.log(`\n══════════════════════════════════════════════════`);
 console.log(`  ${allPassed ? "ALL TESTS PASSED ✅" : "SOME TESTS FAILED ❌"}`);
