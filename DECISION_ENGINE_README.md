@@ -44,6 +44,12 @@ A robust deduplication engine that merges products from multiple sources (Amazon
 - **Fuzzy Matching**: Intelligent name normalization.
 - **Conflict Resolution**: Weighted attribute selection based on source confidence.
 
+### 7. Automated Acquisition Layer
+The "Nervous System" of the platform that senses the web for new data:
+- **Distributed Sensors**: Modular extractors for Reddit, Tech-Sites, and Retailers.
+- **Persistent Observations**: Every raw signal is stored in the `external_review_observations` vault for historical tracking.
+- **Acquisition Orchestrator**: Manages parallel sensing runs and links them to the Decision Intelligence layer.
+
 ## Domain Implementation Workflow
 To add a new domain (e.g., Cars, Servers, Real Estate):
 1. Create a `decision-config.json` defining attributes, metrics, and rules.

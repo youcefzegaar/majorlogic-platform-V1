@@ -73,6 +73,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0012_admin_users_security.sql",
       "database/migrations/0013_pipeline_orchestration.sql",
       "database/migrations/0014_generic_active_views.sql",
+      "database/migrations/0015_external_acquisition_store.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -668,6 +669,38 @@ export class PostgresPlatformRepository {
        set status = $2, metadata = metadata || $3::jsonb, error_message = $4, completed_at = case when $2 in ('completed', 'failed') then now() else completed_at end
        where id = $1`,
       [id, status, JSON.stringify(metadata), errorMessage]
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // External Acquisition
+  // ─────────────────────────────────────────────
+
+  async createAcquisitionRun({ domainId, metadata = {} }) {
+    const id = randomUUID();
+    await this.pool.query(
+      `INSERT INTO public.external_acquisition_runs (id, domain_id, status, metadata)
+       VALUES ($1, $2, 'running', $3::jsonb)`,
+      [id, domainId, JSON.stringify(metadata)]
+    );
+    return id;
+  }
+
+  async completeAcquisitionRun({ id, status = 'completed' }) {
+    await this.pool.query(
+      `UPDATE public.external_acquisition_runs
+       SET status = $2, completed_at = NOW()
+       WHERE id = $1`,
+      [id, status]
+    );
+  }
+
+  async saveReviewObservations({ runId, sourceName, productName, rawData, sentimentScore, extractedSignals }) {
+    await this.pool.query(
+      `INSERT INTO public.external_review_observations
+       (run_id, source_name, product_name, raw_data, sentiment_score, extracted_signals)
+       VALUES ($1, $2, $3, $4::jsonb, $5, $6::jsonb)`,
+      [runId, sourceName, productName, JSON.stringify(rawData), sentimentScore, JSON.stringify(extractedSignals)]
     );
   }
 }
