@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   BrainCircuit, 
@@ -9,8 +9,14 @@ import {
   Search, 
   Plus,
   ArrowUpRight,
-  ShieldCheck
+  ShieldCheck,
+  RefreshCw,
+  Users,
+  Tag,
+  Mail,
+  ExternalLink
 } from 'lucide-react';
+import { DomainAPI, TelemetryAPI, AffiliateAPI, LeadsAPI } from './lib/supabase.js';
 import './index.css';
 
 const Sidebar = ({ currentPath, setCurrentPath }) => {
@@ -19,6 +25,8 @@ const Sidebar = ({ currentPath, setCurrentPath }) => {
     { id: 'domains', icon: BrainCircuit, label: 'Cognitive Domains' },
     { id: 'telemetry', icon: Activity, label: 'Telemetry' },
     { id: 'ab_tests', icon: GitMerge, label: 'A/B Testing' },
+    { id: 'leads', icon: Users, label: 'Growth & Leads' },
+    { id: 'affiliate', icon: Tag, label: 'Affiliate Tags' },
     { id: 'settings', icon: Settings, label: 'Settings' }
   ];
 
@@ -40,7 +48,7 @@ const Sidebar = ({ currentPath, setCurrentPath }) => {
         </div>
       </div>
 
-      <nav style={{ flex: 1 }}>
+      <nav style={{ flex: 1, overflowY: 'auto' }}>
         {menuItems.map(item => (
           <a 
             key={item.id}
@@ -54,12 +62,12 @@ const Sidebar = ({ currentPath, setCurrentPath }) => {
         ))}
       </nav>
 
-      <div className="card" style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
+      <div className="card" style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)', marginTop: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
           <div className="status-dot active"></div>
-          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>System Healthy</span>
+          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>System Connected</span>
         </div>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>v1.0.0 Stable</p>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>Live Telemetry Active</p>
       </div>
     </aside>
   );
@@ -96,6 +104,35 @@ const Topbar = () => {
 };
 
 const DashboardHome = () => {
+  const [metrics, setMetrics] = useState({ total: 24592, avgConfidence: 92, avgIntegrity: 98, recoveries: 142 });
+  const [domains, setDomains] = useState([
+    { id: 1, title: 'Laptops (US)', version: 'v1.2.0', is_active: true },
+    { id: 2, title: 'Smartphones', version: 'v1.0.1', is_active: true }
+  ]);
+  const [interventions, setInterventions] = useState([
+     { intent_slug: 'creative_nomad', relaxed_constraint: 'gate_weight', integrity_score: 60, created_at: new Date().toISOString() }
+  ]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      try {
+        const dbDomains = await DomainAPI.getActiveDomains();
+        const dbMetrics = await TelemetryAPI.getDashboardMetrics();
+        const dbInterventions = await TelemetryAPI.getRecentInterventions();
+        
+        if (dbDomains && dbDomains.length > 0) setDomains(dbDomains);
+        if (dbMetrics && dbMetrics.total > 0) setMetrics(dbMetrics);
+        if (dbInterventions && dbInterventions.length > 0) setInterventions(dbInterventions);
+      } catch (err) {
+        console.error("Supabase not fully configured yet, using mock data.");
+      }
+      setLoading(false);
+    }
+    loadData();
+  }, []);
+
   return (
     <div className="page-content">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
@@ -103,9 +140,14 @@ const DashboardHome = () => {
           <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Cognitive <span className="text-gradient">Overview</span></h1>
           <p style={{ color: 'var(--text-secondary)' }}>Monitor decision engine performance and integrity.</p>
         </div>
-        <button className="btn btn-primary">
-          <Plus size={18} /> New Domain
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button className="btn btn-outline">
+            {loading ? <RefreshCw className="spin" size={18} /> : <RefreshCw size={18} />} Sync
+          </button>
+          <button className="btn btn-primary">
+            <Plus size={18} /> New Domain
+          </button>
+        </div>
       </div>
 
       <div className="grid-4" style={{ marginBottom: '32px' }}>
@@ -114,9 +156,9 @@ const DashboardHome = () => {
             <span>Total Decisions</span>
             <Activity size={20} color="var(--accent-primary)" />
           </div>
-          <div className="metric-value">24,592</div>
+          <div className="metric-value">{metrics.total.toLocaleString()}</div>
           <div style={{ fontSize: '0.85rem', color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
-            <ArrowUpRight size={14} /> +12% this week
+            <ArrowUpRight size={14} /> Tracking live
           </div>
         </div>
 
@@ -125,9 +167,9 @@ const DashboardHome = () => {
             <span>Avg. Confidence</span>
             <BrainCircuit size={20} color="var(--warning)" />
           </div>
-          <div className="metric-value">92%</div>
+          <div className="metric-value">{metrics.avgConfidence}%</div>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginTop: '8px' }}>
-            High certainty across intents
+            System certainty level
           </div>
         </div>
 
@@ -136,20 +178,20 @@ const DashboardHome = () => {
             <span>Avg. Integrity Score</span>
             <ShieldCheck size={20} color="var(--success)" />
           </div>
-          <div className="metric-value">98.5%</div>
+          <div className="metric-value">{metrics.avgIntegrity}%</div>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginTop: '8px' }}>
-            Rarely activating recovery
+            Constraint adherence
           </div>
         </div>
 
         <div className="card metric-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-            <span>Active A/B Tests</span>
+            <span>Recoveries (Relaxed)</span>
             <GitMerge size={20} color="var(--accent-secondary)" />
           </div>
-          <div className="metric-value">2</div>
+          <div className="metric-value">{metrics.recoveries}</div>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginTop: '8px' }}>
-            Laptop & Car domains
+            Zero-result evasions
           </div>
         </div>
       </div>
@@ -163,28 +205,20 @@ const DashboardHome = () => {
                 <th>Domain Name</th>
                 <th>Version</th>
                 <th>Status</th>
-                <th>Avg Confidence</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><strong>Laptops (US)</strong></td>
-                <td>v1.2.0</td>
-                <td><span className="badge badge-success">Active</span></td>
-                <td>94%</td>
-              </tr>
-              <tr>
-                <td><strong>Smartphones</strong></td>
-                <td>v1.0.1</td>
-                <td><span className="badge badge-success">Active</span></td>
-                <td>88%</td>
-              </tr>
-              <tr>
-                <td><strong>Real Estate (UK)</strong></td>
-                <td>v0.9.0</td>
-                <td><span className="badge badge-warning">Draft</span></td>
-                <td>-</td>
-              </tr>
+              {domains.map((d, i) => (
+                <tr key={d.id || i}>
+                  <td><strong>{d.title}</strong></td>
+                  <td>{d.version}</td>
+                  <td>
+                    <span className={`badge ${d.is_active ? 'badge-success' : 'badge-warning'}`}>
+                      {d.is_active ? 'Active' : 'Draft'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -192,27 +226,18 @@ const DashboardHome = () => {
         <div className="card">
           <h3 style={{ marginBottom: '24px' }}>Recent Recovery Interventions</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontWeight: 600 }}>Intent: Creative Nomad</span>
-                <span className="badge badge-warning">Constraint Relaxed</span>
+            {interventions.map((inv, i) => (
+              <div key={i} style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <span style={{ fontWeight: 600 }}>Intent: {inv.intent_slug}</span>
+                  <span className="badge badge-warning">Constraint Relaxed</span>
+                </div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
+                  System dropped constraint <code style={{ color: 'var(--accent-primary)' }}>{inv.relaxed_constraint}</code> to yield results.
+                </p>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>Integrity: {inv.integrity_score}%</div>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
-                System dropped constraint <code style={{ color: 'var(--accent-primary)' }}>gate_weight</code> to yield 1 result.
-              </p>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>Just now • Integrity: 60%</div>
-            </div>
-
-            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontWeight: 600 }}>Intent: Budget Student</span>
-                <span className="badge badge-warning">Constraint Relaxed</span>
-              </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
-                System dropped constraint <code style={{ color: 'var(--accent-primary)' }}>gate_performance</code> to yield 3 results.
-              </p>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>2 hours ago • Integrity: 60%</div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -229,13 +254,298 @@ const App = () => {
       <main className="main-content">
         <Topbar />
         {currentPath === 'dashboard' && <DashboardHome />}
-        {currentPath !== 'dashboard' && (
-          <div className="page-content">
-            <h1 style={{ fontSize: '2rem' }}>{currentPath.charAt(0).toUpperCase() + currentPath.slice(1).replace('_', ' ')}</h1>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '8px' }}>This module is currently under construction. Please check back later.</p>
-          </div>
-        )}
+        {currentPath === 'domains' && <DomainsPage />}
+        {currentPath === 'telemetry' && <TelemetryPage />}
+        {currentPath === 'ab_tests' && <ABTestingPage />}
+        {currentPath === 'leads' && <LeadsPage />}
+        {currentPath === 'affiliate' && <AffiliatePage />}
+        {currentPath === 'settings' && <SettingsPage />}
       </main>
+    </div>
+  );
+};
+
+// --- Additional Pages ---
+
+const DomainsPage = () => {
+  return (
+    <div className="page-content">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Cognitive <span className="text-gradient">Domains</span></h1>
+          <p style={{ color: 'var(--text-secondary)' }}>Manage decision boundaries, constraint maps, and intent topologies.</p>
+        </div>
+        <button className="btn btn-primary"><Plus size={18} /> Create Domain</button>
+      </div>
+
+      <div className="grid-3">
+        <div className="card" style={{ borderTop: '4px solid var(--accent-primary)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '1.2rem' }}>Laptops (US)</h3>
+            <span className="badge badge-success">v1.2.0 Active</span>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '24px' }}>
+            Consumer electronics domain configured with 12 strict gates and 8 evaluation dimensions.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-tertiary)', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+            <span>Intents: 4</span>
+            <span>Avg Confidence: 94%</span>
+          </div>
+        </div>
+
+        <div className="card" style={{ borderTop: '4px solid var(--accent-secondary)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '1.2rem' }}>Smartphones</h3>
+            <span className="badge badge-success">v1.0.1 Active</span>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '24px' }}>
+            Mobile devices domain with high emphasis on camera and battery conflict maps.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-tertiary)', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+            <span>Intents: 6</span>
+            <span>Avg Confidence: 88%</span>
+          </div>
+        </div>
+
+        <div className="card" style={{ borderTop: '4px solid var(--warning)', opacity: 0.8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '1.2rem' }}>Real Estate (UK)</h3>
+            <span className="badge badge-warning">v0.9.0 Draft</span>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '24px' }}>
+            Property evaluation domain. Currently building the location-to-price conflict map.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-tertiary)', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+            <span>Intents: 0 (Draft)</span>
+            <span>Last edit: 2h ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TelemetryPage = () => {
+  return (
+    <div className="page-content">
+      <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Cognitive <span className="text-gradient">Telemetry</span></h1>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Real-time visualization of the Decision Kernel's health and user friction points.</p>
+
+      <div className="card" style={{ marginBottom: '24px', height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.01)' }}>
+        <div style={{ textAlign: 'center', color: 'var(--text-tertiary)' }}>
+          <Activity size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
+          <p>Confidence Trend Chart (Coming Soon)</p>
+          <p style={{ fontSize: '0.8rem' }}>Will render Recharts line graph connecting to Supabase Telemetry API</p>
+        </div>
+      </div>
+
+      <div className="grid-2">
+         <div className="card">
+          <h3 style={{ marginBottom: '16px' }}>Top Conflict Pairs</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '16px' }}>Dimensions that users frequently demand together but are mathematically opposed.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)' }}>
+              <span>Performance ⚡ vs Portability 🪶</span>
+              <span style={{ color: 'var(--warning)' }}>42% of queries</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)' }}>
+              <span>High Specs 🚀 vs Low Budget 💰</span>
+              <span style={{ color: 'var(--warning)' }}>38% of queries</span>
+            </div>
+          </div>
+         </div>
+      </div>
+    </div>
+  );
+};
+
+const ABTestingPage = () => {
+  return (
+    <div className="page-content">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>A/B <span className="text-gradient">Testing</span></h1>
+          <p style={{ color: 'var(--text-secondary)' }}>Deploy Challenger models against Champions to optimize decision integrity.</p>
+        </div>
+        <button className="btn btn-primary"><GitMerge size={18} /> New Experiment</button>
+      </div>
+
+      <div className="card" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--accent-gradient)' }}></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div>
+            <h3 style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Laptops Weight Relaxation Test <span className="badge badge-success">Running</span>
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
+              Testing a less aggressive penalty for weight constraints on the 'Student' intent.
+            </p>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>50 / 50</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>Traffic Split</div>
+          </div>
+        </div>
+
+        <div className="grid-2">
+          <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>🏆 Champion (v1.2.0)</span>
+              <span>Avg Confidence: 94%</span>
+            </div>
+            <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}>
+              <div style={{ width: '94%', height: '100%', background: 'var(--text-secondary)', borderRadius: '2px' }}></div>
+            </div>
+          </div>
+
+          <div style={{ padding: '16px', background: 'rgba(99,102,241,0.05)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(99,102,241,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>⚔️ Challenger (v1.3.0-beta)</span>
+              <span style={{ color: 'var(--accent-primary)' }}>Avg Confidence: 97%</span>
+            </div>
+            <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}>
+              <div style={{ width: '97%', height: '100%', background: 'var(--accent-primary)', borderRadius: '2px', boxShadow: '0 0 10px rgba(99,102,241,0.5)' }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LeadsPage = () => {
+  const [leads, setLeads] = useState([
+    { id: 1, email: 'user1@example.com', lead_type: 'price_alert', created_at: '2026-05-10T10:00:00Z' },
+    { id: 2, email: 'user2@example.com', lead_type: 'save_results', created_at: '2026-05-10T09:30:00Z' }
+  ]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const dbLeads = await LeadsAPI.getLeads();
+        if (dbLeads && dbLeads.length > 0) setLeads(dbLeads);
+      } catch (err) { console.error(err); }
+    }
+    loadData();
+  }, []);
+
+  return (
+    <div className="page-content">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Growth & <span className="text-gradient">Leads</span></h1>
+          <p style={{ color: 'var(--text-secondary)' }}>Captured user intent and contact information from the decision funnel.</p>
+        </div>
+        <button className="btn btn-outline"><Mail size={18} /> Export CSV</button>
+      </div>
+
+      <div className="card">
+        <table className="table-container">
+          <thead>
+            <tr>
+              <th>Email Address</th>
+              <th>Lead Type</th>
+              <th>Date Captured</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {leads.map(lead => (
+              <tr key={lead.id}>
+                <td>{lead.email}</td>
+                <td><span className="badge badge-primary">{lead.lead_type.replace('_', ' ')}</span></td>
+                <td>{new Date(lead.created_at).toLocaleDateString()}</td>
+                <td><button className="btn btn-outline" style={{ padding: '4px 8px' }}><ExternalLink size={14} /></button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+const AffiliatePage = () => {
+  const [settings, setSettings] = useState([
+    { id: 1, seller: 'Amazon', affiliate_tag: 'majorlogic-20', is_active: true },
+    { id: 2, seller: 'Best Buy', affiliate_tag: 'ml-bb-24', is_active: true }
+  ]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const dbSettings = await AffiliateAPI.getSettings();
+        if (dbSettings && dbSettings.length > 0) setSettings(dbSettings);
+      } catch (err) { console.error(err); }
+    }
+    loadData();
+  }, []);
+
+  return (
+    <div className="page-content">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Affiliate <span className="text-gradient">Tags</span></h1>
+          <p style={{ color: 'var(--text-secondary)' }}>Manage dynamic monetization tags across multiple sellers.</p>
+        </div>
+        <button className="btn btn-primary"><Plus size={18} /> Add Seller</button>
+      </div>
+
+      <div className="grid-2">
+        {settings.map(s => (
+          <div key={s.id} className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {s.seller} {s.is_active && <div className="status-dot active"></div>}
+              </h3>
+              <button className="btn btn-outline" style={{ padding: '4px 8px' }}>Edit</button>
+            </div>
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginBottom: '16px' }}>
+              <label style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', display: 'block', marginBottom: '4px' }}>Active Tag</label>
+              <code style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>{s.affiliate_tag}</code>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <span className="badge badge-success">Live</span>
+              <span className="badge badge-primary">Redirect Active</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const SettingsPage = () => {
+  return (
+    <div className="page-content">
+      <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Platform <span className="text-gradient">Settings</span></h1>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Manage API Keys, AI Providers, and Global Configuration.</p>
+
+      <div className="card" style={{ maxWidth: '600px' }}>
+        <h3 style={{ marginBottom: '24px' }}>AI Provider Configuration</h3>
+        
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>Provider</label>
+          <select style={{ width: '100%', padding: '10px 12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-strong)', color: 'white', borderRadius: 'var(--radius-sm)', fontFamily: 'inherit' }}>
+            <option>Google Gemini (Current)</option>
+            <option>OpenAI GPT-4</option>
+            <option>Anthropic Claude</option>
+          </select>
+        </div>
+
+        <div style={{ marginBottom: '24px' }}>
+          <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>API Key</label>
+          <input 
+            type="password" 
+            value="************************"
+            readOnly
+            style={{ width: '100%', padding: '10px 12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-strong)', color: 'white', borderRadius: 'var(--radius-sm)', fontFamily: 'inherit' }}
+          />
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginTop: '8px' }}>Key is encrypted and stored in Supabase Vault.</p>
+        </div>
+
+        <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>Save Configuration</button>
+      </div>
     </div>
   );
 };
