@@ -26,13 +26,19 @@ A dedicated layer for transparency, auditability, and production stability:
 - **Decision Ledger**: A unique `decisionId` is generated for every execution, linking logic and data.
 - **Deterministic Reconstructor**: Allows for 100% accurate re-execution (Replay) of past decisions for verification.
 
-### 4. Decision Explainer (Narrative Layer)
+### 4. Quality Intelligence (PQI)
+A semantic and probabilistic layer that evaluates product quality from real-world feedback:
+- **Bayesian Risk Assessment**: Weights user ratings based on statistical confidence (Bayesian Inference).
+- **Fatal Flaw Detection**: Monitors for recurring semantic patterns in user reviews (e.g., thermal issues, structural failures).
+- **Dynamic Penalty Injection**: Automatically downgrades products with verified high-risk signals.
+
+### 5. Decision Explainer (Narrative Layer)
 Turns raw execution traces into human-readable stories.
 - **Bilingual Support**: English (default) and Arabic.
 - **Reasoning Atlas**: Maps technical node IDs to friendly terms.
 - **Context-Aware**: Explains why a product was chosen or why it was rejected.
 
-### 5. Identity Manager
+### 6. Identity Manager
 A robust deduplication engine that merges products from multiple sources (Amazon, BestBuy, etc.) using:
 - **Strict Identifiers**: MPN, SKU.
 - **Fuzzy Matching**: Intelligent name normalization.
