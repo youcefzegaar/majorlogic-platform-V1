@@ -22,27 +22,41 @@ export class DecisionOrchestrator {
   /**
    * Execute a full decision pipeline from config + data.
    */
-  run(config, entities, userProfile) {
+  async run(config, entities, userProfile) {
     this._validateInput(config, entities, userProfile);
     
     const decisionRunId = randomUUID();
     this.logger.log(`[Orchestrator] Starting decision run: ${decisionRunId}`);
 
-    // ── Phase 1: Profile Mapping ──
-    const mappedProfile = this._mapProfile(userProfile, config.profileMapping || {});
+    // ── Phase 1: Intent Resolution (The Cognitive Brain) ──
+    const { resolvedConfig, intentContext } = this._resolveIntent(config, userProfile);
+    
+    // ── Phase 6: Conflict & Confidence Analysis ──
+    const confidence = this._analyzeConfidence(userProfile, resolvedConfig);
 
-    // ── Phase 2: Compile domain config into IR (with Caching) ──
-    const ir = this._getCompiledIR(config);
+    const domainContext = {
+      atlas: resolvedConfig.atlas || {},
+      expertIdentity: resolvedConfig.expertIdentity || "Expert Advisor",
+      locale: userProfile.locale || resolvedConfig.defaultLocale || "en",
+      useAI: resolvedConfig.useAI || false,
+      intent: intentContext,
+      confidence: confidence
+    };
 
-    // ── Phase 3: Execute Kernel for every entity ──
+    // ── Phase 2: Profile Mapping ──
+    const mappedProfile = this._mapProfile(userProfile, resolvedConfig.profileMapping || {});
+
+    // ── Phase 3: Compile (with Caching) ──
+    const ir = this._getCompiledIR(resolvedConfig);
+
+    // ── Phase 4: Execute Kernel ──
     const context = { ...mappedProfile };
     const execution = this.kernel.execute(ir, entities, context);
 
-    // ── Phase 4: Filter & Analyze Exclusions (Transparency) ──
+    // ── Phase 5: Filter & Analyze Exclusions ──
     const eligible = execution.results.filter(r => r.eligible);
     const excluded = execution.results.filter(r => !r.eligible);
 
-    // Transparency: Explain why top candidates were excluded
     const topExcludedStories = excluded
         .sort((a, b) => b.score - a.score)
         .slice(0, 3)
@@ -51,40 +65,96 @@ export class DecisionOrchestrator {
             return {
                 entityId: ex.entityId,
                 title,
-                reason: this.explainer.explainExclusion(ex.trace, title)
+                reason: this.explainer.explainExclusion(ex.trace, title, domainContext)
             };
         });
 
-    this.logger.log(`[Orchestrator] ${eligible.length} eligible, ${excluded.length} excluded`);
-
     if (eligible.length === 0) {
       return {
-          ...this._buildNoResult(decisionRunId, ir, execution, config),
-          topExcludedStories
+          ...this._buildNoResult(decisionRunId, ir, execution, resolvedConfig),
+          topExcludedStories,
+          confidence
       };
     }
 
-    // ── Phase 5: Card Selection & Signal Integration ──
-    const cards = this._selectCards(eligible, config.selectionStrategy || {}, config.outputTemplate || {}, entities, config.taxonomy || {}, userProfile);
+    // ── Phase 7: Card Selection ──
+    const cards = await this._selectCards(eligible, resolvedConfig.selectionStrategy || {}, resolvedConfig.outputTemplate || {}, entities, resolvedConfig.taxonomy || {}, userProfile, domainContext);
 
-    // ── Phase 6: Governance Trace ──
+    // ── Phase 8: Governance Trace ──
     const inputHash = createHash("sha256").update(JSON.stringify(userProfile)).digest("hex");
 
     return {
       decisionRunId,
       status: "ok",
+      intentId: intentContext.id,
+      confidence,
       profileId: userProfile.id || userProfile.profileId || "anonymous",
       evaluatedCount: execution.results.length,
       candidateCount: eligible.length,
       excludedCount: excluded.length,
-      topExcludedStories, // Transparency layer
+      topExcludedStories,
       cards,
       governance: {
         irHash: ir.irHash,
         inputHash,
-        logicVersion: config.version || "1.0.0",
+        logicVersion: resolvedConfig.version || "1.0.0",
         tracedAt: new Date().toISOString()
       }
+    };
+  }
+
+  /**
+   * Resolve Intent Graph: Merge base config with intent-specific logic.
+   */
+  _resolveIntent(config, profile) {
+    const intentId = profile.intentId || config.defaultIntentId || "general";
+    const locale = profile.locale || config.defaultLocale || "en";
+    const intentNode = config.intentGraph?.[intentId] || { id: "general" };
+
+    this.logger.log(`[Orchestrator] Resolving Intent: ${intentId} (${locale})`);
+
+    // Pick localized strings if they exist, otherwise fallback to string
+    const getLocalized = (val, loc) => (val && typeof val === "object") ? (val[loc] || val["en"]) : val;
+
+    const resolved = {
+        ...config,
+        gates: { ...(config.gates || {}), ...(intentNode.gates || {}) },
+        scores: { ...(config.scores || {}), ...(intentNode.scores || {}) },
+        expertIdentity: getLocalized(intentNode.expertIdentity, locale) || config.expertIdentity
+    };
+
+    return { 
+        resolvedConfig: resolved, 
+        intentContext: { 
+            id: intentId, 
+            title: getLocalized(intentNode.title, locale) || intentId,
+            futureProjection: getLocalized(intentNode.futureProjection, locale) || null
+        } 
+    };
+  }
+
+  /**
+   * Analyze Conflict & Confidence (Cognitive Layer).
+   */
+  _analyzeConfidence(profile, config) {
+    let conflictScore = 0;
+    const conflicts = [];
+
+    if (config.conflictMap) {
+        for (const [pair, impact] of Object.entries(config.conflictMap)) {
+            const [a, b] = pair.split(":");
+            // Logic: if user wants both A and B at high levels
+            if (profile[a] > 70 && profile[b] > 70) {
+                conflictScore += impact;
+                conflicts.push({ pair, impact });
+            }
+        }
+    }
+
+    return {
+        level: conflictScore > 50 ? "low" : conflictScore > 20 ? "medium" : "high",
+        score: 100 - conflictScore,
+        conflicts
     };
   }
 
@@ -115,7 +185,7 @@ export class DecisionOrchestrator {
     return mapped;
   }
 
-  _selectCards(eligible, strategy, outputTemplate, rawEntities, taxonomy, userProfile) {
+  async _selectCards(eligible, strategy, outputTemplate, rawEntities, taxonomy, userProfile, domainContext) {
     const slots = strategy.cardSlots || [{ type: "hero", pickBy: "highest_score" }];
     const noDuplicates = strategy.noDuplicates !== false;
     const selectedIds = new Set();
@@ -148,7 +218,7 @@ export class DecisionOrchestrator {
         reviewCount: rawEntity.market?.reviewCount || 0
       });
 
-      const card = this._buildCard(slot.type, picked, rawEntity, outputTemplate, intelligence, userProfile);
+      const card = await this._buildCard(slot.type, picked, rawEntity, outputTemplate, intelligence, userProfile, domainContext);
       cards.push(card);
     }
 
@@ -179,7 +249,7 @@ export class DecisionOrchestrator {
     }
   }
 
-  _buildCard(cardType, kernelResult, rawEntity, template, intelligence, userProfile) {
+  async _buildCard(cardType, kernelResult, rawEntity, template, intelligence, userProfile, domainContext) {
     const card = {
       cardType,
       entityId: kernelResult.entityId,
@@ -189,8 +259,8 @@ export class DecisionOrchestrator {
       trace: kernelResult.trace
     };
 
-    const story = this.explainer.explain(kernelResult.trace, rawEntity.title || rawEntity.itemName || kernelResult.entityId, userProfile);
-    const tradeoff = this.explainer.explainTradeoff(kernelResult.trace, rawEntity) || intelligence.primaryWarning;
+    const story = await this.explainer.explain(kernelResult.trace, rawEntity.title || rawEntity.itemName || kernelResult.entityId, domainContext);
+    const tradeoff = this.explainer.explainTradeoff(kernelResult.trace, domainContext.atlas, domainContext.locale) || intelligence.primaryWarning;
 
     const context = {
       entity: rawEntity,

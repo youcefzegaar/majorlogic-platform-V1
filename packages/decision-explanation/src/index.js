@@ -1,123 +1,136 @@
 /**
- * Decision Explainer — Turning raw Kernel Traces into Human Stories
+ * Decision Narrative Service (Explainer)
  * 
- * Strategy: "Expert Advisor" tone. Focus on logical links, trade-offs, and transparency.
+ * Role: Presentation Layer.
+ * Strategy: "Expert Advisor" tone. 
+ * Decoupled: Language and context are provided by the Domain Config.
  */
 
 export class DecisionExplainer {
   constructor(options = {}) {
-    this.locale = options.locale || "en";
-    // Atlas of concepts: Mapping Node IDs to human-friendly terms and expert perspectives
-    this.atlas = options.atlas || {
-      en: {
-        within_budget: "your budget limit",
-        min_ram: "required multitasking capacity (RAM)",
-        portability_score: "ease of mobility",
-        performance: "processing speed",
-        value_score: "price-to-performance balance",
-        thermal_throttle: "heat management",
-        gpu_power: "graphics and rendering power",
-        weight_impact: "carrying comfort",
-        
-        // Expert Perspectives
-        reason_budget: "is slightly beyond your specified budget",
-        reason_performance: "doesn't quite meet the heavy workload requirements for your major",
-        reason_ram: "will likely slow down when you have many apps open",
-        
-        // Trade-off templates
-        tradeoff_weight: "It's a powerhouse, but you'll feel the extra weight in your backpack.",
-        tradeoff_price: "Excellent specs, though you're paying a premium for the brand and build.",
-        tradeoff_battery: "Incredible performance, but keep your charger handy as battery life is the sacrifice."
-      },
-      ar: {
-        within_budget: "الميزانية المحددة",
-        min_ram: "سعة الذاكرة (RAM) المطلوبة لتعدد المهام",
-        portability_score: "سهولة التنقل والحمل",
-        performance: "سرعة المعالجة والأداء",
-        value_score: "التوازن بين القيمة والسعر",
-        thermal_throttle: "التحكم في الحرارة",
-        gpu_power: "قوة معالجة الرسوميات",
-        weight_impact: "راحة الحمل والاستخدام",
-
-        // وجهة نظر الخبير
-        reason_budget: "يتجاوز الميزانية التي حددتها قليلاً",
-        reason_performance: "قد لا يلبي متطلبات العمل الشاق الخاصة بتخصصك",
-        reason_ram: "قد تلاحظ بطءاً عند فتح الكثير من البرامج معاً",
-
-        // قوالب التضحيات (Trade-offs)
-        tradeoff_weight: "الجهاز قوي جداً، لكنك ستشعر بوزنه الزائد في حقيبتك.",
-        tradeoff_price: "مواصفات ممتازة، رغم أنك تدفع مبلغاً إضافياً مقابل جودة التصميم والعلامة التجارية.",
-        tradeoff_battery: "أداء مذهل، لكن ابقِ الشاحن قريباً لأن عمر البطارية هو التضحية هنا."
-      }
-    };
+    this.logger = options.logger || console;
+    this.aiProvider = options.aiProvider || null; // e.g., Gemini API interface
   }
 
   /**
-   * Generate decision story for a specific entity.
+   * Main entry point for generating the human story.
    */
-  explain(trace, entityName, context = {}) {
-    if (!trace.isEligible) {
-      return this._explainRejection(trace, entityName);
+  async explain(trace, entityName, domainContext = {}) {
+    const { atlas = {}, expertIdentity = "Expert Advisor", locale = "en", useAI = false } = domainContext;
+
+    if (useAI && this.aiProvider) {
+      try {
+        return await this._renderWithAI(trace, entityName, domainContext);
+      } catch (err) {
+        this.logger.error("[Explainer] AI Rendering failed, falling back to templates", err);
+      }
     }
-    return this._explainWinner(trace, entityName, context);
+
+    return this._renderWithTemplates(trace, entityName, atlas, expertIdentity, locale);
   }
 
   /**
    * Explain WHY we didn't pick an entity (Transparency).
    */
-  explainExclusion(trace, name) {
+  explainExclusion(trace, name, domainContext = {}) {
+    const { atlas = {}, locale = "en" } = domainContext;
     const reasons = trace.exclusions.map(id => {
         const key = `reason_${id.replace('gate_', '')}`;
-        return this.atlas[this.locale]?.[key] || this.atlas[this.locale]?.[id] || id;
+        return atlas[locale]?.[key] || atlas[locale]?.[id] || id;
     });
 
-    if (this.locale === "ar") {
+    if (locale === "ar") {
       return `استبعدنا "${name}" لأنه ${reasons.join(" و ")}.`;
     }
     return `We excluded "${name}" because it ${reasons.join(" and ")}.`;
   }
 
-  _explainRejection(trace, name) {
-    return this.explainExclusion(trace, name);
-  }
+  _renderWithTemplates(trace, name, atlas, identity, locale) {
+    if (!trace.isEligible) return this.explainExclusion(trace, name, { atlas, locale });
 
-  _explainWinner(trace, name, context = {}) {
     const scores = Object.entries(trace.scores)
       .filter(([id]) => id.startsWith("score_"))
       .sort((a, b) => b[1] - a[1]);
 
     const topScore = scores[0];
-    const strength = topScore ? (this.atlas[this.locale]?.[topScore[0]] || topScore[0]) : "";
+    const strength = topScore ? (atlas[locale]?.[topScore[0]] || topScore[0]) : "";
     
-    const major = context.major || "general";
-    
-    if (this.locale === "ar") {
-      let story = `نرشح لك "${name}" كخيار أول لأنه يحقق أفضل توازن لمتطلبات ${strength}.`;
-      if (major !== "general") {
-          story = `بناءً على تخصصك في ${major}، اخترنا "${name}" لقدرته العالية على معالجة أحمال العمل المطلوبة.`;
-      }
-      return story;
+    if (locale === "ar") {
+      return `بصفتي ${identity}، أنصح بـ "${name}" كأفضل توازن لمتطلبات ${strength}.`;
     }
-
-    let story = `We recommend "${name}" because it offers the best balance for ${strength} standards.`;
-    if (major !== "general") {
-        story = `Given your focus on ${major}, we chose "${name}" for its superior handling of the required workloads.`;
-    }
-    return story;
+    return `As your ${identity}, I recommend "${name}" for its superior ${strength}.`;
   }
 
   /**
-   * Specifically highlight the "Catch" or "Sacrifice" (Trust factor).
+   * The "Expert AI" Presentation Layer.
+   * AI doesn't decide; it only narrates the deterministic cognitive state.
    */
-  explainTradeoff(trace, entity) {
-    // Logic: Look for low scores in high-performance items or physical traits
+  async _renderWithAI(trace, name, context) {
+    const prompt = this.buildPrompt(trace, name, context);
+    
+    this.logger.log(`[CognitiveRenderer] Sending prompt for "${name}" (Confidence: ${context.confidence?.score}%)`);
+    
+    // In a real scenario, this would call the AI API.
+    const narrative = await this.aiProvider.generate(prompt);
+    return narrative;
+  }
+
+  /**
+   * Build a Strict Cognitive Prompt.
+   * This is the "Brain-to-Voice" bridge.
+   */
+  buildPrompt(trace, name, context) {
+    const { expertIdentity, locale, atlas, intent, confidence } = context;
+    
+    const cognitiveState = {
+        subject: name,
+        intent: intent.title,
+        expertRole: expertIdentity,
+        confidenceLevel: confidence.level,
+        confidenceScore: confidence.score,
+        conflictsFound: confidence.conflicts.map(c => c.pair),
+        futureProjection: intent.futureProjection,
+        technicalTrace: {
+            scores: trace.scores,
+            exclusions: trace.exclusions,
+            topStrengths: Object.entries(trace.scores)
+                .filter(s => s[1] > 70)
+                .map(s => s[0])
+        }
+    };
+
+    return `
+      SYSTEM INSTRUCTION:
+      You are the "${expertIdentity}". Your role is to explain a deterministic decision result to a user who has the intent: "${intent.title}".
+      
+      CORE PRINCIPLE: "Truth Capital". 
+      If confidence is LOW or MEDIUM, start by addressing the CONFLICTS and TRADE-OFFS. Do not hide them.
+      
+      TECHNICAL TRUTH:
+      ${JSON.stringify(cognitiveState, null, 2)}
+      
+      LOCALE: ${locale}
+      DICTIONARY: ${JSON.stringify(atlas[locale])}
+      
+      WRITING RULES:
+      1. PERSPECTIVE: Speak as a human expert, not a machine.
+      2. LOGIC: Explain WHY this choice is logical despite the conflicts: ${cognitiveState.conflictsFound.join(", ")}.
+      3. FUTURE: Incorporate this projection: "${intent.futureProjection || "N/A"}".
+      4. INTEGRITY: Never invent specifications not in the technical trace.
+      5. TONE: Calm, objective, and deeply helpful.
+      
+      RESPONSE FORMAT: One or two highly impactful paragraphs.
+    `;
+  }
+
+  /**
+   * Highlight the "Sacrifice" based on scores.
+   */
+  explainTradeoff(trace, atlas, locale) {
     const scores = trace.scores;
-    const locale = this.locale;
-    
-    if (scores.portability_score < 40) return this.atlas[locale].tradeoff_weight;
-    if (scores.value_score < 40) return this.atlas[locale].tradeoff_price;
-    
-    // Fallback to review intelligence if provided
-    return null; 
+    // Domain-specific trade-off logic could be added here or in the atlas
+    if (scores.portability_score < 40) return atlas[locale]?.tradeoff_weight || "Heavy build.";
+    if (scores.value_score < 40) return atlas[locale]?.tradeoff_price || "Premium price.";
+    return null;
   }
 }
