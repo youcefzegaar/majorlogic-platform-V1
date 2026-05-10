@@ -110,9 +110,15 @@ export class DecisionKernel {
     
     switch (formula.op) {
       case "add":
-        return formula.args.reduce((sum, arg) => sum + (typeof arg === "object" ? this._evaluateFormula(arg, values) : (values[arg] || 0)), 0);
+        return formula.args.reduce((sum, arg) => {
+            const val = typeof arg === "number" ? arg : (typeof arg === "object" ? this._evaluateFormula(arg, values) : (values[arg] || 0));
+            return sum + val;
+        }, 0);
       case "multiply":
-        return formula.args.reduce((prod, arg) => prod * (typeof arg === "object" ? this._evaluateFormula(arg, values) : (values[arg] || 0)), 1);
+        return formula.args.reduce((prod, arg) => {
+            const val = typeof arg === "number" ? arg : (typeof arg === "object" ? this._evaluateFormula(arg, values) : (values[arg] || 0));
+            return prod * val;
+        }, 1);
       case "inverse":
         const val = typeof formula.arg === "object" ? this._evaluateFormula(formula.arg, values) : (values[formula.arg] || 0);
         return val === 0 ? 0 : 1 / val;

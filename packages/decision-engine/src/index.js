@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { createHash } from "node:crypto";
 
 export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
   const decisionRunId = crypto.randomUUID();
@@ -78,6 +79,11 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
     cards.push(domainPack.buildCard(cardType, selection, preparedProfile));
   }
 
+  // ─── Decision Governance: Immutable Trace ───
+  const inputSnapshot = JSON.stringify({ profile: preparedProfile, entityCount: matchingEntities.length });
+  const inputHash = createHash("sha256").update(inputSnapshot).digest("hex");
+  const irHash = createHash("sha256").update(JSON.stringify(ruleset)).digest("hex");
+
   return {
     decisionRunId,
     profileId: preparedProfile.profileId ?? preparedProfile.id ?? "anonymous_profile",
@@ -88,6 +94,13 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
     excludedReasonCounts,
     status: "ok",
     cards,
-    noResults: null
+    noResults: null,
+    // Governance trace — enables deterministic replay
+    governance: {
+      irHash,
+      inputHash,
+      logicVersion: ruleset?.logicVersion || "unknown",
+      tracedAt: new Date().toISOString()
+    }
   };
 }

@@ -78,6 +78,13 @@ export class DecisionCompiler {
       }
     }
 
+    // 3. Scores (Aggregated — from direct config.scores)
+    if (config.scores) {
+      for (const [id, score] of Object.entries(config.scores)) {
+        nodes.push({ id, type: "score", ...score });
+      }
+    }
+
     return nodes;
   }
 
@@ -162,11 +169,19 @@ export class DecisionCompiler {
     for (const node of plan) {
       node.resultType = inferType(node, nodeMap);
       
-      const checkOperator = (opId, inputNodes) => {
+      const checkOperator = (opId, args) => {
           const op = OPERATOR_REGISTRY[opId];
           if (!op) return;
 
-          const inputTypes = inputNodes.map(id => nodeMap[id]?.resultType || DECISION_TYPES.NUMERIC);
+          const inputTypes = args.map(arg => {
+              // If it's a string, it's a node reference
+              if (typeof arg === "string") {
+                  return nodeMap[arg]?.resultType || DECISION_TYPES.NUMERIC;
+              }
+              // If it's a number, it's a numeric literal
+              if (typeof arg === "number") return DECISION_TYPES.NUMERIC;
+              return DECISION_TYPES.NUMERIC;
+          });
           
           // 1. Base Types Check
           const inputErrors = inputTypes.filter(t => !op.accepts.includes(t));
@@ -182,7 +197,7 @@ export class DecisionCompiler {
       };
 
       if (node.formula) {
-          checkOperator(node.formula.op, node.dependsOn || []);
+          checkOperator(node.formula.op, node.formula.args || []);
       }
       
       if (node.condition) {

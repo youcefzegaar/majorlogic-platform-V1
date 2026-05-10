@@ -120,9 +120,12 @@ export function computeReviewRisk({ classifiedSignals, rawRiskScore = 0 }) {
  * @param {object} [params.taxonomy]
  * @returns {{ signals, risk, primaryWarning, secondaryWarning }}
  */
-export function produceReviewIntelligence({ topCons, reviewRiskScore, taxonomy }) {
+export function produceReviewIntelligence({ topCons, reviewRiskScore, taxonomy, reviewCount = 0 }) {
   const signals = classifyReviewSignals(topCons, taxonomy);
   const risk = computeReviewRisk({ classifiedSignals: signals, rawRiskScore: reviewRiskScore });
+
+  // Bayesian confidence adjustment (merged from quality-intelligence)
+  const bayesian = computeBayesianConfidence({ reviewCount, rawRiskScore: 1 - reviewRiskScore });
 
   const highSeverity = signals.filter((s) => s.severity === "high");
   const mediumSeverity = signals.filter((s) => s.severity === "medium");
@@ -133,8 +136,56 @@ export function produceReviewIntelligence({ topCons, reviewRiskScore, taxonomy }
   return {
     signals,
     risk,
+    bayesianScore: bayesian.weightedScore,
+    confidenceLevel: bayesian.confidenceLevel,
     primaryWarning: orderedSignals[0]?.userFacing ?? null,
     secondaryWarning: orderedSignals[1]?.userFacing ?? null,
     hasHighRisk: highSeverity.length > 0
   };
+}
+
+// ─────────────────────────────────────────────
+// Bayesian Confidence Scoring (unified from quality-intelligence)
+// ─────────────────────────────────────────────
+
+const BAYESIAN_DEFAULTS = { confidenceThreshold: 50, globalAverage: 3.5 };
+
+/**
+ * Bayesian Weighted Rank — prevents low-sample-size products from dominating.
+ * Formula: W = (v*R + m*C) / (v + m)
+ *   v = number of reviews, R = average rating, m = confidence threshold, C = global average
+ */
+export function computeBayesianConfidence({ reviewCount, rawRiskScore, options = {} }) {
+  const m = options.confidenceThreshold || BAYESIAN_DEFAULTS.confidenceThreshold;
+  const C = options.globalAverage || BAYESIAN_DEFAULTS.globalAverage;
+  const R = (rawRiskScore ?? 0.5) * 5; // normalize 0-1 risk to 0-5 rating scale
+  const v = reviewCount || 0;
+
+  const weightedScore = (v * R + m * C) / (v + m);
+
+  return {
+    weightedScore: Math.round(weightedScore * 100) / 100,
+    confidenceLevel: v >= m ? "high" : v >= m * 0.3 ? "medium" : "low",
+    sampleSize: v
+  };
+}
+
+/**
+ * Detect recurring fatal flaws across review signals.
+ * If a single flaw appears in >= threshold % of reviews, flag it as critical.
+ */
+export function detectFatalPatterns(signals, totalReviews, threshold = 0.15) {
+  const risks = [];
+  for (const [node, stats] of Object.entries(signals)) {
+    const ratio = (stats.negativeCount || 0) / Math.max(totalReviews, 1);
+    if (ratio >= threshold) {
+      risks.push({
+        node,
+        severity: "critical",
+        ratio: Math.round(ratio * 100) / 100,
+        reason: `Recurring user complaints about ${node} (${Math.round(ratio * 100)}%)`
+      });
+    }
+  }
+  return risks;
 }

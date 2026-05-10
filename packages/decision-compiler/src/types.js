@@ -28,7 +28,7 @@ export const OPERATOR_REGISTRY = {
     },
     "multiply": {
         name: "Multiplication",
-        accepts: [DECISION_TYPES.NUMERIC, DECISION_TYPES.PERCENTAGE, DECISION_TYPES.SCORE],
+        accepts: [DECISION_TYPES.NUMERIC, DECISION_TYPES.PERCENTAGE, DECISION_TYPES.SCORE, DECISION_TYPES.CURRENCY],
         returns: (inputs) => {
             if (inputs.includes(DECISION_TYPES.SCORE)) return DECISION_TYPES.SCORE;
             if (inputs.includes(DECISION_TYPES.PERCENTAGE)) return DECISION_TYPES.NUMERIC;
@@ -69,7 +69,11 @@ export function inferType(node, nodeMap) {
         const op = OPERATOR_REGISTRY[node.formula.op];
         if (!op) return DECISION_TYPES.NUMERIC;
         
-        const inputTypes = (node.dependsOn || []).map(id => nodeMap[id]?.resultType || DECISION_TYPES.NUMERIC);
+        const inputTypes = (node.formula.args || []).map(arg => {
+            if (typeof arg === "number") return DECISION_TYPES.NUMERIC;
+            if (typeof arg === "string") return nodeMap[arg]?.resultType || DECISION_TYPES.NUMERIC;
+            return DECISION_TYPES.NUMERIC;
+        });
         return typeof op.returns === "function" ? op.returns(inputTypes) : op.returns;
     }
 
