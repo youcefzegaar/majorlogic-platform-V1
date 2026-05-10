@@ -54,6 +54,36 @@ export const OPERATOR_REGISTRY = {
             if (inputs[0] !== inputs[1]) return { valid: false, error: `Incompatible comparison: ${inputs[0]} vs ${inputs[1]}` };
             return { valid: true };
         }
+    },
+    "subtract": {
+        name: "Subtraction",
+        accepts: [DECISION_TYPES.NUMERIC, DECISION_TYPES.CURRENCY, DECISION_TYPES.SCORE],
+        returns: (inputs) => inputs[0],
+        validate: (inputs) => inputs.length >= 2 ? { valid: true } : { valid: false, error: "Subtraction requires at least 2 arguments." }
+    },
+    "min": {
+        name: "Minimum",
+        accepts: [DECISION_TYPES.NUMERIC, DECISION_TYPES.CURRENCY, DECISION_TYPES.SCORE],
+        returns: (inputs) => inputs[0],
+        validate: (inputs) => inputs.length >= 2 ? { valid: true } : { valid: false, error: "Min requires at least 2 arguments." }
+    },
+    "max": {
+        name: "Maximum",
+        accepts: [DECISION_TYPES.NUMERIC, DECISION_TYPES.CURRENCY, DECISION_TYPES.SCORE],
+        returns: (inputs) => inputs[0],
+        validate: (inputs) => inputs.length >= 2 ? { valid: true } : { valid: false, error: "Max requires at least 2 arguments." }
+    },
+    "average": {
+        name: "Average",
+        accepts: [DECISION_TYPES.NUMERIC, DECISION_TYPES.SCORE],
+        returns: () => DECISION_TYPES.NUMERIC,
+        validate: (inputs) => inputs.length >= 2 ? { valid: true } : { valid: false, error: "Average requires at least 2 arguments." }
+    },
+    "clamp": {
+        name: "Clamp",
+        accepts: [DECISION_TYPES.NUMERIC, DECISION_TYPES.SCORE, DECISION_TYPES.CURRENCY],
+        returns: (inputs) => inputs[0],
+        validate: (inputs) => inputs.length === 3 ? { valid: true } : { valid: false, error: "Clamp requires exactly 3 arguments: [value, min, max]." }
     }
 };
 

@@ -105,23 +105,42 @@ export class DecisionKernel {
     }
   }
 
+  _resolveArg(arg, values) {
+    if (typeof arg === "number") return arg;
+    if (typeof arg === "object") return this._evaluateFormula(arg, values);
+    return values[arg] || 0;
+  }
+
   _evaluateFormula(formula, values) {
     if (!formula) return 0;
     
+    const resolveArgs = () => (formula.args || []).map(a => this._resolveArg(a, values));
+
     switch (formula.op) {
       case "add":
-        return formula.args.reduce((sum, arg) => {
-            const val = typeof arg === "number" ? arg : (typeof arg === "object" ? this._evaluateFormula(arg, values) : (values[arg] || 0));
-            return sum + val;
-        }, 0);
+        return resolveArgs().reduce((sum, v) => sum + v, 0);
+      case "subtract":
+        const subArgs = resolveArgs();
+        return subArgs.length ? subArgs.reduce((a, b) => a - b) : 0;
       case "multiply":
-        return formula.args.reduce((prod, arg) => {
-            const val = typeof arg === "number" ? arg : (typeof arg === "object" ? this._evaluateFormula(arg, values) : (values[arg] || 0));
-            return prod * val;
-        }, 1);
-      case "inverse":
-        const val = typeof formula.arg === "object" ? this._evaluateFormula(formula.arg, values) : (values[formula.arg] || 0);
-        return val === 0 ? 0 : 1 / val;
+        return resolveArgs().reduce((prod, v) => prod * v, 1);
+      case "min":
+        return Math.min(...resolveArgs());
+      case "max":
+        return Math.max(...resolveArgs());
+      case "average": {
+        const vals = resolveArgs();
+        return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0;
+      }
+      case "clamp": {
+        // args: [value, min, max]
+        const [val, lo, hi] = resolveArgs();
+        return Math.max(lo, Math.min(hi, val));
+      }
+      case "inverse": {
+        const v = this._resolveArg(formula.arg, values);
+        return v === 0 ? 0 : 1 / v;
+      }
       default:
         return 0;
     }
