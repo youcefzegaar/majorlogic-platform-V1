@@ -74,6 +74,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0013_pipeline_orchestration.sql",
       "database/migrations/0014_generic_active_views.sql",
       "database/migrations/0015_external_acquisition_store.sql",
+      "database/migrations/0016_performance_optimization_indices.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
