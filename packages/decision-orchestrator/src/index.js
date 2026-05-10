@@ -194,7 +194,7 @@ export class DecisionOrchestrator {
 
 
   _validateInput(config, entities, userProfile) {
-    if (!config || !config.domainId) throw new Error("Orchestrator Error: Missing config.domainId");
+    if (!config || (!config.domainId && !config.slug)) throw new Error("Orchestrator Error: Missing domainId or slug");
     if (!Array.isArray(entities)) throw new Error("Orchestrator Error: entities must be an array");
     if (!userProfile) throw new Error("Orchestrator Error: Missing userProfile");
   }
@@ -291,7 +291,8 @@ export class DecisionOrchestrator {
       score: Math.round(kernelResult.score * 100) / 100,
       eligible: kernelResult.eligible,
       intelligence, // Full review intelligence payload
-      trace: kernelResult.trace
+      trace: kernelResult.trace,
+      sacrifices: kernelResult.trace.sacrifices || {} // The Sacrifice Vector (Constitution v1.0)
     };
 
     const story = await this.explainer.explain(kernelResult.trace, rawEntity.title || rawEntity.itemName || kernelResult.entityId, domainContext);
@@ -304,7 +305,8 @@ export class DecisionOrchestrator {
       entityId: kernelResult.entityId,
       intel: intelligence,
       story,
-      tradeoff
+      tradeoff,
+      sacrificeCount: Object.keys(card.sacrifices).length
     };
 
     for (const [key, pattern] of Object.entries(template)) {
@@ -315,6 +317,7 @@ export class DecisionOrchestrator {
 
     card.title = card.title || rawEntity.title || rawEntity.itemName || kernelResult.entityId;
     card.price = rawEntity.price || rawEntity.market?.bestOffer?.priceUsd || null;
+    card.story = story;
     card.tradeoff = card.tradeoff || tradeoff;
 
     return card;

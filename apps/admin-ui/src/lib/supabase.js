@@ -30,6 +30,17 @@ export const DomainAPI = {
       
     if (error) throw error;
     return data;
+  },
+
+  async updateDomainConfig(id, config) {
+    const { data, error } = await supabase
+      .from('cognitive_domains')
+      .update({ config, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select();
+      
+    if (error) throw error;
+    return data;
   }
 };
 

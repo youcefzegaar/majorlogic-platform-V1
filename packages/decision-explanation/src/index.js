@@ -20,6 +20,7 @@ export class DecisionExplainer {
 
     if (useAI && this.aiProvider) {
       try {
+        this.logger.log(`[Explainer] Rendering with AI for: ${entityName}`);
         return await this._renderWithAI(trace, entityName, domainContext);
       } catch (err) {
         this.logger.error("[Explainer] AI Rendering failed, falling back to templates", err);
@@ -94,6 +95,7 @@ export class DecisionExplainer {
         conflictsFound: confidence.conflicts.map(c => c.pair),
         relaxedConstraint: relaxedConstraint,
         futureProjection: intent.futureProjection,
+        sacrifices: trace.sacrifices || {}, // The Sacrifice Vector (Constitution v1.0)
         technicalTrace: {
             scores: trace.scores,
             exclusions: trace.exclusions,
@@ -118,11 +120,13 @@ export class DecisionExplainer {
       
       WRITING RULES:
       1. PERSPECTIVE: Speak as an objective human expert, not a machine.
-      2. OBSERVATION: Describe the cognitive state and the trade-offs factually based on the conflicts: ${cognitiveState.conflictsFound.join(", ")}. Do not invent justifications or defend the choice if it is a compromise.
-      ${relaxedConstraint ? `3. COMPROMISE: You MUST explicitly state that the constraint "${relaxedConstraint}" was compromised (relaxed) to find this option. Inform the user clearly.` : `3. CONSTRAINTS: All constraints were met perfectly.`}
-      4. FUTURE: Incorporate this projection into your observation: "${intent.futureProjection || "N/A"}".
-      5. INTEGRITY: Never invent specifications or features not present in the technical trace. Be completely honest.
-      6. TONE: Calm, objective, transparent, and deeply helpful.
+      2. OBSERVATION: Describe the cognitive state and the trade-offs factually. 
+      3. SACRIFICES: You MUST explicitly mention the following sacrifices: ${JSON.stringify(cognitiveState.sacrifices)}. 
+         Explain what the user is losing in human terms (e.g., "you are sacrificing battery life"). 
+         Be brutal but helpful about why these sacrifices are necessary for the user's intent.
+      ${relaxedConstraint ? `4. COMPROMISE: You MUST explicitly state that the constraint "${relaxedConstraint}" was compromised to find this option.` : `4. CONSTRAINTS: All constraints were met perfectly.`}
+      5. FUTURE: Incorporate this projection: "${intent.futureProjection || "N/A"}".
+      6. INTEGRITY: Never invent specifications. Be completely honest. No sales fluff.
       
       RESPONSE FORMAT: One or two highly impactful, honest paragraphs.
     `;

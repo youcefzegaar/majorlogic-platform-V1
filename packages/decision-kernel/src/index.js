@@ -31,6 +31,7 @@ export class DecisionKernel {
           steps: [],
           exclusions: [],
           scores: {},
+          sacrifices: {},
           isEligible: true
         };
 
@@ -56,6 +57,8 @@ export class DecisionKernel {
   }
 
   _executeNode(node, values, trace) {
+    if (!trace.sacrifices) trace.sacrifices = {};
+
     switch (node.type) {
       case "attribute":
         // Raw values already in 'values'
@@ -71,6 +74,13 @@ export class DecisionKernel {
         if (!passed) {
           trace.isEligible = false;
           trace.exclusions.push(node.id);
+          
+          // Record as a critical sacrifice if we are tracking them
+          trace.sacrifices[node.id] = {
+            type: "gate_violation",
+            severity: 1.0,
+            meaning: node.humanMeaning || "Critical Constraint"
+          };
         }
         break;
 
@@ -81,7 +91,7 @@ export class DecisionKernel {
           score += (values[metric] || 0) * weight;
         }
 
-        // Apply penalties
+        // Apply penalties (Soft Sacrifices)
         if (node.penalties) {
           for (const [pId, p] of Object.entries(node.penalties)) {
             if (this._evaluateCondition(p.condition, values)) {
@@ -92,6 +102,14 @@ export class DecisionKernel {
                   penalty: p.amount, 
                   reason: p.reason 
               });
+
+              // Record sacrifice
+              this.logger.log(`[Kernel] Recording sacrifice for: ${pId} (${p.reason})`);
+              trace.sacrifices[pId] = {
+                type: "soft_sacrifice",
+                severity: p.amount / 100,
+                meaning: p.reason || pId
+              };
             }
           }
         }
