@@ -62,11 +62,17 @@ export function resolveEntityTruth(entity, options = {}) {
   // إذا كان الدومين لديه منطق حسم مخصص → استخدمه
   if (options.resolveFieldsFn) {
     const domainResolved = options.resolveFieldsFn(observations);
+    const conf = aggregateConfidence(observations);
     return {
       entityId,
       ...domainResolved,
       observationCount: observations.length,
-      confidence: aggregateConfidence(observations)
+      confidence: conf,
+      trustSignals: domainResolved.trustSignals ?? {
+        status: conf >= 0.80 ? "trusted" : conf >= 0.60 ? "moderate" : "low_trust",
+        avgSourceConfidence: conf,
+        sourceCount: new Set(observations.map((obs) => obs._acquisition?.sourceId ?? "unknown")).size
+      }
     };
   }
 
@@ -85,10 +91,10 @@ export function resolveEntityTruth(entity, options = {}) {
       resolvedSpecs[key] = resolveByMedian(values);
     } else {
       // للقيم النصية: الأكثر تكراراً يفوز
-      const textValues = observations.map((obs) => obs.specs?.[key]).filter(Boolean);
-      const freq = {};
-      for (const v of textValues) freq[v] = (freq[v] ?? 0) + 1;
-      const winner = Object.entries(freq).sort((a, b) => b[1] - a[1])[0];
+      const textValues = observations.map((obs) => obs.specs?.[key]).filter((v) => v !== undefined && v !== null);
+      const freq = new Map();
+      for (const v of textValues) freq.set(v, (freq.get(v) ?? 0) + 1);
+      const winner = [...freq.entries()].sort((a, b) => b[1] - a[1])[0];
       if (winner) resolvedSpecs[key] = winner[0];
     }
   }
@@ -117,11 +123,11 @@ export function resolveEntityTruth(entity, options = {}) {
  * @returns {{ resolved: Array, blocked: Array }}
  */
 export function resolveAndValidateCatalog(entities, options = {}) {
-  const minConfidence   = options.qualityGates?.minConfidence   ?? 0.50;
+  const minConfidence = options.qualityGates?.minConfidence ?? 0.50;
   const minObservations = options.qualityGates?.minObservations ?? 1;
 
   const resolved = [];
-  const blocked  = [];
+  const blocked = [];
 
   for (const entity of entities) {
     const truth = resolveEntityTruth(entity, options);

@@ -18,10 +18,15 @@ export class ReviewFetcher {
     console.log(`[ReviewFetcher] Searching Reddit for: ${productName}`);
     // استخدام الـ fetcher لجلب البيانات الحقيقية من واجهة برمجية
     try {
-      const searchUrl = `https://www.reddit.com/search.json?q=${encodeURIComponent(productName)}+review`;
+      // إضافة limit=10 و sort=relevance لتحسين جودة وأداء النتائج
+      const searchUrl = `https://www.reddit.com/search.json?q=${encodeURIComponent(productName + ' review')}&limit=10&sort=relevance`;
       const result = await this.fetcher.fetch(searchUrl);
       const data = JSON.parse(result.body);
-      
+
+      if (!data?.data?.children || data.data.children.length === 0) {
+        throw new Error("No Reddit results found for this query.");
+      }
+
       // استخراج النصوص من النتائج
       return data.data.children.map(child => child.data.selftext || child.data.title);
     } catch (err) {
@@ -59,4 +64,3 @@ export class ReviewFetcher {
     return await this.analyzer.analyze(productName, combinedText);
   }
 }
-

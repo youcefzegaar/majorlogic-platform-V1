@@ -425,11 +425,36 @@ export const laptopStudentUsDomainPack = {
         resaleScore
       },
       media: {
-        productImage: buildProductImageDataUri({
-          itemName: observation.itemName,
-          variantName: observation.variantName,
-          brand
-        })
+        experience: {
+          inspection_mode: "parallax",
+          aura: {
+            performance_bias: (specs.performance ?? 0) / 100,
+            mobility_bias: (specs.portability ?? 0) / 100,
+            thermal_intensity: 1 - ((specs.thermals ?? 50) / 100),
+            confidence: observation.trust?.sourceConfidence ?? 0.5
+          },
+          hotspots: (observation.reviewSummary?.topPros ?? []).map((pro, index) => ({
+             id: `pro-${index}`,
+             type: 'pro',
+             label: pro,
+             // Simple heuristic for demo: map known keywords to coordinates
+             x: pro.toLowerCase().includes('screen') || pro.toLowerCase().includes('display') ? 50 : 
+                pro.toLowerCase().includes('keyboard') || pro.toLowerCase().includes('trackpad') ? 50 : 
+                pro.toLowerCase().includes('port') || pro.toLowerCase().includes('usb') ? 20 : 80,
+             y: pro.toLowerCase().includes('screen') || pro.toLowerCase().includes('display') ? 30 : 
+                pro.toLowerCase().includes('keyboard') || pro.toLowerCase().includes('trackpad') ? 70 : 
+                pro.toLowerCase().includes('port') || pro.toLowerCase().includes('usb') ? 85 : 50
+          }))
+        },
+        assets: {
+          productImage: buildProductImageDataUri({
+            itemName: observation.itemName,
+            variantName: observation.variantName,
+            brand
+          }),
+          hero_render: null,
+          model: { glb: null, poster: null }
+        }
       },
       fitStates: Object.fromEntries(
         Object.keys(fitContexts).map((segment) => [
@@ -480,17 +505,55 @@ export const laptopStudentUsDomainPack = {
     return { passed: false, failedSegments };
   },
 
-  isWithinBudget(entity, profile) {
-    return entity.market.bestOffer.priceUsd <= profile.budgetUsd;
+  detectIntentConflicts({ profile, ruleset }) {
+    const conflicts = [];
+    const { sliders } = profile;
+
+    // 1. Performance vs Portability (The Physics Conflict)
+    if (sliders.performance > 75 && sliders.portability > 75) {
+      conflicts.push({
+        id: "phys_limit_perf_port",
+        type: "dimensional_tension",
+        gravity: 0.85,
+        description: lang === 'AR' ? "تعارض مادي: الأداء العالي يتطلب تبريداً يزيد من الوزن." : "Physical tension: High performance requires cooling that increases weight.",
+        dimensions: ["performance", "portability"]
+      });
+    }
+
+    // 2. Budget vs Ambition (The Economic Conflict)
+    if (sliders.performance > 80 && profile.budgetUsd < 1000) {
+      conflicts.push({
+        id: "econ_tension_perf_price",
+        type: "economic_tension",
+        gravity: 0.92,
+        description: lang === 'AR' ? "تعارض ميزانية: الأداء المطلوب يتجاوز سقف السعر الحالي." : "Budget tension: Required performance exceeds current price ceiling.",
+        dimensions: ["performance", "price"]
+      });
+    }
+
+    return conflicts;
   },
 
-  prepareDecisionProfile({ profile }) {
-    return normalizeDecisionProfile(profile);
+  attemptRecovery({ profile, catalog, ruleset }) {
+    // Law of Semantic Drift: Relaxing constraints to avoid zero results
+    let relaxationScore = 0;
+    let currentProfile = { ...profile };
+
+    // Step 1: Relax "Safe" fit to "Official" fit (15% relaxation)
+    relaxationScore = 0.15;
+    const officialEntities = catalog.matchingProfile({ ...currentProfile, useOfficialFit: true });
+    
+    if (officialEntities.length > 0) {
+      const candidates = officialEntities.map(e => this.evaluateCandidate({ profile: currentProfile, entity: e, ruleset, catalog }));
+      return { relaxationScore, candidates };
+    }
+
+    // Step 2: Relax Budget by 20% (Adding 0.20 to score)
+    relaxationScore = 0.35; // Total relaxation > 30% -> TRIGGER COGNITIVE COLLAPSE in Engine
+    return { relaxationScore, candidates: [] };
   },
 
-  evaluateCandidate({ profile, entity }) {
-    // 1. استدعاء النواة الشمولية (Kernel) للتنفيذ الرياضي
-    // نقوم بتسطيح البيانات (Flattening) لتسهيل الوصول إليها في الـ IR
+  evaluateCandidate({ profile, entity, ruleset, catalog }) {
     const flattenedEntity = {
         ...entity,
         price: entity.market?.bestOffer?.priceUsd ?? 9999,
@@ -512,40 +575,39 @@ export const laptopStudentUsDomainPack = {
     const result = kernelResult.results[0];
     const trace = result.trace;
 
-    // 2. تحويل مخرجات النواة إلى الشكل الذي تتوقعه المنصة (Object Mapping)
+    // Law of Sacrifice: Quantify what was lost to gain the win
+    const sacrificeVector = {
+      price: (profile.budgetUsd - flattenedEntity.price) / profile.budgetUsd,
+      performance: (flattenedEntity.performance - 70) / 30,
+      portability: (flattenedEntity.portability - 70) / 30
+    };
+
     return {
       entity,
       eligible: result.eligible,
       exclusionReasons: trace.exclusions,
       score: result.score,
-      trace: trace, // الاحتفاظ بالتتبع السببي كاملاً
+      match: result.score,
+      sacrificeVector,
+      trace: trace,
       componentScores: trace.scores,
-      penalties: trace.steps.filter(s => s.type === "penalty"),
-      penaltyScore: trace.steps.filter(s => s.type === "penalty").reduce((sum, p) => sum + p.penalty, 0),
-      fitState: entity.fitStates[profile.major]?.state ?? "unknown",
-      heroEligible: result.eligible // تبسيط للـ Migration
+      fitState: entity.fitStates[profile.major]?.state ?? "unknown"
     };
   },
 
-  buildNoResults({ profile, evaluatedCandidates }) {
-    const allReasons = evaluatedCandidates.flatMap((candidate) => candidate.exclusionReasons);
-    const reasonsCount = Object.entries(
-      allReasons.reduce((accumulator, reason) => {
-        accumulator[reason] = (accumulator[reason] ?? 0) + 1;
-        return accumulator;
-      }, {})
-    ).sort((left, right) => right[1] - left[1]);
+  buildNoResults({ profile, evaluatedCandidates, status, relaxationScore }) {
+    if (status === "COGNITIVE_COLLAPSE") {
+      return {
+        type: "COGNITIVE_COLLAPSE",
+        message: "Logical Integrity Failed: No rational decision is possible within these constraints without losing all meaning.",
+        relaxationScore
+      };
+    }
 
     return {
       type: "no_viable_option",
       message: "No eligible device remained after applying the current rules.",
-      topReasons: reasonsCount.slice(0, 3).map(([reason, count]) => ({ reason, count })),
-      suggestions: [
-        "Increase budget slightly or allow a verified refurbished path.",
-        "Lower the strict workload sliders if they do not reflect your real use.",
-        "Wait for a stronger published catalog refresh if current options remain weak."
-      ],
-      profileId: profile.profileId
+      suggestions: ["Lower performance expectations", "Increase budget"]
     };
   },
 
@@ -569,12 +631,17 @@ export const laptopStudentUsDomainPack = {
       title: entity.title,
       priceUsd: entity.market.bestOffer?.priceUsd ?? 0,
       score: selection.score,
+      match: selection.score,
+      sacrificeVector: selection.sacrificeVector,
       whyThis: explainer.explain(selection.trace, entity.title),
       badNews: entity.reviewIntelligence.primaryWarning ?? "No critical warning.",
-      tradeoff: entity.reviewIntelligence.secondaryWarning ?? "Tradeoff detected.",
-      userVoice: entity.reviewIntelligence.userSignals?.[0] ?? null,
       topPros: entity.reviewIntelligence.topPros ?? [],
-      imageUrl: entity.media?.productImage ?? null
+      media: entity.media,
+      decision_confidence: {
+        overall: selection.score / 100,
+        stability: selection.score > 85 ? 0.95 : 0.7,
+        evidence_strength: entity.trust?.sourceConfidence ?? 0.5
+      }
     };
   },
 

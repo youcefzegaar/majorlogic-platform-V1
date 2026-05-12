@@ -22,14 +22,15 @@
  * @returns {{ tco, estimatedResaleValue, netCost, costPerYear }}
  */
 function computeLifecycleCost({ purchasePrice, resaleScore, ownershipYears = 4 }) {
+  const safePrice = purchasePrice || 0;
   // تقدير قيمة إعادة البيع بناءً على resaleScore
   const depreciationRate = 1 - (resaleScore / 100) * 0.65;  // الأجهزة ذات resaleScore عالي تحافظ على قيمتها
-  const estimatedResaleValue = Math.round(purchasePrice * (1 - depreciationRate) * 100) / 100;
-  const netCost = purchasePrice - estimatedResaleValue;
+  const estimatedResaleValue = Math.round(safePrice * (1 - depreciationRate) * 100) / 100;
+  const netCost = safePrice - estimatedResaleValue;
   const costPerYear = Math.round((netCost / ownershipYears) * 100) / 100;
 
   return {
-    purchasePrice,
+    purchasePrice: safePrice,
     ownershipYears,
     estimatedResaleValue,
     netCost,
@@ -64,18 +65,18 @@ export function buildOwnershipStrategy({ profile, catalog, decision, domainPack 
 
     // حساب التكلفة الحياتية
     const lifecycle = computeLifecycleCost({
-      purchasePrice: card.priceUsd ?? entity.market.bestOffer.priceUsd,
-      resaleScore: card.resaleScore ?? entity.economicSignals?.resaleScore ?? 50,
+      purchasePrice: card.priceUsd ?? entity?.market?.bestOffer?.priceUsd ?? 0,
+      resaleScore: card.resaleScore ?? entity?.economicSignals?.resaleScore ?? 50,
       ownershipYears
     });
 
     // توصية الملكية من الدومين (إذا وجدت)
     const domainRecommendation = domainPack.recommendOwnership
       ? domainPack.recommendOwnership({
-          profile,
-          entity,
-          heroCard: card
-        })
+        profile,
+        entity,
+        heroCard: card
+      })
       : { mode: "buy_new", explanation: "Default ownership path." };
 
     return {
