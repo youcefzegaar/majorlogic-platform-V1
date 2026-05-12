@@ -9,6 +9,7 @@ export class IdentityManager {
   constructor(options = {}) {
     this.logger = options.logger || console;
     this.similarityThreshold = options.similarityThreshold || 0.85;
+    this.fingerprintFn = options.fingerprintFn || null;
   }
 
   /**
@@ -23,7 +24,9 @@ export class IdentityManager {
     const entities = new Map();
 
     for (const obs of observations) {
-      const fingerprint = this._generateFingerprint(obs, domainRules);
+      const fingerprint = this.fingerprintFn 
+        ? this.fingerprintFn(obs)
+        : this._generateFingerprint(obs, domainRules);
       
       if (!entities.has(fingerprint)) {
         entities.set(fingerprint, {
@@ -103,4 +106,31 @@ function _getWeightedBest(observations, key) {
         (b.trust?.sourceConfidence || 0.5) - (a.trust?.sourceConfidence || 0.5)
     );
     return sorted[0].specs[key];
+}
+
+/**
+ * Functional wrapper for IdentityManager to support the pipeline orchestrator.
+ */
+export function resolveIdentities(observations, options = {}) {
+    const manager = new IdentityManager({
+        similarityThreshold: options.similarityThreshold,
+        fingerprintFn: options.fingerprintFn
+    });
+    
+    const domainRules = {
+        identityFields: options.identityFields,
+        // Map fingerprintFn if provided to the internal logic
+        // Note: IdentityManager uses _generateFingerprint which we can override or wrap
+    };
+
+    // If a custom fingerprintFn is provided, we should probably respect it.
+    // Let's modify IdentityManager to accept a custom fingerprint function.
+    const result = manager.resolve(observations, domainRules);
+
+    return {
+        entities: result.entities,
+        totalObservations: result.stats.total,
+        uniqueEntities: result.stats.unique,
+        collapsedCount: result.stats.collapsed
+    };
 }

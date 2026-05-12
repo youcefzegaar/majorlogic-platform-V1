@@ -15,37 +15,37 @@
  */
 const SIGNAL_TAXONOMY = {
   // أداء / حرارة
-  heavy_for_daily_carry:      { category: "portability", severity: "medium", userFacing: "Heavy for daily campus carry" },
-  runs_hot_under_load:        { category: "thermals",    severity: "high",   userFacing: "Gets hot under heavy workloads" },
-  fan_noise_under_load:       { category: "thermals",    severity: "medium", userFacing: "Fan noise during intensive tasks" },
-  slow_cold_boot:             { category: "performance", severity: "low",    userFacing: "Slightly slow cold boot" },
-  aggressive_fan_profile:     { category: "thermals",    severity: "high",   userFacing: "Aggressive fan noise under load" },
-  thermal_management_limitations: { category: "thermals", severity: "high", userFacing: "Potential thermal throttling" },
+  heavy_for_daily_carry:      { category: "portability", severity: "medium", userFacing: "Heavy for daily campus carry", userFacingAr: "ثقيل للحمل اليومي في الجامعة" },
+  runs_hot_under_load:        { category: "thermals",    severity: "high",   userFacing: "Gets hot under heavy workloads", userFacingAr: "ترتفع حرارته بشكل ملحوظ تحت الضغط" },
+  fan_noise_under_load:       { category: "thermals",    severity: "medium", userFacing: "Fan noise during intensive tasks", userFacingAr: "صوت المراوح مزعج عند العمل المكثف" },
+  slow_cold_boot:             { category: "performance", severity: "low",    userFacing: "Slightly slow cold boot", userFacingAr: "إقلاع النظام بطيء نوعاً ما" },
+  aggressive_fan_profile:     { category: "thermals",    severity: "high",   userFacing: "Aggressive fan noise under load", userFacingAr: "صوت المراوح عالٍ جداً ومزعج" },
+  thermal_management_limitations: { category: "thermals", severity: "high", userFacing: "Potential thermal throttling", userFacingAr: "احتمالية انخفاض الأداء بسبب الحرارة" },
 
   // بطارية
-  battery_below_expectation:  { category: "battery",     severity: "high",   userFacing: "Battery doesn't match advertised claims" },
-  short_battery_life:         { category: "battery",     severity: "high",   userFacing: "Short battery life" },
-  fast_battery_drain_gaming:  { category: "battery",     severity: "medium", userFacing: "Battery drains fast during gaming" },
-  diminished_battery_endurance: { category: "battery",   severity: "high",   userFacing: "Poor real-world battery endurance" },
+  battery_below_expectation:  { category: "battery",     severity: "high",   userFacing: "Battery doesn't match advertised claims", userFacingAr: "البطارية لا تصمد كما هو معلن عنها" },
+  short_battery_life:         { category: "battery",     severity: "high",   userFacing: "Short battery life", userFacingAr: "عمر البطارية قصير" },
+  fast_battery_drain_gaming:  { category: "battery",     severity: "medium", userFacing: "Battery drains fast during gaming", userFacingAr: "استنزاف سريع للبطارية أثناء الألعاب" },
+  diminished_battery_endurance: { category: "battery",   severity: "high",   userFacing: "Poor real-world battery endurance", userFacingAr: "أداء البطارية ضعيف في الاستخدام الواقعي" },
 
   // شاشة / عرض
-  dim_display_outdoors:       { category: "display",     severity: "medium", userFacing: "Display hard to see outdoors" },
-  limited_color_accuracy:     { category: "display",     severity: "medium", userFacing: "Color accuracy below creative standards" },
-  limited_display_luminance:  { category: "display",     severity: "medium", userFacing: "Screen brightness is limited" },
+  dim_display_outdoors:       { category: "display",     severity: "medium", userFacing: "Display hard to see outdoors", userFacingAr: "الشاشة باهتة وصعبة الرؤية في الخارج" },
+  limited_color_accuracy:     { category: "display",     severity: "medium", userFacing: "Color accuracy below creative standards", userFacingAr: "دقة الألوان ضعيفة للمصممين" },
+  limited_display_luminance:  { category: "display",     severity: "medium", userFacing: "Screen brightness is limited", userFacingAr: "سطوع الشاشة محدود" },
 
   // بناء / تصميم
-  cheap_build_quality:        { category: "build",       severity: "high",   userFacing: "Build quality feels below price point" },
-  keyboard_flex:              { category: "build",       severity: "medium", userFacing: "Keyboard flex during typing" },
-  trackpad_inconsistency:     { category: "input",       severity: "medium", userFacing: "Trackpad isn't always responsive" },
-  structural_rigidity_concerns: { category: "build",    severity: "medium", userFacing: "Minor chassis flexibility noticed" },
+  cheap_build_quality:        { category: "build",       severity: "high",   userFacing: "Build quality feels below price point", userFacingAr: "جودة التصنيع ضعيفة مقارنة بالسعر" },
+  keyboard_flex:              { category: "build",       severity: "medium", userFacing: "Keyboard flex during typing", userFacingAr: "لوحة المفاتيح تنحني عند الكتابة" },
+  trackpad_inconsistency:     { category: "input",       severity: "medium", userFacing: "Trackpad isn't always responsive", userFacingAr: "لوحة اللمس غير مستقرة الاستجابة" },
+  structural_rigidity_concerns: { category: "build",    severity: "medium", userFacing: "Minor chassis flexibility noticed", userFacingAr: "مرونة زائدة في هيكل الجهاز" },
 
   // قيمة / اقتصاد
-  overpriced_for_specs:       { category: "value",       severity: "high",   userFacing: "Priced above what specs justify" },
-  limited_upgrade_path:       { category: "longevity",   severity: "medium", userFacing: "Limited upgrade options" },
+  overpriced_for_specs:       { category: "value",       severity: "high",   userFacing: "Priced above what specs justify", userFacingAr: "السعر مرتفع جداً مقارنة بالمواصفات" },
+  limited_upgrade_path:       { category: "longevity",   severity: "medium", userFacing: "Limited upgrade options", userFacingAr: "خيارات التحديث محدودة مستقبلاً" },
 
   // عام
-  bloatware_preinstalled:     { category: "software",    severity: "low",    userFacing: "Comes with pre-installed bloatware" },
-  webcam_below_average:       { category: "peripheral",  severity: "low",    userFacing: "Webcam quality is mediocre" }
+  bloatware_preinstalled:     { category: "software",    severity: "low",    userFacing: "Comes with pre-installed bloatware", userFacingAr: "يأتي مع برامج غير ضرورية مثبتة مسبقاً" },
+  webcam_below_average:       { category: "peripheral",  severity: "low",    userFacing: "Webcam quality is mediocre", userFacingAr: "جودة الكاميرا ضعيفة" }
 };
 
 /**
@@ -139,7 +139,9 @@ export function produceReviewIntelligence({ topCons, reviewRiskScore, taxonomy, 
     bayesianScore: bayesian.weightedScore,
     confidenceLevel: bayesian.confidenceLevel,
     primaryWarning: orderedSignals[0]?.userFacing ?? null,
+    primaryWarningAr: orderedSignals[0]?.userFacingAr ?? null,
     secondaryWarning: orderedSignals[1]?.userFacing ?? null,
+    secondaryWarningAr: orderedSignals[1]?.userFacingAr ?? null,
     hasHighRisk: highSeverity.length > 0
   };
 }

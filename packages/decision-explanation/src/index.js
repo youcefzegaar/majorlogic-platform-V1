@@ -96,6 +96,10 @@ export class DecisionExplainer {
         relaxedConstraint: relaxedConstraint,
         futureProjection: intent.futureProjection,
         sacrifices: trace.sacrifices || {}, // The Sacrifice Vector (Constitution v1.0)
+        defects: {
+            primary: context.reviewWarnings?.primary || null,
+            secondary: context.reviewWarnings?.secondary || null
+        },
         technicalTrace: {
             scores: trace.scores,
             exclusions: trace.exclusions,
@@ -123,9 +127,10 @@ export class DecisionExplainer {
       2. OBSERVATION: Describe the cognitive state and the trade-offs factually. 
       3. SACRIFICES: You MUST explicitly mention the following sacrifices: ${JSON.stringify(cognitiveState.sacrifices)}. 
          Explain what the user is losing in human terms (e.g., "you are sacrificing battery life"). 
-         Be brutal but helpful about why these sacrifices are necessary for the user's intent.
-      ${relaxedConstraint ? `4. COMPROMISE: You MUST explicitly state that the constraint "${relaxedConstraint}" was compromised to find this option.` : `4. CONSTRAINTS: All constraints were met perfectly.`}
-      5. FUTURE: Incorporate this projection: "${intent.futureProjection || "N/A"}".
+      4. DEFECTS: You MUST explicitly address these specific hardware defects reported by users: ${JSON.stringify(cognitiveState.defects)}. 
+         Do not downplay them. Be honest about how they might affect the user's workflow.
+      ${relaxedConstraint ? `5. COMPROMISE: You MUST explicitly state that the constraint "${relaxedConstraint}" was compromised to find this option.` : `5. CONSTRAINTS: All constraints were met perfectly.`}
+      6. FUTURE: Incorporate this projection: "${intent.futureProjection || "N/A"}".
       6. INTEGRITY: Never invent specifications. Be completely honest. No sales fluff.
       
       RESPONSE FORMAT: One or two highly impactful, honest paragraphs.

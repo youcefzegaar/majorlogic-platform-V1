@@ -4,391 +4,550 @@ import {
   Zap,
   ShieldAlert,
   Compass,
-  Info,
   Monitor,
-  GraduationCap,
   SlidersHorizontal,
-  CheckCircle2,
   AlertTriangle,
   Trophy,
   Wallet,
-  Sparkles,
   Scale as ScaleIcon,
   Share2,
-  Copy,
-  Moon,
-  Sun,
-  Languages,
   Cpu,
-  Layers,
-  HardDrive,
-  Shield
+  Shield,
+  User,
+  ArrowRight,
+  History,
+  Settings,
+  LogOut,
+  Target,
+  Activity,
+  Award,
+  ShoppingCart,
+  Mail,
+  X,
+  RefreshCw,
+  ArrowUpRight,
+  ArrowDownRight,
+  ChevronDown,
+  MessageSquare,
+  Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const TRANSLATIONS = {
-  EN: {
-    title: "Find Your Future.",
-    subtitle: "The 30-Second Cognitive Matchmaker.",
-    searchPlaceholder: "Explain your needs... (e.g. 'coding and machine learning')",
-    analyzeBtn: "Analyze with AI 🧠",
-    analyzing: "Analyzing Specs...",
-    majorBudget: "Major & Budget",
-    preferences: "Personal Preferences",
-    portability: "Portability",
-    battery: "Battery",
-    power: "Power",
-    policy: "Specs-First Policy: Independent logic over marketing noise.",
-    saveTitle: "Don't lose these results!",
-    saveSubtitle: "Send your custom shortlist to your inbox.",
-    saveBtn: "Save Path 📨",
-    shareTitle: "🔥 Share Your Custom Results",
-    shareSubtitle: "Help your classmates find their perfect match.",
-    copyBtn: "Copy Link",
-    copied: "Copied!",
-    social: "Social",
-    bestFor: "Best for",
-    cognitiveInsight: "Cognitive Insight",
-    whyThis: "Why this?",
-    badNews: "Bad News",
-    selectPath: "Select Path 🛒",
-    affiliate: "🤝 Affiliate Disclosed",
-    pure: "💎 Pure Recommendation",
-    modalTitle: "One last thing...",
-    modalSubtitle: "Get our 5-Step Inspection Checklist for the {item} to ensure you receive a flawless unit.",
-    modalBtn: "Send Checklist & Go 🛒",
-    modalSkip: "No thanks, skip to destination",
-    keySpecs: "Key Specifications",
-    majors: {
-      cs: "Computer Science",
-      eng: "Engineering",
-      design: "Design / Arts",
-      business: "Business"
-    }
-  },
-  AR: {
-    title: "اكتشف مستقبلك.",
-    subtitle: "مستشارك الإدراكي في 30 ثانية.",
-    searchPlaceholder: "اشرح احتياجاتك... (مثلاً: 'برمجة وتعلم آلة')",
-    analyzeBtn: "حلل بالذكاء الاصطناعي 🧠",
-    analyzing: "جاري تحليل المواصفات...",
-    majorBudget: "التخصص والميزانية",
-    preferences: "التفضيلات الشخصية",
-    portability: "خفة الوزن",
-    battery: "عمر البطارية",
-    power: "قوة الأداء",
-    policy: "سياسة الأرقام أولاً: منطق مستقل بعيداً عن ضجيج التسويق.",
-    saveTitle: "لا تفقد هذه النتائج!",
-    saveSubtitle: "أرسل قائمتك المختصرة إلى بريدك الإلكتروني.",
-    saveBtn: "حفظ المسار 📨",
-    shareTitle: "🔥 شارك نتائجك المخصصة",
-    shareSubtitle: "ساعد زملائك في العثور على الجهاز المثالي.",
-    copyBtn: "نسخ الرابط",
-    copied: "تم النسخ!",
-    social: "نشر",
-    bestFor: "الأنسب لـ",
-    cognitiveInsight: "التبصر الإدراكي",
-    whyThis: "لماذا هذا؟",
-    badNews: "الخبر السيئ",
-    selectPath: "اختر المسار 🛒",
-    affiliate: "🤝 إفصاح: يتضمن عمولة",
-    pure: "💎 توصية نقية (بدون عمولة)",
-    modalTitle: "شيء أخير...",
-    modalSubtitle: "احصل على 'دليل الفحص المكون من 5 خطوات' لجهاز {item} لضمان استلام نسخة سليمة.",
-    modalBtn: "أرسل الدليل واذهب للمتجر 🛒",
-    modalSkip: "شكراً، تخطى إلى الوجهة",
-    keySpecs: "المواصفات الأساسية",
-    majors: {
-      cs: "علوم الحاسوب",
-      eng: "الهندسة",
-      design: "التصميم والفنون",
-      business: "الأعمال"
-    }
-  }
-};
+const LayoutGrid = ({size}) => <Monitor size={size} />; // Fallback icon
 
-const MAJORS = [
-  { id: 'cs', icon: '💻' },
-  { id: 'eng', icon: '⚙️' },
-  { id: 'design', icon: '🎨' },
-  { id: 'business', icon: '📈' }
+const STAGES = [
+  { id: 'goal', icon: <Compass size={18} />, label: 'Discovery' },
+  { id: 'analysis', icon: <Activity size={18} />, label: 'Cognitive Load' },
+  { id: 'result', icon: <LayoutGrid size={18} />, label: 'Strategic Trio' },
+  { id: 'tradeoffs', icon: <ScaleIcon size={18} />, label: 'Transparency' },
+  { id: 'refinement', icon: <Zap size={18} />, label: 'Refinement' },
+  { id: 'summary', icon: <Shield size={18} />, label: 'Final Evolution' }
 ];
 
 const App = () => {
-  const [activeMajor, setActiveMajor] = useState('cs');
-  const [budget, setBudget] = useState(1200);
-  const [prefs, setPrefs] = useState({ portability: 50, battery: 50, power: 50 });
+  const [stage, setStage] = useState(0);
   const [query, setQuery] = useState('');
+  const [budget, setBudget] = useState(1500);
+  const [specialization, setSpecialization] = useState('Software Engineering');
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState(null);
-  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [activeTab, setActiveTab] = useState('sacrifices'); // 'analysis', 'sacrifices', 'excluded'
   const [email, setEmail] = useState('');
-  const [targetEntity, setTargetEntity] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const [lang, setLang] = useState('EN');
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  
+  // Refinement Weights
+  const [weights, setWeights] = useState({
+    portability: 50,
+    performance: 80,
+    battery: 60,
+    budget: 70
+  });
+  const [isRecalculating, setIsRecalculating] = useState(false);
 
-  const t = TRANSLATIONS[lang];
+  const nextStage = () => {
+    if (stage === 0) triggerSearch();
+    setStage(prev => Math.min(prev + 1, 5));
+  };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const prevStage = () => setStage(prev => Math.max(prev - 1, 0));
+
+  const handleCardSelection = (card) => {
+    setSelectedCard(card);
+    setStage(3); 
+  };
+
+  const handleWeightChange = (key, val) => {
+    setWeights(prev => ({ ...prev, [key]: parseInt(val) }));
+    setIsRecalculating(true);
+    setTimeout(() => setIsRecalculating(false), 800);
+  };
+
+  const triggerSearch = () => {
     setIsSearching(true);
-    
-    // Simulate real API response from the new Decision Engine
     setTimeout(() => {
+      const trioData = [
+        {
+          id: 'hero',
+          type: 'HERO',
+          badge: 'MOST STABLE',
+          icon: <Trophy size={20} />,
+          color: '#3B82F6',
+          title: "MacBook Pro 14",
+          sub: "M3 Pro / 18GB / 512GB",
+          price: 1999,
+          match: 94,
+          scores: { performance: 95, battery: 90, portability: 85 },
+          why: "The highest stability score for Computer Science. Perfectly balances Unix-native tools with sustained thermals.",
+          sacrifices: ["Budget (-15%)", "Weight (+0.5lb)", "Limited Legacy Ports"],
+          badNews: "Aggressive fan noise under heavy rendering loops.",
+          img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400",
+          exclusions: [
+            { name: "Dell XPS 15", reason: "Thermal Throttling detected in high-load compiles." },
+            { name: "Surface Laptop", reason: "Insufficient RAM for containerization." }
+          ]
+        },
+        {
+          id: 'value',
+          type: 'VALUE',
+          badge: 'SMART BUDGET',
+          icon: <Wallet size={20} />,
+          color: '#10B981',
+          title: "ThinkPad T14 Gen 4",
+          sub: "Ryzen 7 / 32GB / 1TB",
+          price: 1249,
+          match: 88,
+          scores: { performance: 85, battery: 92, portability: 80 },
+          why: "Maximizes local resources (RAM/SSD) while staying under your ideal budget limit.",
+          sacrifices: ["Display (-20% Color Accuracy)", "Chassis (Premium Plastic)", "Webcam Quality"],
+          badNews: "Speakers are mediocre for media consumption.",
+          img: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&q=80&w=400",
+          exclusions: [
+            { name: "HP Pavilion", reason: "Build quality concerns under heavy daily carry." },
+            { name: "Acer Swift", reason: "Keyboard flex noticed by users." }
+          ]
+        },
+        {
+          id: 'future',
+          type: 'FUTURE',
+          badge: 'POWER HOUSE',
+          icon: <Award size={20} />,
+          color: '#8B5CF6',
+          title: "ASUS ROG Zephyrus G16",
+          sub: "Core Ultra 9 / RTX 4070 / 32GB",
+          price: 2199,
+          match: 82,
+          scores: { performance: 98, battery: 65, portability: 70 },
+          why: "Best future-proofing for Machine Learning and 3D work.",
+          sacrifices: ["Portability (Large Power Brick)", "Battery Life", "Aggressive Aesthetics"],
+          badNews: "Gets extremely hot during sustained ML training sessions.",
+          img: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&q=80&w=400",
+          exclusions: [
+            { name: "Razer Blade 16", reason: "Overpriced for the performance gain." },
+            { name: "MSI Raider", reason: "Too heavy for campus daily carry." }
+          ]
+        }
+      ];
       setResults({
         status: "ok",
-        stabilityScore: 0.88,
-        relaxationScore: 0,
         conflicts: [
-          { id: 'c1', gravity: 0.85, description: lang === 'AR' ? "تعارض: الأداء العالي يرفع السعر فوق الميزانية." : "Conflict: High performance is pushing price over budget." }
+          { id: 'c1', label: "Weight vs Power", val: 85, desc: "Ultra-portable chassis limits thermal dissipation for high-end GPUs." },
+          { id: 'c2', label: "Budget vs Life", val: 60, desc: "Your $1500 limit makes 'Tier 1' battery cells difficult to secure." }
         ],
-        cards: [
-          {
-            id: 1, type: 'HERO', icon: <Trophy size={18} />, title: "ProFlow 14 Elite", match: 98, price: 1899,
-            sacrificeVector: { performance: 0.9, price: -0.4, portability: 0.1 },
-            why: lang === 'EN' ? "Dominates in logic-heavy workloads." : "يهيمن في أعباء العمل المنطقية الثقيلة.",
-            badNews: lang === 'EN' ? "Severe thermal throttling under 4K export." : "اختناق حراري شديد عند تصدير 4K.",
-            specs: [
-              { icon: <Cpu size={14} />, label: "M3 Pro" },
-              { icon: <Layers size={14} />, label: "18GB" },
-              { icon: <HardDrive size={14} />, label: "512GB" }
-            ]
-          },
-          {
-            id: 2, type: 'SMART BUDGET', icon: <Wallet size={18} />, title: "Nomad Air 13", match: 89, price: 899,
-            sacrificeVector: { performance: 0.4, price: 0.8, portability: 0.9 },
-            why: lang === 'EN' ? "Best value for mobility-first users." : "أفضل قيمة للمستخدمين المهتمين بخفة الوزن.",
-            badNews: lang === 'EN' ? "Screen brightness is weak outdoors." : "سطوع الشاشة ضعيف في الخارج.",
-            specs: [
-              { icon: <Cpu size={14} />, label: "Ryzen 7" },
-              { icon: <Layers size={14} />, label: "16GB" },
-              { icon: <HardDrive size={14} />, label: "512GB" }
-            ]
-          }
+        trio: trioData,
+        evolution: [
+          { label: 'Initial Intent', val: 78 },
+          { label: 'Constraint Shift', val: 86 },
+          { label: 'Stabilized Result', val: 94 }
         ]
       });
       setIsSearching(false);
-    }, 1200);
+    }, 1500);
   };
 
-  const copyLink = () => {
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(window.location.href)
-        .then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        })
-        .catch(err => console.error("Failed to copy!", err));
-    }
+  const navigateToStore = () => {
+    window.open('https://amazon.com', '_blank');
+    setShowLeadModal(false);
   };
 
   return (
-    <div className={`app-container ${!isDarkMode ? 'light-mode' : ''} ${lang === 'AR' ? 'rtl' : ''}`} style={{ '--accent-primary': '#6366f1', direction: lang === 'AR' ? 'rtl' : 'ltr' }}>
-
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 0', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '36px', height: '36px', background: 'var(--accent-primary)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BrainCircuit size={20} color="white" />
-          </div>
-          <span style={{ fontWeight: 800, fontSize: '1.4rem', letterSpacing: '-1px' }}>MajorLogic <span style={{ color: 'var(--text-tertiary)', fontWeight: 400, fontSize: '0.9rem' }}>Matchmaker</span></span>
+    <div className="app-container" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      
+      {/* 🌑 Deep Sidebar Navigation */}
+      <aside className="sidebar">
+        <div className="sidebar-logo">
+          <BrainCircuit size={32} color="var(--accent-primary)" />
         </div>
-
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={() => setLang(lang === 'EN' ? 'AR' : 'EN')} className="btn btn-outline" style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
-            <Languages size={18} /> {lang}
-          </button>
-          <button onClick={() => setIsDarkMode(!isDarkMode)} className="btn btn-outline" style={{ padding: '10px' }}>
-            {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
+        <div className="sidebar-nav">
+          <div className="nav-item active" onClick={() => setStage(0)}><Compass size={22} /></div>
+          <div className="nav-item"><History size={22} /></div>
+          <div className="nav-item"><Target size={22} /></div>
+          <div className="nav-item"><User size={22} /></div>
         </div>
-      </nav>
+        <div className="sidebar-footer">
+          <div className="nav-item"><Settings size={22} /></div>
+          <div className="nav-item"><LogOut size={22} /></div>
+        </div>
+      </aside>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '48px' }}>
-        <aside>
-          <div className="card" style={{ padding: '28px', position: 'sticky', top: '24px' }}>
-            <section style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <GraduationCap size={16} /> {t.majorBudget}
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-                {MAJORS.map(m => (
-                  <button key={m.id} onClick={() => setActiveMajor(m.id)} style={{ padding: '12px 8px', borderRadius: '10px', border: '1px solid', fontSize: '0.75rem', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', background: activeMajor === m.id ? 'var(--accent-primary)' : 'transparent', borderColor: activeMajor === m.id ? 'var(--accent-primary)' : 'var(--border-subtle)', color: activeMajor === m.id ? 'white' : 'var(--text-secondary)' }}>
-                    <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>{m.icon}</div>
-                    {t.majors[m.id]}
-                  </button>
-                ))}
-              </div>
-              <div style={{ textAlign: 'center', marginBottom: '12px' }}>
-                <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--accent-primary)' }}>${budget}</span>
-              </div>
-              <input type="range" min="500" max="3500" step="50" value={budget} onChange={(e) => setBudget(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent-primary)' }} />
-            </section>
-
-            <section style={{ marginBottom: '32px', padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid var(--border-subtle)' }}>
-              <h3 style={{ fontSize: '0.75rem', color: 'white', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>{t.preferences}</h3>
-              {[
-                { label: t.portability, key: 'portability' },
-                { label: t.battery, key: 'battery' },
-                { label: t.power, key: 'power' }
-              ].map(p => (
-                <div key={p.key} style={{ marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
-                    <span>{p.label}</span>
-                    <span>{prefs[p.key]}%</span>
-                  </div>
-                  <input type="range" min="0" max="100" value={prefs[p.key]} onChange={(e) => setPrefs({ ...prefs, [p.key]: Number(e.target.value) })} style={{ width: '100%', height: '4px', accentColor: 'var(--accent-primary)' }} />
+      <div className="main-viewport">
+        {/* 🧭 Top Stage Navigator */}
+        <header className="wizard-nav-top">
+          <div className="stage-progress">
+            {STAGES.map((s, i) => (
+              <React.Fragment key={s.id}>
+                <div className={`stage-step ${i <= stage ? 'active' : ''} ${i === stage ? 'current' : ''}`} onClick={() => i < stage && setStage(i)}>
+                  <div className="step-icon">{s.icon}</div>
+                  <span className="step-label">{s.label}</span>
                 </div>
-              ))}
-            </section>
+                {i < STAGES.length - 1 && <div className={`step-line ${i < stage ? 'active' : ''}`} />}
+              </React.Fragment>
+            ))}
           </div>
-        </aside>
+        </header>
 
-        <main>
-          <div style={{ marginBottom: '48px' }}>
-            <h1 style={{ fontSize: '3.5rem', letterSpacing: '-3px', lineHeight: '1', marginBottom: '16px' }}>
-              {t.title.split(' ')[0]} <span className="text-gradient">{t.title.split(' ')[1]}</span> {t.title.split(' ').slice(2).join(' ')}
-            </h1>
-          </div>
-
-          <form onSubmit={handleSearch} style={{ position: 'relative', marginBottom: '64px' }}>
-            <input className="search-input" placeholder={t.searchPlaceholder} value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: '24px 32px', borderRadius: '20px', fontSize: '1.1rem', background: 'rgba(255,255,255,0.03)' }} />
-            <button type="submit" className="btn-decision" style={{ position: 'absolute', [lang === 'AR' ? 'left' : 'right']: '12px', top: '50%', transform: 'translateY(-50%)', padding: '14px 28px', borderRadius: '14px' }}>
-              {isSearching ? t.analyzing : t.analyzeBtn}
-            </button>
-          </form>
-
-          {results && results.status === "COGNITIVE_COLLAPSE" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '64px', textAlign: 'center', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '24px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-               <AlertTriangle size={48} color="#ef4444" style={{ marginBottom: '24px' }} />
-               <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Cognitive Collapse Detected</h2>
-               <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto 32px' }}>
-                 Your constraints require relaxing more than 30% of the logical rules. A rational decision is no longer possible. 
-                 Please increase budget or lower performance expectations to restore integrity.
-               </p>
-               <button onClick={() => setResults(null)} className="btn-decision" style={{ background: '#ef4444' }}>Restore System Logic</button>
-            </motion.div>
-          )}
-
-          {results && results.status !== "COGNITIVE_COLLAPSE" && (
-            <>
-              {results.conflicts.map(c => (
-                <motion.div key={c.id} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} style={{ padding: '16px 24px', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '12px', border: '1px solid rgba(245, 158, 11, 0.2)', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <ScaleIcon color="#f59e0b" size={20} />
-                  <span style={{ fontSize: '0.9rem', color: '#f59e0b' }}>{c.description}</span>
-                </motion.div>
-              ))}
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '32px' }}>
-                {results.cards.map(card => (
-                  <motion.div 
-                    key={card.id} 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="card" 
-                    style={{ 
-                      padding: '32px',
-                      position: 'relative',
-                      border: `1px solid ${card.type === 'HERO' ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '24px'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ 
-                        fontSize: '0.7rem', 
-                        fontWeight: 800, 
-                        color: card.type === 'HERO' ? 'var(--accent-primary)' : '#10b981',
-                        background: 'rgba(255,255,255,0.03)',
-                        padding: '4px 12px',
-                        borderRadius: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}>
-                        {card.icon} {card.type}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#10b981' }}>{card.match}%</div>
-                        <div style={{ fontSize: '0.6rem', color: 'var(--text-tertiary)' }}>STABILITY: {(results.stabilityScore * 100).toFixed(0)}%</div>
-                      </div>
+        {/* 🏗️ Dynamic Content Area */}
+        <div className="content-scroll">
+          <AnimatePresence mode="wait">
+            
+            {/* STAGE 0: DISCOVERY */}
+            {stage === 0 && (
+              <motion.div key="s0" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="stage-panel centered">
+                <div className="stage-header centered">
+                  <div className="os-tag">PHASE 1: INTENT DISCOVERY</div>
+                  <h1>What are we building today?</h1>
+                  <p>Describe your goal in plain language. We'll map the hardware logic.</p>
+                </div>
+                
+                <div className="discovery-grid">
+                  <div className="input-container-glass">
+                    <textarea 
+                      className="goal-input-premium" 
+                      placeholder="I need a laptop for..."
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                    <div className="input-footer">
+                      <span><MessageSquare size={14} /> Cognitive Parser Active</span>
                     </div>
+                  </div>
 
-                    <div>
-                      <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '8px' }}>{card.title}</h2>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{t.bestFor} {t.majors[activeMajor]}</div>
+                  <div className="config-side-panel">
+                    <div className="config-group">
+                      <label>Target Specialization</label>
+                      <select value={specialization} onChange={(e) => setSpecialization(e.target.value)} className="select-premium">
+                        <option>Software Engineering</option>
+                        <option>AI & Data Science</option>
+                        <option>3D Rendering</option>
+                        <option>Business Efficiency</option>
+                      </select>
                     </div>
+                    <div className="config-group">
+                      <label>Budget Range: ${budget}</label>
+                      <input type="range" min="800" max="4000" step="100" value={budget} onChange={(e) => setBudget(e.target.value)} className="weight-slider-input" />
+                      <div className="flex-row j-between" style={{marginTop: '10px'}}>
+                        <span className="text-small">Economy</span>
+                        <span className="text-small">Flagship</span>
+                      </div>
+                      <label className="checkbox-container">
+                        <input type="checkbox" defaultChecked />
+                        <span className="checkmark"></span>
+                        <span className="text-small">I'm flexible for "Perfect Match"</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
 
-                    {/* Sacrifice Vector Visualizer */}
-                    <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
-                       <div style={{ fontSize: '0.7rem', fontWeight: 800, marginBottom: '12px', color: 'var(--text-tertiary)' }}>SACRIFICE VECTOR</div>
-                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          {Object.entries(card.sacrificeVector).map(([key, val]) => (
-                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                               <span style={{ width: '80px', fontSize: '0.65rem', textTransform: 'uppercase' }}>{key}</span>
-                               <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', position: 'relative', overflow: 'hidden' }}>
-                                  <motion.div 
-                                    initial={{ width: 0 }} 
-                                    animate={{ width: `${Math.abs(val) * 100}%`, left: val < 0 ? 'auto' : '50%', right: val < 0 ? '50%' : 'auto' }} 
-                                    style={{ height: '100%', background: val < 0 ? '#ef4444' : '#10b981', position: 'absolute' }} 
-                                  />
-                                  <div style={{ position: 'absolute', left: '50%', top: 0, width: '1px', height: '100%', background: 'rgba(255,255,255,0.2)' }} />
-                               </div>
+                <div className="stage-footer-actions j-center">
+                  <button onClick={nextStage} className="btn-primary-action large">Initialize Analysis <ArrowRight size={18} /></button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STAGE 1: COGNITIVE LOAD */}
+            {stage === 1 && (
+              <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="stage-panel">
+                <div className="stage-header">
+                  <div className="os-tag">PHASE 2: DIMENSIONAL TENSION</div>
+                  <h1>Analyzing Your Needs...</h1>
+                  <p>Resolving hardware conflicts based on your {specialization} profile.</p>
+                </div>
+                <div className="tension-grid">
+                  {results?.conflicts.map((c, i) => (
+                    <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.1 }} key={c.id} className="tension-card">
+                      <div className="tension-header">
+                        <span className="t-label">{c.label}</span>
+                        <span className="t-gravity">{c.val}% Intensity</span>
+                      </div>
+                      <div className="t-bar"><motion.div initial={{ width: 0 }} animate={{ width: `${c.val}%` }} className="t-fill" /></div>
+                      <p className="t-desc">{c.desc}</p>
+                    </motion.div>
+                  ))}
+                </div>
+                <div className="stage-footer-actions">
+                  <button onClick={prevStage} className="btn-ghost">Back</button>
+                  <button onClick={nextStage} className="btn-primary-action">Resolve Logic & Show Trio</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STAGE 2: STRATEGIC TRIO */}
+            {stage === 2 && results && (
+              <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stage-panel large">
+                <div className="stage-header centered">
+                  <h1>Best Choice for You</h1>
+                  <p>Stabilized paths for your {specialization} needs.</p>
+                </div>
+                <div className="trio-grid">
+                  {results.trio.map((card, i) => (
+                    <motion.div 
+                      key={card.id} 
+                      initial={{ y: 50, opacity: 0 }} 
+                      animate={{ y: 0, opacity: 1 }} 
+                      transition={{ delay: i * 0.2 }}
+                      className={`trio-card ${selectedCard?.id === card.id ? 'highlighted' : ''}`}
+                    >
+                      <div className="card-header-flex">
+                        <div className="card-badge" style={{ background: card.color }}>{card.badge}</div>
+                        <div className="overall-score">
+                          <span className="score-val">{card.match}</span>
+                          <span className="score-label">/100</span>
+                        </div>
+                      </div>
+
+                      <div className="card-visual-compact">
+                        <img src={card.img} alt={card.title} />
+                      </div>
+
+                      <div className="card-main-info">
+                        <h3>{card.title}</h3>
+                        <div className="price-tag">${card.price}</div>
+                        <div className="card-tags">
+                          <span>14" Mini-LED</span>
+                          <span>{card.sub.split('/')[0]}</span>
+                          <span>{card.sub.split('/')[1]}</span>
+                        </div>
+                      </div>
+
+                      <div className="spec-radar">
+                        <div className="radar-item">
+                          <span>Performance</span>
+                          <div className="radar-bar"><div style={{ width: `${card.scores.performance}%`, background: card.color }}></div></div>
+                        </div>
+                        <div className="radar-item">
+                          <span>Battery</span>
+                          <div className="radar-bar"><div style={{ width: `${card.scores.battery}%`, background: card.color }}></div></div>
+                        </div>
+                        <div className="radar-item">
+                          <span>Portability</span>
+                          <div className="radar-bar"><div style={{ width: `${card.scores.portability}%`, background: card.color }}></div></div>
+                        </div>
+                      </div>
+
+                      <div className="card-summary">
+                        <label>Why this choice?</label>
+                        <p>{card.why}</p>
+                      </div>
+
+                      <button className="btn-card-select" style={{ background: card.color }} onClick={() => handleCardSelection(card)}>View Full Logic</button>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* STAGE 3: TRANSPARENCY (TABBED) */}
+            {stage === 3 && selectedCard && (
+              <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stage-panel">
+                <div className="transparency-container-boxed">
+                  <div className="transparency-tabs">
+                    <button className={activeTab === 'analysis' ? 'active' : ''} onClick={() => setActiveTab('analysis')}>Detailed Analysis</button>
+                    <button className={activeTab === 'sacrifices' ? 'active' : ''} onClick={() => setActiveTab('sacrifices')}>The Sacrifices</button>
+                    <button className={activeTab === 'excluded' ? 'active' : ''} onClick={() => setActiveTab('excluded')}>Excluded Alternatives</button>
+                  </div>
+
+                  <div className="tab-content">
+                    {activeTab === 'analysis' && (
+                      <div className="analysis-view">
+                        <div className="analysis-hero">
+                          <img src={selectedCard.img} />
+                          <div className="analysis-text">
+                            <h2>{selectedCard.title}</h2>
+                            <p>{selectedCard.why}</p>
+                            <div className="affiliate-badge"><Info size={14}/> This is an affiliate link. Selection logic remains objective.</div>
+                          </div>
+                        </div>
+                        <table className="spec-table-premium">
+                          <thead><tr><th>Hardware Component</th><th>Logic Grade</th></tr></thead>
+                          <tbody>
+                            <tr><td>SoC / Processor</td><td>Grade A+ ({selectedCard.sub.split('/')[0]})</td></tr>
+                            <tr><td>Memory (RAM)</td><td>{selectedCard.sub.split('/')[1]} - High Stability</td></tr>
+                            <tr><td>Thermal Management</td><td>{selectedCard.badNews.includes('hot') ? 'Poor' : 'Excellent'}</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                    {activeTab === 'sacrifices' && (
+                      <div className="sacrifices-view">
+                        <h3>What will you give up?</h3>
+                        <div className="sac-grid">
+                          {selectedCard.sacrifices.map((s, i) => (
+                            <div key={i} className="sac-card-mini">
+                              <AlertTriangle color="var(--danger)" />
+                              <div className="sac-info">
+                                <strong>{s.split('(')[0]}</strong>
+                                <span>{s.includes('(') ? s.split('(')[1].replace(')', '') : 'Impact on Experience'}</span>
+                              </div>
                             </div>
                           ))}
-                       </div>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                      <div>
-                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10b981', marginBottom: '4px' }}>{t.whyThis}</div>
-                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{card.why}</p>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f87171', marginBottom: '4px' }}>{t.badNews}</div>
-                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{card.badNews}</p>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
-                      {card.specs.map((spec, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                          <span style={{ color: 'var(--accent-primary)' }}>{spec.icon}</span>
-                          <span>{spec.label}</span>
                         </div>
-                      ))}
-                    </div>
-
-                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                         <div style={{ fontSize: '0.65rem', color: 'var(--text-tertiary)' }}>PRICE</div>
-                         <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>${card.price}</div>
+                        <div className="defect-box">
+                          <div className="label">Critical Review Signal:</div>
+                          <p>"{selectedCard.badNews}"</p>
+                        </div>
                       </div>
-                      <button onClick={() => { setTargetEntity(card); setShowLeadModal(true); }} className="btn-decision">
-                        {lang === 'AR' ? 'اختر المسار' : 'Select Path'}
-                      </button>
+                    )}
+                    {activeTab === 'excluded' && (
+                      <div className="excluded-view">
+                        <h3>Why we rejected these:</h3>
+                        <div className="excluded-list-vertical">
+                          {selectedCard.exclusions.map((ex, i) => (
+                            <div key={i} className="ex-item-box">
+                              <div className="ex-title">
+                                <strong>{ex.name}</strong>
+                                <X size={18} color="var(--danger)" />
+                              </div>
+                              <p>{ex.reason}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="stage-footer-actions">
+                  <button onClick={() => setStage(2)} className="btn-ghost">Back to Trio</button>
+                  <button onClick={nextStage} className="btn-primary-action">Refine Decision Weights</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STAGE 4: REFINEMENT */}
+            {stage === 4 && selectedCard && (
+              <motion.div key="s4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stage-panel">
+                <div className="stage-header">
+                  <h1>Predictive Refinement</h1>
+                  <p>Fine-tune the weights to see how the {selectedCard.title} adapts.</p>
+                </div>
+                
+                <div className="refinement-layout-split">
+                  <div className="refinement-controls">
+                    {['performance', 'battery', 'portability', 'budget'].map(key => (
+                      <div key={key} className="weight-group">
+                        <label>{key.toUpperCase()}: {weights[key]}%</label>
+                        <input type="range" value={weights[key]} onChange={(e) => handleWeightChange(key, e.target.value)} className="weight-slider-input" />
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="prediction-panel">
+                    {isRecalculating ? (
+                      <div className="recalculating"><RefreshCw className="spin" /> Updating Model...</div>
+                    ) : (
+                      <div className="prediction-results">
+                        <div className="prediction-item">
+                          <span>Predicted Portability</span>
+                          <span className={weights.portability > 50 ? 'pos' : 'neg'}>
+                            {weights.portability > 50 ? <ArrowUpRight /> : <ArrowDownRight />}
+                            {Math.abs(weights.portability - 50)}%
+                          </span>
+                        </div>
+                        <div className="prediction-item">
+                          <span>Battery Life Impact</span>
+                          <span className={weights.battery > 60 ? 'pos' : 'neg'}>
+                            {weights.battery > 60 ? <ArrowUpRight /> : <ArrowDownRight />}
+                            {Math.abs(weights.battery - 60)}%
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="stage-footer-actions">
+                  <button onClick={() => setStage(3)} className="btn-ghost">Back</button>
+                  <button onClick={nextStage} className="btn-primary-action">Confirm Evolution</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STAGE 5: SUMMARY & EVOLUTION */}
+            {stage === 5 && selectedCard && (
+              <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stage-panel">
+                <div className="evolution-summary-container">
+                  <div className="evolution-timeline-header">
+                    <h2>Decision Evolution</h2>
+                    <p>How your requirements matured into this choice.</p>
+                    <div className="timeline-visual">
+                      <div className="line"></div>
+                      <div className="dots">
+                        <div className="dot active">1</div>
+                        <div className="dot active">2</div>
+                        <div className="dot active">3</div>
+                      </div>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
-            </>
-          )}
-        </main>
+                  </div>
+
+                  <div className="delta-comparison-table">
+                    <h3>What changed in your decision?</h3>
+                    <div className="delta-row">
+                      <span>Requirement Weighting</span>
+                      <div className="delta-vals">
+                        <span className="old">80% Perf</span>
+                        <ArrowRight size={14} />
+                        <span className="new">{weights.performance}% Perf</span>
+                      </div>
+                    </div>
+                    <div className="delta-row">
+                      <span>Expected Battery Life</span>
+                      <div className="delta-vals">
+                        <span className="old">10hrs</span>
+                        <ArrowRight size={14} />
+                        <span className="new">{10 + (weights.battery - 60)/10}hrs</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="final-checkout-card">
+                    <img src={selectedCard.img} />
+                    <div className="details">
+                      <h3>{selectedCard.title}</h3>
+                      <div className="final-score">Match: {selectedCard.match}%</div>
+                      <button className="btn-primary-action large" onClick={() => setShowLeadModal(true)}>Go to Store</button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
+      {/* LEAD MODAL (Same as before but improved styling) */}
       <AnimatePresence>
         {showLeadModal && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="card" style={{ maxWidth: '480px', width: '100%', padding: '48px', textAlign: 'center' }}>
-              <div style={{ width: '64px', height: '64px', background: '#16a34a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}><ShieldAlert color="white" size={32} /></div>
-              <h2 style={{ fontSize: '1.8rem', marginBottom: '12px' }}>{t.modalTitle}</h2>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', lineHeight: '1.6' }}>{t.modalSubtitle.replace('{item}', targetEntity?.title)}</p>
-              <input className="search-input" placeholder="your@university.edu" value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: '16px', borderRadius: '12px', fontSize: '1.1rem', marginBottom: '24px', textAlign: 'center' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <button onClick={() => setShowLeadModal(false)} className="btn-decision" style={{ background: '#16a34a', width: '100%', padding: '16px', borderRadius: '12px' }}>{t.modalBtn}</button>
-                <button onClick={() => setShowLeadModal(false)} className="btn btn-outline" style={{ border: 'none', color: 'var(--text-tertiary)' }}>{t.modalSkip}</button>
-              </div>
+          <div className="modal-overlay" onClick={() => setShowLeadModal(false)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="modal-card">
+               <h2>One Last Step...</h2>
+               <p>We've generated a <strong>Hardware Checklist</strong> specifically for the {selectedCard?.title}. Want us to send it to you?</p>
+               <input 
+                 className="email-input-premium" 
+                 placeholder="Enter email (or leave blank to skip)" 
+                 value={email} 
+                 onChange={e => setEmail(e.target.value)} 
+               />
+               <button onClick={navigateToStore} className="btn-primary-action">
+                 {email ? 'Send & Continue' : 'Skip & Continue'}
+               </button>
             </motion.div>
           </div>
         )}

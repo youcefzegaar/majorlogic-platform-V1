@@ -508,6 +508,7 @@ export const laptopStudentUsDomainPack = {
   detectIntentConflicts({ profile, ruleset }) {
     const conflicts = [];
     const { sliders } = profile;
+    const lang = profile.locale === 'ar' ? 'AR' : 'EN';
 
     // 1. Performance vs Portability (The Physics Conflict)
     if (sliders.performance > 75 && sliders.portability > 75) {
@@ -562,24 +563,46 @@ export const laptopStudentUsDomainPack = {
         performance: entity.specs?.performance ?? 0,
         ramGb: entity.specs?.ramGb ?? 0,
         display: entity.specs?.display ?? 0,
-        thermals: entity.specs?.thermals ?? 50
+        thermals: entity.specs?.thermals ?? 50,
+        resale: entity.economicSignals?.resaleScore ?? 50
     };
 
-    const kernelResult = kernel.execute(decisionIR, [flattenedEntity], { 
+    // Dynamic Weighting: Align IR weights with user preferences (Constitution Law #3)
+    const activeRulesetId = rawConfig.rulesets[profile.major] ? profile.major : "general";
+    const customIR = JSON.parse(JSON.stringify(decisionIR)); // Deep clone for thread-safety
+    const scoreNode = customIR.executionPlan.find(n => n.id === `score_${activeRulesetId}`);
+    
+    if (scoreNode && scoreNode.weights) {
+      // Adjust weights based on profile preferences if they exist
+      if (profile.preferences?.resale >= 80) {
+        scoreNode.weights.resale = 0.60;
+        // Law of Sacrifice: To gain 60% resale weight, we must drop others significantly
+        scoreNode.weights.performance = 0.15;
+        scoreNode.weights.portability_score = 0.15;
+        scoreNode.weights.value_score = 0.10;
+      }
+    }
+
+    const kernelResult = kernel.execute(customIR, [flattenedEntity], { 
       budget: profile.budgetUsd,
       major: profile.major 
     }, {
-      targetScoreId: rawConfig.rulesets[profile.major] ? `score_${profile.major}` : "score_general"
+      targetScoreId: `score_${activeRulesetId}`
     });
 
     const result = kernelResult.results[0];
     const trace = result.trace;
 
+    if (profile.preferences?.resale >= 80) {
+      console.log(`[Engine] Candidate: ${entity.title}, Score: ${result.score}, Resale: ${flattenedEntity.resale}`);
+    }
+
     // Law of Sacrifice: Quantify what was lost to gain the win
     const sacrificeVector = {
       price: (profile.budgetUsd - flattenedEntity.price) / profile.budgetUsd,
       performance: (flattenedEntity.performance - 70) / 30,
-      portability: (flattenedEntity.portability - 70) / 30
+      portability: (flattenedEntity.portability - 70) / 30,
+      resale: (flattenedEntity.resale - 50) / 50
     };
 
     return {
@@ -633,8 +656,19 @@ export const laptopStudentUsDomainPack = {
       score: selection.score,
       match: selection.score,
       sacrificeVector: selection.sacrificeVector,
-      whyThis: explainer.explain(selection.trace, entity.title),
-      badNews: entity.reviewIntelligence.primaryWarning ?? "No critical warning.",
+      whyThis: explainer.explain(selection.trace, entity.title, { 
+        locale: profile.locale || 'en',
+        reviewWarnings: {
+          primary: profile.locale === 'ar' ? entity.reviewIntelligence.primaryWarningAr : entity.reviewIntelligence.primaryWarning,
+          secondary: profile.locale === 'ar' ? entity.reviewIntelligence.secondaryWarningAr : entity.reviewIntelligence.secondaryWarning
+        }
+      }),
+      badNews: profile.locale === 'ar' 
+        ? (entity.reviewIntelligence.primaryWarningAr ?? "لا يوجد تحذير حرج.")
+        : (entity.reviewIntelligence.primaryWarning ?? "No critical warning."),
+      secondaryBadNews: profile.locale === 'ar'
+        ? entity.reviewIntelligence.secondaryWarningAr
+        : entity.reviewIntelligence.secondaryWarning,
       topPros: entity.reviewIntelligence.topPros ?? [],
       media: entity.media,
       decision_confidence: {

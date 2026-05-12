@@ -9,7 +9,8 @@
     "price": { "type": "numeric", "label": "Price USD" },
     "ramGb": { "type": "numeric", "label": "RAM" },
     "storageGb": { "type": "numeric", "label": "Storage" },
-    "performance": { "type": "numeric", "label": "Performance Score" }
+    "performance": { "type": "numeric", "label": "Performance Score" },
+    "resale": { "type": "numeric", "label": "Resale Value Index" }
   },
   "metrics": {
     "portability_score": {
@@ -23,11 +24,11 @@
   },
   "gates": {
     "within_budget": {
-      "reason": "Over User Budget",
+      "node": "Budget Constraint",
       "condition": { "op": "lte", "left": "price", "right": "budget" }
     },
     "min_ram": {
-      "reason": "Insufficient RAM",
+      "node": "RAM Minimum",
       "condition": { "op": "gte", "left": "ramGb", "right": 8 }
     }
   },
@@ -37,7 +38,8 @@
       "weights": {
         "performance": 0.4,
         "portability_score": 0.3,
-        "value_score": 0.3
+        "value_score": 0.3,
+        "resale": 0
       },
       "penalties": {
         "thermal_throttle": {
