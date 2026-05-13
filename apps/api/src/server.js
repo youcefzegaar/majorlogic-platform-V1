@@ -60,7 +60,7 @@ fastify.register(fastifyHelmet, {
 const ALLOWED_ORIGINS = [
   "https://majorlogic.ai",
   "https://www.majorlogic.ai",
-  ...(isProd ? [] : ["http://localhost:3010", "http://127.0.0.1:3010"])
+  "http://localhost:3010", "http://127.0.0.1:3010", "http://localhost:5175", "http://localhost:5173", "http://localhost:5174", "http://localhost:5176"
 ];
 fastify.register(cors, {
   origin: (origin, cb) => {

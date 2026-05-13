@@ -467,7 +467,16 @@ export const laptopStudentUsDomainPack = {
   },
 
   entityFitsProfile(entity, profile) {
-    return Boolean(entity.fitStates[profile.major]);
+    if (!entity.fitStates[profile.major]) return false;
+    // Budget gate: only include devices within budget range
+    const price = entity.market?.bestOffer?.priceUsd ?? 9999;
+    if (profile.budgetUsd && price > profile.budgetUsd * 1.15) return false; // 15% tolerance
+    return true;
+  },
+
+  isWithinBudget(entity, profile) {
+    const price = entity.market?.bestOffer?.priceUsd ?? 9999;
+    return price <= (profile.budgetUsd || 9999) * 1.15;
   },
 
 
@@ -506,33 +515,84 @@ export const laptopStudentUsDomainPack = {
   },
 
   detectIntentConflicts({ profile, ruleset }) {
-    const conflicts = [];
-    const { sliders } = profile;
+    const insights = [];
+    const { sliders, preferences, major, budgetUsd } = profile;
     const lang = profile.locale === 'ar' ? 'AR' : 'EN';
 
-    // 1. Performance vs Portability (The Physics Conflict)
+    // 1. Major vs Budget (Economic Risk / Sacrifice)
+    const demandingMajors = ["engineering", "design", "ai"];
+    if (demandingMajors.includes(major) && budgetUsd < 850) {
+      insights.push({
+        id: "econ_major_bottleneck",
+        type: "conflict",
+        gravity: 0.95,
+        dimensions: ["budget", "major"],
+        title: lang === 'AR' ? "عنق زجاجة مالي" : "Economic Bottleneck",
+        description: lang === 'AR' ? `تخصصك (${major.toUpperCase()}) يتطلب قدرة معالجة ورسوميات عالية، لكن الميزانية الحالية (${budgetUsd}$) تقيد الخيارات بالأجهزة الاقتصادية، مما يعني تضحية حتمية في دورة حياة الجهاز.` : `Your major (${major.toUpperCase()}) requires high processing/graphics power, but your budget ($${budgetUsd}) restricts you to economy devices, meaning an inevitable sacrifice in longevity.`
+      });
+    }
+
+    // 2. Physics Law: Performance vs Portability
     if (sliders.performance > 75 && sliders.portability > 75) {
-      conflicts.push({
+      insights.push({
         id: "phys_limit_perf_port",
-        type: "dimensional_tension",
+        type: "conflict",
+        gravity: 0.88,
+        dimensions: ["performance", "portability"],
+        title: lang === 'AR' ? "قانون الفيزياء الحرارية" : "Law of Thermal Physics",
+        description: lang === 'AR' ? "طلبك لأداء فائق مع تصميم خفيف ومحمول سيؤدي إلى تقييد حراري (Thermal Throttling) للوصول لوزن خفيف، أو زيادة هائلة في السعر لهندسة التبريد." : "Demanding extreme performance in a highly portable design leads to thermal throttling or a massive price spike for advanced cooling engineering."
+      });
+    }
+
+    // 3. Power Tax: Performance vs Battery
+    if (sliders.performance > 80 && preferences.battery > 70) {
+      insights.push({
+        id: "power_tax_perf_batt",
+        type: "conflict",
+        gravity: 0.82,
+        dimensions: ["performance", "battery"],
+        title: lang === 'AR' ? "ضريبة الطاقة" : "Power Tax",
+        description: lang === 'AR' ? "المكونات ذات الأداء المطلق تستهلك موارد طاقة ضخمة بشراهة. المطالبة ببطارية طويلة الأمد مع هذا الأداء تُشكل تضحية متبادلة لا مفر منها." : "Absolute performance components consume massive power. Demanding all-day battery life with this performance is an unavoidable mutual sacrifice."
+      });
+    }
+
+    // 4. Strategic Harmony: Code/AI + VM Setup
+    if (["cs", "ai"].includes(major) && sliders.virtual_machines >= 70 && sliders.performance >= 75) {
+      insights.push({
+        id: "harmony_cs_setup",
+        type: "harmony",
+        gravity: 0.90,
+        dimensions: ["major", "performance"],
+        title: lang === 'AR' ? "تناغم استراتيجي" : "Strategic Alignment",
+        description: lang === 'AR' ? "تخصيصك العالي للأداء والآلات الوهمية يتطابق تماماً مع طبيعة التخصص البرمجي ويضمن لك بيئة تطوير مستقرة وخالية من الانهيارات." : "Your high allocation for performance and virtual machines perfectly aligns with your programming major, ensuring a rock-solid development environment."
+      });
+    }
+
+    // 5. Investment Harmony: Premium Ultrabook Path
+    if (budgetUsd > 1400 && preferences.battery > 60 && sliders.portability > 60 && sliders.performance <= 70) {
+      insights.push({
+        id: "harmony_premium_ultra",
+        type: "harmony",
         gravity: 0.85,
-        description: lang === 'AR' ? "تعارض مادي: الأداء العالي يتطلب تبريداً يزيد من الوزن." : "Physical tension: High performance requires cooling that increases weight.",
-        dimensions: ["performance", "portability"]
+        dimensions: ["budget", "portability"],
+        title: lang === 'AR' ? "مسار استثماري ذكي" : "Smart Investment Path",
+        description: lang === 'AR' ? "الميزانية المرتفعة مع التركيز على جودة البطارية والوزن تفتح مساراً ممتازاً نحو أجهزة الفئة العُليا (Premium Ultrabooks) التي تدوم لسنوات طويلة." : "A high budget focused on battery and portability opens an excellent path toward Premium Ultrabooks that boast exceptional longevity."
       });
     }
 
-    // 2. Budget vs Ambition (The Economic Conflict)
-    if (sliders.performance > 80 && profile.budgetUsd < 1000) {
-      conflicts.push({
-        id: "econ_tension_perf_price",
-        type: "economic_tension",
-        gravity: 0.92,
-        description: lang === 'AR' ? "تعارض ميزانية: الأداء المطلوب يتجاوز سقف السعر الحالي." : "Budget tension: Required performance exceeds current price ceiling.",
-        dimensions: ["performance", "price"]
+    // 6. Overkill Risk: Resource Waste
+    if (["general", "medical"].includes(major) && sliders.performance > 85 && budgetUsd > 1500) {
+      insights.push({
+        id: "risk_overkill",
+        type: "risk",
+        gravity: 0.70,
+        dimensions: ["major", "budget"],
+        title: lang === 'AR' ? "إهدار الموارد المحتمل" : "Potential Resource Waste",
+        description: lang === 'AR' ? "طبيعة تخصصك لا تتطلب هذا المستوى الهائل من الأداء. المحرك يقترح إعادة توجيه الميزانية نحو جودة الشاشة أو خفة الوزن للحصول على قيمة حقيقية." : "Your major doesn't strictly require this massive level of performance. The engine suggests redirecting budget toward screen quality or portability for real value."
       });
     }
 
-    return conflicts;
+    return insights;
   },
 
   attemptRecovery({ profile, catalog, ruleset }) {
@@ -567,22 +627,27 @@ export const laptopStudentUsDomainPack = {
         resale: entity.economicSignals?.resaleScore ?? 50
     };
 
-    // Dynamic Weighting: Align IR weights with user preferences (Constitution Law #3)
-    const activeRulesetId = rawConfig.rulesets[profile.major] ? profile.major : "general";
-    const customIR = JSON.parse(JSON.stringify(decisionIR)); // Deep clone for thread-safety
-    const scoreNode = customIR.executionPlan.find(n => n.id === `score_${activeRulesetId}`);
-    
-    if (scoreNode && scoreNode.weights) {
-      // Adjust weights based on profile preferences if they exist
-      if (profile.preferences?.resale >= 80) {
-        scoreNode.weights.resale = 0.60;
-        // Law of Sacrifice: To gain 60% resale weight, we must drop others significantly
-        scoreNode.weights.performance = 0.15;
-        scoreNode.weights.portability_score = 0.15;
-        scoreNode.weights.value_score = 0.10;
-      }
-    }
+    // Dynamic Weighting: Derive weights DIRECTLY from user slider preferences
+    const prefs = profile.preferences || {};
+    const perfW = (prefs.performance || 50) / 100;
+    const battW = (prefs.battery || 50) / 100;
+    const portW = (prefs.portability || 50) / 100;
+    const dispW = (prefs.display || 50) / 100;
+    const resW  = (prefs.resale || 50) / 100;
+    const totalW = perfW + battW + portW + dispW + resW + 0.001; // avoid /0
 
+    // Compute a preference-weighted score directly from specs
+    const prefScore = (
+      (flattenedEntity.performance * (perfW / totalW)) +
+      (flattenedEntity.battery * (battW / totalW)) +
+      ((entity.specs?.portability ?? 50) * (portW / totalW)) +
+      (flattenedEntity.display * (dispW / totalW)) +
+      (flattenedEntity.resale * (resW / totalW))
+    );
+
+    // Also run the original IR kernel for baseline
+    const activeRulesetId = rawConfig.rulesets[profile.major] ? profile.major : "general";
+    const customIR = JSON.parse(JSON.stringify(decisionIR));
     const kernelResult = kernel.execute(customIR, [flattenedEntity], { 
       budget: profile.budgetUsd,
       major: profile.major 
@@ -592,6 +657,9 @@ export const laptopStudentUsDomainPack = {
 
     const result = kernelResult.results[0];
     const trace = result.trace;
+
+    // Blend: 40% kernel baseline + 60% user-preference-weighted score
+    result.score = Math.round(result.score * 0.4 + prefScore * 0.6);
 
     if (profile.preferences?.resale >= 80) {
       console.log(`[Engine] Candidate: ${entity.title}, Score: ${result.score}, Resale: ${flattenedEntity.resale}`);
@@ -634,20 +702,52 @@ export const laptopStudentUsDomainPack = {
     };
   },
 
-  chooseCard(cardType, eligibleCandidates) {
+  chooseCard(cardType, eligibleCandidates, profile, ruleset, ctx) {
     if (!eligibleCandidates.length) return null;
-    const sorted = [...eligibleCandidates].sort((a, b) => b.score - a.score);
-    if (cardType === "hero") return sorted[0];
-    if (cardType === "smart_budget") {
-        return [...eligibleCandidates].sort((a, b) => 
-            (a.entity.market.bestOffer?.priceUsd ?? 9999) - (b.entity.market.bestOffer?.priceUsd ?? 9999)
-        )[0];
+    const selectedIds = ctx?.selectedEntityIds || [];
+    const available = eligibleCandidates.filter(c => !selectedIds.includes(c.entity.entityId));
+    if (!available.length) return null; // No unique device left — skip this card slot
+
+    if (cardType === "hero") {
+      // Best overall score
+      return [...available].sort((a, b) => b.score - a.score)[0];
     }
-    return sorted[1] || sorted[0];
+    if (cardType === "smart_budget") {
+      // Best value: highest score-per-dollar
+      return [...available].sort((a, b) => {
+        const priceA = a.entity.market.bestOffer?.priceUsd ?? 9999;
+        const priceB = b.entity.market.bestOffer?.priceUsd ?? 9999;
+        return (b.score / priceB) - (a.score / priceA);
+      })[0];
+    }
+    if (cardType === "future_proof") {
+      // Highest specs ceiling (RAM + storage + performance)
+      return [...available].sort((a, b) => {
+        const specA = (a.entity.specs?.ramGb || 0) + (a.entity.specs?.performance || 0) + ((a.entity.specs?.storageGb || 0) / 100);
+        const specB = (b.entity.specs?.ramGb || 0) + (b.entity.specs?.performance || 0) + ((b.entity.specs?.storageGb || 0) / 100);
+        return specB - specA;
+      })[0];
+    }
+    return available[0];
   },
 
-  buildCard(cardType, selection, profile) {
+  buildCard(cardType, selection, profile, ctx = {}) {
     const entity = selection.entity;
+    
+    // Compute genuine excluded alternatives
+    let excluded = [];
+    if (ctx.evaluatedCandidates) {
+      // Find devices that failed eligibility
+      const failures = ctx.evaluatedCandidates.filter(c => !c.eligible);
+      // Sort by score or name to get consistent ones, grab top 2
+      excluded = failures.slice(0, 2).map(c => ({
+        name: c.entity.title,
+        reason: c.exclusionReasons && c.exclusionReasons.length > 0 
+          ? c.exclusionReasons[0].message 
+          : "Did not meet core constraints"
+      }));
+    }
+
     return {
       cardType,
       entityId: entity.entityId,
@@ -670,6 +770,13 @@ export const laptopStudentUsDomainPack = {
         ? entity.reviewIntelligence.secondaryWarningAr
         : entity.reviewIntelligence.secondaryWarning,
       topPros: entity.reviewIntelligence.topPros ?? [],
+      excluded,
+      specs: {
+        performance: entity.specs?.performance ?? 50,
+        battery: entity.specs?.battery ?? 50,
+        portability: entity.specs?.portability ?? 50,
+        build: entity.specs?.display ?? 50 // mapping display to build for radar chart
+      },
       media: entity.media,
       decision_confidence: {
         overall: selection.score / 100,

@@ -1,559 +1,1187 @@
 import React, { useState, useEffect } from 'react';
-import {
-  BrainCircuit,
-  Zap,
-  ShieldAlert,
-  Compass,
-  Monitor,
-  SlidersHorizontal,
-  AlertTriangle,
-  Trophy,
-  Wallet,
-  Scale as ScaleIcon,
-  Share2,
-  Cpu,
-  Shield,
-  User,
-  ArrowRight,
-  History,
-  Settings,
-  LogOut,
-  Target,
-  Activity,
-  Award,
-  ShoppingCart,
-  Mail,
-  X,
-  RefreshCw,
-  ArrowUpRight,
-  ArrowDownRight,
-  ChevronDown,
-  MessageSquare,
-  Info
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import './index.css';
 
-const LayoutGrid = ({size}) => <Monitor size={size} />; // Fallback icon
-
-const STAGES = [
-  { id: 'goal', icon: <Compass size={18} />, label: 'Discovery' },
-  { id: 'analysis', icon: <Activity size={18} />, label: 'Cognitive Load' },
-  { id: 'result', icon: <LayoutGrid size={18} />, label: 'Strategic Trio' },
-  { id: 'tradeoffs', icon: <ScaleIcon size={18} />, label: 'Transparency' },
-  { id: 'refinement', icon: <Zap size={18} />, label: 'Refinement' },
-  { id: 'summary', icon: <Shield size={18} />, label: 'Final Evolution' }
-];
-
-const App = () => {
-  const [stage, setStage] = useState(0);
-  const [query, setQuery] = useState('');
-  const [budget, setBudget] = useState(1500);
-  const [specialization, setSpecialization] = useState('Software Engineering');
-  const [isSearching, setIsSearching] = useState(false);
-  const [results, setResults] = useState(null);
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [activeTab, setActiveTab] = useState('sacrifices'); // 'analysis', 'sacrifices', 'excluded'
-  const [email, setEmail] = useState('');
-  const [showLeadModal, setShowLeadModal] = useState(false);
+const RadarChart = ({ data }) => {
+  const cx = 120;
+  const cy = 120;
+  const r = 80;
   
-  // Refinement Weights
-  const [weights, setWeights] = useState({
-    portability: 50,
-    performance: 80,
-    battery: 60,
-    budget: 70
-  });
-  const [isRecalculating, setIsRecalculating] = useState(false);
-
-  const nextStage = () => {
-    if (stage === 0) triggerSearch();
-    setStage(prev => Math.min(prev + 1, 5));
+  const getPoint = (val, angle) => {
+    const rad = (angle - 90) * Math.PI / 180;
+    const distance = (val / 100) * r;
+    return `${cx + distance * Math.cos(rad)},${cy + distance * Math.sin(rad)}`;
   };
 
-  const prevStage = () => setStage(prev => Math.max(prev - 1, 0));
-
-  const handleCardSelection = (card) => {
-    setSelectedCard(card);
-    setStage(3); 
-  };
-
-  const handleWeightChange = (key, val) => {
-    setWeights(prev => ({ ...prev, [key]: parseInt(val) }));
-    setIsRecalculating(true);
-    setTimeout(() => setIsRecalculating(false), 800);
-  };
-
-  const triggerSearch = () => {
-    setIsSearching(true);
-    setTimeout(() => {
-      const trioData = [
-        {
-          id: 'hero',
-          type: 'HERO',
-          badge: 'MOST STABLE',
-          icon: <Trophy size={20} />,
-          color: '#3B82F6',
-          title: "MacBook Pro 14",
-          sub: "M3 Pro / 18GB / 512GB",
-          price: 1999,
-          match: 94,
-          scores: { performance: 95, battery: 90, portability: 85 },
-          why: "The highest stability score for Computer Science. Perfectly balances Unix-native tools with sustained thermals.",
-          sacrifices: ["Budget (-15%)", "Weight (+0.5lb)", "Limited Legacy Ports"],
-          badNews: "Aggressive fan noise under heavy rendering loops.",
-          img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400",
-          exclusions: [
-            { name: "Dell XPS 15", reason: "Thermal Throttling detected in high-load compiles." },
-            { name: "Surface Laptop", reason: "Insufficient RAM for containerization." }
-          ]
-        },
-        {
-          id: 'value',
-          type: 'VALUE',
-          badge: 'SMART BUDGET',
-          icon: <Wallet size={20} />,
-          color: '#10B981',
-          title: "ThinkPad T14 Gen 4",
-          sub: "Ryzen 7 / 32GB / 1TB",
-          price: 1249,
-          match: 88,
-          scores: { performance: 85, battery: 92, portability: 80 },
-          why: "Maximizes local resources (RAM/SSD) while staying under your ideal budget limit.",
-          sacrifices: ["Display (-20% Color Accuracy)", "Chassis (Premium Plastic)", "Webcam Quality"],
-          badNews: "Speakers are mediocre for media consumption.",
-          img: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&q=80&w=400",
-          exclusions: [
-            { name: "HP Pavilion", reason: "Build quality concerns under heavy daily carry." },
-            { name: "Acer Swift", reason: "Keyboard flex noticed by users." }
-          ]
-        },
-        {
-          id: 'future',
-          type: 'FUTURE',
-          badge: 'POWER HOUSE',
-          icon: <Award size={20} />,
-          color: '#8B5CF6',
-          title: "ASUS ROG Zephyrus G16",
-          sub: "Core Ultra 9 / RTX 4070 / 32GB",
-          price: 2199,
-          match: 82,
-          scores: { performance: 98, battery: 65, portability: 70 },
-          why: "Best future-proofing for Machine Learning and 3D work.",
-          sacrifices: ["Portability (Large Power Brick)", "Battery Life", "Aggressive Aesthetics"],
-          badNews: "Gets extremely hot during sustained ML training sessions.",
-          img: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&q=80&w=400",
-          exclusions: [
-            { name: "Razer Blade 16", reason: "Overpriced for the performance gain." },
-            { name: "MSI Raider", reason: "Too heavy for campus daily carry." }
-          ]
-        }
-      ];
-      setResults({
-        status: "ok",
-        conflicts: [
-          { id: 'c1', label: "Weight vs Power", val: 85, desc: "Ultra-portable chassis limits thermal dissipation for high-end GPUs." },
-          { id: 'c2', label: "Budget vs Life", val: 60, desc: "Your $1500 limit makes 'Tier 1' battery cells difficult to secure." }
-        ],
-        trio: trioData,
-        evolution: [
-          { label: 'Initial Intent', val: 78 },
-          { label: 'Constraint Shift', val: 86 },
-          { label: 'Stabilized Result', val: 94 }
-        ]
-      });
-      setIsSearching(false);
-    }, 1500);
-  };
-
-  const navigateToStore = () => {
-    window.open('https://amazon.com', '_blank');
-    setShowLeadModal(false);
-  };
+  const points = [
+    getPoint(data.performance, 0),
+    getPoint(data.battery, 90),
+    getPoint(data.portability, 180),
+    getPoint(data.build, 270)
+  ].join(' ');
 
   return (
-    <div className="app-container" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+    <svg width="240" height="240" viewBox="0 0 240 240" style={{ overflow: 'visible' }}>
+      <polygon points={`${cx},${cy-r} ${cx+r},${cy} ${cx},${cy+r} ${cx-r},${cy}`} fill="rgba(255,255,255,0.02)" stroke="var(--border)" strokeWidth="1" strokeDasharray="4" />
+      <polygon points={`${cx},${cy-r*0.5} ${cx+r*0.5},${cy} ${cx},${cy+r*0.5} ${cx-r*0.5},${cy}`} fill="none" stroke="var(--border)" strokeWidth="1" strokeDasharray="4" />
+      <line x1={cx} y1={cy-r} x2={cx} y2={cy+r} stroke="var(--border)" strokeWidth="1" />
+      <line x1={cx-r} y1={cy} x2={cx+r} y2={cy} stroke="var(--border)" strokeWidth="1" />
       
-      {/* 🌑 Deep Sidebar Navigation */}
-      <aside className="sidebar">
-        <div className="sidebar-logo">
-          <BrainCircuit size={32} color="var(--accent-primary)" />
-        </div>
-        <div className="sidebar-nav">
-          <div className="nav-item active" onClick={() => setStage(0)}><Compass size={22} /></div>
-          <div className="nav-item"><History size={22} /></div>
-          <div className="nav-item"><Target size={22} /></div>
-          <div className="nav-item"><User size={22} /></div>
-        </div>
-        <div className="sidebar-footer">
-          <div className="nav-item"><Settings size={22} /></div>
-          <div className="nav-item"><LogOut size={22} /></div>
-        </div>
-      </aside>
+      <text x={cx} y={cy-r-10} textAnchor="middle" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Performance</text>
+      <text x={cx+r+10} y={cy+4} textAnchor="start" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Battery</text>
+      <text x={cx} y={cy+r+20} textAnchor="middle" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Portability</text>
+      <text x={cx-r-10} y={cy+4} textAnchor="end" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Build</text>
 
-      <div className="main-viewport">
-        {/* 🧭 Top Stage Navigator */}
-        <header className="wizard-nav-top">
-          <div className="stage-progress">
-            {STAGES.map((s, i) => (
-              <React.Fragment key={s.id}>
-                <div className={`stage-step ${i <= stage ? 'active' : ''} ${i === stage ? 'current' : ''}`} onClick={() => i < stage && setStage(i)}>
-                  <div className="step-icon">{s.icon}</div>
-                  <span className="step-label">{s.label}</span>
-                </div>
-                {i < STAGES.length - 1 && <div className={`step-line ${i < stage ? 'active' : ''}`} />}
-              </React.Fragment>
-            ))}
-          </div>
-        </header>
-
-        {/* 🏗️ Dynamic Content Area */}
-        <div className="content-scroll">
-          <AnimatePresence mode="wait">
-            
-            {/* STAGE 0: DISCOVERY */}
-            {stage === 0 && (
-              <motion.div key="s0" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="stage-panel centered">
-                <div className="stage-header centered">
-                  <div className="os-tag">PHASE 1: INTENT DISCOVERY</div>
-                  <h1>What are we building today?</h1>
-                  <p>Describe your goal in plain language. We'll map the hardware logic.</p>
-                </div>
-                
-                <div className="discovery-grid">
-                  <div className="input-container-glass">
-                    <textarea 
-                      className="goal-input-premium" 
-                      placeholder="I need a laptop for..."
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                    />
-                    <div className="input-footer">
-                      <span><MessageSquare size={14} /> Cognitive Parser Active</span>
-                    </div>
-                  </div>
-
-                  <div className="config-side-panel">
-                    <div className="config-group">
-                      <label>Target Specialization</label>
-                      <select value={specialization} onChange={(e) => setSpecialization(e.target.value)} className="select-premium">
-                        <option>Software Engineering</option>
-                        <option>AI & Data Science</option>
-                        <option>3D Rendering</option>
-                        <option>Business Efficiency</option>
-                      </select>
-                    </div>
-                    <div className="config-group">
-                      <label>Budget Range: ${budget}</label>
-                      <input type="range" min="800" max="4000" step="100" value={budget} onChange={(e) => setBudget(e.target.value)} className="weight-slider-input" />
-                      <div className="flex-row j-between" style={{marginTop: '10px'}}>
-                        <span className="text-small">Economy</span>
-                        <span className="text-small">Flagship</span>
-                      </div>
-                      <label className="checkbox-container">
-                        <input type="checkbox" defaultChecked />
-                        <span className="checkmark"></span>
-                        <span className="text-small">I'm flexible for "Perfect Match"</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="stage-footer-actions j-center">
-                  <button onClick={nextStage} className="btn-primary-action large">Initialize Analysis <ArrowRight size={18} /></button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* STAGE 1: COGNITIVE LOAD */}
-            {stage === 1 && (
-              <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="stage-panel">
-                <div className="stage-header">
-                  <div className="os-tag">PHASE 2: DIMENSIONAL TENSION</div>
-                  <h1>Analyzing Your Needs...</h1>
-                  <p>Resolving hardware conflicts based on your {specialization} profile.</p>
-                </div>
-                <div className="tension-grid">
-                  {results?.conflicts.map((c, i) => (
-                    <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.1 }} key={c.id} className="tension-card">
-                      <div className="tension-header">
-                        <span className="t-label">{c.label}</span>
-                        <span className="t-gravity">{c.val}% Intensity</span>
-                      </div>
-                      <div className="t-bar"><motion.div initial={{ width: 0 }} animate={{ width: `${c.val}%` }} className="t-fill" /></div>
-                      <p className="t-desc">{c.desc}</p>
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="stage-footer-actions">
-                  <button onClick={prevStage} className="btn-ghost">Back</button>
-                  <button onClick={nextStage} className="btn-primary-action">Resolve Logic & Show Trio</button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* STAGE 2: STRATEGIC TRIO */}
-            {stage === 2 && results && (
-              <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stage-panel large">
-                <div className="stage-header centered">
-                  <h1>Best Choice for You</h1>
-                  <p>Stabilized paths for your {specialization} needs.</p>
-                </div>
-                <div className="trio-grid">
-                  {results.trio.map((card, i) => (
-                    <motion.div 
-                      key={card.id} 
-                      initial={{ y: 50, opacity: 0 }} 
-                      animate={{ y: 0, opacity: 1 }} 
-                      transition={{ delay: i * 0.2 }}
-                      className={`trio-card ${selectedCard?.id === card.id ? 'highlighted' : ''}`}
-                    >
-                      <div className="card-header-flex">
-                        <div className="card-badge" style={{ background: card.color }}>{card.badge}</div>
-                        <div className="overall-score">
-                          <span className="score-val">{card.match}</span>
-                          <span className="score-label">/100</span>
-                        </div>
-                      </div>
-
-                      <div className="card-visual-compact">
-                        <img src={card.img} alt={card.title} />
-                      </div>
-
-                      <div className="card-main-info">
-                        <h3>{card.title}</h3>
-                        <div className="price-tag">${card.price}</div>
-                        <div className="card-tags">
-                          <span>14" Mini-LED</span>
-                          <span>{card.sub.split('/')[0]}</span>
-                          <span>{card.sub.split('/')[1]}</span>
-                        </div>
-                      </div>
-
-                      <div className="spec-radar">
-                        <div className="radar-item">
-                          <span>Performance</span>
-                          <div className="radar-bar"><div style={{ width: `${card.scores.performance}%`, background: card.color }}></div></div>
-                        </div>
-                        <div className="radar-item">
-                          <span>Battery</span>
-                          <div className="radar-bar"><div style={{ width: `${card.scores.battery}%`, background: card.color }}></div></div>
-                        </div>
-                        <div className="radar-item">
-                          <span>Portability</span>
-                          <div className="radar-bar"><div style={{ width: `${card.scores.portability}%`, background: card.color }}></div></div>
-                        </div>
-                      </div>
-
-                      <div className="card-summary">
-                        <label>Why this choice?</label>
-                        <p>{card.why}</p>
-                      </div>
-
-                      <button className="btn-card-select" style={{ background: card.color }} onClick={() => handleCardSelection(card)}>View Full Logic</button>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {/* STAGE 3: TRANSPARENCY (TABBED) */}
-            {stage === 3 && selectedCard && (
-              <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stage-panel">
-                <div className="transparency-container-boxed">
-                  <div className="transparency-tabs">
-                    <button className={activeTab === 'analysis' ? 'active' : ''} onClick={() => setActiveTab('analysis')}>Detailed Analysis</button>
-                    <button className={activeTab === 'sacrifices' ? 'active' : ''} onClick={() => setActiveTab('sacrifices')}>The Sacrifices</button>
-                    <button className={activeTab === 'excluded' ? 'active' : ''} onClick={() => setActiveTab('excluded')}>Excluded Alternatives</button>
-                  </div>
-
-                  <div className="tab-content">
-                    {activeTab === 'analysis' && (
-                      <div className="analysis-view">
-                        <div className="analysis-hero">
-                          <img src={selectedCard.img} />
-                          <div className="analysis-text">
-                            <h2>{selectedCard.title}</h2>
-                            <p>{selectedCard.why}</p>
-                            <div className="affiliate-badge"><Info size={14}/> This is an affiliate link. Selection logic remains objective.</div>
-                          </div>
-                        </div>
-                        <table className="spec-table-premium">
-                          <thead><tr><th>Hardware Component</th><th>Logic Grade</th></tr></thead>
-                          <tbody>
-                            <tr><td>SoC / Processor</td><td>Grade A+ ({selectedCard.sub.split('/')[0]})</td></tr>
-                            <tr><td>Memory (RAM)</td><td>{selectedCard.sub.split('/')[1]} - High Stability</td></tr>
-                            <tr><td>Thermal Management</td><td>{selectedCard.badNews.includes('hot') ? 'Poor' : 'Excellent'}</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                    {activeTab === 'sacrifices' && (
-                      <div className="sacrifices-view">
-                        <h3>What will you give up?</h3>
-                        <div className="sac-grid">
-                          {selectedCard.sacrifices.map((s, i) => (
-                            <div key={i} className="sac-card-mini">
-                              <AlertTriangle color="var(--danger)" />
-                              <div className="sac-info">
-                                <strong>{s.split('(')[0]}</strong>
-                                <span>{s.includes('(') ? s.split('(')[1].replace(')', '') : 'Impact on Experience'}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="defect-box">
-                          <div className="label">Critical Review Signal:</div>
-                          <p>"{selectedCard.badNews}"</p>
-                        </div>
-                      </div>
-                    )}
-                    {activeTab === 'excluded' && (
-                      <div className="excluded-view">
-                        <h3>Why we rejected these:</h3>
-                        <div className="excluded-list-vertical">
-                          {selectedCard.exclusions.map((ex, i) => (
-                            <div key={i} className="ex-item-box">
-                              <div className="ex-title">
-                                <strong>{ex.name}</strong>
-                                <X size={18} color="var(--danger)" />
-                              </div>
-                              <p>{ex.reason}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="stage-footer-actions">
-                  <button onClick={() => setStage(2)} className="btn-ghost">Back to Trio</button>
-                  <button onClick={nextStage} className="btn-primary-action">Refine Decision Weights</button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* STAGE 4: REFINEMENT */}
-            {stage === 4 && selectedCard && (
-              <motion.div key="s4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stage-panel">
-                <div className="stage-header">
-                  <h1>Predictive Refinement</h1>
-                  <p>Fine-tune the weights to see how the {selectedCard.title} adapts.</p>
-                </div>
-                
-                <div className="refinement-layout-split">
-                  <div className="refinement-controls">
-                    {['performance', 'battery', 'portability', 'budget'].map(key => (
-                      <div key={key} className="weight-group">
-                        <label>{key.toUpperCase()}: {weights[key]}%</label>
-                        <input type="range" value={weights[key]} onChange={(e) => handleWeightChange(key, e.target.value)} className="weight-slider-input" />
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="prediction-panel">
-                    {isRecalculating ? (
-                      <div className="recalculating"><RefreshCw className="spin" /> Updating Model...</div>
-                    ) : (
-                      <div className="prediction-results">
-                        <div className="prediction-item">
-                          <span>Predicted Portability</span>
-                          <span className={weights.portability > 50 ? 'pos' : 'neg'}>
-                            {weights.portability > 50 ? <ArrowUpRight /> : <ArrowDownRight />}
-                            {Math.abs(weights.portability - 50)}%
-                          </span>
-                        </div>
-                        <div className="prediction-item">
-                          <span>Battery Life Impact</span>
-                          <span className={weights.battery > 60 ? 'pos' : 'neg'}>
-                            {weights.battery > 60 ? <ArrowUpRight /> : <ArrowDownRight />}
-                            {Math.abs(weights.battery - 60)}%
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="stage-footer-actions">
-                  <button onClick={() => setStage(3)} className="btn-ghost">Back</button>
-                  <button onClick={nextStage} className="btn-primary-action">Confirm Evolution</button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* STAGE 5: SUMMARY & EVOLUTION */}
-            {stage === 5 && selectedCard && (
-              <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stage-panel">
-                <div className="evolution-summary-container">
-                  <div className="evolution-timeline-header">
-                    <h2>Decision Evolution</h2>
-                    <p>How your requirements matured into this choice.</p>
-                    <div className="timeline-visual">
-                      <div className="line"></div>
-                      <div className="dots">
-                        <div className="dot active">1</div>
-                        <div className="dot active">2</div>
-                        <div className="dot active">3</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="delta-comparison-table">
-                    <h3>What changed in your decision?</h3>
-                    <div className="delta-row">
-                      <span>Requirement Weighting</span>
-                      <div className="delta-vals">
-                        <span className="old">80% Perf</span>
-                        <ArrowRight size={14} />
-                        <span className="new">{weights.performance}% Perf</span>
-                      </div>
-                    </div>
-                    <div className="delta-row">
-                      <span>Expected Battery Life</span>
-                      <div className="delta-vals">
-                        <span className="old">10hrs</span>
-                        <ArrowRight size={14} />
-                        <span className="new">{10 + (weights.battery - 60)/10}hrs</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="final-checkout-card">
-                    <img src={selectedCard.img} />
-                    <div className="details">
-                      <h3>{selectedCard.title}</h3>
-                      <div className="final-score">Match: {selectedCard.match}%</div>
-                      <button className="btn-primary-action large" onClick={() => setShowLeadModal(true)}>Go to Store</button>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* LEAD MODAL (Same as before but improved styling) */}
-      <AnimatePresence>
-        {showLeadModal && (
-          <div className="modal-overlay" onClick={() => setShowLeadModal(false)}>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="modal-card">
-               <h2>One Last Step...</h2>
-               <p>We've generated a <strong>Hardware Checklist</strong> specifically for the {selectedCard?.title}. Want us to send it to you?</p>
-               <input 
-                 className="email-input-premium" 
-                 placeholder="Enter email (or leave blank to skip)" 
-                 value={email} 
-                 onChange={e => setEmail(e.target.value)} 
-               />
-               <button onClick={navigateToStore} className="btn-primary-action">
-                 {email ? 'Send & Continue' : 'Skip & Continue'}
-               </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
+      <polygon points={points} fill="rgba(233, 69, 96, 0.2)" stroke="var(--accent)" strokeWidth="2" style={{ transition: 'all 0.4s ease-out' }} />
+      
+      <circle cx={getPoint(data.performance, 0).split(',')[0]} cy={getPoint(data.performance, 0).split(',')[1]} r="4" fill="var(--accent)" style={{ transition: 'all 0.4s ease-out' }} />
+      <circle cx={getPoint(data.battery, 90).split(',')[0]} cy={getPoint(data.battery, 90).split(',')[1]} r="4" fill="var(--accent)" style={{ transition: 'all 0.4s ease-out' }} />
+      <circle cx={getPoint(data.portability, 180).split(',')[0]} cy={getPoint(data.portability, 180).split(',')[1]} r="4" fill="var(--accent)" style={{ transition: 'all 0.4s ease-out' }} />
+      <circle cx={getPoint(data.build, 270).split(',')[0]} cy={getPoint(data.build, 270).split(',')[1]} r="4" fill="var(--accent)" style={{ transition: 'all 0.4s ease-out' }} />
+    </svg>
   );
 };
 
-export default App;
+export default function App() {
+  const [theme, setTheme] = useState('dark');
+  const [lang, setLang] = useState('en');
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [phase, setPhase] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState(null);
+
+  // User Inputs
+  const [goal, setGoal] = useState('');
+  const [major, setMajor] = useState('cs');
+  const [priorities, setPriorities] = useState({
+    performance: 90,
+    battery: 60,
+    portability: 50,
+    build: 30
+  });
+  const [budgetMin, setBudgetMin] = useState(1200);
+  const [budgetMax, setBudgetMax] = useState(2500);
+  const [analysisSummary, setAnalysisSummary] = useState({
+    conflicts: 0,
+    devices: 0,
+    paths: 3,
+    confidence: 0
+  });
+  const [detectedConflicts, setDetectedConflicts] = useState([]);
+
+  // Results State
+  const [cards, setCards] = useState({});
+  const [selectedCardType, setSelectedCardType] = useState('hero');
+  const [selectedPurchase, setSelectedPurchase] = useState('amazon');
+  const [explanationTab, setExplanationTab] = useState('why-chosen');
+
+  // Timeline (Simulated)
+  const [timeline, setTimeline] = useState([]);
+
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+
+  const handleAnalyze = async () => {
+    setIsAnalyzing(true);
+    setError(null);
+    try {
+      const profile = {
+        major,
+        locale: lang,
+        budgetUsd: budgetMax,
+        preferences: {
+          performance: Number(priorities.performance),
+          portability: Number(priorities.portability),
+          battery: Number(priorities.battery),
+          display: 50,
+          resale: 50
+        },
+        sliders: {
+          performance: Number(priorities.performance),
+          virtual_machines: priorities.performance > 70 ? 80 : 30,
+          video_4k: priorities.performance > 80 ? 80 : 20,
+          gaming: priorities.performance > 60 ? 70 : 20,
+          portability: Number(priorities.portability)
+        },
+        context: {
+          acceptsOpenBox: false,
+          acceptsRefurbished: false,
+          financingAllowed: true
+        },
+        productIntent: {
+          performancePreference: "safe_balanced",
+          osPreference: "windows_preferred",
+          screenSize: "14_16",
+          naturalLanguageIntent: goal || "I need a laptop for programming and daily use."
+        }
+      };
+
+      const response = await fetch('http://localhost:3010/api/v1/laptop-student-us/decision/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile)
+      });
+
+      if (!response.ok) throw new Error('API Error');
+      const result = await response.json();
+      
+      if (result.error) throw new Error(result.message);
+
+      // Map API result to exact UI structure
+      const newCards = {};
+
+      const typeDetails = {
+        hero: { badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻', scoreLabel: 'High Match' },
+        future_proof: { badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀', scoreLabel: 'Exceptional Longevity' },
+        smart_budget: { badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎', scoreLabel: 'Excellent Value' }
+      };
+
+      if (result.decision?.cards) {
+        result.decision.cards.forEach(card => {
+          const type = card.cardType || 'hero';
+          const details = typeDetails[type] || typeDetails.hero;
+          
+          const stabilityScore = Math.round((result.decision.stabilityScore || 0.88) * 100);
+          const stabilityStatus = stabilityScore >= 80 ? 'high' : stabilityScore >= 60 ? 'medium' : 'low';
+          
+          newCards[type] = {
+            name: card.title,
+            price: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
+            originalPrice: (card.priceUsd && card.priceUsd < budgetMax) ? `$${budgetMax.toLocaleString()}` : null,
+            badge: details.badge,
+            badgeClass: details.badgeClass,
+            score: Math.round(card.score || card.confidenceScore * 100 || 85),
+            scoreClass: (card.score || card.confidenceScore * 100 || 85) >= 80 ? 'high' : 'medium',
+            scoreLabel: details.scoreLabel,
+            icon: details.icon,
+            image: (() => {
+              // Image Registry: maps catalog entityId → local studio image
+              const IMAGE_REGISTRY = {
+                'thinkpad-p1': '/laptops/thinkpad-p1-gen-6.png',
+                'zephyrus-g14': '/laptops/asus-zephyrus-g14.png',
+                'macbook-air': '/laptops/macbook-air-15.png',
+                'macbook-pro': '/laptops/macbook-pro-14.png',
+                'dell-inspiron': '/laptops/dell-inspiron-14.png',
+                'acer-nitro': '/laptops/acer-nitro-v-15.png',
+                'thinkpad-t14': '/laptops/lenovo-thinkpad-t14.png',
+                'lenovo-loq': '/laptops/lenovo-loq-15.png',
+                'proart': '/laptops/asus-proart-p16.png',
+                'omnibook': '/laptops/hp-omnibook-x.png',
+                'swift-go': '/laptops/acer-swift-go-14.png',
+                'surface': '/laptops/surface-laptop-7.png',
+                'msi-pulse': '/laptops/msi-pulse-16.png',
+              };
+              const id = card.entityId.toLowerCase();
+              const match = Object.keys(IMAGE_REGISTRY).find(k => id.includes(k));
+              return match ? IMAGE_REGISTRY[match] : '/laptops/dell-inspiron-14.png';
+            })(),
+            whyChosen: typeof card.whyThis === 'string' && card.whyThis.trim() !== '' ? card.whyThis : 'This device perfectly balances your priorities based on our analysis.',
+            flaws: typeof card.badNews === 'string' && card.badNews.trim() !== '' ? [card.badNews] : ['Minor compromises based on budget constraints.'],
+            tradeOffs: {
+              gained: Array.isArray(card.topPros) && card.topPros.length > 0 ? card.topPros : ['Performance above average'],
+              lost: typeof card.secondaryBadNews === 'string' && card.secondaryBadNews.trim() !== '' ? [card.secondaryBadNews] : ['Slightly heavier than average']
+            },
+            excluded: card.excluded && card.excluded.length > 0 ? card.excluded : [
+              { name: 'Generic High-End Option', reason: 'Exceeds budget constraints' }
+            ], 
+            stability: {
+              score: stabilityScore,
+              status: stabilityStatus,
+              label: stabilityScore >= 80 ? 'Stable' : 'Needs Review',
+              description: 'This decision is stable because sacrifices align with your priority hierarchy. No "Gate" (core constraint) was broken.'
+            },
+            priorities: card.specs || { 
+              performance: priorities.performance, 
+              battery: priorities.battery, 
+              portability: priorities.portability, 
+              build: 90 
+            },
+            purchaseLinks: {
+              amazon: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
+              bestbuy: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
+              direct: `$${((card.priceUsd || budgetMax) + 50).toLocaleString()}`
+            }
+          };
+        });
+      }
+
+      // Provide fallbacks if API missing some card types
+      if (!newCards.hero) newCards.hero = { ...fallbackCard('Hero'), badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻' };
+      if (!newCards.future_proof) newCards.future_proof = { ...fallbackCard('Future Proof'), badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀' };
+      if (!newCards.smart_budget) newCards.smart_budget = { ...fallbackCard('Smart Budget'), badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎' };
+
+      setCards(newCards);
+      
+      setAnalysisSummary({
+        conflicts: result.decision?.conflicts?.length ?? 0,
+        devices: result.trust?.trace?.candidateCount ?? 0,
+        paths: result.decision?.cards?.length ?? 0,
+        confidence: Math.round((result.trust?.decisionConfidenceScore ?? 0.78) * 100)
+      });
+      setDetectedConflicts(result.decision.conflicts || []);
+
+      setTimeline([
+        { date: new Date().toLocaleTimeString(), title: 'Initial Decision', desc: `Budget $${budgetMax}` }
+      ]);
+
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        setPhase(1);
+      }, 200);
+
+    } catch (err) {
+      console.error(err);
+      setError('Could not connect to the Decision Engine.');
+      setIsAnalyzing(false);
+    }
+  };
+
+  const fallbackCard = (type) => ({
+    name: `Standard ${type} Laptop`,
+    price: '$1,000',
+    originalPrice: null,
+    score: 80,
+    scoreClass: 'medium',
+    scoreLabel: 'Good Match',
+    whyChosen: 'Meets minimum specs.',
+    flaws: ['Generic fallback data'],
+    tradeOffs: { gained: ['Available'], lost: ['Generic'] },
+    excluded: [],
+    stability: { score: 70, status: 'medium', label: 'Average', description: 'Fallback logic used.' },
+    priorities: { performance: 80, battery: 80, portability: 80, price: 80 },
+    purchaseLinks: { amazon: '$1,000', bestbuy: '$1,000', direct: '$1,050' }
+  });
+
+  const goToPhase = (p) => setPhase(p);
+
+  const resetSidebarChanges = () => {
+    setPriorities({
+      performance: 90,
+      battery: 60,
+      portability: 50,
+      build: 30
+    });
+    setBudgetMax(2500);
+  };
+
+  const applySidebarChanges = async () => {
+    // Add timeline event
+    setTimeline(prev => [...prev, {
+      date: new Date().toLocaleTimeString(),
+      title: 'Priority Adjustment',
+      desc: 'Updated sliders to refine results.'
+    }]);
+    
+    const currentPhase = phase; // Remember current phase
+    setIsAnalyzing(true);
+    
+    try {
+      const profile = {
+        major,
+        locale: lang,
+        budgetUsd: budgetMax,
+        preferences: {
+          performance: Number(priorities.performance),
+          portability: Number(priorities.portability),
+          battery: Number(priorities.battery),
+          display: 50,
+          resale: 50
+        },
+        sliders: {
+          performance: Number(priorities.performance),
+          virtual_machines: priorities.performance > 70 ? 80 : 30,
+          video_4k: priorities.performance > 80 ? 80 : 20,
+          gaming: priorities.performance > 60 ? 70 : 20,
+          portability: Number(priorities.portability)
+        },
+        context: { acceptsOpenBox: false, acceptsRefurbished: false, financingAllowed: true },
+        productIntent: {
+          performancePreference: "safe_balanced",
+          osPreference: "windows_preferred",
+          screenSize: "14_16",
+          naturalLanguageIntent: goal || "I need a laptop for programming and daily use."
+        }
+      };
+
+      const response = await fetch('http://localhost:3010/api/v1/laptop-student-us/decision/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile)
+      });
+
+      if (!response.ok) throw new Error('API Error');
+      const result = await response.json();
+      if (result.error) throw new Error(result.message);
+
+      const newCards = {};
+      const typeDetails = {
+        hero: { badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻', scoreLabel: 'High Match' },
+        future_proof: { badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀', scoreLabel: 'Exceptional Longevity' },
+        smart_budget: { badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎', scoreLabel: 'Excellent Value' }
+      };
+
+      const IMAGE_REGISTRY = {
+        'thinkpad-p1': '/laptops/thinkpad-p1-gen-6.png',
+        'zephyrus-g14': '/laptops/asus-zephyrus-g14.png',
+        'macbook-air': '/laptops/macbook-air-15.png',
+        'macbook-pro': '/laptops/macbook-pro-14.png',
+        'dell-inspiron': '/laptops/dell-inspiron-14.png',
+        'acer-nitro': '/laptops/acer-nitro-v-15.png',
+        'thinkpad-t14': '/laptops/lenovo-thinkpad-t14.png',
+        'lenovo-loq': '/laptops/lenovo-loq-15.png',
+        'proart': '/laptops/asus-proart-p16.png',
+        'omnibook': '/laptops/hp-omnibook-x.png',
+        'swift-go': '/laptops/acer-swift-go-14.png',
+        'surface': '/laptops/surface-laptop-7.png',
+        'msi-pulse': '/laptops/msi-pulse-16.png',
+      };
+
+      if (result.decision?.cards) {
+        result.decision.cards.forEach(card => {
+          const type = card.cardType || 'hero';
+          const details = typeDetails[type] || typeDetails.hero;
+          const stabilityScore = Math.round((result.decision.stabilityScore || 0.88) * 100);
+          const stabilityStatus = stabilityScore >= 80 ? 'high' : stabilityScore >= 60 ? 'medium' : 'low';
+          const id = card.entityId.toLowerCase();
+          const imgMatch = Object.keys(IMAGE_REGISTRY).find(k => id.includes(k));
+
+          newCards[type] = {
+            name: card.title,
+            price: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
+            originalPrice: (card.priceUsd && card.priceUsd < budgetMax) ? `$${budgetMax.toLocaleString()}` : null,
+            badge: details.badge, badgeClass: details.badgeClass,
+            score: Math.round(card.score || card.confidenceScore * 100 || 85),
+            scoreClass: (card.score || card.confidenceScore * 100 || 85) >= 80 ? 'high' : 'medium',
+            scoreLabel: details.scoreLabel, icon: details.icon,
+            image: imgMatch ? IMAGE_REGISTRY[imgMatch] : '/laptops/dell-inspiron-14.png',
+            whyChosen: typeof card.whyThis === 'string' && card.whyThis.trim() !== '' ? card.whyThis : 'This device perfectly balances your priorities based on our analysis.',
+            flaws: typeof card.badNews === 'string' && card.badNews.trim() !== '' ? [card.badNews] : ['Minor compromises based on budget constraints.'],
+            tradeOffs: {
+              gained: Array.isArray(card.topPros) && card.topPros.length > 0 ? card.topPros : ['Performance above average'],
+              lost: typeof card.secondaryBadNews === 'string' && card.secondaryBadNews.trim() !== '' ? [card.secondaryBadNews] : ['Slightly heavier than average']
+            },
+            excluded: card.excluded && card.excluded.length > 0 ? card.excluded : [
+              { name: 'Generic High-End Option', reason: 'Exceeds budget constraints' }
+            ],
+            stability: { score: stabilityScore, status: stabilityStatus, label: stabilityScore >= 80 ? 'Stable' : 'Needs Review', description: 'This decision is stable because sacrifices align with your priority hierarchy.' },
+            priorities: card.specs || { performance: priorities.performance, battery: priorities.battery, portability: priorities.portability, build: 90 },
+            purchaseLinks: {
+              amazon: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
+              bestbuy: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
+              direct: `$${((card.priceUsd || budgetMax) + 50).toLocaleString()}`
+            }
+          };
+        });
+      }
+
+      if (!newCards.hero) newCards.hero = { ...fallbackCard('Hero'), badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻' };
+      if (!newCards.future_proof) newCards.future_proof = { ...fallbackCard('Future Proof'), badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀' };
+      if (!newCards.smart_budget) newCards.smart_budget = { ...fallbackCard('Smart Budget'), badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎' };
+
+      setCards(newCards);
+      setAnalysisSummary({
+        conflicts: result.decision?.conflicts?.length ?? 0,
+        devices: result.trust?.trace?.candidateCount ?? 0,
+        paths: result.decision?.cards?.length ?? 0,
+        confidence: Math.round((result.trust?.decisionConfidenceScore ?? 0.78) * 100)
+      });
+      setDetectedConflicts(result.decision.conflicts || []);
+      setIsAnalyzing(false);
+      setPhase(currentPhase); // Stay on current phase!
+    } catch (err) {
+      console.error(err);
+      setIsAnalyzing(false);
+    }
+  };
+
+  const confirmCard = (type) => {
+    setSelectedCardType(type);
+    
+    setTimeline(prev => [...prev, {
+      date: new Date().toLocaleTimeString(),
+      title: 'Final Decision',
+      desc: `${cards[type].name} - ${cards[type].badge}`
+    }]);
+
+    goToPhase(4);
+  };
+
+  const selectedCard = cards[selectedCardType];
+
+  return (
+    <div className="app-container">
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <div className="logo">
+            <div className="logo-icon">🧠</div>
+            <span>MajorLogic</span>
+          </div>
+        </div>
+        <nav>
+          <div className={`nav-item ${phase === 0 ? 'active' : ''}`} onClick={() => goToPhase(0)}>
+            <i className="fas fa-plus-circle"></i>
+            <span>New Decision</span>
+          </div>
+          <div className="nav-item">
+            <i className="fas fa-history"></i>
+            <span>My Decisions</span>
+          </div>
+          <div className="nav-item">
+            <i className="fas fa-bookmark"></i>
+            <span>Saved</span>
+          </div>
+          <div className="nav-item">
+            <i className="fas fa-cog"></i>
+            <span>Settings</span>
+          </div>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-tools">
+            <div className="lang-dropdown" style={{ flex: 1 }}>
+              <button className="tool-btn" onClick={() => setLangMenuOpen(!langMenuOpen)}>
+                <i className="fas fa-globe"></i>
+                <span id="current-lang">{lang.toUpperCase()}</span>
+              </button>
+              {langMenuOpen && (
+                <div className="lang-menu show">
+                  <div className={`lang-option ${lang === 'en' ? 'active' : ''}`} onClick={() => { setLang('en'); setLangMenuOpen(false); }}>
+                    <span className="lang-flag">🇺🇸</span><span>English</span>
+                  </div>
+                  <div className={`lang-option ${lang === 'ar' ? 'active' : ''}`} onClick={() => { setLang('ar'); setLangMenuOpen(false); }}>
+                    <span className="lang-flag">🇸🇦</span><span>العربية</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <button className="tool-btn" onClick={toggleTheme} style={{ flex: 1 }}>
+              <i className={theme === 'dark' ? "fas fa-sun" : "fas fa-moon"}></i>
+              <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="main-content">
+        {/* Progress Bar */}
+        <div className="progress-bar">
+          {['Goal', 'Analysis', 'Cards', 'Explanation', 'Summary'].map((step, idx) => (
+            <React.Fragment key={step}>
+              <div 
+                className={`step ${phase === idx ? 'active' : phase > idx ? 'completed' : 'pending'}`} 
+                onClick={() => goToPhase(idx)}
+              >
+                <span className="step-number">{idx + 1}</span>
+                <span>{step}</span>
+              </div>
+              {idx < 4 && <div className={`step-connector ${phase > idx ? 'completed' : ''}`}></div>}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {error && (
+          <div style={{ padding: 20, background: 'rgba(244,63,94,0.1)', color: 'var(--accent-danger)', border: '1px solid var(--accent-danger)', borderRadius: 12, marginBottom: 20 }}>
+            {error}
+          </div>
+        )}
+
+        {/* Phase 0: Intake */}
+        {phase === 0 && (
+          <div className="phase-container active">
+            <div className="intake-grid">
+              <div className="intake-card full-width">
+                <div className="card-header">
+                  <div className="card-icon" style={{ background: 'rgba(233, 69, 96, 0.15)', color: 'var(--accent)' }}>🎯</div>
+                  <div>
+                    <div className="card-title">What are you trying to achieve?</div>
+                    <div className="card-subtitle">Describe your goal briefly and your needs in detail</div>
+                  </div>
+                </div>
+                <textarea 
+                  className="form-input" 
+                  rows="3" 
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                  placeholder="I need a laptop for heavy programming and working on large projects... My budget is between $1,500 and $2,500."
+                ></textarea>
+              </div>
+
+              <div className="intake-card">
+                <div className="card-header">
+                  <div className="card-icon" style={{ background: 'rgba(14, 165, 233, 0.15)', color: 'var(--accent-info)' }}>💻</div>
+                  <div>
+                    <div className="card-title">Your Field</div>
+                    <div className="card-subtitle">Choose your primary work area</div>
+                  </div>
+                </div>
+                <div className="specialization-grid">
+                  {[
+                    { id: 'cs', icon: '💻', label: 'CS / IT' },
+                    { id: 'engineering', icon: '⚙️', label: 'Engineering' },
+                    { id: 'design', icon: '🎨', label: 'Design' },
+                    { id: 'medical', icon: '🧬', label: 'Medical' },
+                    { id: 'general', icon: '📚', label: 'General' },
+                    { id: 'ai', icon: '🤖', label: 'AI' }
+                  ].map(spec => (
+                    <div 
+                      key={spec.id}
+                      className={`spec-chip ${major === spec.id ? 'selected' : ''}`} 
+                      onClick={() => setMajor(spec.id)}
+                    >
+                      <div style={{ fontSize: '32px', marginBottom: '8px' }}>{spec.icon}</div>
+                      {spec.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="intake-card">
+                <div className="card-header">
+                  <div className="card-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-success)' }}>⚡</div>
+                  <div>
+                    <div className="card-title">Your Priorities</div>
+                    <div className="card-subtitle">Adjust priorities by dragging</div>
+                  </div>
+                </div>
+                <div className="priority-list">
+                  {Object.entries(priorities).map(([key, val]) => (
+                    <div key={key} className="priority-item">
+                      <div className="priority-icon" style={{ background: 'rgba(233, 69, 96, 0.15)', color: 'var(--accent)' }}>
+                        {key === 'performance' ? '⚡' : key === 'battery' ? '🔋' : key === 'portability' ? '🎒' : '🔇'}
+                      </div>
+                      <div className="priority-info">
+                        <div className="priority-name" style={{textTransform: 'capitalize'}}>{key}</div>
+                        <div className="priority-desc">{val > 80 ? 'Very high' : val > 50 ? 'Medium' : 'Low'} priority</div>
+                      </div>
+                      <div className="priority-slider-container">
+                        <input type="range" className="priority-slider" value={val} onChange={(e) => setPriorities({...priorities, [key]: Number(e.target.value)})} />
+                        <span className="priority-value">{val}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="intake-card full-width">
+                <div className="card-header">
+                  <div className="card-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-success)' }}>💰</div>
+                  <div>
+                    <div className="card-title">Budget</div>
+                    <div className="card-subtitle">Set your available budget range</div>
+                  </div>
+                </div>
+                <div className="budget-container">
+                  <div className="budget-range">
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: 12, top: 10, color: 'var(--text-muted)' }}>$</span>
+                      <input type="number" className="budget-input" style={{ paddingLeft: 24, textAlign: 'left' }} value={budgetMin} onChange={(e) => setBudgetMin(Number(e.target.value))} />
+                    </div>
+                    <input type="range" className="budget-slider" min="500" max="5000" step="50" value={budgetMax} onChange={(e) => setBudgetMax(Number(e.target.value))} />
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: 12, top: 10, color: 'var(--text-muted)' }}>$</span>
+                      <input type="number" className="budget-input" style={{ paddingLeft: 24, textAlign: 'left' }} value={budgetMax} onChange={(e) => setBudgetMax(Number(e.target.value))} />
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, fontSize: 13, color: 'var(--text-muted)' }}>
+                    <span>Min: $500</span>
+                    <span>Selected: ${budgetMin.toLocaleString()} - ${budgetMax.toLocaleString()}</span>
+                    <span>Max: $5,000</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="btn-group">
+              <button className="btn btn-primary" onClick={handleAnalyze} disabled={isAnalyzing}>
+                <i className="fas fa-brain"></i>
+                {isAnalyzing ? 'Analyzing...' : 'Analyze Decision'}
+              </button>
+              <button className="btn btn-secondary">
+                <i className="fas fa-save"></i> Save Draft
+              </button>
+            </div>
+
+            {isAnalyzing && (
+              <div className="thinking-state">
+                <div className="thinking-dots">
+                  <div className="thinking-dot"></div><div className="thinking-dot"></div><div className="thinking-dot"></div>
+                </div>
+                <span style={{ color: 'var(--text-secondary)' }}>Analyzing your conflicts...</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Phase 1: Conflict Analysis */}
+        {phase === 1 && (
+          <div className="phase-container active">
+            <div className="card">
+              <div className="card-header">
+                <div className="card-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-warning)' }}>⚠️</div>
+                <div>
+                  <div className="card-title">Analyzing Your Needs & Conflicts</div>
+                  <div class="card-subtitle">4 main constraints identified that affect your decision</div>
+                </div>
+              </div>
+
+              <div className="conflict-alert">
+                <i className="fas fa-exclamation-triangle"></i>
+                <div className="conflict-alert-text">
+                  <strong>Alert:</strong> Clear conflict detected between <strong>High Performance</strong> and <strong>Battery Life</strong> with <strong>Limited Budget</strong>
+                </div>
+              </div>
+
+              <div className="constraint-list">
+                <div className="constraint-item">
+                  <div className="constraint-status ok"><i className="fas fa-check"></i></div>
+                  <div className="constraint-info">
+                    <div className="constraint-name">Budget (${budgetMin.toLocaleString()} - ${budgetMax.toLocaleString()})</div>
+                    <div className="constraint-detail">{analysisSummary.devices} devices available within budget</div>
+                  </div>
+                  <div className="constraint-tension">
+                    <div className="tension-bar-bg"><div className="tension-bar-fill low" style={{width: '20%'}}></div></div>
+                    <div className="tension-label">Low tension</div>
+                  </div>
+                </div>
+
+                {detectedConflicts.map(insight => {
+                  const isHarmony = insight.type === 'harmony';
+                  const isRisk = insight.type === 'risk';
+                  
+                  const icon = isHarmony ? 'fa-check-circle' : isRisk ? 'fa-info-circle' : 'fa-bolt';
+                  const colorClass = isHarmony ? 'ok' : isRisk ? 'info' : 'warning';
+                  const barColorClass = isHarmony ? 'low' : isRisk ? 'medium' : 'high';
+                  
+                  return (
+                    <div key={insight.id} className="constraint-item" style={{ border: isHarmony ? '1px solid rgba(16, 185, 129, 0.3)' : isRisk ? '1px solid rgba(14, 165, 233, 0.3)' : '1px solid var(--border)', background: isHarmony ? 'rgba(16, 185, 129, 0.02)' : 'var(--surface-elevated)' }}>
+                      <div className={`constraint-status ${colorClass}`}><i className={`fas ${icon}`}></i></div>
+                      <div className="constraint-info">
+                        <div className="constraint-name">{insight.title}</div>
+                        <div className="constraint-detail" style={{ lineHeight: 1.5 }}>{insight.description}</div>
+                      </div>
+                      <div className="constraint-tension">
+                        <div className="tension-bar-bg"><div className={`tension-bar-fill ${barColorClass}`} style={{width: `${Math.round(insight.gravity * 100)}%`}}></div></div>
+                        <div className="tension-label">{isHarmony ? 'Alignment' : isRisk ? 'Risk' : 'Tension'} ({Math.round(insight.gravity * 100)}%)</div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {detectedConflicts.length === 0 && (
+                  <div className="constraint-item">
+                    <div className="constraint-status ok"><i className="fas fa-check-double"></i></div>
+                    <div className="constraint-info">
+                      <div className="constraint-name">Excellent Harmony</div>
+                      <div className="constraint-detail">Your priorities and budget are perfectly aligned. No significant compromises required.</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 24 }}>
+                <div style={{ padding: 16, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, width: '100%', textAlign: 'left', color: 'var(--text-primary)' }}>
+                    <i className="fas fa-bullseye" style={{ color: 'var(--accent-info)', marginRight: 8 }}></i> Dimensional Profile
+                  </div>
+                  <RadarChart data={priorities} />
+                </div>
+
+                <div style={{ padding: 16, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary)' }}>
+                    <i className="fas fa-chart-pie" style={{ color: 'var(--accent-warning)', marginRight: 8 }}></i> Analysis Summary
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, flex: 1 }}>
+                    <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                      <div style={{ fontSize: 24, marginBottom: 8 }}>⚠️</div>
+                      <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-warning)', lineHeight: 1 }}>{analysisSummary.conflicts}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Conflicts</div>
+                    </div>
+                    <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                      <div style={{ fontSize: 24, marginBottom: 8 }}>💻</div>
+                      <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-success)', lineHeight: 1 }}>{analysisSummary.devices}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Viable Devices</div>
+                    </div>
+                    <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                      <div style={{ fontSize: 24, marginBottom: 8 }}>🧭</div>
+                      <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-info)', lineHeight: 1 }}>{analysisSummary.paths}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Resolution Paths</div>
+                    </div>
+                    <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                      <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
+                      <div style={{ fontSize: 28, fontWeight: 800, color: analysisSummary.confidence >= 80 ? 'var(--accent-success)' : analysisSummary.confidence >= 60 ? 'var(--accent-warning)' : 'var(--accent-danger)', lineHeight: 1 }}>{analysisSummary.confidence}%</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Confidence</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="btn-group">
+              <button className="btn btn-primary" onClick={() => goToPhase(2)}>
+                <i className="fas fa-magic"></i> View Cards
+              </button>
+              <button className="btn btn-secondary" onClick={() => goToPhase(0)}>
+                <i className="fas fa-arrow-left"></i> Adjust Priorities
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Phase 2: Decision Cards */}
+        {phase === 2 && (
+          <div className="phase-container active">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+              <div>
+                <h2 style={{ fontSize: 22, fontWeight: 800 }}>Best Options for You</h2>
+                <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>Adjust priorities from the sidebar to update results live</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'var(--surface)', borderRadius: 24, border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Confidence Level</span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--accent-success)' }}>{analysisSummary.confidence >= 80 ? 'High' : analysisSummary.confidence >= 60 ? 'Medium' : 'Low'}</span>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', border: `3px solid ${analysisSummary.confidence >= 80 ? 'var(--accent-success)' : analysisSummary.confidence >= 60 ? 'var(--accent-warning)' : 'var(--accent-danger)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: `${analysisSummary.confidence >= 80 ? 'var(--accent-success)' : analysisSummary.confidence >= 60 ? 'var(--accent-warning)' : 'var(--accent-danger)'}` }}></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="cards-layout">
+              <div className="cards-main">
+                <div className="decision-cards-grid">
+                  {Object.entries(cards).map(([type, card]) => (
+                    <div key={type} className={`decision-card ${selectedCardType === type ? 'recommended' : ''}`} onClick={() => setSelectedCardType(type)}>
+                      {/* CSS Studio Layer */}
+                      <div className="decision-card-image" style={{ 
+                        padding: 0, 
+                        background: 'linear-gradient(145deg, #0d1b2a 0%, #1b2838 40%, #0a1628 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '220px',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}>
+                        {/* Spotlight glow */}
+                        <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)', width: '70%', height: '60%', background: 'radial-gradient(ellipse, rgba(100,160,255,0.08) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+                        {card.image ? (
+                          <img src={card.image} alt={card.name} style={{ 
+                            width: '85%', 
+                            maxHeight: '180px', 
+                            objectFit: 'contain', 
+                            filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.6))',
+                            position: 'relative',
+                            zIndex: 1
+                          }} />
+                        ) : (
+                          <span style={{ fontSize: 64 }}>{card.icon}</span>
+                        )}
+                        {/* Bottom reflection */}
+                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(to top, rgba(13,27,42,0.95), transparent)', pointerEvents: 'none', zIndex: 2 }}></div>
+                      </div>
+                      <div className="decision-card-body">
+                        <div className="decision-card-header">
+                          <span className={`decision-card-badge ${card.badgeClass}`}>{card.badge}</span>
+                        </div>
+                        <div className="decision-card-name">{card.name}</div>
+                        <div className="decision-card-price">{card.price} {card.originalPrice && <span className="original">{card.originalPrice}</span>}</div>
+
+                        <div className="judgment-rating">
+                          <div className={`judgment-score ${card.scoreClass}`}>{card.score}%</div>
+                          <div className="judgment-label">
+                            <strong>Judgment Score</strong><br/>{card.scoreLabel}
+                          </div>
+                        </div>
+
+                        <div className="card-section" style={{ marginBottom: 12 }}>
+                          <div className="card-section-title">Why this choice?</div>
+                          <div className="card-section-text">{card.whyChosen}</div>
+                        </div>
+                        
+                        <div className="card-section" style={{ background: 'rgba(244, 63, 94, 0.05)', border: '1px solid rgba(244, 63, 94, 0.2)', padding: '12px', borderRadius: '8px' }}>
+                          <div className="card-section-title" style={{ color: 'var(--accent-danger)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <i className="fas fa-bullhorn"></i> Real Review Consensus (The Catch)
+                          </div>
+                          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>Aggregated from expert and user reviews across platforms</div>
+                          <div className="card-section-text" style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
+                            {card.flaws && card.flaws[0] ? card.flaws[0] : 'No critical compromises detected in reviews.'}
+                          </div>
+                        </div>
+
+                        <div className="card-actions">
+                          <button className="card-action-btn select" onClick={(e) => { e.stopPropagation(); confirmCard(type); }}>
+                            <i className="fas fa-check-circle"></i> Choose This Decision
+                          </button>
+                          <button className="card-action-btn details" onClick={(e) => { e.stopPropagation(); setSelectedCardType(type); goToPhase(3); }}>
+                            <i className="fas fa-info-circle"></i> Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sidebar */}
+              <div className="cards-sidebar">
+                <div className="sidebar-panel">
+                  <div className="sidebar-panel-title"><i className="fas fa-sliders-h"></i> Adjust Priorities</div>
+                  {Object.entries(priorities).map(([key, val]) => (
+                    <div key={key} className="sidebar-slider-item">
+                      <div className="sidebar-slider-label">
+                        <span style={{textTransform: 'capitalize'}}>{key}</span>
+                        <span>{val}%</span>
+                      </div>
+                      <input type="range" className="sidebar-slider" value={val} onChange={(e) => setPriorities({...priorities, [key]: Number(e.target.value)})} />
+                    </div>
+                  ))}
+                </div>
+                <div className="sidebar-panel">
+                  <div className="sidebar-panel-title"><i className="fas fa-wallet"></i> Budget Range</div>
+                  <div className="sidebar-budget" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <div style={{ position: 'relative', flex: 1 }}>
+                        <span style={{ position: 'absolute', left: 8, top: 8, color: 'var(--text-muted)' }}>$</span>
+                        <input type="number" className="budget-input" style={{ width: '100%', paddingLeft: 20, padding: 8, fontSize: 13 }} value={budgetMin} onChange={(e) => setBudgetMin(Number(e.target.value))} />
+                      </div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>to</span>
+                      <div style={{ position: 'relative', flex: 1 }}>
+                        <span style={{ position: 'absolute', left: 8, top: 8, color: 'var(--text-muted)' }}>$</span>
+                        <input type="number" className="budget-input" style={{ width: '100%', paddingLeft: 20, padding: 8, fontSize: 13 }} value={budgetMax} onChange={(e) => setBudgetMax(Number(e.target.value))} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="sidebar-panel">
+                  <button className="sidebar-action-btn primary" onClick={applySidebarChanges} disabled={isAnalyzing} style={{ marginBottom: 8 }}>
+                    <i className="fas fa-sync-alt"></i> {isAnalyzing ? 'Updating...' : 'Update Results'}
+                  </button>
+                  <button className="sidebar-action-btn secondary" onClick={resetSidebarChanges}>
+                    <i className="fas fa-undo"></i> Reset
+                  </button>
+                </div>
+                <div className="live-update-indicator">
+                  <div className="live-dot"></div>
+                  <span>Changes affect cards instantly</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Phase 3: Explainability */}
+        {phase === 3 && selectedCard && (
+          <div className="phase-container active">
+            <div className="selected-card-banner" style={{ display: 'flex', alignItems: 'center', gap: 24, padding: 0, overflow: 'hidden' }}>
+              {/* Product Image - Studio Layer */}
+              <div style={{
+                width: 200, minHeight: 140,
+                background: 'linear-gradient(145deg, #0d1b2a 0%, #1b2838 40%, #0a1628 100%)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                position: 'relative', overflow: 'hidden', borderRadius: '12px 0 0 12px', flexShrink: 0
+              }}>
+                <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '60%', background: 'radial-gradient(ellipse, rgba(100,160,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+                {selectedCard.image ? (
+                  <img src={selectedCard.image} alt={selectedCard.name} style={{ width: '80%', maxHeight: '110px', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))', position: 'relative', zIndex: 1 }} />
+                ) : (
+                  <i className="fas fa-check-circle" style={{ fontSize: 48, color: 'var(--accent-success)' }}></i>
+                )}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%', background: 'linear-gradient(to top, rgba(13,27,42,0.9), transparent)', pointerEvents: 'none', zIndex: 2 }}></div>
+              </div>
+              {/* Device Info */}
+              <div style={{ flex: 1, padding: '16px 20px 16px 0' }}>
+                <div className="selected-card-name" style={{ fontSize: 18 }}>{selectedCard.name}</div>
+                <div className="selected-card-type" style={{ marginTop: 4 }}>{selectedCard.badge} — Judgment Score: {selectedCard.score}%</div>
+                <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <span className={`selected-card-badge ${selectedCard.badgeClass}`}>{selectedCard.badge}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{selectedCard.price}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-header">
+                <div className="card-icon" style={{ background: 'rgba(14, 165, 233, 0.15)', color: 'var(--accent-info)' }}>🔍</div>
+                <div>
+                  <div className="card-title">Decision Explanation in Detail</div>
+                  <div className="card-subtitle">Full transparency in reasons, trade-offs, and excluded alternatives</div>
+                </div>
+              </div>
+
+              <div className="explanation-tabs">
+                <button className={`explanation-tab ${explanationTab === 'why-chosen' ? 'active' : ''}`} onClick={() => setExplanationTab('why-chosen')}>Why Chosen?</button>
+                <button className={`explanation-tab ${explanationTab === 'excluded' ? 'active' : ''}`} onClick={() => setExplanationTab('excluded')}>Excluded Alternatives</button>
+                <button className={`explanation-tab ${explanationTab === 'trade-offs' ? 'active' : ''}`} onClick={() => setExplanationTab('trade-offs')}>Trade-offs</button>
+                <button className={`explanation-tab ${explanationTab === 'stability' ? 'active' : ''}`} onClick={() => setExplanationTab('stability')}>Decision Stability</button>
+              </div>
+
+              {explanationTab === 'why-chosen' && (
+                <div className="explanation-content active">
+                  <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 20 }}>
+                    {/* Product mini-studio */}
+                    <div style={{
+                      background: 'linear-gradient(145deg, #0d1b2a 0%, #1b2838 40%, #0a1628 100%)',
+                      borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      padding: 20, position: 'relative', overflow: 'hidden', minHeight: 160
+                    }}>
+                      <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '60%', background: 'radial-gradient(ellipse, rgba(100,160,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+                      {selectedCard.image ? (
+                        <img src={selectedCard.image} alt={selectedCard.name} style={{ width: '90%', maxHeight: '130px', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))', position: 'relative', zIndex: 1 }} />
+                      ) : (
+                        <span style={{ fontSize: 64 }}>💻</span>
+                      )}
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%', background: 'linear-gradient(to top, rgba(13,27,42,0.9), transparent)', pointerEvents: 'none', zIndex: 2 }}></div>
+                    </div>
+                    {/* Analysis */}
+                    <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
+                      <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>{selectedCard.name}</div>
+                      <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+                        <strong style={{ color: 'var(--accent-success)' }}>✓</strong> {selectedCard.whyChosen}<br/>
+                        {selectedCard.flaws.map(f => <div key={f}><strong style={{ color: 'var(--accent-danger)' }}>✗</strong> {f}</div>)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {explanationTab === 'trade-offs' && (
+                <div className="explanation-content active">
+                  <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                      <div style={{ padding: 16, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 10, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                        <div style={{ fontSize: 12, color: 'var(--accent-success)', fontWeight: 700, marginBottom: 8 }}>✓ What You Gained</div>
+                        {selectedCard.tradeOffs.gained.map(g => <div key={g} style={{ fontSize: 13 }}>• {g}</div>)}
+                      </div>
+                      <div style={{ padding: 16, background: 'rgba(244, 63, 94, 0.05)', borderRadius: 10, border: '1px solid rgba(244, 63, 94, 0.2)' }}>
+                        <div style={{ fontSize: 12, color: 'var(--accent-danger)', fontWeight: 700, marginBottom: 8 }}>✗ What You Lost</div>
+                        {selectedCard.tradeOffs.lost.map(l => <div key={l} style={{ fontSize: 13 }}>• {l}</div>)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {explanationTab === 'stability' && (
+                <div className="explanation-content active">
+                  <div style={{ textAlign: 'center', padding: 20 }}>
+                    <div className={`stability-circle ${selectedCard.stability.status}`}>
+                      <div className={`stability-score ${selectedCard.stability.status}`}>{selectedCard.stability.score}%</div>
+                      <div className="stability-label">{selectedCard.stability.label}</div>
+                    </div>
+                    <div style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 500, margin: '0 auto' }}>
+                      {selectedCard.stability.description}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {explanationTab === 'excluded' && (
+                <div className="explanation-content active">
+                  {selectedCard.excluded.map((item, idx) => (
+                    <div key={idx} className="excluded-item">
+                      <span style={{ fontWeight: 600 }}>{item.name}</span>
+                      <span className="excluded-reason">{item.reason}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="btn-group">
+              <button className="btn btn-primary" onClick={() => goToPhase(4)}><i className="fas fa-arrow-right"></i> Final Summary</button>
+              <button className="btn btn-secondary" onClick={() => goToPhase(2)}><i className="fas fa-arrow-left"></i> Back to Cards</button>
+            </div>
+          </div>
+        )}
+
+        {/* Phase 4: Summary */}
+        {phase === 4 && selectedCard && (
+          <div className="phase-container active">
+            <div className="final-summary-layout">
+              <div>
+                <div className="final-card-hero">
+                  <div className="final-card-hero-header">
+                    <span className={`final-card-hero-badge ${selectedCard.badgeClass}`}>{selectedCard.badge}</span>
+                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Final Decision</span>
+                  </div>
+                  <div className="final-card-hero-image" style={{
+                    background: 'linear-gradient(145deg, #0d1b2a 0%, #1b2838 40%, #0a1628 100%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    position: 'relative', overflow: 'hidden', minHeight: 200, borderRadius: 12
+                  }}>
+                    <div style={{ position: 'absolute', top: '15%', left: '50%', transform: 'translateX(-50%)', width: '70%', height: '60%', background: 'radial-gradient(ellipse, rgba(100,160,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+                    {selectedCard.image ? (
+                      <img src={selectedCard.image} alt={selectedCard.name} style={{ width: '80%', maxHeight: '170px', objectFit: 'contain', filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.6))', position: 'relative', zIndex: 1 }} />
+                    ) : (
+                      <span style={{ fontSize: 72 }}>{selectedCard.icon}</span>
+                    )}
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%', background: 'linear-gradient(to top, rgba(13,27,42,0.9), transparent)', pointerEvents: 'none', zIndex: 2 }}></div>
+                  </div>
+                  <div className="final-card-hero-body">
+                    <div className="final-card-hero-name">{selectedCard.name}</div>
+                    <div className="final-card-hero-price">
+                      {selectedCard.price} {selectedCard.originalPrice && <span className="original">{selectedCard.originalPrice}</span>}
+                    </div>
+
+                    <div className="final-judgment">
+                      <div className={`final-judgment-score ${selectedCard.scoreClass}`}>{selectedCard.score}%</div>
+                      <div className="final-judgment-info">
+                        <div className="final-judgment-title">Judgment Score - {selectedCard.scoreLabel}</div>
+                        <div className="final-judgment-desc">Achieves core priorities</div>
+                      </div>
+                    </div>
+
+                    <div className="final-section">
+                      <div className="final-section-title">Why This Decision?</div>
+                      <div className="final-section-text">{selectedCard.whyChosen}</div>
+                    </div>
+
+                    <div className="final-section">
+                      <div className="final-section-title">Real Flaws</div>
+                      <div className="final-section-text" style={{ color: 'var(--accent-danger)' }}>
+                        {selectedCard.flaws.map(f => <div key={f}>• {f}</div>)}
+                      </div>
+                    </div>
+
+                    <div className="final-section">
+                      <div className="final-section-title">Key Trade-offs</div>
+                      <div>
+                        {selectedCard.tradeOffs.gained.map(g => (
+                          <div key={g} className="final-trade-off">
+                            <i className="fas fa-arrow-up trade-off-positive"></i>
+                            <span>{g}</span>
+                          </div>
+                        ))}
+                        {selectedCard.tradeOffs.lost.map(l => (
+                          <div key={l} className="final-trade-off">
+                            <i className="fas fa-arrow-down trade-off-negative"></i>
+                            <span>{l}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="final-section">
+                      <div className="final-section-title">Decision Stability</div>
+                      <div style={{ textAlign: 'center', padding: 16 }}>
+                        <div className={`stability-circle ${selectedCard.stability.status}`}>
+                          <div className={`stability-score ${selectedCard.stability.status}`}>{selectedCard.stability.score}%</div>
+                          <div className="stability-label">{selectedCard.stability.label}</div>
+                        </div>
+                        <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+                          {selectedCard.stability.description}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card" style={{ marginTop: 24 }}>
+                  <div className="card-header">
+                    <div className="card-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-warning)' }}>📈</div>
+                    <div>
+                      <div className="card-title">Decision Evolution</div>
+                    </div>
+                  </div>
+                  <div className="evolution-timeline">
+                    {timeline.map((item, idx) => (
+                      <div key={idx} className="timeline-item">
+                        <div className="timeline-dot" style={{ background: idx === timeline.length -1 ? 'var(--accent-success)' : 'var(--accent)' }}></div>
+                        <div className="timeline-content">
+                          <div className="timeline-date">{item.date}</div>
+                          <div className="timeline-title">{item.title}</div>
+                          <div className="timeline-desc">{item.desc}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="purchase-section">
+                  <div className="purchase-section-title"><i className="fas fa-shopping-cart"></i> Purchase Links</div>
+                  
+                  {['amazon', 'bestbuy', 'direct'].map(store => (
+                    <div key={store} className={`purchase-option ${selectedPurchase === store ? 'selected' : ''}`} onClick={() => setSelectedPurchase(store)}>
+                      <input type="radio" className="purchase-option-radio" checked={selectedPurchase === store} readOnly />
+                      <div className="purchase-option-info">
+                        <div className="purchase-option-name" style={{textTransform: 'capitalize'}}>
+                          <i className={store === 'amazon' ? "fab fa-amazon" : store === 'bestbuy' ? "fas fa-store" : "fas fa-globe"}></i> {store}
+                        </div>
+                        <div className="purchase-option-price">{selectedCard.purchaseLinks[store]}</div>
+                      </div>
+                      <span className={`purchase-option-tag ${store !== 'direct' ? 'tag-affiliate' : 'tag-direct'}`}>
+                        {store !== 'direct' ? 'Affiliate' : 'No Affiliate'}
+                      </span>
+                    </div>
+                  ))}
+
+                  <div className="purchase-disclosure" style={{ marginTop: 16, padding: 14, background: 'rgba(100, 116, 139, 0.08)', borderRadius: 10, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                    <i className="fas fa-info-circle" style={{ color: 'var(--accent-warning)', marginRight: 4 }}></i>
+                    <strong>Affiliate Disclosure:</strong> Amazon and BestBuy links are affiliate links. We earn a small commission if you purchase through them. This <strong>does not affect</strong> the decision ranking or the price you pay. The official store has no commission.
+                  </div>
+
+                  <button className={`purchase-action-btn ${selectedPurchase}`} onClick={() => alert(`Redirecting to ${selectedPurchase} for ${selectedCard.purchaseLinks[selectedPurchase]}`)} style={{ marginTop: 16 }}>
+                    <i className={selectedPurchase === 'amazon' ? "fab fa-amazon" : selectedPurchase === 'bestbuy' ? "fas fa-store" : "fas fa-globe"}></i>
+                    Buy from {selectedPurchase} - {selectedCard.purchaseLinks[selectedPurchase]}
+                  </button>
+                </div>
+
+                <div className="purchase-section" style={{ marginTop: 16 }}>
+                  <div className="purchase-section-title">
+                    <i className="fas fa-bell"></i> Future Alerts
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ padding: 12, background: 'var(--surface-elevated)', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontSize: 24 }}>💰</span>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Price Drop</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>If price drops below $1,000</div>
+                      </div>
+                    </div>
+                    <div style={{ padding: 12, background: 'var(--surface-elevated)', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontSize: 24 }}>🆕</span>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>New Device</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>If a better device appears in your budget</div>
+                      </div>
+                    </div>
+                    <div style={{ padding: 12, background: 'var(--surface-elevated)', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontSize: 24 }}>⚡</span>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Spec Update</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>If your chosen device specs improve</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 16 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, color: 'var(--text-primary)' }}>📧 Save Decision for Tracking</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input type="email" className="form-input" placeholder="Your email address" style={{ flex: 1 }} />
+                      <button className="btn btn-primary" style={{ padding: '12px 20px' }} onClick={() => alert('Saved!')}>
+                        <i className="fas fa-bell"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="btn-group" style={{ marginTop: 32 }}>
+              <button className="btn btn-primary" onClick={() => goToPhase(0)}>
+                <i className="fas fa-plus"></i> New Decision
+              </button>
+              <button className="btn btn-secondary" onClick={() => goToPhase(3)}>
+                <i className="fas fa-arrow-left"></i> Back to Explanation
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

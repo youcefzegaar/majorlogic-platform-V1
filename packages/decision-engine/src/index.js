@@ -67,6 +67,9 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
       stabilityScore: 0,
       relaxationScore,
       conflicts: intentConflicts,
+      evaluatedCount: evaluatedCandidates.length,
+      candidateCount: finalCandidates.length,
+      excludedCount: evaluatedCandidates.length - finalCandidates.length,
       cards: [],
       noResults: domainPack.buildNoResults
         ? domainPack.buildNoResults({ profile: preparedProfile, evaluatedCandidates, status, relaxationScore })
@@ -90,7 +93,7 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
     if (selection) {
       if (cardType === "hero") heroCandidate = selection;
       selectedEntityIds.add(selection.entity.entityId);
-      cards.push(domainPack.buildCard(cardType, selection, preparedProfile));
+      cards.push(domainPack.buildCard(cardType, selection, preparedProfile, { evaluatedCandidates }));
     }
   }
 
@@ -106,6 +109,9 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
     relaxationScore,
     conflicts: intentConflicts,
     cards,
+    evaluatedCount: evaluatedCandidates.length,
+    candidateCount: finalCandidates.length,
+    excludedCount: evaluatedCandidates.length - finalCandidates.length,
     governance: {
       irHash,
       inputHash,
