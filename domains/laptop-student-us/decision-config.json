@@ -1,34 +1,76 @@
 {
   "domainId": "laptop-student-us",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "identityRules": {
     "identityFields": ["brand", "ramGb", "storageGb", "gpuClass"],
     "similarityThreshold": 0.9
   },
   "attributes": {
-    "price": { "type": "numeric", "label": "Price USD" },
-    "ramGb": { "type": "numeric", "label": "RAM" },
-    "storageGb": { "type": "numeric", "label": "Storage" },
+    "price":       { "type": "numeric", "label": "Price USD" },
+    "ramGb":       { "type": "numeric", "label": "RAM" },
+    "storageGb":   { "type": "numeric", "label": "Storage" },
     "performance": { "type": "numeric", "label": "Performance Score" },
-    "resale": { "type": "numeric", "label": "Resale Value Index" }
+    "battery":     { "type": "numeric", "label": "Battery Score" },
+    "portability": { "type": "numeric", "label": "Portability Score" },
+    "display":     { "type": "numeric", "label": "Display Score" },
+    "thermals":    { "type": "numeric", "label": "Thermal Throttle Index" },
+    "resale":      { "type": "numeric", "label": "Resale Value Index" },
+    "userPrefPerformance": { "type": "numeric", "label": "User Preference: Performance" },
+    "userPrefBattery":     { "type": "numeric", "label": "User Preference: Battery" },
+    "userPrefPortability": { "type": "numeric", "label": "User Preference: Portability" },
+    "userPrefDisplay":     { "type": "numeric", "label": "User Preference: Display" },
+    "userPrefResale":      { "type": "numeric", "label": "User Preference: Resale" }
   },
   "metrics": {
     "portability_score": {
       "label": "Portability Index",
-      "formula": { "op": "add", "args": ["battery", { "op": "multiply", "args": ["weight", -5] }] }
+      "formula": {
+        "op": "clamp",
+        "args": [
+          { "op": "average", "args": ["battery", "portability"] },
+          0, 100
+        ]
+      }
     },
     "value_score": {
       "label": "Price/Performance Value",
-      "formula": { "op": "add", "args": [100, { "op": "multiply", "args": ["price", -0.05] }] }
+      "formula": {
+        "op": "clamp",
+        "args": [
+          { "op": "add", "args": [100, { "op": "multiply", "args": ["price", -0.04] }] },
+          0, 100
+        ]
+      }
+    },
+    "userPreferenceScore": {
+      "label": "User Preference Weighted Score",
+      "formula": {
+        "op": "clamp",
+        "args": [
+          {
+            "op": "average",
+            "args": [
+              { "op": "multiply", "args": ["performance",    "userPrefPerformance"] },
+              { "op": "multiply", "args": ["battery",        "userPrefBattery"] },
+              { "op": "multiply", "args": ["portability",    "userPrefPortability"] },
+              { "op": "multiply", "args": ["display",        "userPrefDisplay"] },
+              { "op": "multiply", "args": ["resale",         "userPrefResale"] }
+            ]
+          },
+          0, 100
+        ]
+      }
     }
   },
   "gates": {
     "within_budget": {
       "node": "Budget Constraint",
+      "humanMeaning": "Device exceeds the specified budget",
       "condition": { "op": "lte", "left": "price", "right": "budget" }
     },
     "min_ram": {
       "node": "RAM Minimum",
+      "humanMeaning": "Insufficient RAM for modern workflows",
       "condition": { "op": "gte", "left": "ramGb", "right": 8 }
     }
   },
@@ -36,10 +78,9 @@
     "general": {
       "isDefault": true,
       "weights": {
-        "performance": 0.4,
-        "portability_score": 0.3,
-        "value_score": 0.3,
-        "resale": 0
+        "userPreferenceScore": 0.55,
+        "value_score":         0.25,
+        "portability_score":   0.20
       },
       "penalties": {
         "thermal_throttle": {
@@ -49,19 +90,83 @@
         }
       }
     },
+    "cs": {
+      "weights": {
+        "userPreferenceScore": 0.50,
+        "performance":         0.30,
+        "value_score":         0.20
+      },
+      "penalties": {
+        "thermal_throttle": {
+          "condition": { "op": "gt", "left": "thermals", "right": 85 },
+          "amount": 10,
+          "reason": "Thermal throttling limits sustained compute for CS workloads"
+        }
+      }
+    },
     "computer_science": {
       "weights": {
-        "performance": 0.6,
-        "portability_score": 0.2,
-        "value_score": 0.2
+        "userPreferenceScore": 0.50,
+        "performance":         0.30,
+        "value_score":         0.20
+      },
+      "penalties": {
+        "thermal_throttle": {
+          "condition": { "op": "gt", "left": "thermals", "right": 85 },
+          "amount": 10,
+          "reason": "Thermal throttling limits sustained compute for CS workloads"
+        }
+      }
+    },
+    "engineering": {
+      "weights": {
+        "userPreferenceScore": 0.45,
+        "performance":         0.35,
+        "portability_score":   0.20
+      },
+      "penalties": {
+        "thermal_throttle": {
+          "condition": { "op": "gt", "left": "thermals", "right": 85 },
+          "amount": 12,
+          "reason": "Thermal throttling degrades simulation performance"
+        }
       }
     },
     "graphic_design": {
       "weights": {
-        "performance": 0.3,
-        "portability_score": 0.2,
-        "display": 0.5
+        "userPreferenceScore": 0.45,
+        "display":             0.35,
+        "portability_score":   0.20
+      }
+    },
+    "design": {
+      "weights": {
+        "userPreferenceScore": 0.45,
+        "display":             0.35,
+        "portability_score":   0.20
+      }
+    },
+    "medical": {
+      "weights": {
+        "userPreferenceScore": 0.55,
+        "value_score":         0.30,
+        "portability_score":   0.15
+      }
+    },
+    "business": {
+      "weights": {
+        "userPreferenceScore": 0.50,
+        "value_score":         0.30,
+        "portability_score":   0.20
+      }
+    },
+    "arts": {
+      "weights": {
+        "userPreferenceScore": 0.55,
+        "display":             0.25,
+        "portability_score":   0.20
       }
     }
   }
 }
+

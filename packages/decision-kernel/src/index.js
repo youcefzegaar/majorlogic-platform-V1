@@ -65,12 +65,12 @@ export class DecisionKernel {
         break;
 
       case "derived":
-        values[node.id] = this._evaluateFormula(node.formula, values);
+        values[node.id] = this._evaluateFormula(node.formula, values, trace);
         trace.scores[node.id] = values[node.id];
         break;
 
       case "gate":
-        const passed = this._evaluateCondition(node.condition, values);
+        const passed = this._evaluateCondition(node.condition, values, trace);
         if (!passed) {
           trace.isEligible = false;
           trace.exclusions.push(node.id);
@@ -94,7 +94,7 @@ export class DecisionKernel {
         // Apply penalties (Soft Sacrifices)
         if (node.penalties) {
           for (const [pId, p] of Object.entries(node.penalties)) {
-            if (this._evaluateCondition(p.condition, values)) {
+            if (this._evaluateCondition(p.condition, values, trace)) {
               score -= p.amount;
               trace.steps.push({ 
                   type: "penalty", 
@@ -123,51 +123,98 @@ export class DecisionKernel {
     }
   }
 
-  _resolveArg(arg, values) {
+  _resolveArg(arg, values, trace = null) {
     if (typeof arg === "number") return arg;
-    if (typeof arg === "object") return this._evaluateFormula(arg, values);
+    if (typeof arg === "object") return this._evaluateFormula(arg, values, trace);
     return values[arg] || 0;
   }
 
-  _evaluateFormula(formula, values) {
+  _evaluateFormula(formula, values, trace = null) {
     if (!formula) return 0;
-    
-    const resolveArgs = () => (formula.args || []).map(a => this._resolveArg(a, values));
 
-    switch (formula.op) {
-      case "add":
-        return resolveArgs().reduce((sum, v) => sum + v, 0);
-      case "subtract":
-        const subArgs = resolveArgs();
-        return subArgs.length ? subArgs.reduce((a, b) => a - b) : 0;
-      case "multiply":
-        return resolveArgs().reduce((prod, v) => prod * v, 1);
-      case "min":
-        return Math.min(...resolveArgs());
-      case "max":
-        return Math.max(...resolveArgs());
-      case "average": {
-        const vals = resolveArgs();
-        return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0;
+    const resolveArgs = () => {
+      const args = (formula.args || []).map(a => this._resolveArg(a, values, trace));
+      
+      // Validate: all args should be numbers
+      for (let i = 0; i < args.length; i++) {
+        if (typeof args[i] !== 'number' || isNaN(args[i])) {
+          const argDef = formula.args[i];
+          this.logger.warn(`[KERNEL] Arg ${i} (${JSON.stringify(argDef)}) resolved to invalid value: ${args[i]}`);
+          args[i] = 0; // Safe default
+        }
       }
-      case "clamp": {
-        // args: [value, min, max]
-        const [val, lo, hi] = resolveArgs();
-        return Math.max(lo, Math.min(hi, val));
+      return args;
+    };
+
+    let result;
+
+    try {
+      switch (formula.op) {
+        case "add":
+          result = resolveArgs().reduce((sum, v) => sum + v, 0);
+          break;
+        case "subtract":
+          const subArgs = resolveArgs();
+          result = subArgs.length ? subArgs.reduce((a, b) => a - b) : 0;
+          break;
+        case "multiply":
+          result = resolveArgs().reduce((prod, v) => prod * v, 1);
+          break;
+        case "min":
+          const minArgs = resolveArgs();
+          result = minArgs.length ? Math.min(...minArgs) : 0;
+          break;
+        case "max":
+          const maxArgs = resolveArgs();
+          result = maxArgs.length ? Math.max(...maxArgs) : 0;
+          break;
+        case "average": {
+          const vals = resolveArgs();
+          result = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0;
+          break;
+        }
+        case "clamp":
+          const [val, lo, hi] = resolveArgs();
+          result = Math.max(lo, Math.min(hi, val));
+          break;
+        case "inverse": {
+          const v = this._resolveArg(formula.arg, values, trace);
+          result = v === 0 ? 0 : 1 / v;
+          break;
+        }
+        default:
+          this.logger.error(`[KERNEL] Unknown formula operation: ${formula.op}`);
+          result = 0;
       }
-      case "inverse": {
-        const v = this._resolveArg(formula.arg, values);
-        return v === 0 ? 0 : 1 / v;
-      }
-      default:
-        return 0;
+    } catch (err) {
+      this.logger.error(`[KERNEL] Formula evaluation error:`, err);
+      result = 0;
     }
+
+    // Handle NaN/Infinity
+    if (!isFinite(result)) {
+      this.logger.warn(`[KERNEL] Formula produced invalid result: ${result}. Returning 0.`);
+      result = 0;
+    }
+
+    // Round to reasonable precision (avoid floating point errors)
+    result = Math.round(result * 10000) / 10000;
+
+    if (trace) {
+      trace.steps.push({
+        formula: formula.op,
+        result,
+        args: formula.args
+      });
+    }
+
+    return result;
   }
 
-  _evaluateCondition(cond, values) {
+  _evaluateCondition(cond, values, trace = null) {
     if (!cond) return true;
-    const left = typeof cond.left === "object" ? this._evaluateFormula(cond.left, values) : (values[cond.left] || cond.left);
-    const right = typeof cond.right === "object" ? this._evaluateFormula(cond.right, values) : (values[cond.right] || cond.right);
+    const left = typeof cond.left === "object" ? this._evaluateFormula(cond.left, values, trace) : (values[cond.left] || cond.left);
+    const right = typeof cond.right === "object" ? this._evaluateFormula(cond.right, values, trace) : (values[cond.right] || cond.right);
 
     switch (cond.op) {
       case "gte": return left >= right;

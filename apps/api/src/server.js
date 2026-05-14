@@ -304,7 +304,23 @@ fastify.get("/sitemap.xml", async (request, reply) => {
   reply.type("application/xml").send(fs.readFileSync(sitemapPath, "utf8"));
 });
 
-fastify.post("/api/v1/:domain/decision/run", async (request, reply) => {
+fastify.post("/api/v1/:domain/decision/run", {
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        major: { type: 'string' },
+        budgetUsd: { type: 'number', minimum: 100, maximum: 20000 },
+        preferences: {
+          type: 'object',
+          additionalProperties: true
+        },
+        locale: { type: 'string' }
+      },
+      required: ['major', 'budgetUsd']
+    }
+  }
+}, async (request, reply) => {
   const { domain } = request.params;
   try {
     const controller = getDomainController(domain);
@@ -563,6 +579,7 @@ fastify.post("/admin/affiliate", async (request, reply) => {
 
 // JSON API for affiliate settings (for external tools)
 fastify.get("/api/v1/admin/affiliate-settings", async (request, reply) => {
+  const { secret } = request.query;
   const exportSecret = process.env.ADMIN_EXPORT_SECRET;
   if (!exportSecret || secret !== exportSecret) {
     return reply.status(401).send({ error: "unauthorized" });

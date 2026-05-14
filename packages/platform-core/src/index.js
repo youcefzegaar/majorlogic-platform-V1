@@ -107,7 +107,7 @@ export async function executePlatformPipeline({
     domainPack
   });
 
-  const decision = runDecisionEngine({
+  const decision = await runDecisionEngine({
     profile,
     catalog,
     ruleset,

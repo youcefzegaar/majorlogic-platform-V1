@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { createHash } from "node:crypto";
 
-export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
+export async function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
   const decisionRunId = crypto.randomUUID();
   const originalProfile = { ...profile }; // Store for relaxation measurement
 
@@ -14,7 +14,31 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
     ? domainPack.detectIntentConflicts({ profile: preparedProfile, catalog, ruleset })
     : [];
 
-  const matchingEntities = catalog.matchingProfile(preparedProfile);
+  // Validate inputs
+  if (!profile) {
+    throw new Error('[ENGINE] Profile is required');
+  }
+  if (!catalog || typeof catalog.matchingProfile !== 'function') {
+    throw new Error('[ENGINE] Invalid catalog object');
+  }
+
+  // Safe matching with error handling
+  let matchingEntities;
+  try {
+    matchingEntities = catalog.matchingProfile(preparedProfile);
+    if (!Array.isArray(matchingEntities)) {
+      console.warn('[ENGINE] Catalog returned non-array result, defaulting to []');
+      matchingEntities = [];
+    }
+  } catch (err) {
+    console.error('[ENGINE] Catalog matching failed:', err.message);
+    return {
+      decisionRunId,
+      status: 'catalog_error',
+      error: err.message,
+      cards: []
+    };
+  }
   const evaluatedCandidates = matchingEntities.map((entity) =>
     domainPack.evaluateCandidate({ profile: preparedProfile, entity, ruleset, catalog })
   );
@@ -52,9 +76,30 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
   // 3. Stability Assessment
   const calculateStability = (candidates) => {
     if (!candidates.length) return 0;
-    // Average the match scores and penalize by relaxation
-    const avgMatch = candidates.reduce((sum, c) => sum + (c.match || 0), 0) / candidates.length;
-    return Math.max(0, (avgMatch / 100) - relaxationScore);
+    
+    // 1. Calculate match quality (mean + variance)
+    const scores = candidates.map(c => c.match || 0);
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const variance = scores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) / scores.length;
+    const stdDev = Math.sqrt(variance);
+    
+    // Normalize: higher std dev = less stable
+    const matchQuality = mean / 100;
+    const consistency = Math.max(0, 1 - (stdDev / 100));
+
+    // 2. Apply relaxation penalty (but capped)
+    const relaxationPenalty = Math.min(relaxationScore, 0.40);
+
+    // 3. Incorporate trust (mocking trust audits for now since they might be inside entity.trust)
+    let trustScore = 0.75; // default baseline
+    const trustScores = candidates.map(c => c.entity?.trust?.sourceConfidence || 0.75);
+    if (trustScores.length > 0) {
+      trustScore = trustScores.reduce((sum, val) => sum + val, 0) / trustScores.length;
+    }
+
+    // 4. Composite stability = 60% match + 20% consistency + 20% trust
+    const stability = (matchQuality * 0.60) + (consistency * 0.20) + (trustScore * 0.20);
+    return Math.max(0, Math.min(1, stability - relaxationPenalty));
   };
 
   const stabilityScore = calculateStability(finalCandidates);
@@ -93,7 +138,7 @@ export function runDecisionEngine({ profile, catalog, ruleset, domainPack }) {
     if (selection) {
       if (cardType === "hero") heroCandidate = selection;
       selectedEntityIds.add(selection.entity.entityId);
-      cards.push(domainPack.buildCard(cardType, selection, preparedProfile, { evaluatedCandidates }));
+      cards.push(await domainPack.buildCard(cardType, selection, preparedProfile, { evaluatedCandidates }));
     }
   }
 

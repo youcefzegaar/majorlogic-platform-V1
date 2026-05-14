@@ -118,7 +118,8 @@ export default function App() {
         }
       };
 
-      const response = await fetch('http://localhost:3010/api/v1/laptop-student-us/decision/run', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3010';
+      const response = await fetch(`${apiUrl}/api/v1/laptop-student-us/decision/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile)
@@ -305,7 +306,8 @@ export default function App() {
         }
       };
 
-      const response = await fetch('http://localhost:3010/api/v1/laptop-student-us/decision/run', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3010';
+      const response = await fetch(`${apiUrl}/api/v1/laptop-student-us/decision/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile)

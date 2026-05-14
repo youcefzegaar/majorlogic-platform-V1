@@ -596,22 +596,93 @@ export const laptopStudentUsDomainPack = {
   },
 
   attemptRecovery({ profile, catalog, ruleset }) {
-    // Law of Semantic Drift: Relaxing constraints to avoid zero results
-    let relaxationScore = 0;
-    let currentProfile = { ...profile };
+    const relaxationAttempts = [
+      {
+        name: 'loosen_fit_context',
+        weight: 0.10,
+        modify: (p) => ({ ...p, useOfficialFit: true }),
+        description: 'Allow official-fit devices instead of safe-fit only'
+      },
+      {
+        name: 'expand_budget',
+        weight: 0.15,
+        modify: (p) => ({ ...p, budgetUsd: (p.budgetUsd || 9999) * 1.15 }),
+        description: 'Expand budget by 15%'
+      },
+      {
+        name: 'reduce_performance',
+        weight: 0.12,
+        modify: (p) => ({ ...p, preferences: { ...p.preferences, performance: (p.preferences?.performance || 50) * 0.85 } }),
+        description: 'Reduce performance requirement by 15%'
+      },
+      {
+        name: 'reduce_portability',
+        weight: 0.08,
+        modify: (p) => ({ ...p, preferences: { ...p.preferences, portability: (p.preferences?.portability || 50) * 0.80 } }),
+        description: 'Reduce portability requirement by 20%'
+      }
+    ];
 
-    // Step 1: Relax "Safe" fit to "Official" fit (15% relaxation)
-    relaxationScore = 0.15;
-    const officialEntities = catalog.matchingProfile({ ...currentProfile, useOfficialFit: true });
-    
-    if (officialEntities.length > 0) {
-      const candidates = officialEntities.map(e => this.evaluateCandidate({ profile: currentProfile, entity: e, ruleset, catalog }));
-      return { relaxationScore, candidates };
+    let cumulativeRelaxation = 0;
+    let bestCandidates = null;
+    let appliedRelaxations = [];
+
+    for (const attempt of relaxationAttempts) {
+      cumulativeRelaxation += attempt.weight;
+
+      // Law of Semantic Drift: Stop if we've relaxed >30%
+      if (cumulativeRelaxation > 0.30) {
+        console.warn('[RECOVERY] Relaxation exceeded 30%. Cognitive collapse imminent.');
+        break;
+      }
+
+      const relaxedProfile = attempt.modify({ ...profile });
+      const candidates = catalog.matchingProfile(relaxedProfile);
+
+      if (candidates.length > 0) {
+        const evaluated = candidates.map(e => this.evaluateCandidate({ 
+          profile: relaxedProfile, 
+          entity: e, 
+          ruleset, 
+          catalog 
+        }));
+
+        bestCandidates = evaluated;
+        appliedRelaxations.push({
+          attempt: attempt.name,
+          description: attempt.description,
+          weight: attempt.weight,
+          resultCount: candidates.length
+        });
+
+        // Early exit if we found good options
+        if (candidates.length >= 3) {
+          return { 
+            relaxationScore: cumulativeRelaxation, 
+            candidates: evaluated,
+            relaxations: appliedRelaxations,
+            negotiable: true
+          };
+        }
+      }
     }
 
-    // Step 2: Relax Budget by 20% (Adding 0.20 to score)
-    relaxationScore = 0.35; // Total relaxation > 30% -> TRIGGER COGNITIVE COLLAPSE in Engine
-    return { relaxationScore, candidates: [] };
+    if (bestCandidates) {
+      return { 
+        relaxationScore: cumulativeRelaxation, 
+        candidates: bestCandidates,
+        relaxations: appliedRelaxations,
+        negotiable: true
+      };
+    }
+
+    return { 
+      relaxationScore: cumulativeRelaxation, 
+      candidates: [],
+      relaxations: appliedRelaxations,
+      cognitiveCollapse: true,
+      message: 'No viable devices found even with maximum relaxation'
+    };
   },
 
   evaluateCandidate({ profile, entity, ruleset, catalog }) {
@@ -619,6 +690,7 @@ export const laptopStudentUsDomainPack = {
         ...entity,
         price: entity.market?.bestOffer?.priceUsd ?? 9999,
         battery: entity.specs?.battery ?? 0,
+        portability: entity.specs?.portability ?? 50,
         weight: entity.specs?.weight ?? 2,
         performance: entity.specs?.performance ?? 0,
         ramGb: entity.specs?.ramGb ?? 0,
@@ -627,43 +699,39 @@ export const laptopStudentUsDomainPack = {
         resale: entity.economicSignals?.resaleScore ?? 50
     };
 
-    // Dynamic Weighting: Derive weights DIRECTLY from user slider preferences
+    // ─── Pure Kernel: Map user preferences into the IR context ───────────────
+    // Normalize: 0 pref → 0.5 (neutral, not nullifying), 100 pref → 1.0 (full weight)
+    // Formula: 0.5 + (pref / 100) * 0.5
+    // This prevents a zero-slider from annihilating a dimension entirely,
+    // while still reflecting genuine user priority differences.
+    const normalize = (val, fallback = 50) =>
+      0.5 + ((val ?? fallback) / 100) * 0.5;
+
     const prefs = profile.preferences || {};
-    const perfW = (prefs.performance || 50) / 100;
-    const battW = (prefs.battery || 50) / 100;
-    const portW = (prefs.portability || 50) / 100;
-    const dispW = (prefs.display || 50) / 100;
-    const resW  = (prefs.resale || 50) / 100;
-    const totalW = perfW + battW + portW + dispW + resW + 0.001; // avoid /0
-
-    // Compute a preference-weighted score directly from specs
-    const prefScore = (
-      (flattenedEntity.performance * (perfW / totalW)) +
-      (flattenedEntity.battery * (battW / totalW)) +
-      ((entity.specs?.portability ?? 50) * (portW / totalW)) +
-      (flattenedEntity.display * (dispW / totalW)) +
-      (flattenedEntity.resale * (resW / totalW))
-    );
-
-    // Also run the original IR kernel for baseline
-    const activeRulesetId = rawConfig.rulesets[profile.major] ? profile.major : "general";
-    const customIR = JSON.parse(JSON.stringify(decisionIR));
-    const kernelResult = kernel.execute(customIR, [flattenedEntity], { 
+    const kernelContext = {
       budget: profile.budgetUsd,
-      major: profile.major 
-    }, {
+      major:  profile.major,
+      // User preference multipliers — fully traceable in the IR
+      userPrefPerformance: normalize(prefs.performance),
+      userPrefBattery:     normalize(prefs.battery),
+      userPrefPortability: normalize(prefs.portability),
+      userPrefDisplay:     normalize(prefs.display),
+      userPrefResale:      normalize(prefs.resale)
+    };
+    // ─────────────────────────────────────────────────────────────────────────
+
+    const activeRulesetId = rawConfig.rulesets[profile.major] ? profile.major : "general";
+    const kernelResult = kernel.execute(decisionIR, [flattenedEntity], kernelContext, {
       targetScoreId: `score_${activeRulesetId}`
     });
 
     const result = kernelResult.results[0];
     const trace = result.trace;
 
-    // Blend: 40% kernel baseline + 60% user-preference-weighted score
-    result.score = Math.round(result.score * 0.4 + prefScore * 0.6);
-
-    if (profile.preferences?.resale >= 80) {
-      console.log(`[Engine] Candidate: ${entity.title}, Score: ${result.score}, Resale: ${flattenedEntity.resale}`);
-    }
+    // ─── NO 40/60 BLEND — the Kernel IS the source of truth ─────────────────
+    // The score is 100% produced by the compiled IR with full trace provenance.
+    // Every weight, every penalty, every gate is recorded in trace.scores.
+    // ─────────────────────────────────────────────────────────────────────────
 
     // Law of Sacrifice: Quantify what was lost to gain the win
     const sacrificeVector = {
@@ -682,9 +750,10 @@ export const laptopStudentUsDomainPack = {
       sacrificeVector,
       trace: trace,
       componentScores: trace.scores,
-      fitState: entity.fitStates[profile.major]?.state ?? "unknown"
+      fitState: entity.fitStates?.[profile.major]?.state ?? "unknown"
     };
   },
+
 
   buildNoResults({ profile, evaluatedCandidates, status, relaxationScore }) {
     if (status === "COGNITIVE_COLLAPSE") {
@@ -731,7 +800,7 @@ export const laptopStudentUsDomainPack = {
     return available[0];
   },
 
-  buildCard(cardType, selection, profile, ctx = {}) {
+  async buildCard(cardType, selection, profile, ctx = {}) {
     const entity = selection.entity;
     
     // Compute genuine excluded alternatives
@@ -756,7 +825,7 @@ export const laptopStudentUsDomainPack = {
       score: selection.score,
       match: selection.score,
       sacrificeVector: selection.sacrificeVector,
-      whyThis: explainer.explain(selection.trace, entity.title, { 
+      whyThis: await explainer.explain(selection.trace, entity.title, { 
         locale: profile.locale || 'en',
         reviewWarnings: {
           primary: profile.locale === 'ar' ? entity.reviewIntelligence.primaryWarningAr : entity.reviewIntelligence.primaryWarning,
