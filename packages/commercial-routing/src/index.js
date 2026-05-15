@@ -78,6 +78,7 @@ export function attachCommercialRoutes({ decision, catalog, domainPack }) {
         sellerType: offer.sellerType ?? "unknown",
         priceUsd: offer.priceUsd,
         condition: offer.condition,
+        commissionRate: offer.commissionRate ?? 0,
         isBestDeal: idx === 0,           // الأرخص دائماً يحمل شارة "Best Deal"
         isAffiliate: offer.affiliate === true,
         // رابط البوابة النظيف (نمرره عبر السيرفر، لا مباشرة)
@@ -90,8 +91,14 @@ export function attachCommercialRoutes({ decision, catalog, domainPack }) {
       cardType: card.cardType,
       entityId: card.entityId,
       status: "routed",
-      bestOffer: normalizedOffers[0],     // أرخص عرض — مصلحة المستخدم
-      allOffers: normalizedOffers          // جميع المتاجر — للشفافية الكاملة
+      transparency: {
+        isAffiliate: rankedOffers[0]?.affiliate === true,
+        isNeutral: rankedOffers[0]?.commissionRate === 0,
+        badge: rankedOffers[0]?.commissionRate === 0 ? "💎" : "🤝",
+        label: rankedOffers[0]?.commissionRate === 0 ? "Pure Recommendation" : "Verified Partner"
+      },
+      bestOffer: normalizedOffers[0],     // الأرخص دائماً لمصلحة المستخدم
+      allOffers: normalizedOffers          // الشفافية الكاملة
     };
   });
 

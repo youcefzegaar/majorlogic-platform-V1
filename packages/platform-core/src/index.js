@@ -1,5 +1,4 @@
 import { PublishedCatalog } from "../../published-catalog/src/index.js";
-import { runDecisionEngine } from "../../decision-engine/src/index.js";
 import { DecisionOrchestrator } from "../../decision-orchestrator/src/index.js";
 import { buildOwnershipStrategy } from "../../ownership-strategy/src/index.js";
 import { auditDecision } from "../../trust-integrity/src/index.js";
@@ -107,12 +106,7 @@ export async function executePlatformPipeline({
     domainPack
   });
 
-  const decision = await runDecisionEngine({
-    profile,
-    catalog,
-    ruleset,
-    domainPack
-  });
+  const decision = await orchestrator.run(ruleset, publishedEntities, profile);
 
   const commercialRoutes = attachCommercialRoutes({
     decision,

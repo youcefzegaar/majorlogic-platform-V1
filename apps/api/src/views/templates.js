@@ -248,8 +248,8 @@ export function renderResultsPage({ state, result, requestUrl = "" }) {
           
           ${hero ? `
             <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-              <div class="hero-badge">
-                <span class="icon">🥇</span> HERO
+              <div class="hero-badge" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; border: none; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); font-weight: 800; letter-spacing: 1px;">
+                <span class="icon">🏆</span> BEST MATCH
               </div>
               <div style="background:${hero.transparency?.isAffiliate ? 'rgba(33,110,225,0.08)' : 'rgba(16,163,74,0.1)'}; color:${hero.transparency?.isAffiliate ? '#216EE1' : '#16A34A'}; padding:4px 12px; border-radius:99px; font-size:0.8rem; font-weight:700; border:1px solid ${hero.transparency?.isAffiliate ? 'rgba(33,110,225,0.2)' : 'rgba(16,163,74,0.3)'}; display:flex; align-items:center; gap:6px;" title="${hero.transparency?.isAffiliate ? 'We earn a commission if you buy this.' : 'Zero commission. Purely independent.'}">
                 ${hero.transparency?.badge ?? '🛡️'} ${hero.transparency?.label ?? 'Independent'}

@@ -14,11 +14,16 @@ export class CognitiveAnalyzer {
 
     for (const [pair, penalty] of Object.entries(conflictMap)) {
       const [a, b] = pair.split(':');
-      // A conflict exists if both competing dimensions are demanded heavily (e.g., high performance AND high portability)
-      if (userProfile[a] > 70 && userProfile[b] > 70) {
-        conflictScore += penalty;
-        conflicts.push({ pair, a, b, penalty });
-        this.logger.log(`[CognitiveAnalyzer] Conflict Detected: ${pair} (+${penalty} cognitive penalty)`);
+      const valA = userProfile[a] || 0;
+      const valB = userProfile[b] || 0;
+
+      // Graded intensity: The conflict score scales with the intensity of both competing demands.
+      const intensity = (valA / 100) * (valB / 100) * penalty;
+      
+      if (intensity > 0) {
+        conflictScore += intensity;
+        conflicts.push({ pair, a, b, penalty, intensity });
+        this.logger.log(`[CognitiveAnalyzer] Conflict intensity for ${pair}: ${intensity.toFixed(2)}`);
       }
     }
 

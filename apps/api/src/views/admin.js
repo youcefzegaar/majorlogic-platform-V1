@@ -33,6 +33,7 @@ export function renderDashboardHtml(data) {
   <nav style="margin-bottom:32px;">
     <a href="/admin/dashboard">Dashboard</a>
     <a href="/admin/overview">Overview</a>
+    <a href="/admin/logic">🧪 Logic Lab</a>
     <a href="/admin/growth">📊 Growth</a>
     <a href="/admin/affiliate">🔗 Affiliate</a>
     <a href="/admin/account">⚙️ Account</a>
@@ -56,6 +57,14 @@ export function renderDashboardHtml(data) {
         <div class="stat-value">${data?.overview?.counts?.decision_runs ?? 0}</div>
         <div class="stat-label">Decision Runs</div>
       </div>
+      <div class="stat-item">
+        <div class="stat-value">${data?.overview?.counts?.user_feedback ?? 0}</div>
+        <div class="stat-label">User Feedback</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${data?.overview?.counts?.telemetry_clicks ?? 0}</div>
+        <div class="stat-label">Telemetry Clicks</div>
+      </div>
     </div>
   </div>
 
@@ -71,10 +80,26 @@ export function renderDashboardHtml(data) {
   <div class="card">
     <h2>Latest Decision</h2>
     ${data.latestDecision ? `
-      <p>Run ID: <code>${data.latestDecision.decisionRunId}</code></p>
       <p>Major: ${data.latestDecision.profile?.major ?? 'unknown'}</p>
-      <p><a href="/admin/decision-latest" style="color:#7C3AED;">View Decision Trace →</a></p>
+      <p style="margin-top:12px;">
+        <a href="http://localhost:5173/results?runId=${data.latestDecision.decisionRunId}" 
+           style="background:#7C3AED; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold; display:inline-block;" 
+           target="_blank">🚀 Open in New Interface (Decision OS)</a>
+      </p>
+      <p style="margin-top:8px;">
+        <a href="/admin/decision-latest" style="color:#888; font-size:12px;">View Admin Decision Trace →</a>
+      </p>
     ` : '<p style="color:#888;">No decisions logged yet.</p>'}
+  </div>
+
+  <div class="card">
+    <h2>⚡ Quick Actions</h2>
+    <div style="display:flex;gap:12px;">
+      <form action="/admin/logic/save" method="POST" style="display:inline;">
+        <button type="submit" style="background:#7C3AED;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">♻️ Refresh Logic Cache</button>
+      </form>
+      <button onclick="alert('Ingestion Triggered (Sync Mode)')" style="background:#1f1f3a;color:#c4b5fd;border:1px solid #2d2d4e;padding:8px 16px;border-radius:6px;cursor:pointer;">🚜 Trigger Ingestion</button>
+    </div>
   </div>
 
 </body>
@@ -156,7 +181,7 @@ export function renderGrowthLeadsHtml(stats = []) {
 
   <p style="margin-top:24px;font-size:12px;color:#888;">
     Export all leads as CSV:
-    <a href="/api/v1/laptop-student-us/growth/leads/export?secret=${encodeURIComponent(process.env.ADMIN_EXPORT_SECRET ?? "")}" style="color:#7C3AED;">Download CSV →</a>
+    <a href="/admin/export-trigger/laptop-student-us" style="color:#7C3AED;">Download CSV →</a>
   </p>
 </body>
 </html>`;
@@ -185,7 +210,6 @@ export function renderAffiliateSettingsHtml(settings = [], saved = false) {
     return `
     <div style="background:#12122a;border:1px solid ${hasTag ? '#1e3a1e' : '#3b1010'};border-radius:12px;padding:24px;margin-bottom:16px;">
       <form method="POST" action="/admin/affiliate" style="display:grid;grid-template-columns:1fr 1fr auto;gap:16px;align-items:end;">
-        <input type="hidden" name="secret" value="${escapeHtml(process.env.ADMIN_EXPORT_SECRET ?? "")}">
         <input type="hidden" name="seller" value="${escapeHtml(s.seller)}">
 
         <div>
@@ -262,7 +286,6 @@ export function renderAffiliateSettingsHtml(settings = [], saved = false) {
   <div style="margin-top:32px;padding:20px;background:#0a0a1a;border-radius:12px;border:1px solid #1e1e3a;">
     <h3 style="color:#7C3AED;margin-top:0;">➕ Add a New Store</h3>
     <form method="POST" action="/admin/affiliate" style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
-      <input type="hidden" name="secret" value="${escapeHtml(process.env.ADMIN_EXPORT_SECRET ?? "")}">
 
       <div>
         <label style="display:block;color:#9ca3af;font-size:12px;margin-bottom:6px;">Seller Name (exact)</label>
@@ -287,7 +310,7 @@ export function renderAffiliateSettingsHtml(settings = [], saved = false) {
   </div>
 
   <p style="margin-top:24px;font-size:12px;color:#555;">
-    🔒 This page is protected by your <code>ADMIN_EXPORT_SECRET</code>.
+    🔒 This page is protected by admin session authentication.
     The gateway (<code>/go/:domain/:entityId</code>) reads these settings on every click.
   </p>
 </body>

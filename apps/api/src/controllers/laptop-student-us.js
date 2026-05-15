@@ -151,7 +151,7 @@ export function buildSearchState(searchParams, defaultProfile) {
 
 export async function runPipeline(profile) {
   try {
-    const ruleset   = await getRuleset("rulesets/domains/laptop-student-us/ruleset.json");
+    const ruleset   = await getRuleset("domains/laptop-student-us/decision-config.json");
     const repository = await getRepository();
 
     const publishedCatalogState = await resolvePublishedCatalog({

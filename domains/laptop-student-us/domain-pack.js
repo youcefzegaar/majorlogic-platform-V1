@@ -47,6 +47,23 @@ function scoreGpu(gpuClass) {
   return 40;
 }
 
+function resolveSellerTier(offer) {
+  if (!offer) return 4; // Unknown
+  const type = offer.sellerType;
+  const cond = offer.condition;
+
+  if (type === "brand_direct") return 1;
+  if (type === "retailer") return 1;
+  if (type === "certified_reseller") return 2;
+  
+  if (type === "marketplace") {
+    if (cond === "new") return 2;
+    return 4; // Risky marketplace refurbished/open-box
+  }
+
+  return 3;
+}
+
 function detectBrand(itemName) {
   const value = String(itemName ?? "").toLowerCase();
   if (value.includes("macbook") || value.includes("apple")) return "apple";
@@ -402,7 +419,8 @@ export const laptopStudentUsDomainPack = {
       specs: specs,
       market: {
         bestOffer,
-        offers
+        offers,
+        sellerTier: resolveSellerTier(bestOffer)
       },
       trust: {
         sourceConfidence: observation.trust.sourceConfidence,
@@ -422,7 +440,8 @@ export const laptopStudentUsDomainPack = {
         userSignals: observation.reviewSummary?.userSignals ?? []
       },
       economicSignals: {
-        resaleScore
+        resaleScore: specs.resale ?? 30,
+        tcoEstimate: calculateTCO({ market: { bestOffer }, specs })
       },
       media: {
         experience: {
@@ -468,6 +487,11 @@ export const laptopStudentUsDomainPack = {
 
   entityFitsProfile(entity, profile) {
     if (!entity.fitStates[profile.major]) return false;
+    
+    // Tiered Trust System: Only Tier 1 & 2 allowed in v1 production
+    const tier = entity.market?.sellerTier ?? 4;
+    if (tier > 2) return false;
+
     // Budget gate: only include devices within budget range
     const price = entity.market?.bestOffer?.priceUsd ?? 9999;
     if (profile.budgetUsd && price > profile.budgetUsd * 1.15) return false; // 15% tolerance
@@ -959,20 +983,38 @@ export const laptopStudentUsDomainPack = {
 
   buildGrowthArtifacts({ profile, decision }) {
     const hero = decision.cards.find((card) => card.cardType === "hero");
+    const archetype = this.detectArchetype(profile, decision);
+
     return {
       seoPagePayload: {
-        slug: `${profile.major}-best-laptops`,
-        title: `Best laptops for ${profile.major} students`,
-        description: "Structured search surface generated from decision outputs and the published catalog."
+        slug: `${profile.major}-${archetype.id}-best-laptops`,
+        title: `Best ${archetype.label} Laptops for ${profile.major} Students`,
+        description: `Expert recommendation for ${profile.major} students matching the ${archetype.label} profile.`,
+        keywords: [profile.major, archetype.id, "laptop", "student", "recommendation"]
       },
       shareArtifact: hero
         ? {
           type: "recommendation_snapshot",
-          headline: `Recommended hero for ${profile.major} students`,
+          headline: `Recommended for ${profile.major} (${archetype.label})`,
           title: hero.title,
-          priceUsd: hero.priceUsd
+          priceUsd: hero.priceUsd,
+          tcoEstimate: hero.economicSignals?.tcoEstimate
         }
         : null
     };
+  },
+
+  detectArchetype(profile, decision) {
+    const budget = profile.budgetUsd || 1000;
+    if (budget < 800) return { id: "budget_conscious", label: "Budget Conscious" };
+    if (profile.major === "engineering" || profile.major === "design") return { id: "power_user", label: "Power User" };
+    return { id: "balanced", label: "Balanced Choice" };
   }
 };
+
+function calculateTCO(entity) {
+  const price = entity.market?.bestOffer?.priceUsd ?? 1000;
+  const resale = price * ((entity.specs?.resale ?? 30) / 100);
+  const maintenance = 150; // 4-year estimate
+  return Math.round(price + maintenance - resale);
+}

@@ -31,13 +31,20 @@ export class RecoveryEngine {
     const excludedNew = execution.results.filter(r => !r.eligible);
 
     if (eligible.length > 0) {
-        // Recovery Integrity Score - in the future this could be dynamically calculated based on gate importance
+        // Recovery Integrity Score - dynamically calculated based on gate importance (weight)
+        const gateNode = ir.executionPlan.find(n => n.id === mostCommonGate);
+        
+        // If a gate has a weight of 1.0 (Absolute), we lose 100% integrity (impossible to recover ethically)
+        // If it has 0.5, we lose 50% integrity.
+        const gateWeight = gateNode?.weight ?? 0.5;
+        const integrityScore = Math.round(100 * (1 - gateWeight));
+
         return { 
           execution, 
           eligible, 
           excluded: excludedNew, 
           relaxedGateId: mostCommonGate,
-          integrityScore: 60 // Base compromise score for now
+          integrityScore 
         };
     }
 

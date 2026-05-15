@@ -76,6 +76,7 @@ export class PostgresPlatformRepository {
       "database/migrations/0015_external_acquisition_store.sql",
       "database/migrations/0016_performance_optimization_indices.sql",
       "database/migrations/0017_decision_governance_ledger.sql",
+      "database/migrations/0020_user_feedback.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -380,7 +381,13 @@ export class PostgresPlatformRepository {
        union all
        select 'decision_runs', count(*)::int
        from ml_decision.decision_runs
-       where domain_id = $1`,
+       where domain_id = $1
+       union all
+       select 'user_feedback', count(*)::int
+       from ml_telemetry.user_feedback
+       union all
+       select 'telemetry_clicks', count(*)::int
+       from ml_telemetry.telemetry_clicks`,
       [domainId]
     );
 
@@ -501,6 +508,14 @@ export class PostgresPlatformRepository {
       `INSERT INTO ml_telemetry.telemetry_clicks (decision_run_id, entity_id, click_type)
        VALUES ($1, $2, $3)`,
       [decisionRunId, entityId, clickType]
+    );
+  }
+
+  async saveFeedback({ decisionRunId, score, comment, tags }) {
+    await this.pool.query(
+      `INSERT INTO ml_telemetry.user_feedback (id, decision_run_id, score, comment, tags)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [randomUUID(), decisionRunId, score, comment, tags]
     );
   }
 

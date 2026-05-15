@@ -19,9 +19,15 @@ import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
 import bcrypt from "bcrypt";
 import { renderLoginHtml } from "./views/login.js";
+import { validateEnv } from "./config/validate-env.js";
+import { createHmac } from "node:crypto";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
 loadEnvFile(path.join(root, ".env"));
+
+// CRITICAL: Validate environment before any other operation
+validateEnv();
 
 function escapeHtml(text) {
   if (!text) return "";
@@ -64,8 +70,8 @@ const ALLOWED_ORIGINS = [
 ];
 fastify.register(cors, {
   origin: (origin, cb) => {
-    // Allow same-origin requests (no origin header) and whitelisted domains
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    // Allow same-origin requests (no origin header), null (sandboxed/local), and whitelisted domains
+    if (!origin || origin === 'null' || ALLOWED_ORIGINS.includes(origin)) {
       cb(null, true);
     } else {
       cb(new Error(`CORS: origin '${origin}' not allowed`), false);
@@ -76,21 +82,9 @@ fastify.register(cors, {
 
 fastify.register(fastifyFormbody);
 
-// Validate required secrets at startup — never allow fallback defaults in any environment
+// Environment validated via validateEnv() utility
 const jwtSecret = process.env.JWT_SECRET;
-if (!jwtSecret || jwtSecret.length < 32) {
-  throw new Error(
-    '[FATAL] JWT_SECRET is not set or too short. ' +
-    'Generate one with: node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"'
-  );
-}
 const cookieSecret = process.env.COOKIE_SECRET;
-if (!cookieSecret || cookieSecret.length < 32) {
-  throw new Error(
-    '[FATAL] COOKIE_SECRET is not set or too short. ' +
-    'Generate one with: node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"'
-  );
-}
 
 fastify.register(fastifyJwt, {
   secret: jwtSecret,
@@ -159,18 +153,12 @@ fastify.post("/admin/login", {
 
   let dbUser = await repository.getAdminUser(username);
 
-  // Seeder logic: If no user in DB, and credentials match .env, seed it.
-  if (!dbUser && username === envUser && (envHash || envPass)) {
-    let isValidEnv = false;
-    if (envHash) {
-      isValidEnv = await bcrypt.compare(password, envHash);
-    } else if (envPass) {
-      isValidEnv = password === envPass;
-    }
+  // Seeder logic: If no user in DB, and credentials match .env hash, seed it.
+  if (!dbUser && username === envUser && envHash) {
+    const isValidEnv = await bcrypt.compare(password, envHash);
     
     if (isValidEnv) {
-      const hashToSave = envHash || await bcrypt.hash(envPass, 10);
-      await repository.createAdminUser(username, hashToSave);
+      await repository.createAdminUser(username, envHash);
       dbUser = await repository.getAdminUser(username);
     }
   }
@@ -234,6 +222,30 @@ fastify.addHook("onRequest", async (req, reply) => {
       reply.redirect("/admin/login");
     }
   }
+});
+
+/**
+ * Secure Export Token Generator
+ * Returns a short-lived token for CSV exports to avoid leaking ADMIN_EXPORT_SECRET in HTML.
+ */
+fastify.get("/admin/export-token", async (request, reply) => {
+  const expires = Date.now() + 5 * 60 * 1000; // 5 minutes
+  const sig = createHmac("sha256", process.env.ADMIN_EXPORT_SECRET)
+    .update(String(expires)).digest("hex");
+  return { token: `${expires}.${sig}`, expiresIn: 300 };
+});
+
+/**
+ * Secure Export Redirect
+ * Acts as a bridge between the authenticated session and the tokenized export URL.
+ */
+fastify.get("/admin/export-trigger/:domain", async (request, reply) => {
+  const expires = Date.now() + 5 * 60 * 1000;
+  const sig = createHmac("sha256", process.env.ADMIN_EXPORT_SECRET)
+    .update(String(expires)).digest("hex");
+  const token = `${expires}.${sig}`;
+  const domain = request.params.domain;
+  reply.redirect(`/api/v1/${domain}/growth/leads/export?token=${token}`);
 });
 
 fastify.get("/admin/account", async (request, reply) => {
@@ -415,13 +427,46 @@ fastify.post("/api/v1/:domain/growth/lead", async (request, reply) => {
   }
 });
 
+// Closed-loop Growth Feedback
+fastify.post("/api/v1/:domain/feedback", async (request, reply) => {
+  const { decisionRunId, score, comment, tags } = request.body;
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (repository) {
+    await repository.saveFeedback({
+      decisionRunId,
+      score,
+      comment,
+      tags
+    });
+  }
+  return { status: "received" };
+});
+
 // CSV Export for Admin use (basic auth guard via secret query param)
 fastify.get("/api/v1/:domain/growth/leads/export", async (request, reply) => {
   const { domain } = request.params;
-  const { leadType = null, secret } = request.query;
+  const { leadType = null, secret, token } = request.query;
 
+  let isAuthorized = false;
+
+  // 1. Validate via Short-lived Token (Safe for browser links)
+  if (token) {
+    const [expires, sig] = token.split('.');
+    if (expires && sig && Date.now() < parseInt(expires)) {
+      const expected = createHmac("sha256", process.env.ADMIN_EXPORT_SECRET)
+        .update(expires).digest("hex");
+      if (sig === expected) isAuthorized = true;
+    }
+  }
+
+  // 2. Validate via Static Secret (Internal/Legacy API)
   const exportSecret = process.env.ADMIN_EXPORT_SECRET;
-  if (!exportSecret || secret !== exportSecret) {
+  if (!isAuthorized && exportSecret && secret === exportSecret) {
+    isAuthorized = true;
+  }
+
+  if (!isAuthorized) {
     return reply.status(401).send({ error: "unauthorized" });
   }
 
@@ -473,11 +518,14 @@ fastify.get("/api/v1/:domain/admin/dashboard", async (request, reply) => {
 // Web Routes (SSR HTML)
 // ─────────────────────────────────────────────
 fastify.get("/", async (request, reply) => {
-  reply.redirect("/web/search");
+  reply.redirect("http://localhost:5173");
 });
 
-fastify.get("/search", async (request, reply) => reply.redirect("/web/search"));
-fastify.get("/results", async (request, reply) => reply.redirect(request.raw.url.replace("/results", "/web/results")));
+fastify.get("/search", async (request, reply) => reply.redirect("http://localhost:5173"));
+fastify.get("/results", async (request, reply) => {
+  const url = new URL(request.raw.url, "http://localhost:5173");
+  reply.redirect(url.toString());
+});
 
 // ─────────────────────────────────────────────
 // Legal Pages
@@ -556,6 +604,62 @@ fastify.get("/admin/affiliate", async (request, reply) => {
   const settings = await repository.getAffiliateSettings();
   const { renderAffiliateSettingsHtml } = await import("./views/admin.js");
   reply.type("text/html; charset=utf-8").send(renderAffiliateSettingsHtml(settings));
+});
+
+// Logic Lab — No-Code Editor
+fastify.get("/admin/logic", async (request, reply) => {
+  const { getRepository, getRuleset } = await import("./db/repository.js");
+  const { renderLogicLabHtml } = await import("./views/admin_logic_lab.js");
+  
+  const domainId = DEFAULT_DOMAIN;
+  const config = await getRuleset(`domains/${domainId}/decision-config.json`);
+  
+  return reply.type("text/html; charset=utf-8").send(renderLogicLabHtml({ config, domainId }));
+});
+
+fastify.post("/admin/logic/save", async (request, reply) => {
+  const body = request.body;
+  const domainId = DEFAULT_DOMAIN;
+  
+  const { getRuleset } = await import("./db/repository.js");
+  const configPath = `domains/${domainId}/decision-config.json`;
+  const config = await getRuleset(configPath);
+
+  // Update Gates
+  for (const [key, value] of Object.entries(body)) {
+    if (key.startsWith("gate_")) {
+      const [, id, field] = key.split("_");
+      if (!config.gates[id]) continue;
+      if (field === "meaning") config.gates[id].humanMeaning = value;
+      if (field === "weight") config.gates[id].weight = parseFloat(value);
+    }
+    // Update Weights
+    if (key.startsWith("weight_")) {
+      const [, rulesetId, metric] = key.split("_");
+      if (config.rulesets[rulesetId] && config.rulesets[rulesetId].weights) {
+        config.rulesets[rulesetId].weights[metric] = parseFloat(value);
+      }
+    }
+  }
+
+  // Update version
+  const [major, minor, patch] = config.version.split(".").map(Number);
+  config.version = `${major}.${minor}.${patch + 1}`;
+
+  // Save back to disk
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const fullPath = path.resolve(__dirname, "../../../", configPath);
+  
+  await fs.writeFile(fullPath, JSON.stringify(config, null, 2), "utf8");
+
+  // Clear cache to ensure next decision run uses fresh logic
+  const { clearRulesetCache } = await import("./db/repository.js");
+  clearRulesetCache();
+  
+  return reply.redirect("/admin/logic?saved=true");
 });
 
 // Save affiliate tag from admin form (POST)

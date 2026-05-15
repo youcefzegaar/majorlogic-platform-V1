@@ -20,7 +20,11 @@ const root      = path.resolve(__dirname, "../../../..");
 // Ruleset Cache (loaded once, restart to refresh)
 // ─────────────────────────────────────────────
 
-const rulesetCache = new Map();
+export const rulesetCache = new Map();
+
+export function clearRulesetCache() {
+  rulesetCache.clear();
+}
 
 export async function getRuleset(relativePath) {
   if (rulesetCache.has(relativePath)) {

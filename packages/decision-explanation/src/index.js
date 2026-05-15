@@ -49,17 +49,38 @@ export class DecisionExplainer {
   _renderWithTemplates(trace, name, atlas, identity, locale) {
     if (!trace.isEligible) return this.explainExclusion(trace, name, { atlas, locale });
 
-    const scores = Object.entries(trace.scores)
-      .filter(([id]) => id.startsWith("score_"))
-      .sort((a, b) => b[1] - a[1]);
-
-    const topScore = scores[0];
-    const strength = topScore ? (atlas[locale]?.[topScore[0]] || topScore[0]) : "";
+    const strengths = this.explainStrengths(trace, atlas, locale);
+    const sacrifices = this.explainSacrifices(trace, atlas, locale);
     
     if (locale === "ar") {
-      return `بصفتي ${identity}، أنصح بـ "${name}" كأفضل توازن لمتطلبات ${strength}.`;
+      return `بصفتي ${identity}، أنصح بـ "${name}" لأنها ${strengths}. ${sacrifices}`;
     }
-    return `As your ${identity}, I recommend "${name}" for its superior ${strength}.`;
+    return `As your ${identity}, I recommend "${name}" because it ${strengths}. ${sacrifices}`;
+  }
+
+  explainStrengths(trace, atlas, locale) {
+    const scores = Object.entries(trace.scores)
+      .filter(([id, val]) => id.startsWith("score_") || val > 80)
+      .sort((a, b) => b[1] - a[1]);
+
+    const top = scores.slice(0, 2).map(s => atlas[locale]?.[s[0]] || s[0]);
+    if (locale === "ar") return `تتميز بـ ${top.join(" و ")}`;
+    return `excels in ${top.join(" and ")}`;
+  }
+
+  explainSacrifices(trace, atlas, locale) {
+    const sacrifices = Object.values(trace.sacrifices || {});
+    if (sacrifices.length === 0) return "";
+    
+    const descriptions = sacrifices.map(s => {
+        const meaning = atlas[locale]?.[`sacrifice_${s.meaning}`] || s.meaning;
+        return meaning;
+    });
+
+    if (locale === "ar") {
+      return `لاحظ أنك ستضحي بـ: ${descriptions.join(" و ")}.`;
+    }
+    return `Note: You are sacrificing ${descriptions.join(" and ")}.`;
   }
 
   /**

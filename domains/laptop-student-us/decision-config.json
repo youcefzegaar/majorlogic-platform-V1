@@ -66,17 +66,29 @@
     "within_budget": {
       "node": "Budget Constraint",
       "humanMeaning": "Device exceeds the specified budget",
+      "weight": 0.8,
       "condition": { "op": "lte", "left": "price", "right": "budget" }
     },
     "min_ram": {
       "node": "RAM Minimum",
       "humanMeaning": "Insufficient RAM for modern workflows",
+      "weight": 1.0,
       "condition": { "op": "gte", "left": "ramGb", "right": 8 }
+    },
+    "seller_trust_gate": {
+      "node": "Seller Trust Gate",
+      "humanMeaning": "Source is from an unverified or risky marketplace",
+      "weight": 1.0,
+      "condition": { "op": "lte", "left": "market.sellerTier", "right": 2 }
     }
   },
   "rulesets": {
     "general": {
       "isDefault": true,
+      "sacrifice_portability": "Weight & Bulk",
+      "sacrifice_battery": "Battery Life",
+      "sacrifice_budget": "Initial Budget",
+      "sacrifice_value": "Resale Value",
       "weights": {
         "userPreferenceScore": 0.55,
         "value_score":         0.25,
@@ -89,6 +101,17 @@
           "reason": "Aggressive thermal throttling detected in reviews"
         }
       }
+    },
+    "ar": {
+      "score_performance_score": "الأداء",
+      "score_display_score": "جودة الشاشة",
+      "score_portability_score": "سهولة الحمل",
+      "score_battery_score": "عمر البطارية",
+      "score_value_score": "القيمة الاقتصادية",
+      "sacrifice_portability": "سهولة التنقل (الجهاز ثقيل)",
+      "sacrifice_battery": "عمر البطارية (تحتاج للشاحن دائماً)",
+      "sacrifice_budget": "الميزانية المحددة (تجاوز السعر)",
+      "sacrifice_value": "القيمة المادية عند البيع"
     },
     "cs": {
       "weights": {

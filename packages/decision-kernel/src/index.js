@@ -4,6 +4,12 @@ import { createHash } from "node:crypto";
  * Decision Kernel (DDVM) — Universal Execution Runtime
  */
 
+function getDeepValue(obj, path) {
+  if (typeof path !== "string") return path;
+  if (!path.includes(".")) return obj[path];
+  return path.split(".").reduce((acc, part) => acc?.[part], obj);
+}
+
 export class DecisionKernel {
   constructor(logger = console) {
     this.logger = logger;
@@ -78,7 +84,7 @@ export class DecisionKernel {
           // Record as a critical sacrifice if we are tracking them
           trace.sacrifices[node.id] = {
             type: "gate_violation",
-            severity: 1.0,
+            severity: node.weight ?? 1.0,
             meaning: node.humanMeaning || "Critical Constraint"
           };
         }
@@ -126,7 +132,7 @@ export class DecisionKernel {
   _resolveArg(arg, values, trace = null) {
     if (typeof arg === "number") return arg;
     if (typeof arg === "object") return this._evaluateFormula(arg, values, trace);
-    return values[arg] || 0;
+    return getDeepValue(values, arg) ?? 0;
   }
 
   _evaluateFormula(formula, values, trace = null) {
@@ -213,8 +219,8 @@ export class DecisionKernel {
 
   _evaluateCondition(cond, values, trace = null) {
     if (!cond) return true;
-    const left = typeof cond.left === "object" ? this._evaluateFormula(cond.left, values, trace) : (values[cond.left] || cond.left);
-    const right = typeof cond.right === "object" ? this._evaluateFormula(cond.right, values, trace) : (values[cond.right] || cond.right);
+    const left = typeof cond.left === "object" ? this._evaluateFormula(cond.left, values, trace) : (getDeepValue(values, cond.left) ?? cond.left);
+    const right = typeof cond.right === "object" ? this._evaluateFormula(cond.right, values, trace) : (getDeepValue(values, cond.right) ?? cond.right);
 
     switch (cond.op) {
       case "gte": return left >= right;
