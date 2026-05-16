@@ -288,20 +288,33 @@ export class DecisionOrchestrator {
       return raw[priceField] || raw.market?.bestOffer?.priceUsd || Infinity;
     };
 
+    // Enforce minScore quality gate if defined in slot config.
+    // Prevents low-quality cards from filling slots (e.g. future_proof with score 52).
+    const minScore = slot.minScore ?? 0;
+    const qualified = minScore > 0
+      ? candidates.filter(r => r.score >= minScore)
+      : candidates;
+
+    // If no candidates meet the quality bar, log and return null (slot stays empty).
+    if (qualified.length === 0) {
+      this.logger.log(`[Orchestrator] Slot "${slot.type}" skipped: no candidates meet minScore=${minScore}`);
+      return null;
+    }
+
     switch (slot.pickBy) {
       case "highest_score":
-        return candidates.sort((a, b) => b.score - a.score)[0];
+        return qualified.sort((a, b) => b.score - a.score)[0];
       case "lowest_price":
-        return candidates.sort((a, b) => getPrice(a) - getPrice(b))[0];
+        return qualified.sort((a, b) => getPrice(a) - getPrice(b))[0];
       case "best_ratio": {
-        return candidates.sort((a, b) => {
+        return qualified.sort((a, b) => {
           const ratioA = a.score / Math.max(getPrice(a), 1);
           const ratioB = b.score / Math.max(getPrice(b), 1);
           return ratioB - ratioA;
         })[0];
       }
       default:
-        return candidates[0];
+        return qualified[0];
     }
   }
 

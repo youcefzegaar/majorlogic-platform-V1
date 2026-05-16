@@ -2,7 +2,12 @@
   "domainId": "laptop-student-us",
   "version": "3.0.0",
   "identityRules": {
-    "identityFields": ["brand", "ramGb", "storageGb", "gpuClass"],
+    "identityFields": [
+      "brand",
+      "ramGb",
+      "storageGb",
+      "gpuClass"
+    ],
     "similarityThreshold": 0.9
   },
   "atlas": {
@@ -64,20 +69,62 @@
     "major": "major"
   },
   "attributes": {
-    "market.bestOffer.priceUsd": { "type": "numeric", "label": "Price USD" },
-    "specs.ramGb":               { "type": "numeric", "label": "RAM" },
-    "specs.storageGb":           { "type": "numeric", "label": "Storage" },
-    "specs.performance":         { "type": "numeric", "label": "Performance Score" },
-    "specs.battery":             { "type": "numeric", "label": "Battery Score" },
-    "specs.portability":         { "type": "numeric", "label": "Portability Score" },
-    "specs.display":             { "type": "numeric", "label": "Display Score" },
-    "specs.thermals":            { "type": "numeric", "label": "Thermal Throttle Index" },
-    "economicSignals.resaleScore": { "type": "numeric", "label": "Resale Value Index" },
-    "userPrefPerformance": { "type": "numeric", "label": "User Preference: Performance" },
-    "userPrefBattery":     { "type": "numeric", "label": "User Preference: Battery" },
-    "userPrefPortability": { "type": "numeric", "label": "User Preference: Portability" },
-    "userPrefDisplay":     { "type": "numeric", "label": "User Preference: Display" },
-    "userPrefResale":      { "type": "numeric", "label": "User Preference: Resale" }
+    "market.bestOffer.priceUsd": {
+      "type": "numeric",
+      "label": "Price USD"
+    },
+    "specs.ramGb": {
+      "type": "numeric",
+      "label": "RAM"
+    },
+    "specs.storageGb": {
+      "type": "numeric",
+      "label": "Storage"
+    },
+    "specs.performance": {
+      "type": "numeric",
+      "label": "Performance Score"
+    },
+    "specs.battery": {
+      "type": "numeric",
+      "label": "Battery Score"
+    },
+    "specs.portability": {
+      "type": "numeric",
+      "label": "Portability Score"
+    },
+    "specs.display": {
+      "type": "numeric",
+      "label": "Display Score"
+    },
+    "specs.thermals": {
+      "type": "numeric",
+      "label": "Thermal Throttle Index"
+    },
+    "economicSignals.resaleScore": {
+      "type": "numeric",
+      "label": "Resale Value Index"
+    },
+    "userPrefPerformance": {
+      "type": "numeric",
+      "label": "User Preference: Performance"
+    },
+    "userPrefBattery": {
+      "type": "numeric",
+      "label": "User Preference: Battery"
+    },
+    "userPrefPortability": {
+      "type": "numeric",
+      "label": "User Preference: Portability"
+    },
+    "userPrefDisplay": {
+      "type": "numeric",
+      "label": "User Preference: Display"
+    },
+    "userPrefResale": {
+      "type": "numeric",
+      "label": "User Preference: Resale"
+    }
   },
   "metrics": {
     "portability_score": {
@@ -85,8 +132,15 @@
       "formula": {
         "op": "clamp",
         "args": [
-          { "op": "average", "args": ["specs.battery", "specs.portability"] },
-          0, 100
+          {
+            "op": "average",
+            "args": [
+              "specs.battery",
+              "specs.portability"
+            ]
+          },
+          0,
+          100
         ]
       }
     },
@@ -95,8 +149,21 @@
       "formula": {
         "op": "clamp",
         "args": [
-          { "op": "add", "args": [100, { "op": "multiply", "args": ["market.bestOffer.priceUsd", -0.015] }] },
-          0, 100
+          {
+            "op": "add",
+            "args": [
+              100,
+              {
+                "op": "multiply",
+                "args": [
+                  "market.bestOffer.priceUsd",
+                  -0.015
+                ]
+              }
+            ]
+          },
+          0,
+          100
         ]
       }
     },
@@ -108,14 +175,45 @@
           {
             "op": "average",
             "args": [
-              { "op": "multiply", "args": ["specs.performance",    "userPrefPerformance"] },
-              { "op": "multiply", "args": ["specs.battery",        "userPrefBattery"] },
-              { "op": "multiply", "args": ["specs.portability",    "userPrefPortability"] },
-              { "op": "multiply", "args": ["specs.display",        "userPrefDisplay"] },
-              { "op": "multiply", "args": ["economicSignals.resaleScore", "userPrefResale"] }
+              {
+                "op": "multiply",
+                "args": [
+                  "specs.performance",
+                  "userPrefPerformance"
+                ]
+              },
+              {
+                "op": "multiply",
+                "args": [
+                  "specs.battery",
+                  "userPrefBattery"
+                ]
+              },
+              {
+                "op": "multiply",
+                "args": [
+                  "specs.portability",
+                  "userPrefPortability"
+                ]
+              },
+              {
+                "op": "multiply",
+                "args": [
+                  "specs.display",
+                  "userPrefDisplay"
+                ]
+              },
+              {
+                "op": "multiply",
+                "args": [
+                  "economicSignals.resaleScore",
+                  "userPrefResale"
+                ]
+              }
             ]
           },
-          0, 100
+          0,
+          100
         ]
       }
     }
@@ -125,19 +223,31 @@
       "node": "Budget Constraint",
       "humanMeaning": "Device exceeds the specified budget",
       "weight": 0.8,
-      "condition": { "op": "lte", "left": "market.bestOffer.priceUsd", "right": "budget" }
+      "condition": {
+        "op": "lte",
+        "left": "market.bestOffer.priceUsd",
+        "right": "budget"
+      }
     },
     "min_ram": {
       "node": "RAM Minimum",
       "humanMeaning": "Insufficient RAM for modern workflows",
       "weight": 1.0,
-      "condition": { "op": "gte", "left": "specs.ramGb", "right": 8 }
+      "condition": {
+        "op": "gte",
+        "left": "specs.ramGb",
+        "right": 8
+      }
     },
     "seller_trust_gate": {
       "node": "Seller Trust Gate",
       "humanMeaning": "Source is from an unverified or risky marketplace",
       "weight": 1.0,
-      "condition": { "op": "lte", "left": "market.sellerTier", "right": 3 }
+      "condition": {
+        "op": "lte",
+        "left": "market.sellerTier",
+        "right": 3
+      }
     },
     "gaming_gpu_requirement": {
       "node": "Gaming GPU Constraint",
@@ -146,8 +256,16 @@
       "condition": {
         "op": "or",
         "args": [
-          { "op": "lt", "left": "slider_gaming", "right": 70 },
-          { "op": "not_equal", "left": "specs.gpuClass", "right": "integrated" }
+          {
+            "op": "lt",
+            "left": "slider_gaming",
+            "right": 70
+          },
+          {
+            "op": "not_equal",
+            "left": "specs.gpuClass",
+            "right": "integrated"
+          }
         ]
       }
     },
@@ -158,8 +276,16 @@
       "condition": {
         "op": "or",
         "args": [
-          { "op": "lt", "left": "slider_virtual_machines", "right": 70 },
-          { "op": "gte", "left": "specs.ramGb", "right": 16 }
+          {
+            "op": "lt",
+            "left": "slider_virtual_machines",
+            "right": 70
+          },
+          {
+            "op": "gte",
+            "left": "specs.ramGb",
+            "right": 16
+          }
         ]
       }
     }
@@ -173,12 +299,16 @@
       "sacrifice_value": "Resale Value",
       "weights": {
         "userPreferenceScore": 0.55,
-        "value_score":         0.25,
-        "portability_score":   0.20
+        "value_score": 0.25,
+        "portability_score": 0.2
       },
       "penalties": {
         "thermal_throttle": {
-          "condition": { "op": "gt", "left": "specs.thermals", "right": 85 },
+          "condition": {
+            "op": "gt",
+            "left": "specs.thermals",
+            "right": 85
+          },
           "amount": 12,
           "reason": "Aggressive thermal throttling detected in reviews"
         }
@@ -197,13 +327,17 @@
     },
     "cs": {
       "weights": {
-        "userPreferenceScore": 0.50,
-        "specs.performance":   0.30,
-        "value_score":         0.20
+        "userPreferenceScore": 0.5,
+        "specs.performance": 0.3,
+        "value_score": 0.2
       },
       "penalties": {
         "thermal_throttle": {
-          "condition": { "op": "gt", "left": "specs.thermals", "right": 85 },
+          "condition": {
+            "op": "gt",
+            "left": "specs.thermals",
+            "right": 85
+          },
           "amount": 10,
           "reason": "Thermal throttling limits sustained compute for CS workloads"
         }
@@ -211,13 +345,17 @@
     },
     "computer_science": {
       "weights": {
-        "userPreferenceScore": 0.50,
-        "specs.performance":   0.30,
-        "value_score":         0.20
+        "userPreferenceScore": 0.5,
+        "specs.performance": 0.3,
+        "value_score": 0.2
       },
       "penalties": {
         "thermal_throttle": {
-          "condition": { "op": "gt", "left": "thermals", "right": 85 },
+          "condition": {
+            "op": "gt",
+            "left": "thermals",
+            "right": 85
+          },
           "amount": 10,
           "reason": "Thermal throttling limits sustained compute for CS workloads"
         }
@@ -226,12 +364,16 @@
     "engineering": {
       "weights": {
         "userPreferenceScore": 0.45,
-        "specs.performance":   0.35,
-        "portability_score":   0.20
+        "specs.performance": 0.35,
+        "portability_score": 0.2
       },
       "penalties": {
         "thermal_throttle": {
-          "condition": { "op": "gt", "left": "thermals", "right": 85 },
+          "condition": {
+            "op": "gt",
+            "left": "thermals",
+            "right": 85
+          },
           "amount": 12,
           "reason": "Thermal throttling degrades simulation performance"
         }
@@ -240,44 +382,55 @@
     "graphic_design": {
       "weights": {
         "userPreferenceScore": 0.45,
-        "specs.display":       0.35,
-        "portability_score":   0.20
+        "specs.display": 0.35,
+        "portability_score": 0.2
       }
     },
     "design": {
       "weights": {
         "userPreferenceScore": 0.45,
-        "specs.display":       0.35,
-        "portability_score":   0.20
+        "specs.display": 0.35,
+        "portability_score": 0.2
       }
     },
     "medical": {
       "weights": {
         "userPreferenceScore": 0.55,
-        "value_score":         0.30,
-        "portability_score":   0.15
+        "value_score": 0.3,
+        "portability_score": 0.15
       }
     },
     "business": {
       "weights": {
-        "userPreferenceScore": 0.50,
-        "value_score":         0.30,
-        "portability_score":   0.20
+        "userPreferenceScore": 0.5,
+        "value_score": 0.3,
+        "portability_score": 0.2
       }
     },
     "arts": {
       "weights": {
         "userPreferenceScore": 0.55,
-        "specs.display":       0.25,
-        "portability_score":   0.20
+        "specs.display": 0.25,
+        "portability_score": 0.2
       }
     }
   },
   "selectionStrategy": {
     "cardSlots": [
-      { "type": "hero", "pickBy": "highest_score" },
-      { "type": "smart_budget", "pickBy": "best_ratio", "priceField": "market.bestOffer.priceUsd" },
-      { "type": "future_proof", "pickBy": "highest_score", "minScore": 85 }
+      {
+        "type": "hero",
+        "pickBy": "highest_score"
+      },
+      {
+        "type": "smart_budget",
+        "pickBy": "best_ratio",
+        "priceField": "market.bestOffer.priceUsd"
+      },
+      {
+        "type": "future_proof",
+        "pickBy": "highest_score",
+        "minScore": 85
+      }
     ],
     "noDuplicates": true
   },
@@ -286,6 +439,89 @@
     "priceUsd": "{entity.market.bestOffer.priceUsd}",
     "whyThis": "{story}",
     "badNews": "{tradeoff}"
+  },
+  "conflictMap": {
+    "performance:battery": 60,
+    "performance:portability": 55,
+    "gaming:battery": 70,
+    "video_4k:battery": 50,
+    "virtual_machines:portability": 45
+  },
+  "intentGraph": {
+    "cs": {
+      "id": "cs",
+      "title": {
+        "en": "Computer Science & Software Engineering",
+        "ar": "علوم الحاسوب والهندسة البرمجية"
+      },
+      "expertIdentity": {
+        "en": "CS Career Advisor",
+        "ar": "مستشار مسار علوم الحاسوب"
+      },
+      "futureProjection": {
+        "en": "You will run IDEs, compilers, containers, and AI models daily. Performance longevity matters.",
+        "ar": "ستشغل بيئات تطوير ومترجمات وحاويات ونماذج ذكاء اصطناعي يومياً. متانة الأداء مهمة."
+      }
+    },
+    "engineering": {
+      "id": "engineering",
+      "title": {
+        "en": "Engineering (Mechanical / Electrical)",
+        "ar": "الهندسة (ميكانيكية / كهربائية)"
+      },
+      "expertIdentity": {
+        "en": "Engineering Workstation Advisor",
+        "ar": "مستشار محطة عمل هندسية"
+      },
+      "futureProjection": {
+        "en": "CAD, simulation, and MATLAB workloads need headroom. Do not compromise on RAM.",
+        "ar": "أعباء CAD والمحاكاة وMATLAB تحتاج مساحة عمل. لا تتنازل عن الذاكرة."
+      }
+    },
+    "design": {
+      "id": "design",
+      "title": {
+        "en": "Design & Creative Arts",
+        "ar": "التصميم والفنون الإبداعية"
+      },
+      "expertIdentity": {
+        "en": "Creative Workflow Advisor",
+        "ar": "مستشار سير العمل الإبداعي"
+      },
+      "futureProjection": {
+        "en": "Color accuracy and display quality are non-negotiable for design portfolios.",
+        "ar": "دقة الألوان وجودة الشاشة غير قابلة للتفاوض في حقائب التصميم."
+      }
+    },
+    "medical": {
+      "id": "medical",
+      "title": {
+        "en": "Medical Studies",
+        "ar": "الدراسات الطبية"
+      },
+      "expertIdentity": {
+        "en": "Medical Student Advisor",
+        "ar": "مستشار طلاب الطب"
+      },
+      "futureProjection": {
+        "en": "Long rotations require all-day battery. Portability is critical in clinical settings.",
+        "ar": "الجولات الطويلة تتطلب بطارية طوال اليوم. قابلية الحمل حرجة في البيئات السريرية."
+      }
+    },
+    "general": {
+      "id": "general",
+      "title": {
+        "en": "General Studies",
+        "ar": "الدراسات العامة"
+      },
+      "expertIdentity": {
+        "en": "Academic Advisor",
+        "ar": "مستشار أكاديمي"
+      },
+      "futureProjection": {
+        "en": "Reliability and value for everyday academic work matter most.",
+        "ar": "الموثوقية والقيمة للعمل الأكاديمي اليومي هي الأهم."
+      }
+    }
   }
 }
-

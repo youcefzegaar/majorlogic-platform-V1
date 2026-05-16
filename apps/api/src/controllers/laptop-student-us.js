@@ -124,10 +124,14 @@ export function buildSearchState(searchParams, defaultProfile) {
       resale:      perf.resale
     },
     sliders: {
-      virtual_machines: uiState.toolVms    ? 82 : 25,
-      video_4k:         uiState.toolAdobe  ? 72 : perf.video_4k,
-      gaming:           uiState.toolGaming ? 82 : perf.gaming,
-      portability:      performancePreference === "portability_first" ? 88 : uiState.portabilityImportance
+      // Graduated intent scaling — not binary on/off.
+      // "I use VMs" signals strong need (75), not maximum (82).
+      // "I don't use VMs" signals low need (20), not zero (0).
+      // This preserves the nuance the decision kernel needs for accurate conflict detection.
+      virtual_machines: uiState.toolVms    ? 75 : 20,
+      video_4k:         uiState.toolAdobe  ? 68 : Math.round(perf.video_4k * 0.9),
+      gaming:           uiState.toolGaming ? 72 : Math.round(perf.gaming   * 0.9),
+      portability:      performancePreference === "portability_first" ? 85 : uiState.portabilityImportance
     },
     context: {
       acceptsOpenBox:    parseBooleanFlag(searchParams.get("acceptsOpenBox"),    false),
