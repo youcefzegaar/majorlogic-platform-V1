@@ -219,6 +219,18 @@ export class DecisionKernel {
 
   _evaluateCondition(cond, values, trace = null) {
     if (!cond) return true;
+    
+    // Support Logical Operators (Recursive)
+    if (cond.op === "or") {
+      return (cond.args || []).some(arg => this._evaluateCondition(arg, values, trace));
+    }
+    if (cond.op === "and") {
+      return (cond.args || []).every(arg => this._evaluateCondition(arg, values, trace));
+    }
+    if (cond.op === "not") {
+      return !this._evaluateCondition(cond.arg || cond.args?.[0], values, trace);
+    }
+
     const left = typeof cond.left === "object" ? this._evaluateFormula(cond.left, values, trace) : (getDeepValue(values, cond.left) ?? cond.left);
     const right = typeof cond.right === "object" ? this._evaluateFormula(cond.right, values, trace) : (getDeepValue(values, cond.right) ?? cond.right);
 
@@ -228,6 +240,8 @@ export class DecisionKernel {
       case "gt": return left > right;
       case "lt": return left < right;
       case "eq": return left === right;
+      case "not_equal": return left !== right;
+      case "ne": return left !== right;
       default: return false;
     }
   }

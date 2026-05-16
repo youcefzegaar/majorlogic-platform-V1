@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { generatePublishedCatalog } from "../packages/catalog-publish/src/index.js";
-import { executePlatformPipeline } from "../packages/platform-core/src/index.js";
+import { executeUniversalPipeline } from "../packages/platform-core/src/index.js";
 import { laptopStudentUsDomainPack } from "../domains/laptop-student-us/domain-pack.js";
 
 function loadJson(url) {
@@ -38,17 +38,18 @@ function adaptProfile(regressionProfile) {
   };
 }
 
-const ruleset = loadJson(new URL("../rulesets/domains/laptop-student-us/ruleset.json", import.meta.url));
+const decisionConfig = loadJson(new URL("../domains/laptop-student-us/decision-config.json", import.meta.url));
 const publishedEntities = loadPublishedEntities();
-const regressionProfiles = loadJson(new URL("../../majorlogic-v1/domains/laptop-student-us/regression/profiles.json", import.meta.url));
+const regressionProfiles = loadJson(new URL("../domains/laptop-student-us/regression/profiles.json", import.meta.url));
 
 for (const regressionProfile of regressionProfiles) {
   const profile = adaptProfile(regressionProfile);
-  const result = await executePlatformPipeline({
+  const result = await executeUniversalPipeline({
     profile,
     domainPack: laptopStudentUsDomainPack,
     publishedEntities,
-    ruleset
+    decisionConfig,
+    repository: null
   });
 
   const cards = result.decision.cards;

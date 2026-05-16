@@ -49,6 +49,7 @@ export class AmazonAdapter {
       offers: [
         {
           seller: "Amazon",
+          sellerType: "retailer",
           priceUsd: priceMatch ? parseFloat(priceMatch[1]) : 0,
           condition: "new",
           affiliate: true

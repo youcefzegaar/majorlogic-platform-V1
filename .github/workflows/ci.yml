@@ -1,0 +1,52 @@
+name: MajorLogic CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: majorlogic_test
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-attempts 5
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Database Migrations
+      run: node scripts/db-migrate.js
+      env:
+        DATABASE_URL: postgresql://postgres:password@localhost:5432/majorlogic_test
+
+    - name: Run Regression Tests
+      run: node tests/regression-v1.test.js
+      env:
+        DATABASE_URL: postgresql://postgres:password@localhost:5432/majorlogic_test
+
+    - name: Run System Tests
+      run: node tests/system.test.js
+      env:
+        DATABASE_URL: postgresql://postgres:password@localhost:5432/majorlogic_test

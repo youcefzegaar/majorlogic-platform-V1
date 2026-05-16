@@ -1,0 +1,95 @@
+[
+  {
+    "id": "p1_cs_1200_portable",
+    "major": "cs",
+    "budget_usd": 1200,
+    "sliders": {
+      "portability": 85,
+      "virtual_machines": 40,
+      "video_4k": 10,
+      "gaming": 20
+    },
+    "context": {
+      "refurbished_accepted": false,
+      "open_box_accepted": true
+    },
+    "expected_rules": [
+      "must_return_4_cards_or_less",
+      "cards_types_are_fixed",
+      "smart_budget_should_exist_if_any_option_exists"
+    ]
+  },
+  {
+    "id": "engineering_high_perf",
+    "major": "engineering",
+    "budget_usd": 2500,
+    "sliders": {
+      "portability": 30,
+      "virtual_machines": 80,
+      "video_4k": 50,
+      "gaming": 40
+    },
+    "context": {
+      "refurbished_accepted": false,
+      "open_box_accepted": false
+    },
+    "expected_rules": [
+      "engineering_baseline_requires_strong_performance",
+      "high_vm_slider_should_push_ram_up"
+    ]
+  },
+  {
+    "id": "design_pro",
+    "major": "design",
+    "budget_usd": 2000,
+    "sliders": {
+      "portability": 60,
+      "virtual_machines": 20,
+      "video_4k": 85,
+      "gaming": 30
+    },
+    "context": {
+      "refurbished_accepted": false,
+      "open_box_accepted": false
+    },
+    "expected_rules": [
+      "design_prefers_display_quality"
+    ]
+  },
+  {
+    "id": "medical_portable",
+    "major": "medical",
+    "budget_usd": 1500,
+    "sliders": {
+      "portability": 90,
+      "virtual_machines": 10,
+      "video_4k": 10,
+      "gaming": 10
+    },
+    "context": {
+      "refurbished_accepted": true,
+      "open_box_accepted": true
+    },
+    "expected_rules": [
+      "medical_prefers_battery_and_portability"
+    ]
+  },
+  {
+    "id": "gaming_enthusiast",
+    "major": "general",
+    "budget_usd": 1800,
+    "sliders": {
+      "portability": 20,
+      "virtual_machines": 20,
+      "video_4k": 30,
+      "gaming": 90
+    },
+    "context": {
+      "refurbished_accepted": false,
+      "open_box_accepted": false
+    },
+    "expected_rules": [
+      "high_gaming_slider_should_require_dgpu"
+    ]
+  }
+]

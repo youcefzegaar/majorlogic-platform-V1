@@ -220,6 +220,14 @@ export class DecisionOrchestrator {
         if (from !== to) delete mapped[from];
       }
     }
+    
+    // Always include sliders if they exist
+    if (rawProfile.sliders) {
+      for (const [key, val] of Object.entries(rawProfile.sliders)) {
+        mapped[`slider_${key}`] = val;
+      }
+    }
+    
     return mapped;
   }
 
@@ -309,7 +317,8 @@ export class DecisionOrchestrator {
       intel: intelligence,
       story,
       tradeoff,
-      sacrificeCount: Object.keys(card.sacrifices).length
+      sacrificeCount: Object.keys(card.sacrifices).length,
+      segment: domainContext.intent.id || "general"
     };
 
     for (const [key, pattern] of Object.entries(template)) {
@@ -319,9 +328,13 @@ export class DecisionOrchestrator {
     }
 
     card.title = card.title || rawEntity.title || rawEntity.itemName || kernelResult.entityId;
-    card.price = rawEntity.price || rawEntity.market?.bestOffer?.priceUsd || null;
     card.story = story;
     card.tradeoff = card.tradeoff || tradeoff;
+    
+    // Legacy support for fitState if it exists in entity for the current segment
+    if (rawEntity.fitStates && rawEntity.fitStates[context.segment]) {
+      card.fitState = rawEntity.fitStates[context.segment].state;
+    }
 
     return card;
   }

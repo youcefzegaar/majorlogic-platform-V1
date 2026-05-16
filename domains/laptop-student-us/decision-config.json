@@ -5,6 +5,60 @@
     "identityFields": ["brand", "ramGb", "storageGb", "gpuClass"],
     "similarityThreshold": 0.9
   },
+  "atlas": {
+    "en": {
+      "score_general": "general productivity",
+      "score_cs": "computer science workloads",
+      "score_engineering": "engineering software support",
+      "score_graphic_design": "graphic design and color accuracy",
+      "score_design": "creative workflows",
+      "score_medical": "medical student portability and reliability",
+      "score_business": "business multitasking",
+      "score_arts": "content consumption and portability",
+      "value_score": "performance-to-price value",
+      "portability_score": "mobility and bulk balance",
+      "performance": "processing speed",
+      "battery": "battery life",
+      "portability": "ease of carrying",
+      "display": "screen quality",
+      "resaleScore": "future resale value",
+      "sacrifice_portability": "portability and lightness",
+      "sacrifice_battery": "long-term battery life",
+      "sacrifice_budget": "initial budget limits",
+      "sacrifice_value": "long-term resale value",
+      "tradeoff_weight": "Note: This is a heavy machine that sacrifices portability for raw power.",
+      "tradeoff_price": "Note: This is a premium-priced option that sacrifices budget for superior build quality.",
+      "reason_within_budget": "exceeds your budget",
+      "reason_min_ram": "does not have enough RAM for your major",
+      "reason_seller_trust_gate": "comes from a source with low trust rating"
+    },
+    "ar": {
+      "score_general": "الإنتاجية العامة",
+      "score_cs": "مهام علوم الحاسوب",
+      "score_engineering": "دعم برامج الهندسة",
+      "score_graphic_design": "التصميم الجرافيكي ودقة الألوان",
+      "score_design": "سير العمل الإبداعي",
+      "score_medical": "قابلية الحمل والموثوقية لطلاب الطب",
+      "score_business": "تعدد المهام في الأعمال",
+      "score_arts": "استهلاك المحتوى وقابلية الحمل",
+      "value_score": "قيمة الأداء مقابل السعر",
+      "portability_score": "التوازن بين سهولة الحمل والحجم",
+      "performance": "سرعة المعالجة",
+      "battery": "عمر البطارية",
+      "portability": "سهولة الحمل",
+      "display": "جودة الشاشة",
+      "resaleScore": "قيمة إعادة البيع المستقبلية",
+      "sacrifice_portability": "سهولة الحمل والخفة",
+      "sacrifice_battery": "عمر البطارية الطويل",
+      "sacrifice_budget": "حدود الميزانية الأولية",
+      "sacrifice_value": "قيمة إعادة البيع على المدى الطويل",
+      "tradeoff_weight": "ملاحظة: هذا جهاز ثقيل يضحي بسهولة الحمل لصالح القوة الخام.",
+      "tradeoff_price": "ملاحظة: هذا خيار بسعر مرتفع يضحي بالميزانية لصالح جودة التصنيع الفائقة.",
+      "reason_within_budget": "يتجاوز ميزانيتك المحددة",
+      "reason_min_ram": "لا يحتوي على ذاكرة كافية (RAM) لتخصصك",
+      "reason_seller_trust_gate": "يأتي من مصدر ذو تصنيف ثقة منخفض"
+    }
+  },
   "profileMapping": {
     "budgetUsd": "budget",
     "major": "major"
@@ -84,6 +138,30 @@
       "humanMeaning": "Source is from an unverified or risky marketplace",
       "weight": 1.0,
       "condition": { "op": "lte", "left": "market.sellerTier", "right": 3 }
+    },
+    "gaming_gpu_requirement": {
+      "node": "Gaming GPU Constraint",
+      "humanMeaning": "Integrated graphics are insufficient for high-end gaming needs",
+      "weight": 1.0,
+      "condition": {
+        "op": "or",
+        "args": [
+          { "op": "lt", "left": "slider_gaming", "right": 70 },
+          { "op": "not_equal", "left": "specs.gpuClass", "right": "integrated" }
+        ]
+      }
+    },
+    "vm_ram_requirement": {
+      "node": "VM RAM Constraint",
+      "humanMeaning": "Virtual machine workloads require at least 16GB RAM",
+      "weight": 1.0,
+      "condition": {
+        "op": "or",
+        "args": [
+          { "op": "lt", "left": "slider_virtual_machines", "right": 70 },
+          { "op": "gte", "left": "specs.ramGb", "right": 16 }
+        ]
+      }
     }
   },
   "rulesets": {

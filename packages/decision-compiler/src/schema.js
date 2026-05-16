@@ -1,11 +1,21 @@
 import { z } from "zod";
 
 // Base condition schema
-const conditionSchema = z.object({
-  op: z.enum(["gte", "lte", "gt", "lt", "eq"]),
-  left: z.union([z.string(), z.number()]),
-  right: z.union([z.string(), z.number()])
-});
+const conditionSchema = z.lazy(() => z.union([
+  z.object({
+    op: z.enum(["gte", "lte", "gt", "lt", "eq", "not_equal", "ne"]),
+    left: z.union([z.string(), z.number()]),
+    right: z.union([z.string(), z.number()])
+  }),
+  z.object({
+    op: z.enum(["or", "and"]),
+    args: z.array(conditionSchema)
+  }),
+  z.object({
+    op: z.literal("not"),
+    arg: conditionSchema
+  })
+]));
 
 // Formula schema
 const formulaSchema = z.object({
