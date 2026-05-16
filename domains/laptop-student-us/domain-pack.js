@@ -51,6 +51,7 @@ function resolveSellerTier(offer) {
   if (!offer) return 4; // Unknown
   const type = offer.sellerType;
   const cond = offer.condition;
+  const seller = String(offer.seller ?? "").toLowerCase();
 
   if (type === "brand_direct") return 1;
   if (type === "retailer") return 1;
@@ -60,6 +61,13 @@ function resolveSellerTier(offer) {
     if (cond === "new") return 2;
     return 4; // Risky marketplace refurbished/open-box
   }
+
+  // Robust fallback for known retailers if type is missing in source
+  const knownTier1 = ["amazon", "best buy", "b&h", "newegg", "walmart", "target", "micro center"];
+  const knownBrands = ["apple", "lenovo", "dell", "hp", "asus", "acer", "msi", "microsoft", "framework"];
+  
+  if (knownTier1.includes(seller)) return 2; // Treat known retailers as Tier 2 if type unknown
+  if (knownBrands.includes(seller)) return 1; // Treat known brands as Tier 1 if type unknown
 
   return 3;
 }
@@ -440,7 +448,7 @@ export const laptopStudentUsDomainPack = {
         userSignals: observation.reviewSummary?.userSignals ?? []
       },
       economicSignals: {
-        resaleScore: specs.resale ?? 30,
+        resaleScore: specs.resale ?? 50,
         tcoEstimate: calculateTCO({ market: { bestOffer }, specs })
       },
       media: {
@@ -488,9 +496,9 @@ export const laptopStudentUsDomainPack = {
   entityFitsProfile(entity, profile) {
     if (!entity.fitStates[profile.major]) return false;
     
-    // Tiered Trust System: Only Tier 1 & 2 allowed in v1 production
+    // Tiered Trust System: Only Tier 1, 2 & 3 allowed in v1 production
     const tier = entity.market?.sellerTier ?? 4;
-    if (tier > 2) return false;
+    if (tier > 3) return false;
 
     // Budget gate: only include devices within budget range
     const price = entity.market?.bestOffer?.priceUsd ?? 9999;

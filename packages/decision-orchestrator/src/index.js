@@ -181,14 +181,17 @@ export class DecisionOrchestrator {
           decisionRunId: ctx.decisionRunId,
           status: ctx.status,
           intentId: ctx.domainContext.intent.id,
+          segment: ctx.mappedProfile?.major || "general",
           confidence: ctx.confidence,
           profileId: ctx.userProfile.id || ctx.userProfile.profileId || "anonymous",
-          evaluatedCount: ctx.execution.results.length,
+          evaluatedCount: ctx.execution?.results?.length || 0,
           candidateCount: ctx.eligible.length,
           excludedCount: ctx.excluded.length,
           topExcludedStories: ctx.topExcludedStories,
           cards: ctx.cards,
-          governance: ctx.governance
+          governance: ctx.governance,
+          relaxedConstraint: ctx.relaxedConstraint,
+          integrityScore: ctx.integrityScore
       };
   }
 

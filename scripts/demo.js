@@ -1,7 +1,7 @@
 // scripts/demo.js
 import fs from "node:fs";
 import { loadEnvFile } from "./env.js";
-import { executePlatformPipeline } from "../packages/platform-core/src/index.js";
+import { executeUniversalPipeline } from "../packages/platform-core/src/index.js";
 import { laptopStudentUsDomainPack } from "../domains/laptop-student-us/domain-pack.js";
 import { createPostgresClient, PostgresPlatformRepository } from "../packages/postgres-persistence/src/index.js";
 import { resolvePublishedCatalog } from "../packages/postgres-persistence/src/catalog-loader.js";
@@ -17,7 +17,7 @@ function loadJson(relativePath) {
   return JSON.parse(fs.readFileSync(new URL(relativePath, import.meta.url), "utf8"));
 }
 
-const ruleset = loadJson("../rulesets/domains/laptop-student-us/ruleset.json");
+const ruleset = loadJson("../domains/laptop-student-us/decision-config.json");
 const profile = loadJson("../examples/profile.json");
 
 let repository = null;
@@ -45,17 +45,27 @@ try {
   console.log(`🔢 Catalog Version         : ${publishedCatalogState.catalogVersion}`);
   console.log(`📊 Entities Count          : ${publishedCatalogState.entities.length}\n`);
 
-  const result = await executePlatformPipeline({
+  const result = await executeUniversalPipeline({
     profile,
     domainPack: laptopStudentUsDomainPack,
     publishedEntities: publishedCatalogState.entities,
     catalogVersion: publishedCatalogState.catalogVersion,
     publishRunId: publishedCatalogState.publishRunId,
-    ruleset,
+    decisionConfig: ruleset,
     repository
   });
 
   // ==================== OUTPUT ====================
+  if (result.governance && !result.governance.ok) {
+    console.error("❌ GOVERNANCE VIOLATION:", result.governance.violations);
+    process.exit(1);
+  }
+  
+  if (!result.decision) {
+    console.error("❌ PIPELINE ERROR: No decision returned. Result:", JSON.stringify(result, null, 2));
+    process.exit(1);
+  }
+
   console.log("✅ DECISION ENGINE OUTPUT");
   console.log("══════════════════════════════════════════════");
   console.log(`Major          : ${result.decision.segment}`);

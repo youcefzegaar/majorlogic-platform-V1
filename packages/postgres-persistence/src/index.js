@@ -77,6 +77,8 @@ export class PostgresPlatformRepository {
       "database/migrations/0016_performance_optimization_indices.sql",
       "database/migrations/0017_decision_governance_ledger.sql",
       "database/migrations/0020_user_feedback.sql",
+      "database/migrations/0021_decision_interventions.sql",
+      "database/migrations/0022_decision_logic.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -282,7 +284,7 @@ export class PostgresPlatformRepository {
         publishRunId,
         catalogVersion,
         JSON.stringify(profile),
-        ruleset.logicVersion,
+        ruleset.version || ruleset.logicVersion || "1.0.0",
         JSON.stringify(decision.cards)
       ]
     );
@@ -317,12 +319,46 @@ export class PostgresPlatformRepository {
     );
   }
 
+  async saveIntervention({ id, decisionRunId, domainId, relaxedConstraint, integrityScore, originalExcludedCount, recoveredCount }) {
+    await this.pool.query(
+      `INSERT INTO ml_telemetry.interventions 
+       (id, decision_run_id, domain_id, relaxed_constraint, integrity_score, original_excluded_count, recovered_count)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [id || randomUUID(), decisionRunId, domainId, relaxedConstraint, integrityScore, originalExcludedCount, recoveredCount]
+    );
+  }
+
+  async getRecentInterventions({ domainId, limit = 20 }) {
+    const result = await this.pool.query(
+      `SELECT id, decision_run_id, relaxed_constraint, integrity_score, original_excluded_count, recovered_count, created_at
+       FROM ml_telemetry.interventions
+       WHERE domain_id = $1
+       ORDER BY created_at DESC
+       LIMIT $2`,
+      [domainId, limit]
+    );
+    return result.rows;
+  }
+
+  async getDecisionTrace(id) {
+    const result = await this.pool.query(
+      `SELECT id, domain_id, profile_id, segment, payload_json, created_at
+       FROM ml_telemetry.decision_runs
+       WHERE id = $1`,
+      [id]
+    );
+    return result.rows[0] || null;
+  }
+
   async saveGrowthArtifacts({ domainId, growth }) {
     if (growth.seoPagePayload) {
       await this.pool.query(
         `insert into ml_growth.page_payloads (
           id, domain_id, surface_type, slug, payload_json
-        ) values ($1, $2, $3, $4, $5::jsonb)`,
+        ) values ($1, $2, $3, $4, $5::jsonb)
+        on conflict (domain_id, slug) do update set
+          payload_json = excluded.payload_json,
+          generated_at = now()`,
         [
           randomUUID(),
           domainId,
@@ -718,6 +754,28 @@ export class PostgresPlatformRepository {
        (run_id, source_name, product_name, raw_data, sentiment_score, extracted_signals)
        VALUES ($1, $2, $3, $4::jsonb, $5, $6::jsonb)`,
       [runId, sourceName, productName, JSON.stringify(rawData), sentimentScore, JSON.stringify(extractedSignals)]
+    );
+  }
+
+  async getDecisionLogic(domainId) {
+    const result = await this.pool.query(
+      `select config_json, version
+       from ml_governance.decision_logic
+       where domain_id = $1`,
+      [domainId]
+    );
+    return result.rows[0] || null;
+  }
+
+  async saveDecisionLogic(domainId, config) {
+    await this.pool.query(
+      `insert into ml_governance.decision_logic (domain_id, config_json, version, updated_at)
+       values ($1, $2::jsonb, $3, now())
+       on conflict (domain_id) do update set
+         config_json = excluded.config_json,
+         version = excluded.version,
+         updated_at = now()`,
+      [domainId, JSON.stringify(config), config.version || "1.0.0"]
     );
   }
 }

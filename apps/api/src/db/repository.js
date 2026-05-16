@@ -30,8 +30,35 @@ export async function getRuleset(relativePath) {
   if (rulesetCache.has(relativePath)) {
     return rulesetCache.get(relativePath);
   }
+
+  // Attempt DB load first if it's a domain config
+  const domainMatch = relativePath.match(/domains\/([^/]+)\/decision-config.json/);
+  if (domainMatch) {
+    const domainId = domainMatch[1];
+    const repo = await getRepository();
+    if (repo) {
+      const dbConfig = await repo.getDecisionLogic(domainId);
+      if (dbConfig) {
+        rulesetCache.set(relativePath, dbConfig.config_json);
+        return dbConfig.config_json;
+      }
+    }
+  }
+
+  // Fallback to disk
   const raw     = await fs.promises.readFile(path.join(root, relativePath), "utf8");
   const parsed  = JSON.parse(raw);
+
+  // Lazy Migration: If we have a DB, save the disk config to it
+  if (domainMatch) {
+    const domainId = domainMatch[1];
+    const repo = await getRepository();
+    if (repo) {
+      console.log(`[Repository] Lazy migrating config for ${domainId} to database...`);
+      await repo.saveDecisionLogic(domainId, parsed);
+    }
+  }
+
   rulesetCache.set(relativePath, parsed);
   return parsed;
 }

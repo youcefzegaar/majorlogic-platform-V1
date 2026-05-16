@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { generatePublishedCatalog } from "../packages/catalog-publish/src/index.js";
-import { executePlatformPipeline } from "../packages/platform-core/src/index.js";
+import { executeUniversalPipeline } from "../packages/platform-core/src/index.js";
 import { laptopStudentUsDomainPack } from "../domains/laptop-student-us/domain-pack.js";
 
 function loadJson(url) {
@@ -10,6 +10,7 @@ function loadJson(url) {
 
 function loadPublishedEntities() {
   const observations = loadJson(new URL("../domains/laptop-student-us/generated/source-observations.generated.json", import.meta.url));
+  // Note: we still use fit-contexts for the published catalog generation step in tests
   const fitContexts = loadJson(new URL("../rulesets/domains/laptop-student-us/fit-contexts.json", import.meta.url));
   return generatePublishedCatalog({
     observations,
@@ -18,7 +19,7 @@ function loadPublishedEntities() {
   });
 }
 
-const ruleset = loadJson(new URL("../rulesets/domains/laptop-student-us/ruleset.json", import.meta.url));
+const decisionConfig = loadJson(new URL("../domains/laptop-student-us/decision-config.json", import.meta.url));
 const publishedEntities = loadPublishedEntities();
 
 const engineeringProfile = {
@@ -122,18 +123,18 @@ const openBoxBudgetProfile = {
   }
 };
 
-const deterministicRunA = await executePlatformPipeline({
+const deterministicRunA = await executeUniversalPipeline({
   profile: engineeringProfile,
   domainPack: laptopStudentUsDomainPack,
   publishedEntities,
-  ruleset
+  decisionConfig
 });
 
-const deterministicRunB = await executePlatformPipeline({
+const deterministicRunB = await executeUniversalPipeline({
   profile: engineeringProfile,
   domainPack: laptopStudentUsDomainPack,
   publishedEntities,
-  ruleset
+  decisionConfig
 });
 
 assert.deepEqual(
@@ -159,18 +160,18 @@ assert.equal(deterministicRunA.trust.cardAudits.length, deterministicRunA.decisi
 assert.ok(["high", "medium", "low"].includes(deterministicRunA.trust.decisionConfidenceLevel));
 assert.ok(deterministicRunA.trust.trace.selectedCardCount === deterministicRunA.decision.cards.length);
 
-const lowResaleRun = await executePlatformPipeline({
+const lowResaleRun = await executeUniversalPipeline({
   profile: lowResaleGeneralProfile,
   domainPack: laptopStudentUsDomainPack,
   publishedEntities,
-  ruleset
+  decisionConfig
 });
 
-const highResaleRun = await executePlatformPipeline({
+const highResaleRun = await executeUniversalPipeline({
   profile: highResaleGeneralProfile,
   domainPack: laptopStudentUsDomainPack,
   publishedEntities,
-  ruleset
+  decisionConfig
 });
 
 const lowResaleHero = lowResaleRun.decision.cards.find((card) => card.cardType === "hero");
@@ -179,11 +180,11 @@ assert.ok(lowResaleHero);
 assert.ok(highResaleHero);
 assert.notEqual(lowResaleHero.entityId, highResaleHero.entityId);
 
-const noResultRun = await executePlatformPipeline({
+const noResultRun = await executeUniversalPipeline({
   profile: noResultProfile,
   domainPack: laptopStudentUsDomainPack,
   publishedEntities,
-  ruleset
+  decisionConfig
 });
 
 assert.equal(noResultRun.decision.status, "no_viable_option");
@@ -193,11 +194,11 @@ assert.ok(noResultRun.trust.findings.length > 0);
 assert.ok(noResultRun.trust.trace.excludedCount > 0);
 assert.ok(noResultRun.trust.exclusionSummary.length > 0);
 
-const openBoxRun = await executePlatformPipeline({
+const openBoxRun = await executeUniversalPipeline({
   profile: openBoxBudgetProfile,
   domainPack: laptopStudentUsDomainPack,
   publishedEntities,
-  ruleset
+  decisionConfig
 });
 
 assert.ok(openBoxRun.decision.cards.length > 0);

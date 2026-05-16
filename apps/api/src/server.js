@@ -443,6 +443,73 @@ fastify.post("/api/v1/:domain/feedback", async (request, reply) => {
   return { status: "received" };
 });
 
+fastify.get("/admin/dashboard", { preHandler: [fastify.authenticateAdmin] }, async (request, reply) => {
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  const data = await repository.getAdminOverview({ domainId: DEFAULT_DOMAIN });
+  const interventions = await repository.getRecentInterventions({ domainId: DEFAULT_DOMAIN, limit: 5 });
+  
+  return reply.send({
+    success: true,
+    data: {
+      ...data,
+      latestInterventions: interventions
+    },
+    system: {
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      node: process.version
+    }
+  });
+});
+
+fastify.get("/admin/domains", { preHandler: [fastify.authenticateAdmin] }, async (request, reply) => {
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const domainsDir = path.resolve(process.cwd(), "domains");
+  
+  // لغرض العرض، سنقوم بمسح المجلدات واسترداد الإعدادات
+  const domainFolders = ["laptop-student-us"]; // يمكننا تحسين هذا لاحقاً لمسح المجلدات آلياً
+  
+  const domains = await Promise.all(domainFolders.map(async (slug) => {
+    try {
+      const configPath = path.join(domainsDir, slug, "decision-config.json");
+      const configRaw = await fs.readFile(configPath, "utf-8");
+      const config = JSON.parse(configRaw);
+      
+      return {
+        id: slug,
+        slug: slug,
+        title: slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+        version: config.version || "1.0.0",
+        is_active: true,
+        updated_at: new Date().toISOString(),
+        config: config
+      };
+    } catch (e) {
+      return null;
+    }
+  }));
+
+  return { success: true, domains: domains.filter(Boolean) };
+});
+
+fastify.get("/admin/decision-trace/:id", { preHandler: [fastify.authenticateAdmin] }, async (request, reply) => {
+  const { id } = request.params;
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  const trace = await repository.getDecisionTrace(id);
+  if (!trace) return reply.status(404).send({ error: "Trace not found" });
+  return { success: true, trace };
+});
+
+fastify.post("/admin/simulate", { preHandler: [fastify.authenticateAdmin] }, async (request, reply) => {
+  const { domainId, modifications, sampleSize } = request.body;
+  const { simulateImpact } = await import("../../../packages/admin-decision-api/src/index.js");
+  const report = await simulateImpact(domainId, modifications, sampleSize || 100);
+  return { success: true, report };
+});
+
 // CSV Export for Admin use (basic auth guard via secret query param)
 fastify.get("/api/v1/:domain/growth/leads/export", async (request, reply) => {
   const { domain } = request.params;
@@ -560,25 +627,8 @@ fastify.get("/web/results", async (request, reply) => {
   reply.type("text/html; charset=utf-8").send(html);
 });
 
-fastify.get("/admin", async (request, reply) => reply.redirect("/admin/dashboard"));
-
-fastify.get("/admin/dashboard", async (request, reply) => {
-  const controller = getDomainController(DEFAULT_DOMAIN);
-  const data = await controller.buildAdminDashboardData();
-  if (!data) {
-    return reply.type("text/html").send("<h1>Database unavailable</h1>");
-  }
-  const html = renderDashboardHtml(data);
-  reply.type("text/html; charset=utf-8").send(html);
-});
-
-fastify.get("/admin/overview", async (request, reply) => {
-  const controller = getDomainController(DEFAULT_DOMAIN);
-  const data = await controller.buildAdminDashboardData();
-  if (!data) return reply.type("text/html").send("<h1>DB missing</h1>");
-  const html = renderOverviewHtml(data.overview);
-  reply.type("text/html; charset=utf-8").send(html);
-});
+fastify.get("/admin", async (request, reply) => reply.redirect("http://localhost:5173"));
+fastify.get("/admin/*", async (request, reply) => reply.redirect("http://localhost:5173"));
 
 fastify.get("/admin/decision-latest", async (request, reply) => {
   const controller = getDomainController(DEFAULT_DOMAIN);
@@ -621,7 +671,7 @@ fastify.post("/admin/logic/save", async (request, reply) => {
   const body = request.body;
   const domainId = DEFAULT_DOMAIN;
   
-  const { getRuleset } = await import("./db/repository.js");
+  const { getRuleset, getRepository } = await import("./db/repository.js");
   const configPath = `domains/${domainId}/decision-config.json`;
   const config = await getRuleset(configPath);
 
@@ -646,14 +696,16 @@ fastify.post("/admin/logic/save", async (request, reply) => {
   const [major, minor, patch] = config.version.split(".").map(Number);
   config.version = `${major}.${minor}.${patch + 1}`;
 
-  // Save back to disk
-  const fs = await import("node:fs/promises");
-  const path = await import("node:path");
-  const { fileURLToPath } = await import("node:url");
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const fullPath = path.resolve(__dirname, "../../../", configPath);
-  
-  await fs.writeFile(fullPath, JSON.stringify(config, null, 2), "utf8");
+  // Save to Database
+  const repository = await getRepository();
+  if (repository) {
+    await repository.saveDecisionLogic(domainId, config);
+    request.log.info({ domainId, version: config.version }, "[ADMIN] Logic saved to database");
+  } else {
+    // Fallback or Error if DB is required but offline
+    request.log.error("[ADMIN] Database offline, cannot save logic safely.");
+    return reply.status(503).send("Database offline. Logic cannot be saved.");
+  }
 
   // Clear cache to ensure next decision run uses fresh logic
   const { clearRulesetCache } = await import("./db/repository.js");

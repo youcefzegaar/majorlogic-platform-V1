@@ -12,7 +12,7 @@
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { executePlatformPipeline } from "../../../../packages/platform-core/src/index.js";
+import { executeUniversalPipeline } from "../../../../packages/platform-core/src/index.js";
 import { laptopStudentUsDomainPack } from "../../../../domains/laptop-student-us/domain-pack.js";
 import { resolvePublishedCatalog } from "../../../../packages/postgres-persistence/src/catalog-loader.js";
 import { getRuleset, getRepository } from "../db/repository.js";
@@ -167,13 +167,13 @@ export async function runPipeline(profile) {
       };
     }
 
-    const result = await executePlatformPipeline({
+    const result = await executeUniversalPipeline({
       profile,
       domainPack:       laptopStudentUsDomainPack,
       publishedEntities:publishedCatalogState.entities,
       catalogVersion:   publishedCatalogState.catalogVersion,
       publishRunId:     publishedCatalogState.publishRunId,
-      ruleset,
+      decisionConfig:   ruleset,
       repository
     });
 

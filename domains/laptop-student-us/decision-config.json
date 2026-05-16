@@ -5,16 +5,20 @@
     "identityFields": ["brand", "ramGb", "storageGb", "gpuClass"],
     "similarityThreshold": 0.9
   },
+  "profileMapping": {
+    "budgetUsd": "budget",
+    "major": "major"
+  },
   "attributes": {
-    "price":       { "type": "numeric", "label": "Price USD" },
-    "ramGb":       { "type": "numeric", "label": "RAM" },
-    "storageGb":   { "type": "numeric", "label": "Storage" },
-    "performance": { "type": "numeric", "label": "Performance Score" },
-    "battery":     { "type": "numeric", "label": "Battery Score" },
-    "portability": { "type": "numeric", "label": "Portability Score" },
-    "display":     { "type": "numeric", "label": "Display Score" },
-    "thermals":    { "type": "numeric", "label": "Thermal Throttle Index" },
-    "resale":      { "type": "numeric", "label": "Resale Value Index" },
+    "market.bestOffer.priceUsd": { "type": "numeric", "label": "Price USD" },
+    "specs.ramGb":               { "type": "numeric", "label": "RAM" },
+    "specs.storageGb":           { "type": "numeric", "label": "Storage" },
+    "specs.performance":         { "type": "numeric", "label": "Performance Score" },
+    "specs.battery":             { "type": "numeric", "label": "Battery Score" },
+    "specs.portability":         { "type": "numeric", "label": "Portability Score" },
+    "specs.display":             { "type": "numeric", "label": "Display Score" },
+    "specs.thermals":            { "type": "numeric", "label": "Thermal Throttle Index" },
+    "economicSignals.resaleScore": { "type": "numeric", "label": "Resale Value Index" },
     "userPrefPerformance": { "type": "numeric", "label": "User Preference: Performance" },
     "userPrefBattery":     { "type": "numeric", "label": "User Preference: Battery" },
     "userPrefPortability": { "type": "numeric", "label": "User Preference: Portability" },
@@ -27,7 +31,7 @@
       "formula": {
         "op": "clamp",
         "args": [
-          { "op": "average", "args": ["battery", "portability"] },
+          { "op": "average", "args": ["specs.battery", "specs.portability"] },
           0, 100
         ]
       }
@@ -37,7 +41,7 @@
       "formula": {
         "op": "clamp",
         "args": [
-          { "op": "add", "args": [100, { "op": "multiply", "args": ["price", -0.04] }] },
+          { "op": "add", "args": [100, { "op": "multiply", "args": ["market.bestOffer.priceUsd", -0.015] }] },
           0, 100
         ]
       }
@@ -50,11 +54,11 @@
           {
             "op": "average",
             "args": [
-              { "op": "multiply", "args": ["performance",    "userPrefPerformance"] },
-              { "op": "multiply", "args": ["battery",        "userPrefBattery"] },
-              { "op": "multiply", "args": ["portability",    "userPrefPortability"] },
-              { "op": "multiply", "args": ["display",        "userPrefDisplay"] },
-              { "op": "multiply", "args": ["resale",         "userPrefResale"] }
+              { "op": "multiply", "args": ["specs.performance",    "userPrefPerformance"] },
+              { "op": "multiply", "args": ["specs.battery",        "userPrefBattery"] },
+              { "op": "multiply", "args": ["specs.portability",    "userPrefPortability"] },
+              { "op": "multiply", "args": ["specs.display",        "userPrefDisplay"] },
+              { "op": "multiply", "args": ["economicSignals.resaleScore", "userPrefResale"] }
             ]
           },
           0, 100
@@ -67,19 +71,19 @@
       "node": "Budget Constraint",
       "humanMeaning": "Device exceeds the specified budget",
       "weight": 0.8,
-      "condition": { "op": "lte", "left": "price", "right": "budget" }
+      "condition": { "op": "lte", "left": "market.bestOffer.priceUsd", "right": "budget" }
     },
     "min_ram": {
       "node": "RAM Minimum",
       "humanMeaning": "Insufficient RAM for modern workflows",
       "weight": 1.0,
-      "condition": { "op": "gte", "left": "ramGb", "right": 8 }
+      "condition": { "op": "gte", "left": "specs.ramGb", "right": 8 }
     },
     "seller_trust_gate": {
       "node": "Seller Trust Gate",
       "humanMeaning": "Source is from an unverified or risky marketplace",
       "weight": 1.0,
-      "condition": { "op": "lte", "left": "market.sellerTier", "right": 2 }
+      "condition": { "op": "lte", "left": "market.bestOffer.sellerTier", "right": 3 }
     }
   },
   "rulesets": {
@@ -96,7 +100,7 @@
       },
       "penalties": {
         "thermal_throttle": {
-          "condition": { "op": "gt", "left": "thermals", "right": 85 },
+          "condition": { "op": "gt", "left": "specs.thermals", "right": 85 },
           "amount": 12,
           "reason": "Aggressive thermal throttling detected in reviews"
         }
@@ -116,12 +120,12 @@
     "cs": {
       "weights": {
         "userPreferenceScore": 0.50,
-        "performance":         0.30,
+        "specs.performance":   0.30,
         "value_score":         0.20
       },
       "penalties": {
         "thermal_throttle": {
-          "condition": { "op": "gt", "left": "thermals", "right": 85 },
+          "condition": { "op": "gt", "left": "specs.thermals", "right": 85 },
           "amount": 10,
           "reason": "Thermal throttling limits sustained compute for CS workloads"
         }
@@ -130,7 +134,7 @@
     "computer_science": {
       "weights": {
         "userPreferenceScore": 0.50,
-        "performance":         0.30,
+        "specs.performance":   0.30,
         "value_score":         0.20
       },
       "penalties": {
@@ -144,7 +148,7 @@
     "engineering": {
       "weights": {
         "userPreferenceScore": 0.45,
-        "performance":         0.35,
+        "specs.performance":   0.35,
         "portability_score":   0.20
       },
       "penalties": {
@@ -158,14 +162,14 @@
     "graphic_design": {
       "weights": {
         "userPreferenceScore": 0.45,
-        "display":             0.35,
+        "specs.display":       0.35,
         "portability_score":   0.20
       }
     },
     "design": {
       "weights": {
         "userPreferenceScore": 0.45,
-        "display":             0.35,
+        "specs.display":       0.35,
         "portability_score":   0.20
       }
     },
@@ -186,10 +190,24 @@
     "arts": {
       "weights": {
         "userPreferenceScore": 0.55,
-        "display":             0.25,
+        "specs.display":       0.25,
         "portability_score":   0.20
       }
     }
+  },
+  "selectionStrategy": {
+    "cardSlots": [
+      { "type": "hero", "pickBy": "highest_score" },
+      { "type": "smart_budget", "pickBy": "best_ratio", "priceField": "market.bestOffer.priceUsd" },
+      { "type": "future_proof", "pickBy": "highest_score", "minScore": 85 }
+    ],
+    "noDuplicates": true
+  },
+  "outputTemplate": {
+    "title": "{entity.title}",
+    "priceUsd": "{entity.market.bestOffer.priceUsd}",
+    "whyThis": "{story}",
+    "badNews": "{tradeoff}"
   }
 }
 

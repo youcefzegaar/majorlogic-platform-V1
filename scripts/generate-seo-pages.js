@@ -12,6 +12,7 @@ import fs   from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnvFile } from "./env.js";
+import { executeUniversalPipeline } from "../packages/platform-core/src/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root      = path.resolve(__dirname, "..");
@@ -73,8 +74,7 @@ const BUDGET_TIERS = [
 
 // ── Pipeline ───────────────────────────────────────────────────────────────
 
-async function generatePage(major, budget, repository, publishedEntities, ruleset, domainPack) {
-  const { executePlatformPipeline } = await import("../packages/platform-core/src/index.js");
+async function generatePage(major, budget, repository, publishedEntities, decisionConfig, domainPack) {
   const { PublishedCatalog }        = await import("../packages/published-catalog/src/index.js");
 
   const profile = {
@@ -103,13 +103,13 @@ async function generatePage(major, budget, repository, publishedEntities, rulese
   };
 
   try {
-    const result = await executePlatformPipeline({
+    const result = await executeUniversalPipeline({
       profile,
       domainPack,
       publishedEntities,
       catalogVersion: null,
       publishRunId:   null,
-      ruleset,
+      decisionConfig,
       repository:     null   // SEO generation runs without DB writes (read-only)
     });
 
@@ -160,11 +160,11 @@ async function run() {
     process.exit(1);
   }
 
-  // Load ruleset
-  const rulesetRaw = fs.readFileSync(
-    path.join(root, "rulesets/domains/laptop-student-us/ruleset.json"), "utf8"
+  // Load decision config
+  const configRaw = fs.readFileSync(
+    path.join(root, "domains/laptop-student-us/decision-config.json"), "utf8"
   );
-  const ruleset = JSON.parse(rulesetRaw);
+  const decisionConfig = JSON.parse(configRaw);
 
   // Output directory
   const outDir = path.join(root, "domains/laptop-student-us/generated/seo-pages");
@@ -175,7 +175,7 @@ async function run() {
 
   for (const major of MAJORS) {
     for (const budget of BUDGET_TIERS) {
-      const page = await generatePage(major, budget, repository, catalogState.entities, ruleset, laptopStudentUsDomainPack);
+      const page = await generatePage(major, budget, repository, catalogState.entities, decisionConfig, laptopStudentUsDomainPack);
       if (page) {
         const filename = path.join(outDir, `${major.key}__${budget.key}.json`);
         fs.writeFileSync(filename, JSON.stringify(page, null, 2));

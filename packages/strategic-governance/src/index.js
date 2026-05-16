@@ -35,7 +35,7 @@ export function enforceGovernance({ profile, ruleset, domainPack }) {
     violations.push("Platform drift: execution requires an explicit domain pack with domainId.");
   }
 
-  if (!ruleset?.logicVersion) {
+  if (!ruleset?.version && !ruleset?.logicVersion) {
     violations.push("Missing ruleset version: every execution must reference a versioned ruleset.");
   }
 

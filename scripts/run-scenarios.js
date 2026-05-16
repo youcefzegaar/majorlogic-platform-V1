@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { loadEnvFile } from "./env.js";
-import { executePlatformPipeline } from "../packages/platform-core/src/index.js";
+import { executeUniversalPipeline } from "../packages/platform-core/src/index.js";
 import { laptopStudentUsDomainPack } from "../domains/laptop-student-us/domain-pack.js";
 import { createPostgresClient, PostgresPlatformRepository } from "../packages/postgres-persistence/src/index.js";
 import { resolvePublishedCatalog } from "../packages/postgres-persistence/src/catalog-loader.js";
@@ -12,7 +12,7 @@ function loadJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.resolve(relativePath), "utf8"));
 }
 
-const ruleset = loadJson("rulesets/domains/laptop-student-us/ruleset.json");
+const decisionConfig = loadJson("domains/laptop-student-us/decision-config.json");
 const profiles = loadJson("examples/scenario-profiles.json");
 
 let repository = null;
@@ -36,13 +36,14 @@ try {
 
   const scenarioResults = [];
   for (const profile of profiles) {
-    const result = await executePlatformPipeline({
+    const result = await executeUniversalPipeline({
       profile,
       domainPack: laptopStudentUsDomainPack,
       publishedEntities: publishedCatalogState.entities,
       catalogVersion: publishedCatalogState.catalogVersion,
       publishRunId: publishedCatalogState.publishRunId,
-      ruleset
+      decisionConfig,
+      repository
     });
 
     scenarioResults.push({

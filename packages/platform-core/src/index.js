@@ -9,7 +9,9 @@ import { attachCommercialRoutes } from "../../commercial-routing/src/index.js";
 const orchestrator = new DecisionOrchestrator();
 
 /**
- * Universal Pipeline — The new path that uses the declarative Orchestrator.
+ * Universal Pipeline — The unified path for decision execution.
+ * Integrates the declarative Orchestrator with legacy domain-pack logic
+ * and advanced persistence (telemetry, interventions, governance).
  */
 export async function executeUniversalPipeline({
   profile,
@@ -18,124 +20,45 @@ export async function executeUniversalPipeline({
   catalogVersion = null,
   publishRunId = null,
   repository = null,
-  domainPack = null // Optional for backward compatibility in some layers
+  domainPack = null
 }) {
-  // 1. Run Orchestrator
-  const decision = orchestrator.run(decisionConfig, publishedEntities, profile);
+  const ruleset = decisionConfig;
 
-  const catalog = new PublishedCatalog({
-    entities: publishedEntities,
-    domainPack: domainPack || { meta: { domainId: decisionConfig.domainId } }
-  });
-
-  // 2. Wrap decision into the expected format if needed
-  // Note: DecisionOrchestrator already returns a structure compatible with the engine
-
-  // 3. Downstream layers
-  const commercialRoutes = attachCommercialRoutes({
-    decision,
-    catalog,
-    domainPack
-  });
-
-  const ownership = buildOwnershipStrategy({
-    profile,
-    catalog,
-    decision,
-    domainPack
-  });
-
-  const trust = auditDecision({
-    catalog,
-    decision,
-    domainPack
-  });
-
-  const growth = buildGrowthArtifacts({
-    profile,
-    decision,
-    domainPack
-  });
-
-  if (repository) {
-    await repository.saveDecisionRun({
-      domainId: decisionConfig.domainId,
-      profile,
-      ruleset: decisionConfig,
-      decision,
-      ownership,
-      trust,
-      catalogVersion,
-      publishRunId
-    });
-  }
-
-  return {
-    domain: { domainId: decisionConfig.domainId },
-    decision,
-    commercialRoutes,
-    ownership,
-    trust,
-    growth
-  };
-}
-
-export async function executePlatformPipeline({
-  profile,
-  domainPack,
-  publishedEntities,
-  catalogVersion = null,
-  publishRunId = null,
-  ruleset,
-  repository = null
-}) {
-  const governance = enforceGovernance({ profile, ruleset, domainPack });
-  if (repository) {
-    await repository.saveGuardrailEvents({
-      domainId: domainPack.meta.domainId,
-      governance
-    });
+  // 1. Strategic Governance Check (if domainPack is provided)
+  let governance = { ok: true };
+  if (domainPack) {
+    governance = enforceGovernance({ profile, ruleset, domainPack });
+    if (repository && !governance.ok) {
+      await repository.saveGuardrailEvents({
+        domainId: ruleset.domainId,
+        governance
+      });
+    }
   }
 
   if (!governance.ok) {
     return { governance };
   }
 
-  const catalog = new PublishedCatalog({
-    entities: publishedEntities,
-    domainPack
-  });
-
+  // 2. Decision Core (Orchestrator + Kernel)
   const decision = await orchestrator.run(ruleset, publishedEntities, profile);
 
-  const commercialRoutes = attachCommercialRoutes({
-    decision,
-    catalog,
-    domainPack
+  const catalog = new PublishedCatalog({
+    entities: publishedEntities,
+    domainPack: domainPack || { meta: { domainId: ruleset.domainId } }
   });
 
-  const ownership = buildOwnershipStrategy({
-    profile,
-    catalog,
-    decision,
-    domainPack
-  });
+  // 3. Post-Decision Value Layers
+  const commercialRoutes = attachCommercialRoutes({ decision, catalog, domainPack });
+  const ownership = buildOwnershipStrategy({ profile, catalog, decision, domainPack });
+  const trust = auditDecision({ catalog, decision, domainPack });
+  const growth = buildGrowthArtifacts({ profile, decision, domainPack });
 
-  const trust = auditDecision({
-    catalog,
-    decision,
-    domainPack
-  });
-
-  const growth = buildGrowthArtifacts({
-    profile,
-    decision,
-    domainPack
-  });
-
+  // 4. Industrial Persistence
   if (repository) {
+    // A. Main decision run ledger
     await repository.saveDecisionRun({
-      domainId: domainPack.meta.domainId,
+      domainId: ruleset.domainId,
       profile,
       ruleset,
       decision,
@@ -145,14 +68,27 @@ export async function executePlatformPipeline({
       publishRunId
     });
 
+    // B. Marketing & Distribution artifacts
     await repository.saveGrowthArtifacts({
-      domainId: domainPack.meta.domainId,
+      domainId: ruleset.domainId,
       growth
     });
+
+    // C. Recovery Engine Interventions (Traceability)
+    if (decision.relaxedConstraint) {
+      await repository.saveIntervention({
+        decisionRunId: decision.decisionRunId,
+        domainId: ruleset.domainId,
+        relaxedConstraint: decision.relaxedConstraint,
+        integrityScore: decision.integrityScore,
+        originalExcludedCount: decision.excludedCount,
+        recoveredCount: decision.candidateCount
+      });
+    }
   }
 
   return {
-    domain: domainPack.meta,
+    domain: { domainId: ruleset.domainId },
     governance,
     decision,
     commercialRoutes,

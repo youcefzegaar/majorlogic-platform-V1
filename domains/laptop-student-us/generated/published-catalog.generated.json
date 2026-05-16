@@ -42,7 +42,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.92,
@@ -84,7 +84,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 1388
     },
     "media": {
@@ -176,7 +176,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.940Z"
+    "publishedAt": "2026-05-16T03:58:57.189Z"
   },
   {
     "entityId": "asus-zephyrus-g14-ryzen-9-32gb-1tb-rtx-4070",
@@ -215,7 +215,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.93,
@@ -255,7 +255,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 1444
     },
     "media": {
@@ -347,7 +347,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.941Z"
+    "publishedAt": "2026-05-16T03:58:57.190Z"
   },
   {
     "entityId": "macbook-air-15-m3-16gb-512gb",
@@ -386,7 +386,7 @@
           "affiliate": false
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 1
     },
     "trust": {
       "sourceConfidence": 0.95,
@@ -426,7 +426,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 1129
     },
     "media": {
@@ -518,7 +518,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.942Z"
+    "publishedAt": "2026-05-16T03:58:57.190Z"
   },
   {
     "entityId": "dell-inspiron-14-core-5-16gb-512gb",
@@ -563,7 +563,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.84,
@@ -603,7 +603,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 674
     },
     "media": {
@@ -695,7 +695,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.943Z"
+    "publishedAt": "2026-05-16T03:58:57.190Z"
   },
   {
     "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
@@ -780,7 +780,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 779
     },
     "media": {
@@ -872,7 +872,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.943Z"
+    "publishedAt": "2026-05-16T03:58:57.191Z"
   },
   {
     "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
@@ -917,7 +917,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.88,
@@ -957,7 +957,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 744
     },
     "media": {
@@ -1049,7 +1049,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.944Z"
+    "publishedAt": "2026-05-16T03:58:57.191Z"
   },
   {
     "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
@@ -1094,7 +1094,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.91,
@@ -1134,7 +1134,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 954
     },
     "media": {
@@ -1226,7 +1226,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.944Z"
+    "publishedAt": "2026-05-16T03:58:57.191Z"
   },
   {
     "entityId": "asus-proart-p16-ryzen-ai-9-32gb-1tb-rtx-4060",
@@ -1271,7 +1271,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.92,
@@ -1311,7 +1311,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 1444
     },
     "media": {
@@ -1403,7 +1403,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.947Z"
+    "publishedAt": "2026-05-16T03:58:57.191Z"
   },
   {
     "entityId": "hp-omnibook-x-snapdragon-x-elite-16gb-1tb",
@@ -1448,7 +1448,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.89,
@@ -1488,7 +1488,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 919
     },
     "media": {
@@ -1580,7 +1580,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.947Z"
+    "publishedAt": "2026-05-16T03:58:57.192Z"
   },
   {
     "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
@@ -1625,7 +1625,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.87,
@@ -1665,7 +1665,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 814
     },
     "media": {
@@ -1757,7 +1757,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.948Z"
+    "publishedAt": "2026-05-16T03:58:57.193Z"
   },
   {
     "entityId": "macbook-pro-14-m4-pro-24gb-1tb",
@@ -1796,7 +1796,7 @@
           "affiliate": false
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 1
     },
     "trust": {
       "sourceConfidence": 0.96,
@@ -1836,7 +1836,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 1549
     },
     "media": {
@@ -1928,7 +1928,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.949Z"
+    "publishedAt": "2026-05-16T03:58:57.193Z"
   },
   {
     "entityId": "msi-pulse-16-ai-core-ultra-9-32gb-1tb-rtx-4070",
@@ -1972,7 +1972,7 @@
           "affiliate": true
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 2
     },
     "trust": {
       "sourceConfidence": 0.89,
@@ -2012,7 +2012,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 1234
     },
     "media": {
@@ -2104,7 +2104,7 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.949Z"
+    "publishedAt": "2026-05-16T03:58:57.193Z"
   },
   {
     "entityId": "surface-laptop-7-snapdragon-x-plus-16gb-512gb",
@@ -2142,7 +2142,7 @@
           "affiliate": false
         }
       ],
-      "sellerTier": 3
+      "sellerTier": 1
     },
     "trust": {
       "sourceConfidence": 0.88,
@@ -2182,7 +2182,7 @@
       "userSignals": []
     },
     "economicSignals": {
-      "resaleScore": 30,
+      "resaleScore": 50,
       "tcoEstimate": 1059
     },
     "media": {
@@ -2274,6 +2274,6 @@
         "state": "meets_safe"
       }
     },
-    "publishedAt": "2026-05-15T20:44:30.950Z"
+    "publishedAt": "2026-05-16T03:58:57.194Z"
   }
 ]
