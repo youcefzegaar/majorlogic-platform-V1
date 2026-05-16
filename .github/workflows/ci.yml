@@ -41,6 +41,12 @@ jobs:
       env:
         DATABASE_URL: postgresql://postgres:password@localhost:5432/majorlogic_test
 
+    - name: Lint
+      run: npm run lint || true # Allow fail for now to avoid blocking CI
+      
+    - name: Security Audit
+      run: npm audit --audit-level=high || true # Allow fail for now
+
     - name: Run Regression Tests
       run: node tests/regression-v1.test.js
       env:

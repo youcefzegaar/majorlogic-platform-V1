@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-16T04:21:55.968Z",
+  "generatedAt": "2026-05-16T09:42:23.155Z",
   "publishedCatalogSource": "database",
   "catalogVersion": "v2026-05-16T04-21-25-075Z",
   "publishRunId": "89014e61-7aa5-4192-8815-b6f59b844753",
@@ -16,19 +16,22 @@
           "cardType": "hero",
           "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
           "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
-          "priceUsd": "949"
+          "priceUsd": "949",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "future_proof",
           "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
           "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "priceUsd": "899",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -44,19 +47,22 @@
           "cardType": "hero",
           "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
           "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
-          "priceUsd": "949"
+          "priceUsd": "949",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "future_proof",
           "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
           "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "priceUsd": "899",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -72,19 +78,22 @@
           "cardType": "hero",
           "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
           "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
-          "priceUsd": "949"
+          "priceUsd": "949",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "future_proof",
           "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
           "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "priceUsd": "899",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -100,7 +109,8 @@
           "cardType": "hero",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -116,19 +126,22 @@
           "cardType": "hero",
           "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
           "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
-          "priceUsd": "949"
+          "priceUsd": "949",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "future_proof",
           "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
           "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "priceUsd": "899",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -144,19 +157,22 @@
           "cardType": "hero",
           "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
           "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
-          "priceUsd": "949"
+          "priceUsd": "949",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "future_proof",
           "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
           "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "priceUsd": "899",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -172,19 +188,22 @@
           "cardType": "hero",
           "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
           "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "priceUsd": "899",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "future_proof",
           "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
           "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
-          "priceUsd": "849"
+          "priceUsd": "849",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -200,19 +219,22 @@
           "cardType": "hero",
           "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
           "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
-          "priceUsd": "949"
+          "priceUsd": "949",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "future_proof",
           "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
           "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "priceUsd": "899",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -222,25 +244,21 @@
       "major": "general",
       "budgetUsd": 1300,
       "status": "ok",
-      "candidateCount": 7,
+      "candidateCount": 2,
       "cards": [
         {
           "cardType": "hero",
-          "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
-          "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
-          "priceUsd": "949"
+          "entityId": "acer-nitro-v-15-core-i7-16gb-1tb-rtx-4050",
+          "title": "Acer Nitro V 15 - Core i7 / 16GB / 1TB / RTX 4050",
+          "priceUsd": "849",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
-          "entityId": "dell-inspiron-14-core-5-16gb-512gb",
-          "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
-        },
-        {
-          "cardType": "future_proof",
-          "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
-          "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "entityId": "lenovo-loq-15-gen-9-ryzen-7-24gb-1tb-rtx-4060",
+          "title": "Lenovo LOQ 15 Gen 9 - Ryzen 7 / 24GB / 1TB / RTX 4060",
+          "priceUsd": "1149",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
@@ -256,19 +274,22 @@
           "cardType": "hero",
           "entityId": "acer-swift-go-14-core-ultra-7-16gb-1tb",
           "title": "Acer Swift Go 14 - Core Ultra 7 / 16GB / 1TB",
-          "priceUsd": "949"
+          "priceUsd": "949",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "smart_budget",
           "entityId": "dell-inspiron-14-core-5-16gb-512gb",
           "title": "Dell Inspiron 14 - Core 5 / 16GB / 512GB",
-          "priceUsd": "749"
+          "priceUsd": "749",
+          "fitState": "meets_safe"
         },
         {
           "cardType": "future_proof",
           "entityId": "lenovo-thinkpad-t14-gen-4-ryzen-7-16gb-512gb",
           "title": "Lenovo ThinkPad T14 Gen 4 - Ryzen 7 / 16GB / 512GB",
-          "priceUsd": "899"
+          "priceUsd": "899",
+          "fitState": "meets_safe"
         }
       ],
       "noResults": null
