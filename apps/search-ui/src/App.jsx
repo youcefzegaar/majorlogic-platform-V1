@@ -895,8 +895,8 @@ export default function App() {
                     </div>
                   ))}
                 </div>
+                )}
               </div>
-
               {/* Sidebar */}
               <div className="cards-sidebar">
                 <div className="sidebar-panel">
@@ -1170,7 +1170,7 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                </div>
+                  </div>
               </div>
 
               <div>

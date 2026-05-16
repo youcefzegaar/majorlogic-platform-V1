@@ -59,6 +59,7 @@ try {
         entityId: card.entityId,
         title: card.title,
         priceUsd: card.priceUsd,
+        score: card.score, // Added score
         resaleScore: card.resaleScore,
         fitState: card.fitState,
         offerCondition: card.offerCondition
