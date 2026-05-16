@@ -74,6 +74,7 @@ export default function App() {
   const [selectedPurchase, setSelectedPurchase] = useState('amazon');
   const [explanationTab, setExplanationTab] = useState('why-chosen');
   const [noResults, setNoResults] = useState(null);
+  const [decisionMetadata, setDecisionMetadata] = useState({ relaxedConstraint: null, integrityScore: 1.0 });
 
   // Timeline (Simulated)
   const [timeline, setTimeline] = useState([]);
@@ -229,6 +230,10 @@ export default function App() {
         devices: result.trust?.trace?.candidateCount ?? 0,
         paths: result.decision?.cards?.length ?? 0,
         confidence: Math.round((result.trust?.decisionConfidenceScore ?? 0.78) * 100)
+      });
+      setDecisionMetadata({
+        relaxedConstraint: result.decision?.relaxedConstraint || null,
+        integrityScore: result.decision?.integrityScore || 1.0
       });
       setDetectedConflicts(result.decision.conflicts || []);
 
@@ -405,6 +410,10 @@ export default function App() {
         devices: result.trust?.trace?.candidateCount ?? 0,
         paths: result.decision?.cards?.length ?? 0,
         confidence: Math.round((result.trust?.decisionConfidenceScore ?? 0.78) * 100)
+      });
+      setDecisionMetadata({
+        relaxedConstraint: result.decision?.relaxedConstraint || null,
+        integrityScore: result.decision?.integrityScore || 1.0
       });
       setDetectedConflicts(result.decision.conflicts || []);
       setIsAnalyzing(false);
@@ -770,6 +779,26 @@ export default function App() {
 
             <div className="cards-layout">
               <div className="cards-main">
+                {decisionMetadata.relaxedConstraint === 'within_budget' && (
+                  <div className="recovery-warning" style={{ 
+                    background: 'rgba(245, 158, 11, 0.1)', 
+                    color: 'var(--accent-warning)', 
+                    border: '1px solid var(--accent-warning)', 
+                    padding: '16px 20px', 
+                    borderRadius: 12, 
+                    marginBottom: 24, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 16,
+                    fontSize: '14px'
+                  }}>
+                    <i className="fas fa-exclamation-triangle" style={{ fontSize: '20px' }}></i>
+                    <div>
+                      <strong style={{ display: 'block', marginBottom: 4 }}>Budget Constraint Relaxed</strong>
+                      We couldn't find a device matching your exact budget and priorities. These options slightly exceed your limit but are the closest matches available.
+                    </div>
+                  </div>
+                )}
                 {noResults ? (
                   <div className="no-results-container" style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--surface)', borderRadius: 16, border: '2px dashed var(--border)' }}>
                     <div style={{ fontSize: 64, marginBottom: 20 }}>🤷‍♂️</div>

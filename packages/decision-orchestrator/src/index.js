@@ -227,6 +227,16 @@ export class DecisionOrchestrator {
         mapped[`slider_${key}`] = val;
       }
     }
+
+    // Fix: Normalize and flatten preferences for userPreferenceScore calculation in Kernel
+    if (rawProfile.preferences) {
+      const normalize = v => 0.5 + 0.5 * (v / 100);
+      mapped.userPrefPerformance  = normalize(rawProfile.preferences.performance ?? 50);
+      mapped.userPrefBattery      = normalize(rawProfile.preferences.battery      ?? 50);
+      mapped.userPrefPortability  = normalize(rawProfile.preferences.portability  ?? 50);
+      mapped.userPrefDisplay      = normalize(rawProfile.preferences.display      ?? 50);
+      mapped.userPrefResale       = normalize(rawProfile.preferences.resale       ?? 50);
+    }
     
     return mapped;
   }

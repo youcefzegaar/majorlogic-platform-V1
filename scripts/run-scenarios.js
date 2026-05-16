@@ -51,6 +51,8 @@ try {
       major: profile.major,
       budgetUsd: profile.budgetUsd,
       status: result.decision.status,
+      relaxedConstraint: result.decision.relaxedConstraint || null,
+      integrityScore: result.decision.integrityScore || 1.0,
       candidateCount: result.decision.candidateCount,
       cards: result.decision.cards.map((card) => ({
         cardType: card.cardType,
