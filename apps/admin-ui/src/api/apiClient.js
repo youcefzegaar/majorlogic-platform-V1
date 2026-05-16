@@ -24,7 +24,13 @@ export default apiClient;
 
 export const adminService = {
   getOverview: () => apiClient.get('/dashboard'),
-  getDomains: () => apiClient.get('/domains'), // We'll create this endpoint
+  getDomains: () => apiClient.get('/domains'),
   getDecisionTrace: (id) => apiClient.get(`/decision-trace/${id}`),
   simulate: (data) => apiClient.post('/simulate', data),
+  getInterventions: () => apiClient.get('/interventions-data'),
+  getGrowthStats: () => apiClient.get('/growth-stats'),
+  getAffiliateSettings: () => apiClient.get('/affiliate-settings'),
+  saveAffiliateSettings: (data) => apiClient.post('/affiliate-settings', data),
+  getLogicConfig: (domainId) => apiClient.get(`/logic-config/${domainId}`),
+  saveLogicConfig: (domainId, data) => apiClient.post(`/logic-config/${domainId}`, data),
 };

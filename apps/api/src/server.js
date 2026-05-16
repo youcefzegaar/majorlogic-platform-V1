@@ -510,6 +510,68 @@ fastify.post("/admin/simulate", async (request, reply) => {
   return { success: true, report };
 });
 
+// JSON API for Interventions
+fastify.get("/admin/interventions-data", async (request, reply) => {
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.status(503).send({ error: "db_offline" });
+  const interventions = await repository.getRecentInterventions({ domainId: DEFAULT_DOMAIN, limit: 50 });
+  return { success: true, interventions };
+});
+
+// JSON API for Growth Stats
+fastify.get("/admin/growth-stats", async (request, reply) => {
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.status(503).send({ error: "db_offline" });
+  const stats = await repository.getLeadStats({ domainId: DEFAULT_DOMAIN });
+  return { success: true, stats };
+});
+
+// JSON API for Affiliate Settings
+fastify.get("/admin/affiliate-settings", async (request, reply) => {
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.status(503).send({ error: "db_offline" });
+  const settings = await repository.getAffiliateSettings();
+  return { success: true, settings };
+});
+
+fastify.post("/admin/affiliate-settings", async (request, reply) => {
+  const { seller, affiliateTag, isActive, notes } = request.body;
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.status(503).send({ error: "db_offline" });
+  
+  await repository.saveAffiliateTag({
+    seller,
+    affiliateTag,
+    isActive,
+    notes
+  });
+  return { success: true };
+});
+
+// JSON API for Logic Lab
+fastify.get("/admin/logic-config/:domainId", async (request, reply) => {
+  const { domainId } = request.params;
+  const { getRuleset } = await import("./db/repository.js");
+  const config = await getRuleset(`domains/${domainId}/decision-config.json`);
+  return { success: true, config };
+});
+
+fastify.post("/admin/logic-config/:domainId", async (request, reply) => {
+  const { domainId } = request.params;
+  const config = request.body;
+  const { getRepository, clearRulesetCache } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.status(503).send({ error: "db_offline" });
+  
+  await repository.saveDecisionLogic(domainId, config);
+  clearRulesetCache();
+  return { success: true, version: config.version };
+});
+
 // CSV Export for Admin use (basic auth guard via secret query param)
 fastify.get("/api/v1/:domain/growth/leads/export", async (request, reply) => {
   const { domain } = request.params;
@@ -627,8 +689,33 @@ fastify.get("/web/results", async (request, reply) => {
   reply.type("text/html; charset=utf-8").send(html);
 });
 
-fastify.get("/admin", async (request, reply) => reply.redirect("http://localhost:5173"));
-fastify.get("/admin/*", async (request, reply) => reply.redirect("http://localhost:5173"));
+fastify.get("/admin", async (request, reply) => {
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.type("text/html").send("<h1>DB Offline</h1>");
+  
+  const overview = await repository.getAdminOverview({ domainId: DEFAULT_DOMAIN });
+  const controller = getDomainController(DEFAULT_DOMAIN);
+  const adminData = await controller.buildAdminDashboardData();
+
+  const html = renderDashboardHtml({ 
+    overview, 
+    latestDecision: adminData?.latestDecision 
+  });
+  return reply.type("text/html; charset=utf-8").send(html);
+});
+
+fastify.get("/admin/interventions", async (request, reply) => {
+  const { getRepository } = await import("./db/repository.js");
+  const repository = await getRepository();
+  if (!repository) return reply.type("text/html").send("<h1>DB Offline</h1>");
+  
+  const interventions = await repository.getRecentInterventions({ domainId: DEFAULT_DOMAIN, limit: 50 });
+  const { renderInterventionsHtml } = await import("./views/admin_interventions.js");
+  
+  const html = renderInterventionsHtml(interventions);
+  return reply.type("text/html; charset=utf-8").send(html);
+});
 
 fastify.get("/admin/decision-latest", async (request, reply) => {
   const controller = getDomainController(DEFAULT_DOMAIN);

@@ -9,8 +9,8 @@ import {
   ChevronRight,
   Zap
 } from 'lucide-react';
-import { adminService } from '../api/apiClient';
-import { useAppStore } from '../stores/appStore';
+import { adminService } from '../../api/apiClient';
+import { useAppStore } from '../../stores/appStore';
 
 const CognitiveCommandCenter = () => {
   const { navigate } = useAppStore();

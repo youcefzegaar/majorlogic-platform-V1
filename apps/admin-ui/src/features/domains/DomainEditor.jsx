@@ -7,7 +7,7 @@ import {
   Layout,
   Zap
 } from 'lucide-react';
-import { useAppStore } from '../stores/appStore';
+import { useAppStore } from '../../stores/appStore';
 
 const DomainEditor = ({ domain, onBack }) => {
   const { navigate } = useAppStore();

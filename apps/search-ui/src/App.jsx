@@ -85,41 +85,59 @@ export default function App() {
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
-  const handleAnalyze = async () => {
+  const buildProfile = (overrides = {}) => {
+    const currentPriorities = overrides.priorities || priorities;
+    const perf = Number(currentPriorities.performance);
+    
+    return {
+      major,
+      locale: lang,
+      budgetUsd: budgetMax,
+      preferences: {
+        performance: perf,
+        portability: Number(currentPriorities.portability),
+        battery: Number(currentPriorities.battery),
+        display: major === 'design' ? 85 : 50,    // Context-aware default
+        resale: currentPriorities.resale ?? 50
+      },
+      sliders: {
+        performance: perf,
+        virtual_machines: Math.round(perf * 0.85),  // Linear, not binary
+        video_4k:         Math.round(perf * 0.70),  // Linear
+        gaming:           Math.round(perf * 0.75),  // Linear
+        portability:      Number(currentPriorities.portability)
+      },
+      context: {
+        acceptsOpenBox: false,
+        acceptsRefurbished: false,
+        financingAllowed: true
+      },
+      productIntent: {
+        performancePreference: "safe_balanced",
+        osPreference: "windows_preferred",
+        screenSize: "14_16",
+        naturalLanguageIntent: goal || "I need a laptop for programming and daily use."
+      }
+    };
+  };
+
+  const buildStabilityDescription = (score, relaxed, status) => {
+    if (status === 'COGNITIVE_COLLAPSE') 
+      return 'No rational decision possible within these constraints.';
+    if (relaxed) 
+      return `One constraint was relaxed to find results. Stability reduced.`;
+    if (score >= 80) 
+      return 'All core constraints met. Sacrifice profile aligns with your priorities.';
+    if (score >= 60) 
+      return 'Mild compromise detected. Review the trade-offs carefully.';
+    return 'Significant constraints relaxed. Consider adjusting your requirements.';
+  };
+
+  const runDecision = async (profileOverrides = {}) => {
     setIsAnalyzing(true);
     setError(null);
     try {
-      const profile = {
-        major,
-        locale: lang,
-        budgetUsd: budgetMax,
-        preferences: {
-          performance: Number(priorities.performance),
-          portability: Number(priorities.portability),
-          battery: Number(priorities.battery),
-          display: 50,
-          resale: 50
-        },
-        sliders: {
-          performance: Number(priorities.performance),
-          virtual_machines: priorities.performance > 70 ? 80 : 30,
-          video_4k: priorities.performance > 80 ? 80 : 20,
-          gaming: priorities.performance > 60 ? 70 : 20,
-          portability: Number(priorities.portability)
-        },
-        context: {
-          acceptsOpenBox: false,
-          acceptsRefurbished: false,
-          financingAllowed: true
-        },
-        productIntent: {
-          performancePreference: "safe_balanced",
-          osPreference: "windows_preferred",
-          screenSize: "14_16",
-          naturalLanguageIntent: goal || "I need a laptop for programming and daily use."
-        }
-      };
-
+      const profile = buildProfile(profileOverrides);
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3010';
       const response = await fetch(`${apiUrl}/api/v1/laptop-student-us/decision/run`, {
         method: 'POST',
@@ -129,12 +147,9 @@ export default function App() {
 
       if (!response.ok) throw new Error('API Error');
       const result = await response.json();
-      
       if (result.error) throw new Error(result.message);
 
-      // Map API result to exact UI structure
       const newCards = {};
-
       const typeDetails = {
         hero: { badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻', scoreLabel: 'High Match' },
         future_proof: { badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀', scoreLabel: 'Exceptional Longevity' },
@@ -146,8 +161,11 @@ export default function App() {
           const type = card.cardType || 'hero';
           const details = typeDetails[type] || typeDetails.hero;
           
-          const stabilityScore = Math.round((result.decision.stabilityScore || 0.88) * 100);
-          const stabilityStatus = stabilityScore >= 80 ? 'high' : stabilityScore >= 60 ? 'medium' : 'low';
+          const stabilityScore = result.decision.stabilityScore !== undefined 
+            ? Math.round(result.decision.stabilityScore * 100) 
+            : null; // Don't fake 88%
+            
+          const stabilityStatus = stabilityScore >= 80 ? 'high' : (stabilityScore >= 60 || stabilityScore === null) ? 'medium' : 'low';
           
           newCards[type] = {
             name: card.title,
@@ -160,7 +178,6 @@ export default function App() {
             scoreLabel: details.scoreLabel,
             icon: details.icon,
             image: (() => {
-              // Image Registry: maps catalog entityId → local studio image
               const IMAGE_REGISTRY = {
                 'thinkpad-p1': '/laptops/thinkpad-p1-gen-6.png',
                 'zephyrus-g14': '/laptops/asus-zephyrus-g14.png',
@@ -190,10 +207,10 @@ export default function App() {
               { name: 'Generic High-End Option', reason: 'Exceeds budget constraints' }
             ], 
             stability: {
-              score: stabilityScore,
+              score: stabilityScore || 0,
               status: stabilityStatus,
               label: stabilityScore >= 80 ? 'Stable' : 'Needs Review',
-              description: 'This decision is stable because sacrifices align with your priority hierarchy. No "Gate" (core constraint) was broken.'
+              description: buildStabilityDescription(stabilityScore, !!result.decision.relaxedConstraint, result.decision.status)
             },
             priorities: card.specs || { 
               performance: priorities.performance, 
@@ -218,7 +235,6 @@ export default function App() {
         setCards({});
       } else {
         setNoResults(null);
-        // Provide fallbacks if API missing some card types but NOT if it was explicitly a no_viable_option
         if (!newCards.hero) newCards.hero = { ...fallbackCard('Hero'), badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻' };
         if (!newCards.future_proof) newCards.future_proof = { ...fallbackCard('Future Proof'), badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀' };
         if (!newCards.smart_budget) newCards.smart_budget = { ...fallbackCard('Smart Budget'), badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎' };
@@ -237,19 +253,23 @@ export default function App() {
       });
       setDetectedConflicts(result.decision.conflicts || []);
 
-      setTimeline([
-        { date: new Date().toLocaleTimeString(), title: 'Initial Decision', desc: `Budget $${budgetMax}` }
-      ]);
-
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setPhase(1);
-      }, 200);
-
+      return true;
     } catch (err) {
       console.error(err);
       setError('Could not connect to the Decision Engine.');
+      return false;
+    } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const handleAnalyze = async () => {
+    const success = await runDecision();
+    if (success) {
+      setTimeline([
+        { date: new Date().toLocaleTimeString(), title: 'Initial Decision', desc: `Budget $${budgetMax}` }
+      ]);
+      setTimeout(() => setPhase(1), 200);
     }
   };
 
@@ -282,146 +302,13 @@ export default function App() {
   };
 
   const applySidebarChanges = async () => {
-    // Add timeline event
     setTimeline(prev => [...prev, {
       date: new Date().toLocaleTimeString(),
       title: 'Priority Adjustment',
       desc: 'Updated sliders to refine results.'
     }]);
     
-    const currentPhase = phase; // Remember current phase
-    setIsAnalyzing(true);
-    
-    try {
-      const profile = {
-        major,
-        locale: lang,
-        budgetUsd: budgetMax,
-        preferences: {
-          performance: Number(priorities.performance),
-          portability: Number(priorities.portability),
-          battery: Number(priorities.battery),
-          display: 50,
-          resale: 50
-        },
-        sliders: {
-          performance: Number(priorities.performance),
-          virtual_machines: priorities.performance > 70 ? 80 : 30,
-          video_4k: priorities.performance > 80 ? 80 : 20,
-          gaming: priorities.performance > 60 ? 70 : 20,
-          portability: Number(priorities.portability)
-        },
-        context: { acceptsOpenBox: false, acceptsRefurbished: false, financingAllowed: true },
-        productIntent: {
-          performancePreference: "safe_balanced",
-          osPreference: "windows_preferred",
-          screenSize: "14_16",
-          naturalLanguageIntent: goal || "I need a laptop for programming and daily use."
-        }
-      };
-
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3010';
-      const response = await fetch(`${apiUrl}/api/v1/laptop-student-us/decision/run`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile)
-      });
-
-      if (!response.ok) throw new Error('API Error');
-      const result = await response.json();
-      if (result.error) throw new Error(result.message);
-
-      const newCards = {};
-      const typeDetails = {
-        hero: { badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻', scoreLabel: 'High Match' },
-        future_proof: { badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀', scoreLabel: 'Exceptional Longevity' },
-        smart_budget: { badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎', scoreLabel: 'Excellent Value' }
-      };
-
-      const IMAGE_REGISTRY = {
-        'thinkpad-p1': '/laptops/thinkpad-p1-gen-6.png',
-        'zephyrus-g14': '/laptops/asus-zephyrus-g14.png',
-        'macbook-air': '/laptops/macbook-air-15.png',
-        'macbook-pro': '/laptops/macbook-pro-14.png',
-        'dell-inspiron': '/laptops/dell-inspiron-14.png',
-        'acer-nitro': '/laptops/acer-nitro-v-15.png',
-        'thinkpad-t14': '/laptops/lenovo-thinkpad-t14.png',
-        'lenovo-loq': '/laptops/lenovo-loq-15.png',
-        'proart': '/laptops/asus-proart-p16.png',
-        'omnibook': '/laptops/hp-omnibook-x.png',
-        'swift-go': '/laptops/acer-swift-go-14.png',
-        'surface': '/laptops/surface-laptop-7.png',
-        'msi-pulse': '/laptops/msi-pulse-16.png',
-      };
-
-      if (result.decision?.cards) {
-        result.decision.cards.forEach(card => {
-          const type = card.cardType || 'hero';
-          const details = typeDetails[type] || typeDetails.hero;
-          const stabilityScore = Math.round((result.decision.stabilityScore || 0.88) * 100);
-          const stabilityStatus = stabilityScore >= 80 ? 'high' : stabilityScore >= 60 ? 'medium' : 'low';
-          const id = card.entityId.toLowerCase();
-          const imgMatch = Object.keys(IMAGE_REGISTRY).find(k => id.includes(k));
-
-          newCards[type] = {
-            name: card.title,
-            price: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
-            originalPrice: (card.priceUsd && card.priceUsd < budgetMax) ? `$${budgetMax.toLocaleString()}` : null,
-            badge: details.badge, badgeClass: details.badgeClass,
-            score: Math.round(card.score || card.confidenceScore * 100 || 85),
-            scoreClass: (card.score || card.confidenceScore * 100 || 85) >= 80 ? 'high' : 'medium',
-            scoreLabel: details.scoreLabel, icon: details.icon,
-            image: imgMatch ? IMAGE_REGISTRY[imgMatch] : '/laptops/dell-inspiron-14.png',
-            whyChosen: typeof card.whyThis === 'string' && card.whyThis.trim() !== '' ? card.whyThis : 'This device perfectly balances your priorities based on our analysis.',
-            flaws: typeof card.badNews === 'string' && card.badNews.trim() !== '' ? [card.badNews] : ['Minor compromises based on budget constraints.'],
-            tradeOffs: {
-              gained: Array.isArray(card.topPros) && card.topPros.length > 0 ? card.topPros : ['Performance above average'],
-              lost: typeof card.secondaryBadNews === 'string' && card.secondaryBadNews.trim() !== '' ? [card.secondaryBadNews] : ['Slightly heavier than average']
-            },
-            excluded: card.excluded && card.excluded.length > 0 ? card.excluded : [
-              { name: 'Generic High-End Option', reason: 'Exceeds budget constraints' }
-            ],
-            stability: { score: stabilityScore, status: stabilityStatus, label: stabilityScore >= 80 ? 'Stable' : 'Needs Review', description: 'This decision is stable because sacrifices align with your priority hierarchy.' },
-            priorities: card.specs || { performance: priorities.performance, battery: priorities.battery, portability: priorities.portability, build: 90 },
-            purchaseLinks: {
-              amazon: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
-              bestbuy: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
-              direct: `$${((card.priceUsd || budgetMax) + 50).toLocaleString()}`
-            }
-          };
-        });
-      }
-
-      if (result.decision?.status === 'no_viable_option') {
-        setNoResults({
-          message: result.decision.message || 'No suitable device found for your specific constraints.',
-          suggestions: result.decision.suggestions || []
-        });
-        setCards({});
-      } else {
-        setNoResults(null);
-        if (!newCards.hero) newCards.hero = { ...fallbackCard('Hero'), badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻' };
-        if (!newCards.future_proof) newCards.future_proof = { ...fallbackCard('Future Proof'), badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀' };
-        if (!newCards.smart_budget) newCards.smart_budget = { ...fallbackCard('Smart Budget'), badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎' };
-        setCards(newCards);
-      }
-      setAnalysisSummary({
-        conflicts: result.decision?.conflicts?.length ?? 0,
-        devices: result.trust?.trace?.candidateCount ?? 0,
-        paths: result.decision?.cards?.length ?? 0,
-        confidence: Math.round((result.trust?.decisionConfidenceScore ?? 0.78) * 100)
-      });
-      setDecisionMetadata({
-        relaxedConstraint: result.decision?.relaxedConstraint || null,
-        integrityScore: result.decision?.integrityScore || 1.0
-      });
-      setDetectedConflicts(result.decision.conflicts || []);
-      setIsAnalyzing(false);
-      setPhase(currentPhase); // Stay on current phase!
-    } catch (err) {
-      console.error(err);
-      setIsAnalyzing(false);
-    }
+    await runDecision();
   };
 
   const confirmCard = (type) => {

@@ -9,7 +9,7 @@ import {
   Activity,
   RefreshCw
 } from 'lucide-react';
-import { adminService } from '../api/apiClient';
+import { adminService } from '../../api/apiClient';
 
 const ShadowRunner = ({ domain, onBack }) => {
   const [modifications, setModifications] = useState({});

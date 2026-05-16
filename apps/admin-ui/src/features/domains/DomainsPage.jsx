@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Plus, RefreshCw } from 'lucide-react';
-import { adminService } from '../api/apiClient';
+import { adminService } from '../../api/apiClient';
 
 const DomainsPage = ({ onEdit }) => {
   const { data: domainsData, isLoading, refetch } = useQuery({

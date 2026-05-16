@@ -822,10 +822,14 @@ export const laptopStudentUsDomainPack = {
       })[0];
     }
     if (cardType === "future_proof") {
-      // Highest specs ceiling (RAM + storage + performance)
+      // Highest specs ceiling (RAM + performance + storage weighted)
+      // Rationale: In the cloud-first era (2025+), local storage matters roughly 1/100th 
+      // compared to RAM or CPU performance for long-term scalability.
+      const STORAGE_WEIGHT = 0.01; 
+      
       return [...available].sort((a, b) => {
-        const specA = (a.entity.specs?.ramGb || 0) + (a.entity.specs?.performance || 0) + ((a.entity.specs?.storageGb || 0) / 100);
-        const specB = (b.entity.specs?.ramGb || 0) + (b.entity.specs?.performance || 0) + ((b.entity.specs?.storageGb || 0) / 100);
+        const specA = (a.entity.specs?.ramGb || 0) + (a.entity.specs?.performance || 0) + ((a.entity.specs?.storageGb || 0) * STORAGE_WEIGHT);
+        const specB = (b.entity.specs?.ramGb || 0) + (b.entity.specs?.performance || 0) + ((b.entity.specs?.storageGb || 0) * STORAGE_WEIGHT);
         return specB - specA;
       })[0];
     }

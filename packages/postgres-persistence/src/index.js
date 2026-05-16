@@ -427,6 +427,14 @@ export class PostgresPlatformRepository {
       [domainId]
     );
 
+    const integrityResult = await this.pool.query(
+      `select avg(coalesce(i.integrity_score, 100))::float as avg_integrity
+       from ml_decision.decision_runs dr
+       left join ml_telemetry.interventions i on dr.id = i.decision_run_id
+       where dr.domain_id = $1`,
+      [domainId]
+    );
+
     const latestIngestionResult = await this.pool.query(
       `select id, source_count, normalized_count, status, started_at, finished_at
        from ml_raw.ingestion_runs
@@ -462,6 +470,7 @@ export class PostgresPlatformRepository {
     return {
       domainId,
       counts,
+      avgIntegrity: (integrityResult.rows[0]?.avg_integrity ?? 100) / 100,
       latestIngestionRun: latestIngestionResult.rows[0] ?? null,
       latestPublishRun: latestPublishResult.rows[0] ?? null,
       latestDecisionRun: latestDecisionResult.rows[0] ?? null

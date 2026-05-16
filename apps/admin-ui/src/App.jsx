@@ -1,11 +1,18 @@
 import React from 'react';
 import AdminLayout from './layouts/AdminLayout';
-import DomainsPage from './pages/DomainsPage';
-import DomainEditor from './pages/DomainEditor';
-import DecisionTraceView from './pages/DecisionTraceView';
-import DecisionTopologyView from './pages/DecisionTopologyView';
-import CognitiveCommandCenter from './pages/CognitiveCommandCenter';
-import ShadowRunner from './pages/ShadowRunner';
+import CognitiveCommandCenter from './features/dashboard/CognitiveCommandCenter';
+import DomainsPage from './features/domains/DomainsPage';
+import DomainEditor from './features/domains/DomainEditor';
+import DecisionTraceView from './features/forensics/DecisionTraceView';
+import DecisionTopologyView from './features/forensics/DecisionTopologyView';
+import ShadowRunner from './features/shadow-runner/ShadowRunner';
+import DashboardHome from './features/dashboard/DashboardHome';
+import InterventionFeed from './features/governance/InterventionFeed';
+import GrowthLeads from './features/growth/GrowthLeads';
+import AffiliateManager from './features/affiliate/AffiliateManager';
+import LogicLab from './features/governance/LogicLab';
+import CommercialIntegrity from './features/governance/CommercialIntegrity';
+import SettingsPage from './features/dashboard/SettingsPage';
 import { useAppStore } from './stores/appStore';
 import './index.css';
 
@@ -27,15 +34,17 @@ const App = () => {
       case 'shadow_runner':
         return <ShadowRunner domain={editingDomain} onBack={() => navigate('domain_editor', { domain: editingDomain })} />;
       case 'telemetry':
-        return <PlaceholderPage title="Telemetry" icon="Activity" />;
+        return <InterventionFeed />;
       case 'ab_tests':
-        return <PlaceholderPage title="A/B Testing" icon="GitMerge" />;
+        return <CommercialIntegrity />;
       case 'leads':
-        return <PlaceholderPage title="Growth & Leads" icon="Users" />;
+        return <GrowthLeads />;
       case 'affiliate':
-        return <PlaceholderPage title="Affiliate Tags" icon="Tag" />;
+        return <AffiliateManager />;
+      case 'logic_lab':
+        return <LogicLab />;
       case 'settings':
-        return <PlaceholderPage title="Settings" icon="Settings" />;
+        return <SettingsPage />;
       default:
         return <DashboardHome />;
     }

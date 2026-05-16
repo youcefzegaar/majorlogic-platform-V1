@@ -9,102 +9,154 @@ import { renderAuditDashboard } from "./admin_templates.js";
 
 /**
  * Main Admin Dashboard Wrapper
- */
-export function renderDashboardHtml(data) {
+ *export function renderDashboardHtml(data) {
+  const integrityColor = (data?.overview?.avgIntegrity ?? 0.9) >= 0.8 ? '#10b981' : '#f59e0b';
+  
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard — MajorLogic</title>
-  <link rel="stylesheet" href="/public/styles.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
   <style>
-    body { font-family: system-ui, sans-serif; background: #0d0d1a; color: #e0e0e0; padding: 32px; }
-    .card { background: #1a1a2e; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #2d2d4e; }
-    h1 { color: #7C3AED; }
-    h2 { margin-top: 0; font-size: 1.2rem; color: #c4b5fd; }
-    nav a { color: #7C3AED; margin-right: 16px; text-decoration: none; font-size: 14px; }
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-    .stat-item { background: #12122a; padding: 16px; border-radius: 8px; text-align: center; }
-    .stat-value { font-size: 24px; font-weight: 700; color: #fff; }
-    .stat-label { font-size: 12px; color: #888; text-transform: uppercase; }
+    :root {
+      --bg: #0a0a1a;
+      --surface: #12122a;
+      --surface-elevated: #1a1a3a;
+      --accent: #7C3AED;
+      --accent-glow: rgba(124, 58, 237, 0.3);
+      --text: #e0e0e0;
+      --text-muted: #888;
+      --border: #2d2d4e;
+    }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 0; margin: 0; display: flex; min-height: 100vh; }
+    
+    .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: 32px 24px; flex-shrink: 0; }
+    .main { flex: 1; padding: 48px; max-width: 1200px; }
+    
+    .logo { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 48px; display: flex; alignItems: center; gap: 12px; }
+    .logo i { color: var(--accent); }
+    
+    nav a { display: flex; align-items: center; gap: 12px; color: var(--text-muted); text-decoration: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; transition: all 0.2s; font-size: 14px; }
+    nav a:hover { background: var(--surface-elevated); color: #fff; }
+    nav a.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--accent-glow); }
+    
+    .card { background: var(--surface); border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid var(--border); transition: transform 0.2s; }
+    .card:hover { border-color: var(--accent); }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 32px; color: #fff; }
+    h2 { margin-top: 0; font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-item { background: var(--surface-elevated); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+    .stat-value { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    
+    .integrity-meter { height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin-top: 12px; }
+    .integrity-fill { height: 100%; transition: width 0.5s ease-out; }
+    
+    .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; transition: filter 0.2s; }
+    .btn:hover { filter: brightness(1.2); }
+    .btn-secondary { background: var(--surface-elevated); border: 1px solid var(--border); color: #fff; }
+    
+    .tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+    .tag-success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    
+    .action-group { display: flex; gap: 12px; margin-top: 16px; }
   </style>
 </head>
 <body>
-  <nav style="margin-bottom:32px;">
-    <a href="/admin/dashboard">Dashboard</a>
-    <a href="/admin/overview">Overview</a>
-    <a href="/admin/logic">🧪 Logic Lab</a>
-    <a href="/admin/growth">📊 Growth</a>
-    <a href="/admin/affiliate">🔗 Affiliate</a>
-    <a href="/admin/account">⚙️ Account</a>
-    <a href="/web/search" target="_blank">View Site ↗</a>
-  </nav>
+  <div class="sidebar">
+    <div class="logo"><i class="fas fa-brain"></i> MajorLogic</div>
+    <nav>
+      <a href="/admin" class="active"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="/admin/overview"><i class="fas fa-list"></i> Decision Logs</a>
+      <a href="/admin/interventions"><i class="fas fa-shield-alt"></i> Interventions</a>
+      <a href="/admin/logic"><i class="fas fa-flask"></i> Logic Lab</a>
+      <a href="/admin/growth"><i class="fas fa-chart-line"></i> Growth</a>
+      <a href="/admin/affiliate"><i class="fas fa-link"></i> Affiliate</a>
+      <a href="/admin/account"><i class="fas fa-cog"></i> Settings</a>
+      <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border);">
+        <a href="/web/search" target="_blank" style="color: var(--accent);"><i class="fas fa-external-link-alt"></i> Live Site</a>
+      </div>
+    </nav>
+  </div>
 
-  <h1>🛡️ MajorLogic Admin</h1>
+  <div class="main">
+    <h1>Dashboard Overview</h1>
 
-  <div class="card">
-    <h2>System Health & Counts</h2>
     <div class="stat-grid">
       <div class="stat-item">
-        <div class="stat-value">${data?.overview?.counts?.source_observations ?? 0}</div>
-        <div class="stat-label">Source Observations</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">${data?.overview?.counts?.published_entities ?? 0}</div>
-        <div class="stat-label">Published Entities</div>
-      </div>
-      <div class="stat-item">
         <div class="stat-value">${data?.overview?.counts?.decision_runs ?? 0}</div>
-        <div class="stat-label">Decision Runs</div>
+        <div class="stat-label">Total Decisions</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${Math.round((data?.overview?.avgIntegrity ?? 0.92) * 100)}%</div>
+        <div class="stat-label">Decision Integrity</div>
+        <div class="integrity-meter"><div class="integrity-fill" style="width: ${Math.round((data?.overview?.avgIntegrity ?? 0.92) * 100)}%; background: ${integrityColor};"></div></div>
       </div>
       <div class="stat-item">
         <div class="stat-value">${data?.overview?.counts?.user_feedback ?? 0}</div>
-        <div class="stat-label">User Feedback</div>
+        <div class="stat-label">Feedback Received</div>
       </div>
       <div class="stat-item">
         <div class="stat-value">${data?.overview?.counts?.telemetry_clicks ?? 0}</div>
-        <div class="stat-label">Telemetry Clicks</div>
+        <div class="stat-label">Conversion Clicks</div>
       </div>
     </div>
-  </div>
 
-  <div class="card">
-    <h2>Latest Ingestion</h2>
-    ${data?.overview?.latestIngestionRun ? `
-      <p>ID: <code>${data.overview.latestIngestionRun.id}</code></p>
-      <p>Status: <span style="color:${data.overview.latestIngestionRun.status === 'completed' ? '#4ade80' : '#f87171'}">${data.overview.latestIngestionRun.status}</span></p>
-      <p>Sources: ${data.overview.latestIngestionRun.source_count} | Normalized: ${data.overview.latestIngestionRun.normalized_count}</p>
-    ` : '<p style="color:#888;">No ingestion runs yet.</p>'}
-  </div>
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+      <div class="card">
+        <h2><i class="fas fa-history"></i> Latest System Activity</h2>
+        ${data.latestDecision ? `
+          <div style="background: var(--bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+              <div>
+                <div style="font-weight: 800; font-size: 18px; color: #fff;">${data.latestDecision.profile?.major?.toUpperCase() ?? 'GENERAL'} INQUIRY</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">ID: ${data.latestDecision.decisionRunId}</div>
+              </div>
+              <span class="tag tag-success">COMPLETED</span>
+            </div>
+            <p style="font-size: 14px; line-height: 1.6; color: var(--text-muted);">
+              Decision finalized using <strong>IR v${data.latestDecision.ir?.version ?? '3.0.0'}</strong>.
+              Result recovery: <span style="color: #fff;">${data.latestDecision.decision?.relaxedConstraint ? 'Active (' + data.latestDecision.decision.relaxedConstraint + ')' : 'Direct Match'}</span>
+            </p>
+            <div class="action-group">
+              <a href="http://localhost:5174/results?runId=${data.latestDecision.decisionRunId}" class="btn" target="_blank">
+                <i class="fas fa-eye"></i> View as User
+              </a>
+              <a href="/admin/decision-latest" class="btn btn-secondary">
+                <i class="fas fa-code-branch"></i> Trace Logic
+              </a>
+            </div>
+          </div>
+        ` : '<p style="color:var(--text-muted);">No activity logged yet.</p>'}
+      </div>
 
-  <div class="card">
-    <h2>Latest Decision</h2>
-    ${data.latestDecision ? `
-      <p>Major: ${data.latestDecision.profile?.major ?? 'unknown'}</p>
-      <p style="margin-top:12px;">
-        <a href="http://localhost:5173/results?runId=${data.latestDecision.decisionRunId}" 
-           style="background:#7C3AED; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold; display:inline-block;" 
-           target="_blank">🚀 Open in New Interface (Decision OS)</a>
-      </p>
-      <p style="margin-top:8px;">
-        <a href="/admin/decision-latest" style="color:#888; font-size:12px;">View Admin Decision Trace →</a>
-      </p>
-    ` : '<p style="color:#888;">No decisions logged yet.</p>'}
-  </div>
-
-  <div class="card">
-    <h2>⚡ Quick Actions</h2>
-    <div style="display:flex;gap:12px;">
-      <form action="/admin/logic/save" method="POST" style="display:inline;">
-        <button type="submit" style="background:#7C3AED;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">♻️ Refresh Logic Cache</button>
-      </form>
-      <button onclick="alert('Ingestion Triggered (Sync Mode)')" style="background:#1f1f3a;color:#c4b5fd;border:1px solid #2d2d4e;padding:8px 16px;border-radius:6px;cursor:pointer;">🚜 Trigger Ingestion</button>
+      <div class="card">
+        <h2><i class="fas fa-bolt"></i> Quick Controls</h2>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <form action="/admin/logic/save" method="POST">
+            <button type="submit" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+              <i class="fas fa-sync"></i> Re-compile IR Cache
+            </button>
+          </form>
+          <button onclick="alert('Ingestion Started')" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+            <i class="fas fa-database"></i> Force Ingestion
+          </button>
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">ACTIVE DOMAIN</div>
+            <div style="font-weight: 800; color: var(--accent);">laptop-student-us</div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
+  </div>
 </body>
 </html>`;
 }
+
 
 export function renderOverviewHtml(overview) {
   // Simple redirect to main dashboard or a list of runs

@@ -60,10 +60,17 @@ export class DecisionExplainer {
 
   explainStrengths(trace, atlas, locale) {
     const scores = Object.entries(trace.scores)
-      .filter(([id, val]) => id.startsWith("score_") || val > 80)
+      .filter(([id, val]) => val > 70)
       .sort((a, b) => b[1] - a[1]);
 
-    const top = scores.slice(0, 2).map(s => atlas[locale]?.[s[0]] || s[0]);
+    if (!scores.length) {
+      return locale === 'ar' ? 'يستوفي المتطلبات الأساسية' : 'meets core requirements';
+    }
+
+    const top = scores.slice(0, 2).map(([id]) => {
+      return atlas[locale]?.[id] || atlas['en']?.[id] || id.replace(/score_/, '').replace(/_/g, ' ');
+    });
+
     if (locale === "ar") return `تتميز بـ ${top.join(" و ")}`;
     return `excels in ${top.join(" and ")}`;
   }

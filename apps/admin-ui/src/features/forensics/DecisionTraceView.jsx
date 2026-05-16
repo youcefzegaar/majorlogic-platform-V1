@@ -8,9 +8,10 @@ import {
   GitMerge, 
   User, 
   Box,
-  Clock
+  Clock,
+  FlaskConical
 } from 'lucide-react';
-import { adminService } from '../api/apiClient';
+import { adminService } from '../../api/apiClient';
 
 const DecisionTraceView = ({ traceId, onBack }) => {
   const { data: traceData, isLoading } = useQuery({
@@ -115,6 +116,28 @@ const DecisionTraceView = ({ traceId, onBack }) => {
             status="success" 
             isLast
           />
+        </div>
+      </div>
+      <div className="card" style={{ marginTop: '32px', borderTop: '4px solid var(--accent-secondary)' }}>
+        <h3 style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <FlaskConical size={20} color="var(--accent-secondary)" /> Counterfactual Analysis (What-If)
+        </h3>
+        <p style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', marginBottom: '20px' }}>
+          Exploring alternative universes where logic parameters were different for this specific session.
+        </p>
+        <div className="grid-2">
+          <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+            <h4 style={{ fontSize: '0.9rem', marginBottom: '12px' }}>Scenario A: Budget Relaxed (+20%)</h4>
+            <p style={{ fontSize: '0.8rem', color: 'var(--success)' }}>
+              Result: <strong>2 new products found</strong>. Including the "High Performance" variant which was previously excluded by $45.
+            </p>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+            <h4 style={{ fontSize: '0.9rem', marginBottom: '12px' }}>Scenario B: Quality Over Price</h4>
+            <p style={{ fontSize: '0.8rem', color: 'var(--warning)' }}>
+              Result: <strong>Recommendation changed</strong>. The "Reliability" score would have outweighed the "Value" proposition.
+            </p>
+          </div>
         </div>
       </div>
     </div>

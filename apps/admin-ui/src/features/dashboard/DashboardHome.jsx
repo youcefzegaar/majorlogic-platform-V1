@@ -9,8 +9,8 @@ import {
   RefreshCw, 
   Plus 
 } from 'lucide-react';
-import { adminService } from '../api/apiClient';
-import { useAppStore } from '../stores/appStore';
+import { adminService } from '../../api/apiClient';
+import { useAppStore } from '../../stores/appStore';
 
 const DashboardHome = () => {
   const { navigate } = useAppStore();

@@ -3,18 +3,20 @@ import {
   LayoutDashboard, 
   BrainCircuit, 
   Activity, 
-  GitMerge, 
+  Scale, 
   Users, 
   Tag, 
-  Settings 
+  Settings,
+  FlaskConical
 } from 'lucide-react';
 
 const Sidebar = ({ currentPath, setCurrentPath }) => {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'domains', icon: BrainCircuit, label: 'Cognitive Domains' },
+    { id: 'logic_lab', icon: FlaskConical, label: 'Logic Lab' },
     { id: 'telemetry', icon: Activity, label: 'Telemetry' },
-    { id: 'ab_tests', icon: GitMerge, label: 'A/B Testing' },
+    { id: 'ab_tests', icon: Scale, label: 'Commercial Integrity' },
     { id: 'leads', icon: Users, label: 'Growth & Leads' },
     { id: 'affiliate', icon: Tag, label: 'Affiliate Tags' },
     { id: 'settings', icon: Settings, label: 'Settings' }
