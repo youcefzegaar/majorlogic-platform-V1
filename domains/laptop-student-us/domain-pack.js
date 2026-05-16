@@ -448,7 +448,7 @@ export const laptopStudentUsDomainPack = {
         userSignals: observation.reviewSummary?.userSignals ?? []
       },
       economicSignals: {
-        resaleScore: specs.resale ?? 50,
+        resaleScore: resaleScore,
         tcoEstimate: calculateTCO({ market: { bestOffer }, specs })
       },
       media: {

@@ -83,7 +83,7 @@
       "node": "Seller Trust Gate",
       "humanMeaning": "Source is from an unverified or risky marketplace",
       "weight": 1.0,
-      "condition": { "op": "lte", "left": "market.bestOffer.sellerTier", "right": 3 }
+      "condition": { "op": "lte", "left": "market.sellerTier", "right": 3 }
     }
   },
   "rulesets": {
