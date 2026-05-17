@@ -358,6 +358,17 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
     return reply.send({ success: true });
   });
 
+  fastify.delete("/integrations/:slug", async (request, reply) => {
+    const { slug } = request.params;
+    const { getRepository } = await import("../db/repository.js");
+    const repository = await getRepository();
+    if (!repository) return reply.status(503).send({ error: "db_offline" });
+    await repository.deleteIntegration(slug);
+    const { clearIntegrationCache } = await import("../services/integrationService.js");
+    clearIntegrationCache();
+    return reply.send({ success: true });
+  });
+
   fastify.post("/integrations/:slug/test", async (request, reply) => {
     const { slug } = request.params;
     const { getRepository } = await import("../db/repository.js");

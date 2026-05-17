@@ -952,6 +952,13 @@ export class PostgresPlatformRepository {
     );
   }
 
+  async deleteIntegration(slug) {
+    await this.pool.query(
+      `DELETE FROM ml_commercial.platform_integrations WHERE slug = $1`,
+      [slug]
+    );
+  }
+
   // ─────────────────────────────────────────────
   // Admin Audit Log
   // ─────────────────────────────────────────────

@@ -36,6 +36,7 @@ export const adminService = {
   addIntegration: (data) => apiClient.post('/integrations', data),
   testIntegration: (slug) => apiClient.post(`/integrations/${slug}/test`),
   revokeIntegration: (slug) => apiClient.delete(`/integrations/${slug}/credentials`),
+  deleteIntegration: (slug) => apiClient.delete(`/integrations/${slug}`),
   getAffiliateSettings: () => apiClient.get('/affiliate-settings'),
   saveAffiliateSettings: (data) => apiClient.post('/affiliate-settings', data),
   getLogicConfig: (domainId) => apiClient.get(`/logic-config/${domainId}`),
