@@ -123,11 +123,11 @@ const AddDropdown = ({ existingSlugs, onAddKnown, onAddCustom, onClose }) => {
     <div ref={ref} style={{
       position: 'absolute', top: '100%', right: 0, marginTop: '6px',
       width: '300px', maxHeight: '420px', overflowY: 'auto',
-      background: 'var(--surface)', border: '1px solid var(--border-subtle)',
-      borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', zIndex: 200,
+      background: '#101014', border: '1px solid rgba(255,255,255,0.12)',
+      borderRadius: '12px', boxShadow: '0 12px 40px rgba(0,0,0,0.7)', zIndex: 500,
     }}>
       {/* Search */}
-      <div style={{ padding: '10px', borderBottom: '1px solid var(--border-subtle)', position: 'sticky', top: 0, background: 'var(--surface)' }}>
+      <div style={{ padding: '10px', borderBottom: '1px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, background: '#101014' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '6px 10px', border: '1px solid var(--border-subtle)' }}>
           <Search size={13} color="var(--text-tertiary)" />
           <input
