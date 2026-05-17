@@ -16,6 +16,7 @@ import { validateEnv } from "./config/validate-env.js";
 import adminRoutes from "./routes/admin.js";
 import apiRoutes from "./routes/api.js";
 import webRoutes from "./routes/web.js";
+import { csrfPlugin } from "./middleware/csrf.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
@@ -56,13 +57,19 @@ fastify.register(fastifyHelmet, {
 });
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-const ALLOWED_ORIGINS = [
-  "https://majorlogic.ai",
-  "https://www.majorlogic.ai",
-  "http://localhost:3010", "http://127.0.0.1:3010",
-  "http://localhost:5173", "http://localhost:5174",
-  "http://localhost:5175", "http://localhost:5176"
-];
+// security: in production, only origins listed in ALLOWED_ORIGINS env var are
+// permitted. localhost entries are never included in production to avoid
+// cross-origin leaks from attacker-controlled local pages.
+const ALLOWED_ORIGINS = isProd
+  ? (process.env.ALLOWED_ORIGINS || "").split(",").map(o => o.trim()).filter(Boolean)
+  : [
+      "https://majorlogic.ai",
+      "https://www.majorlogic.ai",
+      "http://localhost:3010", "http://127.0.0.1:3010",
+      "http://localhost:5173", "http://localhost:5174",
+      "http://localhost:5175", "http://localhost:5176"
+    ];
+
 fastify.register(cors, {
   origin: (origin, cb) => {
     if (!origin || ALLOWED_ORIGINS.includes(origin)) {
@@ -84,6 +91,11 @@ fastify.register(fastifyCookie, {
   secret: process.env.COOKIE_SECRET,
   hook: "onRequest"
 });
+
+// ── CSRF Protection ───────────────────────────────────────────────────────────
+// security: double-submit cookie pattern for all state-changing /admin/* routes.
+// Must be registered after fastifyCookie so req.cookies is available.
+fastify.register(csrfPlugin);
 
 // ── Rate Limiting ─────────────────────────────────────────────────────────────
 await fastify.register(fastifyRateLimit, {

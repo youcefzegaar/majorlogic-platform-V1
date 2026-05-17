@@ -1,0 +1,157 @@
+import React from 'react';
+
+const RadarChart = ({ data }) => {
+  const cx = 120;
+  const cy = 120;
+  const r = 80;
+
+  const getPoint = (val, angle) => {
+    const rad = (angle - 90) * Math.PI / 180;
+    const distance = (val / 100) * r;
+    return `${cx + distance * Math.cos(rad)},${cy + distance * Math.sin(rad)}`;
+  };
+
+  const points = [
+    getPoint(data.performance, 0),
+    getPoint(data.battery, 90),
+    getPoint(data.portability, 180),
+    getPoint(data.build, 270)
+  ].join(' ');
+
+  return (
+    <svg width="240" height="240" viewBox="0 0 240 240" style={{ overflow: 'visible' }}>
+      <polygon points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`} fill="rgba(255,255,255,0.02)" stroke="var(--border)" strokeWidth="1" strokeDasharray="4" />
+      <polygon points={`${cx},${cy - r * 0.5} ${cx + r * 0.5},${cy} ${cx},${cy + r * 0.5} ${cx - r * 0.5},${cy}`} fill="none" stroke="var(--border)" strokeWidth="1" strokeDasharray="4" />
+      <line x1={cx} y1={cy - r} x2={cx} y2={cy + r} stroke="var(--border)" strokeWidth="1" />
+      <line x1={cx - r} y1={cy} x2={cx + r} y2={cy} stroke="var(--border)" strokeWidth="1" />
+
+      <text x={cx} y={cy - r - 10} textAnchor="middle" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Performance</text>
+      <text x={cx + r + 10} y={cy + 4} textAnchor="start" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Battery</text>
+      <text x={cx} y={cy + r + 20} textAnchor="middle" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Portability</text>
+      <text x={cx - r - 10} y={cy + 4} textAnchor="end" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Build</text>
+
+      <polygon points={points} fill="rgba(233, 69, 96, 0.2)" stroke="var(--accent)" strokeWidth="2" style={{ transition: 'all 0.4s ease-out' }} />
+
+      <circle cx={getPoint(data.performance, 0).split(',')[0]} cy={getPoint(data.performance, 0).split(',')[1]} r="4" fill="var(--accent)" style={{ transition: 'all 0.4s ease-out' }} />
+      <circle cx={getPoint(data.battery, 90).split(',')[0]} cy={getPoint(data.battery, 90).split(',')[1]} r="4" fill="var(--accent)" style={{ transition: 'all 0.4s ease-out' }} />
+      <circle cx={getPoint(data.portability, 180).split(',')[0]} cy={getPoint(data.portability, 180).split(',')[1]} r="4" fill="var(--accent)" style={{ transition: 'all 0.4s ease-out' }} />
+      <circle cx={getPoint(data.build, 270).split(',')[0]} cy={getPoint(data.build, 270).split(',')[1]} r="4" fill="var(--accent)" style={{ transition: 'all 0.4s ease-out' }} />
+    </svg>
+  );
+};
+
+export default function DecisionTrace({ priorities, analysisSummary, detectedConflicts, budgetMin, budgetMax }) {
+  return (
+    <>
+      <div className="constraint-list">
+        <div className="constraint-item">
+          <div className="constraint-status ok"><i className="fas fa-check"></i></div>
+          <div className="constraint-info">
+            <div className="constraint-name">Budget (${budgetMin.toLocaleString()} - ${budgetMax.toLocaleString()})</div>
+            <div className="constraint-detail">{analysisSummary.devices} devices available within budget</div>
+          </div>
+          <div className="constraint-tension">
+            <div className="tension-bar-bg"><div className="tension-bar-fill low" style={{ width: '20%' }}></div></div>
+            <div className="tension-label">Low tension</div>
+          </div>
+        </div>
+
+        {detectedConflicts.map(insight => {
+          const isHarmony = insight.type === 'harmony';
+          const isRisk = insight.type === 'risk';
+
+          const icon = isHarmony ? 'fa-check-circle' : isRisk ? 'fa-info-circle' : 'fa-bolt';
+          const colorClass = isHarmony ? 'ok' : isRisk ? 'info' : 'warning';
+          const barColorClass = isHarmony ? 'low' : isRisk ? 'medium' : 'high';
+
+          return (
+            <div
+              key={insight.id}
+              className="constraint-item"
+              style={{
+                border: isHarmony
+                  ? '1px solid rgba(16, 185, 129, 0.3)'
+                  : isRisk
+                    ? '1px solid rgba(14, 165, 233, 0.3)'
+                    : '1px solid var(--border)',
+                background: isHarmony ? 'rgba(16, 185, 129, 0.02)' : 'var(--surface-elevated)'
+              }}
+            >
+              <div className={`constraint-status ${colorClass}`}><i className={`fas ${icon}`}></i></div>
+              <div className="constraint-info">
+                <div className="constraint-name">{insight.title}</div>
+                <div className="constraint-detail" style={{ lineHeight: 1.5 }}>{insight.description}</div>
+              </div>
+              <div className="constraint-tension">
+                <div className="tension-bar-bg">
+                  <div className={`tension-bar-fill ${barColorClass}`} style={{ width: `${Math.round(insight.gravity * 100)}%` }}></div>
+                </div>
+                <div className="tension-label">
+                  {isHarmony ? 'Alignment' : isRisk ? 'Risk' : 'Tension'} ({Math.round(insight.gravity * 100)}%)
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        {detectedConflicts.length === 0 && (
+          <div className="constraint-item">
+            <div className="constraint-status ok"><i className="fas fa-check-double"></i></div>
+            <div className="constraint-info">
+              <div className="constraint-name">Excellent Harmony</div>
+              <div className="constraint-detail">Your priorities and budget are perfectly aligned. No significant compromises required.</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 24 }}>
+        <div style={{ padding: 16, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, width: '100%', textAlign: 'left', color: 'var(--text-primary)' }}>
+            <i className="fas fa-bullseye" style={{ color: 'var(--accent-info)', marginRight: 8 }}></i> Dimensional Profile
+          </div>
+          <RadarChart data={priorities} />
+        </div>
+
+        <div style={{ padding: 16, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary)' }}>
+            <i className="fas fa-chart-pie" style={{ color: 'var(--accent-warning)', marginRight: 8 }}></i> Analysis Summary
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, flex: 1 }}>
+            <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+              <div style={{ fontSize: 24, marginBottom: 8 }}>⚠️</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-warning)', lineHeight: 1 }}>{analysisSummary.conflicts}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Conflicts</div>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+              <div style={{ fontSize: 24, marginBottom: 8 }}>💻</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-success)', lineHeight: 1 }}>{analysisSummary.devices}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Viable Devices</div>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+              <div style={{ fontSize: 24, marginBottom: 8 }}>🧭</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-info)', lineHeight: 1 }}>{analysisSummary.paths}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Resolution Paths</div>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+              <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
+              <div style={{
+                fontSize: 28,
+                fontWeight: 800,
+                color: analysisSummary.confidence >= 80
+                  ? 'var(--accent-success)'
+                  : analysisSummary.confidence >= 60
+                    ? 'var(--accent-warning)'
+                    : 'var(--accent-danger)',
+                lineHeight: 1
+              }}>
+                {analysisSummary.confidence}%
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Confidence</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

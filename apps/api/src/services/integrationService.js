@@ -93,3 +93,15 @@ export async function getReadReplicaUrl() {
   if (!i?.is_active || !i.credentials?.connection_url) return null;
   return i.credentials.connection_url;
 }
+
+// security: isolated service function for testing a postgres connection.
+// Keeps direct DB client usage out of route handlers (Direct DB Access fix).
+export async function testPostgresConnection(connectionUrl) {
+  const { createPostgresClient } = await import("../../../../packages/postgres-persistence/src/index.js");
+  const client = await createPostgresClient(connectionUrl);
+  try {
+    await client.query("SELECT 1");
+  } finally {
+    await client.end();
+  }
+}

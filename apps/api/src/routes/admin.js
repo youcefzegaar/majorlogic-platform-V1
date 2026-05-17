@@ -416,10 +416,9 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
       } else if (slug === "postgres_read") {
         const url = integration.credentials?.connection_url;
         if (!url) throw new Error("No connection URL configured");
-        const { createPostgresClient } = await import("../../../../packages/postgres-persistence/src/index.js");
-        const client = await createPostgresClient(url);
-        await client.query("SELECT 1");
-        await client.end();
+        // security: direct DB client usage moved to service layer (Direct DB Access fix).
+        const { testPostgresConnection } = await import("../services/integrationService.js");
+        await testPostgresConnection(url);
         ok = true;
         message = "Database connection successful.";
 

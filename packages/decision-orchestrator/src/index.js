@@ -7,6 +7,10 @@ import { createHash, randomUUID } from "node:crypto";
 import { IntentEngine } from "./modules/IntentEngine.js";
 import { CognitiveAnalyzer } from "./modules/CognitiveAnalyzer.js";
 import { RecoveryEngine } from "./modules/RecoveryEngine.js";
+import { NarrativeCache } from "./NarrativeCache.js";
+
+// Singleton cache shared across all orchestrator instances in this process
+const narrativeCache = new NarrativeCache();
 
 /**
  * Universal Decision Orchestrator
@@ -147,13 +151,20 @@ export class DecisionOrchestrator {
 
   async _stepCardSelection(ctx) {
       if (ctx.abort) return;
+      // Attach governance hashes to domainContext so _buildCard can use them for cache keying.
+      // irHash comes from the compiled IR; inputHash mirrors _stepGovernanceTrace logic.
+      const inputHash = createHash("sha256").update(JSON.stringify(ctx.userProfile)).digest("hex");
+      ctx.domainContext._cacheKeys = {
+          irHash: ctx.ir?.irHash,
+          inputHash
+      };
       ctx.cards = await this._selectCards(
-          ctx.eligible, 
-          ctx.resolvedConfig.selectionStrategy || {}, 
-          ctx.resolvedConfig.outputTemplate || {}, 
-          ctx.entities, 
-          ctx.resolvedConfig.taxonomy || {}, 
-          ctx.userProfile, 
+          ctx.eligible,
+          ctx.resolvedConfig.selectionStrategy || {},
+          ctx.resolvedConfig.outputTemplate || {},
+          ctx.entities,
+          ctx.resolvedConfig.taxonomy || {},
+          ctx.userProfile,
           ctx.domainContext
       );
   }
@@ -329,7 +340,23 @@ export class DecisionOrchestrator {
       sacrifices: kernelResult.trace.sacrifices || {} // The Sacrifice Vector (Constitution v1.0)
     };
 
-    const story = await this.explainer.explain(kernelResult.trace, rawEntity.title || rawEntity.itemName || kernelResult.entityId, domainContext);
+    // Narrative cache: skip AI call on repeated (irHash, inputHash, entityId) combos
+    const { irHash, inputHash } = domainContext._cacheKeys || {};
+    const entityId = kernelResult.entityId;
+    let story = narrativeCache.get(irHash, inputHash, entityId);
+    if (story !== null) {
+      const cacheStats = narrativeCache.stats();
+      this.logger.log(
+        `[NarrativeCache] HIT irHash:${irHash?.slice(0, 8)}… entity:${entityId} ratio:${cacheStats.hitRate}`
+      );
+    } else {
+      story = await this.explainer.explain(
+        kernelResult.trace,
+        rawEntity.title || rawEntity.itemName || entityId,
+        domainContext
+      );
+      narrativeCache.set(irHash, inputHash, entityId, story);
+    }
     const tradeoff = this.explainer.explainTradeoff(kernelResult.trace, domainContext.atlas, domainContext.locale) || intelligence.primaryWarning;
 
     const context = {
@@ -372,6 +399,14 @@ export class DecisionOrchestrator {
       }
       return String(value);
     });
+  }
+
+  /**
+   * Return narrative cache statistics for the admin dashboard.
+   * Delegates to the process-level singleton NarrativeCache.
+   */
+  getCacheStats() {
+    return narrativeCache.stats();
   }
 
   _buildNoResult(decisionRunId, ir, execution, config) {

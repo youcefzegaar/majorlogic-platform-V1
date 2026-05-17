@@ -1,11 +1,32 @@
 import axios from 'axios';
 
+// security: read the csrf_token cookie set by the server on GET /admin/* requests.
+// The cookie is httpOnly:false so JavaScript can read it here and echo it back
+// as a header (double-submit cookie CSRF pattern).
+function getCsrfToken() {
+  const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+const STATE_CHANGING_METHODS = new Set(['post', 'put', 'patch', 'delete']);
+
 const apiClient = axios.create({
   baseURL: '/admin', // All admin routes start with /admin
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+// security: attach X-CSRF-Token header automatically on all state-changing requests.
+apiClient.interceptors.request.use((config) => {
+  if (STATE_CHANGING_METHODS.has(config.method?.toLowerCase())) {
+    const token = getCsrfToken();
+    if (token) {
+      config.headers['X-CSRF-Token'] = token;
+    }
+  }
+  return config;
 });
 
 // Interceptor for global error handling
