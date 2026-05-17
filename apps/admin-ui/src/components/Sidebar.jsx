@@ -1,25 +1,29 @@
 import React from 'react';
-import { 
-  LayoutDashboard, 
-  BrainCircuit, 
-  Activity, 
-  Scale, 
-  Users, 
-  Tag, 
+import {
+  LayoutDashboard,
+  BrainCircuit,
+  Activity,
+  Scale,
+  Users,
+  Tag,
   Settings,
-  FlaskConical
+  FlaskConical,
+  ClipboardList,
+  Plug
 } from 'lucide-react';
 
 const Sidebar = ({ currentPath, setCurrentPath }) => {
   const menuItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { id: 'domains', icon: BrainCircuit, label: 'Cognitive Domains' },
-    { id: 'logic_lab', icon: FlaskConical, label: 'Logic Lab' },
-    { id: 'telemetry', icon: Activity, label: 'Telemetry' },
-    { id: 'ab_tests', icon: Scale, label: 'Commercial Integrity' },
-    { id: 'leads', icon: Users, label: 'Growth & Leads' },
-    { id: 'affiliate', icon: Tag, label: 'Affiliate Tags' },
-    { id: 'settings', icon: Settings, label: 'Settings' }
+    { id: 'dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
+    { id: 'domains',      icon: BrainCircuit,    label: 'Cognitive Domains' },
+    { id: 'logic_lab',    icon: FlaskConical,    label: 'Logic Lab' },
+    { id: 'telemetry',    icon: Activity,        label: 'Telemetry' },
+    { id: 'ab_tests',     icon: Scale,           label: 'Commercial Integrity' },
+    { id: 'leads',        icon: Users,           label: 'Growth & Leads' },
+    { id: 'affiliate',    icon: Tag,             label: 'Affiliate Tags' },
+    { id: 'integrations', icon: Plug,            label: 'Integrations' },
+    { id: 'audit_log',    icon: ClipboardList,   label: 'Audit Trail' },
+    { id: 'settings',     icon: Settings,        label: 'Settings' },
   ];
 
   return (

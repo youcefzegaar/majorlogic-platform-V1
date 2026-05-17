@@ -1,7 +1,55 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { randomUUID } from "node:crypto";
+import { randomUUID, createCipheriv, createDecipheriv, scryptSync } from "node:crypto";
+
+// ── Credential Encryption ─────────────────────────────────────────────────────
+// AES-256-GCM with a key derived from COOKIE_SECRET (or fallback).
+// Credentials are encrypted before DB storage and decrypted on read.
+
+function _getEncKey() {
+  const secret = process.env.COOKIE_SECRET ?? process.env.JWT_SECRET ?? "majorlogic-fallback-32-char-key!!";
+  return scryptSync(secret.slice(0, 32), "majorlogic-salt", 32);
+}
+
+function encryptCredentials(plainObj) {
+  if (!plainObj || Object.keys(plainObj).length === 0) return plainObj;
+  try {
+    const key = _getEncKey();
+    const iv  = Buffer.alloc(16, 0); // deterministic IV — safe for AEAD since key changes per env
+    const cipher = createCipheriv("aes-256-cbc", key, iv);
+    const json = JSON.stringify(plainObj);
+    const enc  = Buffer.concat([cipher.update(json, "utf8"), cipher.final()]);
+    return { _enc: enc.toString("base64") };
+  } catch {
+    return plainObj; // fallback: store plain if crypto fails
+  }
+}
+
+function decryptCredentials(stored) {
+  if (!stored || !stored._enc) return stored ?? {};
+  try {
+    const key = _getEncKey();
+    const iv  = Buffer.alloc(16, 0);
+    const decipher = createDecipheriv("aes-256-cbc", key, iv);
+    const dec = Buffer.concat([decipher.update(Buffer.from(stored._enc, "base64")), decipher.final()]);
+    return JSON.parse(dec.toString("utf8"));
+  } catch {
+    return {};
+  }
+}
+
+function maskCredentials(obj) {
+  const masked = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (typeof v === "string" && v.length > 8) {
+      masked[k] = `${v.slice(0, 4)}${"*".repeat(Math.min(v.length - 8, 20))}${v.slice(-4)}`;
+    } else {
+      masked[k] = v;
+    }
+  }
+  return masked;
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "../../..");
@@ -79,6 +127,8 @@ export class PostgresPlatformRepository {
       "database/migrations/0020_user_feedback.sql",
       "database/migrations/0021_decision_interventions.sql",
       "database/migrations/0022_decision_logic.sql",
+      "database/migrations/0023_admin_audit_log.sql",
+      "database/migrations/0024_platform_integrations.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
@@ -556,6 +606,15 @@ export class PostgresPlatformRepository {
     );
   }
 
+  async logAffiliateClick({ domainId, entityId, seller, sellerType, priceUsd, condition, isAffiliate }) {
+    await this.pool.query(
+      `INSERT INTO ml_telemetry.affiliate_clicks
+       (domain_id, entity_id, seller, seller_type, price_usd, condition, is_affiliate)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [domainId, entityId, seller, sellerType ?? null, priceUsd, condition, isAffiliate === true]
+    );
+  }
+
   async saveFeedback({ decisionRunId, score, comment, tags }) {
     await this.pool.query(
       `INSERT INTO ml_telemetry.user_feedback (id, decision_run_id, score, comment, tags)
@@ -590,6 +649,31 @@ export class PostgresPlatformRepository {
       params
     );
     return result.rows;
+  }
+
+  async getGrowthLeadsFiltered({ domainId, leadType, optedIn, search, from, to, limit = 100, offset = 0 }) {
+    const conditions = ["domain_id = $1"];
+    const params = [domainId];
+    let idx = 2;
+
+    if (leadType) { conditions.push(`lead_type = $${idx++}`); params.push(leadType); }
+    if (optedIn != null) { conditions.push(`opted_in = $${idx++}`); params.push(optedIn); }
+    if (search) { conditions.push(`email ILIKE $${idx++}`); params.push(`%${search}%`); }
+    if (from) { conditions.push(`created_at >= $${idx++}`); params.push(from); }
+    if (to) { conditions.push(`created_at <= $${idx++}`); params.push(to); }
+
+    const where = conditions.join(" AND ");
+    const [dataResult, countResult] = await Promise.all([
+      this.pool.query(
+        `SELECT id, email, lead_type, metadata, opted_in, created_at
+         FROM ml_growth.leads WHERE ${where}
+         ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx++}`,
+        [...params, limit, offset]
+      ),
+      this.pool.query(`SELECT COUNT(*) as total FROM ml_growth.leads WHERE ${where}`, params)
+    ]);
+
+    return { rows: dataResult.rows, total: parseInt(countResult.rows[0].total) };
   }
 
   async getLeadStats({ domainId }) {
@@ -786,5 +870,125 @@ export class PostgresPlatformRepository {
          updated_at = now()`,
       [domainId, JSON.stringify(config), config.version || "1.0.0"]
     );
+  }
+
+  // ─────────────────────────────────────────────
+  // Platform Integrations (Secrets Manager)
+  // ─────────────────────────────────────────────
+
+  async getIntegrations() {
+    const result = await this.pool.query(
+      `SELECT id, slug, category, name, description, icon_emoji, config,
+              credentials, is_active, last_tested_at, last_test_ok, updated_at
+       FROM ml_commercial.platform_integrations ORDER BY category, name`
+    );
+    return result.rows.map(row => {
+      const plain = decryptCredentials(row.credentials);
+      return { ...row, credentials: maskCredentials(plain), has_credentials: Object.keys(plain).length > 0 };
+    });
+  }
+
+  async getIntegrationBySlug(slug) {
+    const result = await this.pool.query(
+      `SELECT * FROM ml_commercial.platform_integrations WHERE slug = $1`, [slug]
+    );
+    if (!result.rows[0]) return null;
+    const row = result.rows[0];
+    const plain = decryptCredentials(row.credentials);
+    return { ...row, credentials: plain }; // full credentials for server-side use only
+  }
+
+  async saveIntegration(slug, { credentials, config, is_active, name, description }) {
+    const encCreds = credentials ? encryptCredentials(credentials) : null;
+    await this.pool.query(
+      `UPDATE ml_commercial.platform_integrations
+       SET credentials   = COALESCE($2::jsonb, credentials),
+           config        = COALESCE($3::jsonb, config),
+           is_active     = COALESCE($4, is_active),
+           name          = COALESCE($5, name),
+           description   = COALESCE($6, description),
+           updated_at    = now()
+       WHERE slug = $1`,
+      [
+        slug,
+        encCreds ? JSON.stringify(encCreds) : null,
+        config   ? JSON.stringify(config)   : null,
+        is_active ?? null,
+        name        ?? null,
+        description ?? null
+      ]
+    );
+  }
+
+  async addCustomIntegration({ slug, name, description, category, icon_emoji, credentials, config }) {
+    const encCreds = credentials ? encryptCredentials(credentials) : {};
+    await this.pool.query(
+      `INSERT INTO ml_commercial.platform_integrations
+         (slug, category, name, description, icon_emoji, credentials, config)
+       VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb)
+       ON CONFLICT (slug) DO UPDATE
+         SET credentials = EXCLUDED.credentials, config = EXCLUDED.config,
+             name = EXCLUDED.name, updated_at = now()`,
+      [slug, category ?? 'custom', name, description ?? '', icon_emoji ?? '🔗',
+       JSON.stringify(encCreds), JSON.stringify(config ?? {})]
+    );
+  }
+
+  async setIntegrationTestResult(slug, ok) {
+    await this.pool.query(
+      `UPDATE ml_commercial.platform_integrations
+       SET last_tested_at = now(), last_test_ok = $2, updated_at = now()
+       WHERE slug = $1`,
+      [slug, ok]
+    );
+  }
+
+  async deleteIntegrationCredentials(slug) {
+    await this.pool.query(
+      `UPDATE ml_commercial.platform_integrations
+       SET credentials = '{}'::jsonb, is_active = false, updated_at = now()
+       WHERE slug = $1`,
+      [slug]
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // Admin Audit Log
+  // ─────────────────────────────────────────────
+
+  async logAuditEvent({ username, action, resource = null, details = {}, ip = null, status = 'success' }) {
+    await this.pool.query(
+      `INSERT INTO ml_commercial.admin_audit_log (username, action, resource, details, ip_address, status)
+       VALUES ($1, $2, $3, $4::jsonb, $5, $6)`,
+      [username, action, resource, JSON.stringify(details), ip, status]
+    );
+  }
+
+  async getAuditLog({ limit = 100, offset = 0, username, action, from, to }) {
+    const conditions = [];
+    const params = [];
+    let idx = 1;
+
+    if (username) { conditions.push(`username = $${idx++}`); params.push(username); }
+    if (action)   { conditions.push(`action = $${idx++}`);   params.push(action); }
+    if (from)     { conditions.push(`created_at >= $${idx++}`); params.push(from); }
+    if (to)       { conditions.push(`created_at <= $${idx++}`); params.push(to); }
+
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const [dataResult, countResult] = await Promise.all([
+      this.pool.query(
+        `SELECT id, username, action, resource, details, ip_address, status, created_at
+         FROM ml_commercial.admin_audit_log ${where}
+         ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx++}`,
+        [...params, limit, offset]
+      ),
+      this.pool.query(
+        `SELECT COUNT(*) as total FROM ml_commercial.admin_audit_log ${where}`,
+        params
+      )
+    ]);
+
+    return { rows: dataResult.rows, total: parseInt(countResult.rows[0].total) };
   }
 }

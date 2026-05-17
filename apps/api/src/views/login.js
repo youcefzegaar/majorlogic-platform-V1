@@ -1,6 +1,12 @@
+function escapeHtml(text) {
+  return String(text ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
 export function renderLoginHtml({ error = null } = {}) {
   const errorMsg = error
-    ? `<div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: center;">${error}</div>`
+    ? `<div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: center;">${escapeHtml(error)}</div>`
     : "";
 
   return `

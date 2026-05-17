@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { 
-  FlaskConical, 
-  Save, 
+import {
+  FlaskConical,
   RefreshCw,
   Zap,
   ShieldCheck,
+  CheckCircle,
   AlertTriangle,
-  ChevronDown,
-  ChevronUp
+  Sliders
 } from 'lucide-react';
 import { adminService } from '../../api/apiClient';
+import { useAppStore } from '../../stores/appStore';
 
 const LogicLab = () => {
-  const [activeDomain, setActiveDomain] = useState('laptop-student-us');
+  const { navigate } = useAppStore();
+  const [activeDomain] = useState('laptop-student-us');
   const [config, setConfig] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState(null);
 
   const { data: configData, isLoading, refetch } = useQuery({
     queryKey: ['logic-config', activeDomain],
@@ -31,48 +32,79 @@ const LogicLab = () => {
   const saveMutation = useMutation({
     mutationFn: (data) => adminService.saveLogicConfig(activeDomain, data),
     onSuccess: (data) => {
-      alert(`Logic version ${data.version} saved and re-compiled!`);
+      setFeedback({ type: 'success', message: `Logic v${data.version} deployed successfully.` });
+      setTimeout(() => setFeedback(null), 4000);
       refetch();
+    },
+    onError: (err) => {
+      setFeedback({ type: 'error', message: err?.response?.data?.message || 'Failed to save changes.' });
+      setTimeout(() => setFeedback(null), 5000);
     }
   });
 
   if (isLoading || !config) return <div style={{ textAlign: 'center', padding: '100px' }}><RefreshCw className="spin" size={40} /></div>;
 
   const handleGateChange = (gateId, field, value) => {
-    const newConfig = { ...config };
-    if (!newConfig.gates[gateId]) return;
-    newConfig.gates[gateId][field] = value;
-    setConfig(newConfig);
+    setConfig(prev => ({
+      ...prev,
+      gates: { ...prev.gates, [gateId]: { ...prev.gates[gateId], [field]: value } }
+    }));
   };
 
   const handleWeightChange = (rulesetId, metric, value) => {
-    const newConfig = { ...config };
-    if (!newConfig.rulesets[rulesetId]) return;
-    newConfig.rulesets[rulesetId].weights[metric] = parseFloat(value);
-    setConfig(newConfig);
+    setConfig(prev => ({
+      ...prev,
+      rulesets: {
+        ...prev.rulesets,
+        [rulesetId]: {
+          ...prev.rulesets[rulesetId],
+          weights: { ...prev.rulesets[rulesetId].weights, [metric]: parseFloat(value) }
+        }
+      }
+    }));
   };
 
-  const handleSave = () => {
-    saveMutation.mutate(config);
+  const handleSimulate = () => {
+    const domain = { slug: activeDomain, id: activeDomain, title: 'Laptop Student US', config };
+    navigate('shadow_runner', { domain });
   };
 
   return (
     <div className="page-content">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
           <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Logic <span className="text-gradient">Lab</span></h1>
           <p style={{ color: 'var(--text-secondary)' }}>No-code control plane for the Decision Engine kernel.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <div style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-             <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>Current Version:</span>
-             <span style={{ fontWeight: 700, fontFamily: 'monospace' }}>v{config.version}</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>Version:</span>
+            <span style={{ fontWeight: 700, fontFamily: 'monospace' }}>v{config.version}</span>
           </div>
-          <button className="btn btn-primary" onClick={handleSave} disabled={saveMutation.isPending}>
-            {saveMutation.isPending ? <RefreshCw className="spin" size={18} /> : <ShieldCheck size={18} />} Deploy Logic Changes
+          <button className="btn btn-outline" onClick={handleSimulate}>
+            <Zap size={18} color="var(--warning)" /> What-If Analysis
+          </button>
+          <button className="btn btn-primary" onClick={() => saveMutation.mutate(config)} disabled={saveMutation.isPending}>
+            {saveMutation.isPending ? <RefreshCw className="spin" size={18} /> : <ShieldCheck size={18} />} Deploy Changes
           </button>
         </div>
       </div>
+
+      {feedback && (
+        <div style={{
+          marginBottom: '20px', padding: '14px 20px', borderRadius: 'var(--radius-md)',
+          background: feedback.type === 'success' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+          border: `1px solid ${feedback.type === 'success' ? 'var(--success)' : 'var(--error)'}`,
+          display: 'flex', alignItems: 'center', gap: '10px'
+        }}>
+          {feedback.type === 'success'
+            ? <CheckCircle size={18} color="var(--success)" />
+            : <AlertTriangle size={18} color="var(--error)" />}
+          <span style={{ color: feedback.type === 'success' ? 'var(--success)' : 'var(--error)' }}>
+            {feedback.message}
+          </span>
+        </div>
+      )}
 
       <div className="grid-2">
         {/* Pass/Fail Gates */}

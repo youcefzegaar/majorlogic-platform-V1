@@ -12,6 +12,8 @@ import GrowthLeads from './features/growth/GrowthLeads';
 import AffiliateManager from './features/affiliate/AffiliateManager';
 import LogicLab from './features/governance/LogicLab';
 import CommercialIntegrity from './features/governance/CommercialIntegrity';
+import AuditLog from './features/governance/AuditLog';
+import IntegrationsPage from './features/integrations/IntegrationsPage';
 import SettingsPage from './features/dashboard/SettingsPage';
 import { useAppStore } from './stores/appStore';
 import './index.css';
@@ -43,6 +45,10 @@ const App = () => {
         return <AffiliateManager />;
       case 'logic_lab':
         return <LogicLab />;
+      case 'audit_log':
+        return <AuditLog />;
+      case 'integrations':
+        return <IntegrationsPage />;
       case 'settings':
         return <SettingsPage />;
       default:

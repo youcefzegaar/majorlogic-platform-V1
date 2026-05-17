@@ -7,8 +7,58 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  lint-and-audit:
+    name: Lint & Security Audit
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Security Audit
+        run: npm audit --audit-level=high
+
+  build-ui:
+    name: Build UI Apps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Admin UI
+        run: npm run build
+        working-directory: apps/admin-ui
+        env:
+          NODE_ENV: production
+
+      - name: Build Search UI
+        run: npm run build
+        working-directory: apps/search-ui
+        env:
+          NODE_ENV: production
+
+  test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [lint-and-audit]
 
     services:
       postgres:
@@ -24,37 +74,32 @@ jobs:
           --health-timeout 5s
           --health-attempts 5
 
+    env:
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/majorlogic_test
+      NODE_ENV: test
+      JWT_SECRET: ci-test-jwt-secret-not-for-production
+      COOKIE_SECRET: ci-test-cookie-secret-not-for-production
+      ADMIN_EXPORT_SECRET: ci-test-export-secret
+      ADMIN_USER: admin
+      ADMIN_PASSWORD_HASH: $2b$10$placeholder.hash.for.ci.only
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: npm install
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Run Database Migrations
-      run: node scripts/db-migrate.js
-      env:
-        DATABASE_URL: postgresql://postgres:password@localhost:5432/majorlogic_test
+      - name: Install dependencies
+        run: npm install
 
-    - name: Lint
-      run: npm run lint
-      continue-on-error: true
-      
-    - name: Security Audit
-      run: npm audit --audit-level=high
-      continue-on-error: true
+      - name: Run Database Migrations
+        run: node scripts/db-migrate.js
 
-    - name: Run Regression Tests
-      run: node tests/regression-v1.test.js
-      env:
-        DATABASE_URL: postgresql://postgres:password@localhost:5432/majorlogic_test
+      - name: Run Regression Tests
+        run: node tests/regression-v1.test.js
 
-    - name: Run System Tests
-      run: node tests/system.test.js
-      env:
-        DATABASE_URL: postgresql://postgres:password@localhost:5432/majorlogic_test
+      - name: Run System Tests
+        run: node tests/system.test.js
