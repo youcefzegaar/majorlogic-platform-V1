@@ -19,12 +19,12 @@
  * @param {number} params.purchasePrice  — سعر الشراء
  * @param {number} params.resaleScore    — تصنيف إعادة البيع (0-100)
  * @param {number} [params.ownershipYears] — سنوات الامتلاك المتوقعة
+ * @param {number} [params.depreciationFactor] — معامل الهبوط الخاص بالدومين
  * @returns {{ tco, estimatedResaleValue, netCost, costPerYear }}
  */
-function computeLifecycleCost({ purchasePrice, resaleScore, ownershipYears = 4 }) {
+function computeLifecycleCost({ purchasePrice, resaleScore, ownershipYears = 4, depreciationFactor = 0.65 }) {
   const safePrice = purchasePrice || 0;
-  // تقدير قيمة إعادة البيع بناءً على resaleScore
-  const depreciationRate = 1 - (resaleScore / 100) * 0.65;  // الأجهزة ذات resaleScore عالي تحافظ على قيمتها
+  const depreciationRate = 1 - (resaleScore / 100) * depreciationFactor;
   const estimatedResaleValue = Math.round(safePrice * (1 - depreciationRate) * 100) / 100;
   const netCost = safePrice - estimatedResaleValue;
   const costPerYear = Math.round((netCost / ownershipYears) * 100) / 100;
@@ -35,7 +35,7 @@ function computeLifecycleCost({ purchasePrice, resaleScore, ownershipYears = 4 }
     estimatedResaleValue,
     netCost,
     costPerYear,
-    tco: netCost  // في المرحلة الأولى، TCO = صافي التكلفة بعد إعادة البيع
+    tco: netCost
   };
 }
 
@@ -63,20 +63,19 @@ export function buildOwnershipStrategy({ profile, catalog, decision, domainPack 
       };
     }
 
-    // حساب التكلفة الحياتية
     const lifecycle = computeLifecycleCost({
       purchasePrice: card.priceUsd ?? entity?.market?.bestOffer?.priceUsd ?? 0,
       resaleScore: card.resaleScore ?? entity?.economicSignals?.resaleScore ?? 50,
-      ownershipYears
+      ownershipYears,
+      depreciationFactor: domainPack.economicConfig?.depreciationFactor ?? 0.65
     });
 
-    // توصية الملكية من الدومين (إذا وجدت)
     const domainRecommendation = domainPack.recommendOwnership
       ? domainPack.recommendOwnership({
-        profile,
-        entity,
-        heroCard: card
-      })
+          profile,
+          entity,
+          heroCard: card
+        })
       : { mode: "buy_new", explanation: "Default ownership path." };
 
     return {
@@ -89,7 +88,6 @@ export function buildOwnershipStrategy({ profile, catalog, decision, domainPack 
     };
   });
 
-  // اختيار أفضل استراتيجية ملكية (الأقل تكلفة سنوية)
   const bestValue = [...strategies]
     .filter((s) => s.lifecycle)
     .sort((a, b) => a.lifecycle.costPerYear - b.lifecycle.costPerYear)[0] ?? null;

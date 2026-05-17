@@ -2,5 +2,8 @@
   "name": "@majorlogic/shared-kernel",
   "version": "0.1.0",
   "type": "module",
-  "exports": "./src/index.js"
+  "exports": "./src/index.js",
+  "dependencies": {
+    "pino": "^10.3.1"
+  }
 }

@@ -195,7 +195,7 @@ describe('Zero-Result Recovery Engine', () => {
     const { excluded } = runKernel(kernel, IR_IMPOSSIBLE, entities);
 
     // Entities fail both gates; gate_budget will be relaxed but gate_ram (64GB) still excludes them
-    const recovery = recoveryEngine.attemptRecovery(IR_IMPOSSIBLE, entities, {}, excluded);
+    recoveryEngine.attemptRecovery(IR_IMPOSSIBLE, entities, {}, excluded);
 
     // Even after relaxation of gate_budget, gate_ram (>=64GB) blocks all → recovery returns null
     // (or finds eligible if gate_budget relaxation yields anything — depends on which gate is most common)

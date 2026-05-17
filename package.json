@@ -19,7 +19,8 @@
         "test:regression": "node tests/regression-v1.test.js",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:node": "node tests/system.test.js"
+        "test:node": "node tests/system.test.js",
+        "lint": "eslint ."
     },
     "dependencies": {
         "@fastify/cors": "^11.2.0",

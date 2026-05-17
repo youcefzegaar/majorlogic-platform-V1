@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   LayoutDashboard,
   BrainCircuit,
@@ -9,7 +8,8 @@ import {
   Settings,
   FlaskConical,
   ClipboardList,
-  Plug
+  Plug,
+  BookOpen,
 } from 'lucide-react';
 
 const Sidebar = ({ currentPath, setCurrentPath }) => {
@@ -24,6 +24,7 @@ const Sidebar = ({ currentPath, setCurrentPath }) => {
     { id: 'integrations', icon: Plug,            label: 'Integrations' },
     { id: 'audit_log',    icon: ClipboardList,   label: 'Audit Trail' },
     { id: 'settings',     icon: Settings,        label: 'Settings' },
+    { id: 'guide',        icon: BookOpen,        label: 'Platform Guide' },
   ];
 
   return (

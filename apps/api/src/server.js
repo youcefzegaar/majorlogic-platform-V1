@@ -17,6 +17,7 @@ import adminRoutes from "./routes/admin.js";
 import apiRoutes from "./routes/api.js";
 import webRoutes from "./routes/web.js";
 import { csrfPlugin } from "./middleware/csrf.js";
+import healthPlugin from "./plugins/health.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
@@ -27,7 +28,8 @@ validateEnv();
 const isProd = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT ?? 3010);
 const DEFAULT_DOMAIN = process.env.DEFAULT_DOMAIN ?? "laptop-student-us";
-const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:5173";
+const clientOrigin = process.env.CLIENT_ORIGIN ?? process.env.FRONTEND_URL ?? 'http://localhost:5173';
+const FRONTEND_URL = clientOrigin;
 const defaultProfile = loadJsonSync("examples/profile.json");
 
 const fastify = Fastify({
@@ -156,6 +158,9 @@ fastify.setErrorHandler((error, request, reply) => {
     message: isProd ? "A server error occurred. Please try again later." : error.message
   });
 });
+
+// ── Health Checks ─────────────────────────────────────────────────────────────
+fastify.register(healthPlugin);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 fastify.register(adminRoutes, { prefix: "/admin", DEFAULT_DOMAIN });

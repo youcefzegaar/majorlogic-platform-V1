@@ -46,8 +46,13 @@ export async function getRuleset(relativePath) {
   }
 
   // Fallback to disk
-  const raw     = await fs.promises.readFile(path.join(root, relativePath), "utf8");
-  const parsed  = JSON.parse(raw);
+  const raw = await fs.promises.readFile(path.join(root, relativePath), "utf8");
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (e) {
+    throw new Error(`[Repository] Failed to parse ${relativePath}: ${e.message}`);
+  }
 
   // Lazy Migration: If we have a DB, save the disk config to it
   if (domainMatch) {
@@ -68,21 +73,9 @@ export async function getRuleset(relativePath) {
 // ─────────────────────────────────────────────
 
 let repositoryInstance = null;
-let isConnecting       = false;
+let _initPromise       = null;
 
-export async function getRepository() {
-  if (!process.env.DATABASE_URL) return null;
-
-  // Return healthy existing instance
-  if (repositoryInstance) return repositoryInstance;
-
-  // Prevent concurrent connection races
-  if (isConnecting) {
-    await new Promise((r) => setTimeout(r, 200));
-    return repositoryInstance;
-  }
-
-  isConnecting = true;
+async function _doInit() {
   const MAX_ATTEMPTS = 3;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
@@ -91,14 +84,14 @@ export async function getRepository() {
       const repository = new PostgresPlatformRepository(client);
       await repository.applyMigrations();
 
-      // On unexpected disconnect, invalidate singleton so next request reconnects
+      // On unexpected disconnect, invalidate singletons so next request reconnects
       client.on("error", (err) => {
-        console.error(`[DB] Connection error (attempt ${attempt}):`, err.message);
+        console.error(`[DB] Connection error:`, err.message);
         repositoryInstance = null;
+        _initPromise       = null;
       });
 
       repositoryInstance = repository;
-      isConnecting       = false;
       return repository;
 
     } catch (err) {
@@ -109,9 +102,24 @@ export async function getRepository() {
     }
   }
 
-  isConnecting = false;
   console.error("[DB] All connection attempts exhausted. Running without database.");
   return null;
+}
+
+async function ensureInitialized() {
+  if (!_initPromise) _initPromise = _doInit();
+  return _initPromise;
+}
+
+export async function getRepository() {
+  if (!process.env.DATABASE_URL) return null;
+
+  // Return healthy existing instance without touching the promise
+  if (repositoryInstance) return repositoryInstance;
+
+  // Promise-based singleton: concurrent callers all await the same promise,
+  // guaranteeing exactly-one initialization even under concurrent requests.
+  return ensureInitialized();
 }
 
 // ─────────────────────────────────────────────

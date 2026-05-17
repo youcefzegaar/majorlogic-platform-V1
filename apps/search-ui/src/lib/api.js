@@ -25,7 +25,7 @@ export const DecisionAPI = {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          decisionRunId: Math.random().toString(36).substr(2, 9),
+          decisionRunId: crypto.randomUUID(), // stub — should eventually call real API
           intent: {
             title: "Dynamic Decision Path",
             confidence: 88,

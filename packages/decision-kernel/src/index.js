@@ -30,7 +30,7 @@ export class DecisionKernel {
         const inputHash = createHash("sha256").update(JSON.stringify(entity)).digest("hex");
 
         const trace = {
-          decisionId: createHash("md5").update(ir.irHash + inputHash).digest("hex"),
+          decisionId: createHash("sha256").update(ir.irHash + inputHash).digest("hex"),
           irHash: ir.irHash,
           inputHash,
           entityId: entity.entityId || entity.id,

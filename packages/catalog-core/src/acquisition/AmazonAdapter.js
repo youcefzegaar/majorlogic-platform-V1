@@ -1,8 +1,17 @@
+import { createHash } from 'node:crypto';
+
 /**
  * AmazonAdapter — محول متخصص لجلب البيانات من أمازون.
  * في المرحلة الصناعية، سيستخدم PA-API أو Scraper متطور.
  */
 export class AmazonAdapter {
+  /**
+   * Returns a stable, content-addressed source ID derived from the product URL.
+   * Using SHA-256 ensures the same URL always produces the same ID (deterministic).
+   */
+  static _sourceIdFromUrl(productUrl) {
+    return 'amazon-sha-' + createHash('sha256').update(productUrl).digest('hex');
+  }
   constructor(fetcher) {
     this.fetcher = fetcher;
     this.sourceName = 'Amazon';
@@ -36,7 +45,7 @@ export class AmazonAdapter {
     const itemName = titleMatch ? titleMatch[1].trim().replace(/\n/g, "") : "Unknown Amazon Product";
 
     return {
-      sourceId: `amazon-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      sourceId: AmazonAdapter._sourceIdFromUrl(productUrl),
       sourceType: this.sourceType,
       sourceName: this.sourceName,
       sourceUrl: productUrl,

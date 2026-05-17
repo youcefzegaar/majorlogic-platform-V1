@@ -15,6 +15,7 @@ import CommercialIntegrity from './features/governance/CommercialIntegrity';
 import AuditLog from './features/governance/AuditLog';
 import IntegrationsPage from './features/integrations/IntegrationsPage';
 import SettingsPage from './features/dashboard/SettingsPage';
+import GuidePage from './features/guide/GuidePage';
 import { useAppStore } from './stores/appStore';
 import './index.css';
 
@@ -51,6 +52,8 @@ const App = () => {
         return <IntegrationsPage />;
       case 'settings':
         return <SettingsPage />;
+      case 'guide':
+        return <GuidePage />;
       default:
         return <DashboardHome />;
     }

@@ -1,0 +1,143 @@
+import { randomUUID } from "node:crypto";
+
+export class GrowthRepository {
+  constructor(pool) {
+    this.pool = pool;
+  }
+
+  async saveGrowthArtifacts({ domainId, growth }) {
+    if (growth.seoPagePayload) {
+      await this.pool.query(
+        `insert into ml_growth.page_payloads (
+          id, domain_id, surface_type, slug, payload_json
+        ) values ($1, $2, $3, $4, $5::jsonb)
+        on conflict (domain_id, slug) do update set
+          payload_json = excluded.payload_json,
+          generated_at = now()`,
+        [
+          randomUUID(),
+          domainId,
+          "seo_page",
+          growth.seoPagePayload.slug,
+          JSON.stringify(growth.seoPagePayload)
+        ]
+      );
+    }
+
+    if (growth.shareArtifact) {
+      await this.pool.query(
+        `insert into ml_growth.share_artifacts (
+          id, domain_id, artifact_type, artifact_payload
+        ) values ($1, $2, $3, $4::jsonb)`,
+        [
+          randomUUID(),
+          domainId,
+          growth.shareArtifact.type,
+          JSON.stringify(growth.shareArtifact)
+        ]
+      );
+    }
+  }
+
+  async saveGrowthLead({ domainId, email, leadType, metadata = {}, optedIn = false }) {
+    const result = await this.pool.query(
+      `INSERT INTO ml_growth.leads (domain_id, email, lead_type, metadata, opted_in)
+       VALUES ($1, $2, $3, $4::jsonb, $5)
+       ON CONFLICT (email, domain_id, lead_type) DO UPDATE
+         SET metadata = EXCLUDED.metadata, opted_in = EXCLUDED.opted_in
+       RETURNING id, created_at, xmax`,
+      [domainId, email.toLowerCase().trim(), leadType, JSON.stringify(metadata), optedIn]
+    );
+    const row = result.rows[0];
+    // xmax=0 means it was a fresh INSERT (not an update)
+    return { id: row.id, created_at: row.created_at, isDuplicate: row.xmax !== "0" };
+  }
+
+  async getGrowthLeads({ domainId, leadType = null, limit = 500 }) {
+    const typeFilter = leadType ? "AND lead_type = $3" : "";
+    const params = leadType ? [domainId, limit, leadType] : [domainId, limit];
+    const result = await this.pool.query(
+      `SELECT id, email, lead_type, metadata, opted_in, created_at
+       FROM ml_growth.leads
+       WHERE domain_id = $1 ${typeFilter}
+       ORDER BY created_at DESC
+       LIMIT $2`,
+      params
+    );
+    return result.rows;
+  }
+
+  async getGrowthLeadsFiltered({ domainId, leadType, optedIn, search, from, to, limit = 100, offset = 0 }) {
+    const conditions = ["domain_id = $1"];
+    const params = [domainId];
+    let idx = 2;
+
+    if (leadType) { conditions.push(`lead_type = $${idx++}`); params.push(leadType); }
+    if (optedIn != null) { conditions.push(`opted_in = $${idx++}`); params.push(optedIn); }
+    if (search) { conditions.push(`email ILIKE $${idx++}`); params.push(`%${search}%`); }
+    if (from) { conditions.push(`created_at >= $${idx++}`); params.push(from); }
+    if (to) { conditions.push(`created_at <= $${idx++}`); params.push(to); }
+
+    const where = conditions.join(" AND ");
+    const [dataResult, countResult] = await Promise.all([
+      this.pool.query(
+        `SELECT id, email, lead_type, metadata, opted_in, created_at
+         FROM ml_growth.leads WHERE ${where}
+         ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx++}`,
+        [...params, limit, offset]
+      ),
+      this.pool.query(`SELECT COUNT(*) as total FROM ml_growth.leads WHERE ${where}`, params)
+    ]);
+
+    return { rows: dataResult.rows, total: parseInt(countResult.rows[0].total) };
+  }
+
+  async getLeadStats({ domainId }) {
+    const result = await this.pool.query(
+      `SELECT
+        lead_type,
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE opted_in = true) as opted_in_count,
+        MAX(created_at) as latest_at
+       FROM ml_growth.leads
+       WHERE domain_id = $1
+       GROUP BY lead_type
+       ORDER BY total DESC`,
+      [domainId]
+    );
+    return result.rows;
+  }
+
+  async saveGuardrailEvents({ domainId, governance }) {
+    if (governance.ok) {
+      return;
+    }
+
+    for (const violation of governance.violations) {
+      await this.pool.query(
+        `insert into ml_governance.guardrail_events (
+          id, domain_id, layer_name, event_type, details
+        ) values ($1, $2, $3, $4, $5::jsonb)`,
+        [
+          randomUUID(),
+          domainId,
+          "strategic_governance",
+          "violation",
+          JSON.stringify({ violation })
+        ]
+      );
+    }
+  }
+
+  async getGuardrailEvents({ domainId, limit = 50 }) {
+    const result = await this.pool.query(
+      `SELECT id, domain_id, layer_name, event_type, details, created_at
+       FROM ml_governance.guardrail_events
+       WHERE domain_id = $1
+       ORDER BY created_at DESC
+       LIMIT $2`,
+      [domainId, limit]
+    );
+    return result.rows;
+  }
+}

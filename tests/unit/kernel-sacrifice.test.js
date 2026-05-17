@@ -185,7 +185,7 @@ describe('Kernel Sacrifice Vector', () => {
     const result = kernel.execute(IR_WITH_CONSTRAINTS, [entity], {});
     const sacrifices = result.results[0].trace.sacrifices;
 
-    for (const [key, s] of Object.entries(sacrifices)) {
+    for (const [, s] of Object.entries(sacrifices)) {
       expect(isFinite(s.severity)).toBe(true);
       expect(s.severity).toBeGreaterThanOrEqual(0);
       expect(s.severity).toBeLessThanOrEqual(1);

@@ -75,7 +75,12 @@ export class DecisionOrchestrator {
     ];
 
     for (const step of steps) {
-        await step(ctx);
+        try {
+            await step(ctx);
+        } catch (err) {
+            this.logger.error(`[Orchestrator] Pipeline step "${step.name}" failed:`, err);
+            throw { status: 'error', step: step.name, message: err.message, cause: err };
+        }
         if (ctx.abort) break;
     }
 
@@ -116,7 +121,7 @@ export class DecisionOrchestrator {
   async _stepZeroResultRecovery(ctx) {
       if (ctx.eligible.length === 0 && ctx.excluded.length > 0) {
           this.logger.log(`[Orchestrator] Zero results. Initiating Recovery Engine...`);
-          const recoveryResult = this.recoveryEngine.attemptRecovery(ctx.ir, ctx.entities, ctx.mappedProfile, ctx.excluded);
+          const recoveryResult = await this.recoveryEngine.attemptRecovery(ctx.ir, ctx.entities, ctx.mappedProfile, ctx.excluded);
           if (recoveryResult) {
               ctx.execution = recoveryResult.execution;
               ctx.eligible = recoveryResult.eligible;
@@ -214,7 +219,7 @@ export class DecisionOrchestrator {
   }
 
   _getCompiledIR(config) {
-    const configHash = createHash("md5").update(JSON.stringify(config)).digest("hex");
+    const configHash = createHash("sha256").update(JSON.stringify(config)).digest("hex");
     if (this.irCache.has(configHash)) {
       return this.irCache.get(configHash);
     }
@@ -241,12 +246,12 @@ export class DecisionOrchestrator {
 
     // Fix: Normalize and flatten preferences for userPreferenceScore calculation in Kernel
     if (rawProfile.preferences) {
-      const normalize = v => 0.5 + 0.5 * (v / 100);
-      mapped.userPrefPerformance  = normalize(rawProfile.preferences.performance ?? 50);
-      mapped.userPrefBattery      = normalize(rawProfile.preferences.battery      ?? 50);
-      mapped.userPrefPortability  = normalize(rawProfile.preferences.portability  ?? 50);
-      mapped.userPrefDisplay      = normalize(rawProfile.preferences.display      ?? 50);
-      mapped.userPrefResale       = normalize(rawProfile.preferences.resale       ?? 50);
+      const normalize = v => Math.max(0, Math.min(100, v ?? 50)) / 100;
+      mapped.userPrefPerformance  = normalize(rawProfile.preferences.performance);
+      mapped.userPrefBattery      = normalize(rawProfile.preferences.battery);
+      mapped.userPrefPortability  = normalize(rawProfile.preferences.portability);
+      mapped.userPrefDisplay      = normalize(rawProfile.preferences.display);
+      mapped.userPrefResale       = normalize(rawProfile.preferences.resale);
     }
     
     return mapped;
