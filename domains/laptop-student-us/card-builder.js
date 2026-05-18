@@ -112,7 +112,7 @@ export function recommendOwnership({ profile, entity, heroCard }) {
     };
   }
 
-  if (profile.context.financingAllowed && heroCard.priceUsd > profile.budgetUsd * 0.9) {
+  if (profile.context?.financingAllowed && heroCard.priceUsd > profile.budgetUsd * 0.9) {
     return {
       mode: "light_financing",
       explanation: "Financing can be considered because the chosen device sits near the top of budget."
