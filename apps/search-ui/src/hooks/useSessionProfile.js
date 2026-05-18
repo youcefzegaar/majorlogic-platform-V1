@@ -11,17 +11,17 @@ const DEFAULT_PROFILE = {
 export function useSessionProfile() {
   const [profile, setProfile] = useLocalStorage('ml_session_v1', DEFAULT_PROFILE);
 
-  const setGoal = (goal) => setProfile({ ...profile, goal });
-  const setMajor = (major) => setProfile({ ...profile, major });
-  const setPriorities = (priorities) => setProfile({ ...profile, priorities });
-  const setBudgetMin = (budgetMin) => setProfile({ ...profile, budgetMin });
-  const setBudgetMax = (budgetMax) => setProfile({ ...profile, budgetMax });
+  const setGoal = (goal) => setProfile(prev => ({ ...prev, goal }));
+  const setMajor = (major) => setProfile(prev => ({ ...prev, major }));
+  const setPriorities = (priorities) => setProfile(prev => ({ ...prev, priorities }));
+  const setBudgetMin = (budgetMin) => setProfile(prev => ({ ...prev, budgetMin }));
+  const setBudgetMax = (budgetMax) => setProfile(prev => ({ ...prev, budgetMax }));
 
-  const resetPriorities = () => setProfile({
-    ...profile,
+  const resetPriorities = () => setProfile(prev => ({
+    ...prev,
     priorities: DEFAULT_PROFILE.priorities,
     budgetMax: DEFAULT_PROFILE.budgetMax
-  });
+  }));
 
   return {
     goal: profile.goal, setGoal,

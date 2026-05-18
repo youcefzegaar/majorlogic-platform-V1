@@ -429,7 +429,7 @@
       {
         "type": "future_proof",
         "pickBy": "highest_score",
-        "minScore": 85
+        "minScore": 35
       }
     ],
     "noDuplicates": true
