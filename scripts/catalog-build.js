@@ -29,15 +29,18 @@ async function run() {
     process.exit(1);
   }
 
-  console.log(`\n[1/3] 🚀 Starting Data Ingestion for domain: ${domainId}...`);
+  console.log(`\n[1/4] 🌐 Fetching live data from configured API integrations...`);
+  await runProcess("scripts/fetch-sources.js", [`--domain=${domainId}`]);
+
+  console.log(`\n[2/4] 🚀 Starting Data Ingestion for domain: ${domainId}...`);
   await runProcess("scripts/ingest-domain.js", [`--domain=${domainId}`]);
 
-  console.log(`\n[2/3] 📦 Starting Catalog Publishing for domain: ${domainId}...`);
+  console.log(`\n[3/4] 📦 Starting Catalog Publishing for domain: ${domainId}...`);
   await runProcess("scripts/publish-catalog.js", [`--domain=${domainId}`]);
 
   // Only generate SEO pages for supported domains
   if (domainId === "laptop-student-us") {
-    console.log(`\n[3/3] 🔍 Generating Programmatic SEO Pages...`);
+    console.log(`\n[4/4] 🔍 Generating Programmatic SEO Pages...`);
     await runProcess("scripts/generate-seo-pages.js", []);
   }
 
