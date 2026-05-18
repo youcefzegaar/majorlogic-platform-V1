@@ -1,0 +1,82 @@
+name: 🔔 Telegram Alert
+
+on:
+  # تنبيه عند فشل أي push أو PR على main
+  workflow_run:
+    workflows: ["MajorLogic CI"]
+    types: [completed]
+    branches: [main]
+
+  # فحص صحة المنصة كل 30 دقيقة
+  schedule:
+    - cron: '*/30 * * * *'
+
+  # تشغيل يدوي للاختبار
+  workflow_dispatch:
+
+jobs:
+  # ─── تنبيه فشل CI ────────────────────────────────────────────────────────
+  notify-ci-failure:
+    name: تنبيه فشل البناء
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: إرسال تنبيه Telegram
+        run: |
+          MESSAGE="🔴 *MajorLogic — فشل البناء*
+
+          الفرع: \`${{ github.event.workflow_run.head_branch }}\`
+          السبب: CI pipeline فشل
+
+          🔗 [عرض التفاصيل](${{ github.event.workflow_run.html_url }})"
+
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="$MESSAGE"
+
+  # ─── فحص صحة المنصة ──────────────────────────────────────────────────────
+  health-check:
+    name: فحص صحة المنصة
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: فحص /api/v1/health
+        id: health
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 15 \
+            "${{ secrets.API_URL }}/api/v1/health" || echo "000")
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          echo "فحص الحالة: $STATUS"
+
+      - name: إرسال تنبيه إذا كانت المنصة متوقفة
+        if: steps.health.outputs.status != '200'
+        run: |
+          MESSAGE="🔴 *MajorLogic — المنصة متوقفة!*
+
+          ⏰ الوقت: $(date -u '+%Y-%m-%d %H:%M UTC')
+          📊 كود الاستجابة: \`${{ steps.health.outputs.status }}\`
+
+          ⚡ الخطوة التالية:
+          1. افتح Railway dashboard
+          2. اضغط Restart على الـ API service
+
+          🔗 [Railway Dashboard](https://railway.app/dashboard)"
+
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="$MESSAGE"
+
+      - name: إرسال تأكيد إذا كانت المنصة تعمل (مرة يومياً فقط)
+        if: steps.health.outputs.status == '200' && github.event_name == 'workflow_dispatch'
+        run: |
+          MESSAGE="✅ *MajorLogic — المنصة تعمل بشكل طبيعي*
+
+          ⏰ $(date -u '+%Y-%m-%d %H:%M UTC')"
+
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="$MESSAGE"

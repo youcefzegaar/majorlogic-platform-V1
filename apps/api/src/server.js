@@ -1,4 +1,6 @@
 import "./telemetry.js"; // Must be first import — OpenTelemetry SDK init
+import { initSentry, sentryPlugin } from "./monitoring/sentry.js";
+initSentry(); // before anything else so errors during startup are captured
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -160,6 +162,9 @@ fastify.setErrorHandler((error, request, reply) => {
     message: isProd ? "A server error occurred. Please try again later." : error.message
   });
 });
+
+// ── Sentry Error Capture ──────────────────────────────────────────────────────
+fastify.register(sentryPlugin);
 
 // ── Health Checks ─────────────────────────────────────────────────────────────
 fastify.register(healthPlugin);
