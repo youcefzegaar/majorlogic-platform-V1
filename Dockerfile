@@ -20,6 +20,7 @@ COPY apps ./apps
 COPY domains ./domains
 COPY scripts ./scripts
 COPY rulesets ./rulesets
+COPY examples ./examples
 
 # Install all dependencies (Turborepo will handle this)
 RUN npm install
