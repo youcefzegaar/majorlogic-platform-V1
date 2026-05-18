@@ -1,28 +1,35 @@
-// apps/api/src/telemetry.js
-// MUST be imported before any other module
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
-import { Resource } from '@opentelemetry/resources';
-import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
+// OpenTelemetry — optional instrumentation. Wrapped in try/catch so a version
+// mismatch or missing package never prevents the API from starting.
+try {
+  const { NodeSDK } = await import('@opentelemetry/sdk-node');
+  const { getNodeAutoInstrumentations } = await import('@opentelemetry/auto-instrumentations-node');
+  const { PrometheusExporter } = await import('@opentelemetry/exporter-prometheus');
+  const otelResources = await import('@opentelemetry/resources');
+  const Resource = otelResources.Resource ?? otelResources.default?.Resource;
+  const otelConventions = await import('@opentelemetry/semantic-conventions');
+  const ATTR_SERVICE_NAME = otelConventions.ATTR_SERVICE_NAME ?? 'service.name';
+  const ATTR_SERVICE_VERSION = otelConventions.ATTR_SERVICE_VERSION ?? 'service.version';
 
-const prometheusExporter = new PrometheusExporter({ port: 9464 });
+  const prometheusExporter = new PrometheusExporter({ port: 9464 });
 
-const sdk = new NodeSDK({
-  resource: new Resource({
-    [ATTR_SERVICE_NAME]: 'majorlogic-api',
-    [ATTR_SERVICE_VERSION]: '0.1.0',
-  }),
-  metricReader: prometheusExporter,
-  instrumentations: [
-    getNodeAutoInstrumentations({
-      '@opentelemetry/instrumentation-http': { enabled: true },
-      '@opentelemetry/instrumentation-fastify': { enabled: true },
-      '@opentelemetry/instrumentation-pg': { enabled: true },
-      '@opentelemetry/instrumentation-fs': { enabled: false },
+  const sdk = new NodeSDK({
+    resource: new Resource({
+      [ATTR_SERVICE_NAME]: 'majorlogic-api',
+      [ATTR_SERVICE_VERSION]: '0.1.0',
     }),
-  ],
-});
+    metricReader: prometheusExporter,
+    instrumentations: [
+      getNodeAutoInstrumentations({
+        '@opentelemetry/instrumentation-http': { enabled: true },
+        '@opentelemetry/instrumentation-fastify': { enabled: true },
+        '@opentelemetry/instrumentation-pg': { enabled: true },
+        '@opentelemetry/instrumentation-fs': { enabled: false },
+      }),
+    ],
+  });
 
-sdk.start();
-process.on('SIGTERM', () => sdk.shutdown());
+  sdk.start();
+  process.on('SIGTERM', () => sdk.shutdown());
+} catch (err) {
+  console.warn('[telemetry] OpenTelemetry failed to initialize (non-fatal):', err.message);
+}
