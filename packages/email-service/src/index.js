@@ -99,6 +99,63 @@ export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
   });
 }
 
+export async function sendNurtureEmail({ email, sequenceDay, metadata = {} }) {
+  const segment = metadata.segment ?? "your major";
+  const siteUrl = process.env.FRONTEND_URL ?? "https://majorlogic.tech";
+
+  const templates = {
+    3: {
+      subject: "Still searching? Here's what changed this week",
+      body: `
+        <h2>Still looking for the right laptop?</h2>
+        <p>A lot can change in a few days. Prices shift, new deals appear, and your priorities might too.</p>
+        <p>Your personalized recommendation for <strong>${segment}</strong> is still saved — run a fresh analysis to see if anything has changed.</p>
+        <p style="margin-top:24px;">
+          <a href="${siteUrl}" style="background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">
+            Re-Run My Analysis →
+          </a>
+        </p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">You signed up for MajorLogic results. <a href="#">Unsubscribe</a>.</p>
+      `
+    },
+    7: {
+      subject: "Top 3 questions CS students ask before buying a laptop",
+      body: `
+        <h2>Three questions worth answering before you buy</h2>
+        <ol style="line-height:2;">
+          <li><strong>Is 16GB RAM enough for CS?</strong> — Yes for most, but if you run VMs or Docker containers daily, 32GB future-proofs you for 4+ years.</li>
+          <li><strong>Does the GPU matter?</strong> — For pure software development: no. For ML/AI coursework: yes, look for an RTX 4060 or better.</li>
+          <li><strong>MacBook vs Windows?</strong> — macOS has excellent UNIX tooling out of the box. Windows with WSL2 is now near-equivalent. Pick what your lab/employer uses.</li>
+        </ol>
+        <p>Our engine weighs all of this automatically based on your specific priorities.</p>
+        <p style="margin-top:24px;">
+          <a href="${siteUrl}" style="background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">
+            See My Recommendation →
+          </a>
+        </p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">You signed up for MajorLogic results. <a href="#">Unsubscribe</a>.</p>
+      `
+    }
+  };
+
+  const template = templates[sequenceDay];
+  if (!template) return { skipped: true, reason: "unknown_sequence_day" };
+
+  return send({
+    to: email,
+    subject: template.subject,
+    html: `
+      <!DOCTYPE html>
+      <html><body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
+        <div style="margin-bottom:24px;">
+          <strong style="font-size:20px;">🧭 MajorLogic</strong>
+        </div>
+        ${template.body}
+      </body></html>
+    `
+  });
+}
+
 export async function sendPriceDropAlert({ email, entityId, oldPrice, newPrice, buyUrl }) {
   return send({
     to: email,

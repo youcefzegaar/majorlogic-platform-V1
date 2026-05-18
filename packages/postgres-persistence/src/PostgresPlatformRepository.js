@@ -74,6 +74,10 @@ export class PostgresPlatformRepository {
   getLeadStats(...args)                   { return this._growth.getLeadStats(...args); }
   saveGuardrailEvents(...args)            { return this._growth.saveGuardrailEvents(...args); }
   getGuardrailEvents(...args)             { return this._growth.getGuardrailEvents(...args); }
+  getAllPriceAlertLeads(...args)          { return this._growth.getAllPriceAlertLeads(...args); }
+  updateLeadMetadata(...args)            { return this._growth.updateLeadMetadata(...args); }
+  getLeadsForNurtureDay(...args)         { return this._growth.getLeadsForNurtureDay(...args); }
+  recordNurtureEmail(...args)            { return this._growth.recordNurtureEmail(...args); }
 
   // ── commercial ────────────────────────────────────────────────────────────────
   getAffiliateSettings(...args)           { return this._commercial.getAffiliateSettings(...args); }

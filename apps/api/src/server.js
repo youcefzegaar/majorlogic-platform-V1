@@ -1,4 +1,4 @@
-import "./telemetry.js"; // Must be first import — OpenTelemetry SDK init (v2)
+import "./telemetry.js"; // Must be first import — OpenTelemetry SDK init (v3)
 import { initSentry, sentryPlugin } from "./monitoring/sentry.js";
 initSentry(); // before anything else so errors during startup are captured
 

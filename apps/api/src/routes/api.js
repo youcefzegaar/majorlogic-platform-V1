@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { sendWelcomeEmail } from "../../../../packages/email-service/src/index.js";
 import { getValidDomains } from "../registry.js";
 
@@ -77,8 +77,19 @@ export default async function apiRoutes(fastify, { isProd }) {
       const repository = await getRepository();
       if (!repository) return reply.status(503).send({ error: "db_offline" });
 
-      const lead = await repository.saveGrowthLead({ domainId: domain, email, leadType, metadata: trackingData, optedIn });
-      sendWelcomeEmail({ email, leadType, metadata: trackingData })
+      // For price_alert leads: look up current entity price and store as watched baseline
+      let enrichedMetadata = { ...trackingData };
+      if (leadType === "price_alert" && trackingData.entityId && !enrichedMetadata.watchedPriceUsd) {
+        try {
+          const entities = await repository.getPublishedEntities({ domainId });
+          const entity = entities.find(e => e.entityId === trackingData.entityId);
+          const currentPrice = entity?.market?.bestOffer?.priceUsd;
+          if (currentPrice != null) enrichedMetadata.watchedPriceUsd = currentPrice;
+        } catch (_) { /* non-fatal */ }
+      }
+
+      const lead = await repository.saveGrowthLead({ domainId: domain, email, leadType, metadata: enrichedMetadata, optedIn });
+      sendWelcomeEmail({ email, leadType, metadata: enrichedMetadata })
         .catch(err => request.log.error({ err }, "[Email] Failed to send welcome email"));
 
       const msg = lead.isDuplicate ? "Updated your preferences. Thanks!" : "Lead captured. Thank you!";
@@ -150,6 +161,54 @@ export default async function apiRoutes(fastify, { isProd }) {
         .send([header, ...rows].join("\n"));
     } catch (err) {
       return reply.status(500).send({ error: "export_failed", message: err.message });
+    }
+  });
+
+  // ── Automation Jobs Trigger ───────────────────────────────────────────────────
+  fastify.get("/api/v1/jobs/run", {
+    config: { rateLimit: { max: 20, timeWindow: "1 hour" } }
+  }, async (request, reply) => {
+    const { job, secret } = request.query;
+    const JOB_SECRET = process.env.JOB_SECRET;
+
+    if (!JOB_SECRET) return reply.status(503).send({ error: "jobs_not_configured" });
+    if (!secret) return reply.status(401).send({ error: "missing_secret" });
+
+    // Constant-time comparison to prevent timing attacks
+    try {
+      const a = Buffer.from(secret);
+      const b = Buffer.from(JOB_SECRET);
+      if (a.length !== b.length || !timingSafeEqual(a, b)) {
+        return reply.status(401).send({ error: "unauthorized" });
+      }
+    } catch {
+      return reply.status(401).send({ error: "unauthorized" });
+    }
+
+    const VALID_JOBS = ["price_monitor", "email_nurture"];
+    if (!VALID_JOBS.includes(job)) {
+      return reply.status(400).send({ error: "unknown_job", validJobs: VALID_JOBS });
+    }
+
+    try {
+      const { getRepository } = await import("../db/repository.js");
+      const repository = await getRepository();
+      if (!repository) return reply.status(503).send({ error: "db_offline" });
+
+      let result;
+      if (job === "price_monitor") {
+        const { runPriceMonitor } = await import("../jobs/price-monitor.js");
+        result = await runPriceMonitor(repository);
+      } else if (job === "email_nurture") {
+        const { runEmailNurture } = await import("../jobs/email-nurture.js");
+        result = await runEmailNurture(repository);
+      }
+
+      request.log.info({ job, result }, "Job completed");
+      return reply.send({ ok: true, job, result });
+    } catch (err) {
+      request.log.error({ err, job }, "Job failed");
+      return reply.status(500).send({ error: "job_failed", message: err.message });
     }
   });
 

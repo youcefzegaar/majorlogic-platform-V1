@@ -140,4 +140,52 @@ export class GrowthRepository {
     );
     return result.rows;
   }
+
+  // ── Price alert helpers ───────────────────────────────────────────────────────
+
+  async getAllPriceAlertLeads() {
+    const result = await this.pool.query(
+      `SELECT id, email, domain_id, metadata
+       FROM ml_growth.leads
+       WHERE lead_type = 'price_alert'
+       ORDER BY created_at ASC`
+    );
+    return result.rows;
+  }
+
+  async updateLeadMetadata({ leadId, metadata }) {
+    await this.pool.query(
+      `UPDATE ml_growth.leads SET metadata = $2::jsonb WHERE id = $1`,
+      [leadId, JSON.stringify(metadata)]
+    );
+  }
+
+  // ── Nurture email helpers ─────────────────────────────────────────────────────
+
+  async getLeadsForNurtureDay(sequenceDay) {
+    const windowMap = { 1: [0, 2], 3: [2, 4], 7: [6, 9] };
+    const [minDays, maxDays] = windowMap[sequenceDay] ?? [0, 2];
+    const result = await this.pool.query(
+      `SELECT l.id, l.email, l.domain_id, l.metadata, l.created_at
+       FROM ml_growth.leads l
+       WHERE l.created_at >= NOW() - INTERVAL '${maxDays} days'
+         AND l.created_at <  NOW() - INTERVAL '${minDays} days'
+         AND NOT EXISTS (
+           SELECT 1 FROM ml_growth.nurture_emails n
+           WHERE n.lead_id = l.id AND n.sequence_day = ${sequenceDay}
+         )
+       ORDER BY l.created_at ASC
+       LIMIT 500`
+    );
+    return result.rows;
+  }
+
+  async recordNurtureEmail({ leadId, email, sequenceDay }) {
+    await this.pool.query(
+      `INSERT INTO ml_growth.nurture_emails (lead_id, email, sequence_day)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (lead_id, sequence_day) DO NOTHING`,
+      [leadId, email, sequenceDay]
+    );
+  }
 }
