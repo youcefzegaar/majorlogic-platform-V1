@@ -1,8 +1,22 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawn } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import bcrypt from "bcrypt";
 import { createHmac } from "node:crypto";
 import { renderLoginHtml } from "../views/login.js";
+
+// ── Catalog Rebuild Job Store ─────────────────────────────────────────────────
+// In-memory only — survives request but not restarts. Sufficient for admin use.
+const _catalogJobs = new Map(); // jobId → { status, logs, domainId, startedAt, finishedAt }
+const JOB_TTL_MS = 30 * 60 * 1000; // purge jobs older than 30 min
+
+function _purgeStaleCatalogJobs() {
+  const now = Date.now();
+  for (const [id, job] of _catalogJobs) {
+    if (job.finishedAt && now - job.finishedAt > JOB_TTL_MS) _catalogJobs.delete(id);
+  }
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const adminDistDir = path.resolve(__dirname, "../../../admin-ui/dist");
@@ -21,6 +35,7 @@ const AUDIT_ACTIONS = [
   { method: "POST",   pattern: /^\/admin\/integrations$/,               action: "add_integration" },
   { method: "DELETE", pattern: /^\/admin\/integrations\/[^/]+\/credentials$/, action: "revoke_integration" },
   { method: "POST",   pattern: /^\/admin\/integrations\/[^/]+\/test$/,  action: "test_integration" },
+  { method: "POST",   pattern: /^\/admin\/catalog\/rebuild$/,           action: "catalog_rebuild" },
 ];
 
 function getAuditAction(method, url) {
@@ -533,6 +548,63 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
     await repository.saveDecisionLogic(domainId, config);
     clearRulesetCache();
     return reply.send({ success: true, version: config.version });
+  });
+
+  // ── Catalog Rebuild ───────────────────────────────────────────────────────
+
+  fastify.post("/catalog/rebuild", async (request, reply) => {
+    const { domainId } = request.body ?? {};
+    if (!domainId) return reply.status(400).send({ error: "domainId is required" });
+
+    // Reject if a rebuild for this domain is already running
+    for (const job of _catalogJobs.values()) {
+      if (job.domainId === domainId && job.status === "running") {
+        return reply.status(409).send({ error: "rebuild_running", jobId: job.id });
+      }
+    }
+
+    _purgeStaleCatalogJobs();
+
+    const jobId = randomUUID();
+    const job = { id: jobId, domainId, status: "running", logs: [], startedAt: Date.now(), finishedAt: null };
+    _catalogJobs.set(jobId, job);
+
+    // Resolve repo root (4 levels up from routes/)
+    const repoRoot = path.resolve(__dirname, "../../../..");
+    const scriptPath = path.join(repoRoot, "scripts", "catalog-build.js");
+
+    const proc = spawn("node", [scriptPath, `--domain=${domainId}`], {
+      cwd: repoRoot,
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+
+    const addLog = (line) => {
+      job.logs.push(line.trimEnd());
+      if (job.logs.length > 200) job.logs.shift(); // cap memory
+    };
+
+    proc.stdout.on("data", (d) => d.toString().split("\n").forEach(addLog));
+    proc.stderr.on("data", (d) => d.toString().split("\n").forEach(addLog));
+
+    proc.on("close", (code) => {
+      job.status = code === 0 ? "done" : "error";
+      job.finishedAt = Date.now();
+    });
+
+    return reply.status(202).send({ jobId, status: "running" });
+  });
+
+  fastify.get("/catalog/rebuild/:jobId", async (request, reply) => {
+    const job = _catalogJobs.get(request.params.jobId);
+    if (!job) return reply.status(404).send({ error: "job_not_found" });
+    return reply.send({
+      jobId: job.id,
+      domainId: job.domainId,
+      status: job.status,
+      logs: job.logs,
+      startedAt: job.startedAt,
+      finishedAt: job.finishedAt
+    });
   });
 
   // ── SPA Catch-all (must be last) ─────────────────────────────────────────

@@ -62,4 +62,6 @@ export const adminService = {
   saveAffiliateSettings: (data) => apiClient.post('/affiliate-settings', data),
   getLogicConfig: (domainId) => apiClient.get(`/logic-config/${domainId}`),
   saveLogicConfig: (domainId, data) => apiClient.post(`/logic-config/${domainId}`, data),
+  rebuildCatalog: (domainId) => apiClient.post('/catalog/rebuild', { domainId }),
+  getCatalogRebuildStatus: (jobId) => apiClient.get(`/catalog/rebuild/${jobId}`),
 };
