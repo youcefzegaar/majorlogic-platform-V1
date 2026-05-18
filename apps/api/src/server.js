@@ -1,3 +1,5 @@
+import "./telemetry.js"; // Must be first import — OpenTelemetry SDK init
+
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Fastify from "fastify";
@@ -166,6 +168,22 @@ fastify.register(healthPlugin);
 fastify.register(adminRoutes, { prefix: "/admin", DEFAULT_DOMAIN });
 fastify.register(apiRoutes,   { isProd });
 fastify.register(webRoutes,   { root, port, FRONTEND_URL, DEFAULT_DOMAIN, defaultProfile });
+
+// ── Graceful Shutdown ─────────────────────────────────────────────────────────
+const shutdown = async (signal) => {
+  fastify.log.info(`[shutdown] Received ${signal} — closing server gracefully`);
+  try {
+    await fastify.close();
+    fastify.log.info("[shutdown] Server closed. Exiting.");
+    process.exit(0);
+  } catch (err) {
+    fastify.log.error({ err }, "[shutdown] Error during close");
+    process.exit(1);
+  }
+};
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT",  () => shutdown("SIGINT"));
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 const start = async () => {

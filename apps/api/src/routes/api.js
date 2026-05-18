@@ -1,7 +1,6 @@
 import { createHmac } from "node:crypto";
 import { sendWelcomeEmail } from "../../../../packages/email-service/src/index.js";
-
-const VALID_DOMAINS = new Set(["laptop-student-us"]);
+import { getValidDomains } from "../registry.js";
 
 export default async function apiRoutes(fastify, { isProd }) {
 
@@ -24,7 +23,7 @@ export default async function apiRoutes(fastify, { isProd }) {
     }
   }, async (request, reply) => {
     const { domain } = request.params;
-    if (!VALID_DOMAINS.has(domain)) return reply.status(400).send({ error: "invalid_domain" });
+    if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
     try {
       const { getDomainController } = await import("../registry.js");
       const controller = getDomainController(domain);
@@ -59,7 +58,7 @@ export default async function apiRoutes(fastify, { isProd }) {
 
   fastify.post("/api/v1/:domain/growth/lead", async (request, reply) => {
     const { domain } = request.params;
-    if (!VALID_DOMAINS.has(domain)) return reply.status(400).send({ error: "invalid_domain" });
+    if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
     const { email, leadType, optedIn = false, trackingData = {} } = request.body;
     const VALID_LEAD_TYPES = ["save_results", "price_alert", "interstitial_gate"];
 
@@ -106,7 +105,7 @@ export default async function apiRoutes(fastify, { isProd }) {
     }
   }, async (request, reply) => {
     const { domain } = request.params;
-    if (!VALID_DOMAINS.has(domain)) return reply.status(400).send({ error: "invalid_domain" });
+    if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
     const { leadType = null, token } = request.query;
 
     let isAuthorized = false;

@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['tests/**/*.vitest.js', 'tests/**/*.test.js'],
+    include: ['tests/**/*.vitest.js', 'tests/**/*.test.js', 'tests/integration/**/*.vitest.js'],
     exclude: [
       // Legacy node:assert style tests (top-level await + assert, no describe/it blocks)
       'tests/unit-kernel.test.js',

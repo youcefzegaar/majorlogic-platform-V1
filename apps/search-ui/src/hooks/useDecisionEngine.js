@@ -164,6 +164,7 @@ export function useDecisionEngine() {
                 ? [card.secondaryBadNews]
                 : ['Slightly heavier than average']
             },
+            sacrificeVector: card.sacrifices || {},
             excluded: card.excluded && card.excluded.length > 0
               ? card.excluded
               : [{ name: 'Generic High-End Option', reason: 'Exceeds budget constraints' }],

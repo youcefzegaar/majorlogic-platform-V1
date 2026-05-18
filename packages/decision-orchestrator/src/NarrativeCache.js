@@ -48,6 +48,9 @@ export class NarrativeCache {
       return null;
     }
 
+    // LRU promotion: re-insert so this entry is evicted last
+    this._store.delete(key);
+    this._store.set(key, entry);
     this._hits++;
     return entry.value;
   }

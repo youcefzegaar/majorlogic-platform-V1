@@ -48,8 +48,9 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
   fastify.get("/web/search", async (request, reply) => {
     const { getDomainController } = await import("../registry.js");
     const controller = getDomainController(DEFAULT_DOMAIN);
+    const proto = request.headers["x-forwarded-proto"] ?? "http";
     const host = request.headers.host ?? `localhost:${port}`;
-    const url = new URL(request.raw.url, `http://${host}`);
+    const url = new URL(request.raw.url, `${proto}://${host}`);
     const state = controller.buildSearchState(url.searchParams, defaultProfile);
     reply.type("text/html; charset=utf-8").send(renderSearchPage(state));
   });
@@ -57,8 +58,9 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
   fastify.get("/web/results", async (request, reply) => {
     const { getDomainController } = await import("../registry.js");
     const controller = getDomainController(DEFAULT_DOMAIN);
+    const proto = request.headers["x-forwarded-proto"] ?? "http";
     const host = request.headers.host ?? `localhost:${port}`;
-    const url = new URL(request.raw.url, `http://${host}`);
+    const url = new URL(request.raw.url, `${proto}://${host}`);
     const state = controller.buildSearchState(url.searchParams, defaultProfile);
     const result = await controller.runPipeline(state.profile);
     reply.type("text/html; charset=utf-8").send(renderResultsPage({ state, result, requestUrl: url.toString() }));

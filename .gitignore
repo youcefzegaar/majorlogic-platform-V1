@@ -1,4 +1,8 @@
 node_modules/
 dist/
 .env
+.env.local
+apps/**/.env
+apps/**/.env.local
 coverage/
+.claude/

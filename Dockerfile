@@ -33,7 +33,7 @@ WORKDIR /app
 
 COPY --from=base /app /app
 
-EXPOSE 3000
+EXPOSE 3010
 
 # Start the API server by default
 CMD ["npm", "run", "start:api"]

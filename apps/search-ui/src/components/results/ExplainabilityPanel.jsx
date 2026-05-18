@@ -80,6 +80,17 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
                   {selectedCard.tradeOffs.lost.map(l => <div key={l} style={{ fontSize: 13 }}>• {l}</div>)}
                 </div>
               </div>
+              {Object.keys(selectedCard.sacrificeVector || {}).length > 0 && (
+                <div style={{ marginTop: 16, padding: 16, background: 'rgba(99, 102, 241, 0.05)', borderRadius: 10, border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+                  <div style={{ fontSize: 12, color: 'var(--accent-primary)', fontWeight: 700, marginBottom: 8 }}>⚖ Why This Choice Over Alternatives</div>
+                  {Object.entries(selectedCard.sacrificeVector).map(([gate, info]) => (
+                    <div key={gate} style={{ fontSize: 13, marginBottom: 4, color: 'var(--text-secondary)' }}>
+                      • Relaxed <strong style={{ color: 'var(--text-primary)' }}>{gate.replace(/_/g, ' ')}</strong>
+                      {info?.meaning ? ` — ${info.meaning}` : ''}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

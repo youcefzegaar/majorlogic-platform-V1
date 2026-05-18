@@ -3,6 +3,7 @@ import './index.css';
 
 import { useSessionProfile } from './hooks/useSessionProfile';
 import { useDecisionEngine } from './hooks/useDecisionEngine';
+import { useDecisionStore } from './stores/decisionStore';
 
 import AppSidebar from './components/shared/AppSidebar';
 import ProgressBar from './components/shared/ProgressBar';
@@ -16,18 +17,19 @@ export default function App() {
   const [theme, setTheme] = useState('dark');
   const [lang, setLang] = useState('en');
   const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const [phase, setPhase] = useState(0);
-  const [selectedCardType, setSelectedCardType] = useState('hero');
-  const [selectedPurchase, setSelectedPurchase] = useState('amazon');
-  const [explanationTab, setExplanationTab] = useState('why-chosen');
   const [timeline, setTimeline] = useState([]);
+
+  const {
+    phase, setPhase,
+    selectedCardType, setSelectedCardType,
+    explanationTab, setExplanationTab,
+    selectedPurchase, setSelectedPurchase
+  } = useDecisionStore();
 
   const profile = useSessionProfile();
   const engine = useDecisionEngine();
 
   useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
-
-  const goToPhase = (p) => setPhase(p);
 
   const handleAnalyze = async () => {
     const success = await engine.runDecision({ ...profile, lang });
@@ -45,7 +47,7 @@ export default function App() {
   const confirmCard = (type) => {
     setSelectedCardType(type);
     setTimeline(prev => [...prev, { date: new Date().toLocaleTimeString(), title: 'Final Decision', desc: `${engine.cards[type].name} - ${engine.cards[type].badge}` }]);
-    goToPhase(4);
+    setPhase(4);
   };
 
   const selectedCard = engine.cards[selectedCardType];
@@ -53,14 +55,14 @@ export default function App() {
   return (
     <div className="app-container">
       <AppSidebar
-        phase={phase} onNewDecision={() => goToPhase(0)}
+        phase={phase} onNewDecision={() => setPhase(0)}
         lang={lang} setLang={setLang}
         langMenuOpen={langMenuOpen} setLangMenuOpen={setLangMenuOpen}
         theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       />
 
       <main className="main-content">
-        <ProgressBar phase={phase} onStepClick={goToPhase} />
+        <ProgressBar phase={phase} onStepClick={setPhase} />
 
         {engine.error && (
           <div style={{ padding: 20, background: 'rgba(244,63,94,0.1)', color: 'var(--accent-danger)', border: '1px solid var(--accent-danger)', borderRadius: 12, marginBottom: 20 }}>
@@ -85,7 +87,7 @@ export default function App() {
             analysisSummary={engine.analysisSummary}
             detectedConflicts={engine.detectedConflicts}
             budgetMin={profile.budgetMin} budgetMax={profile.budgetMax}
-            onViewCards={() => goToPhase(2)} onAdjustPriorities={() => goToPhase(0)}
+            onViewCards={() => setPhase(2)} onAdjustPriorities={() => setPhase(0)}
           />
         )}
 
@@ -95,8 +97,8 @@ export default function App() {
             decisionMetadata={engine.decisionMetadata} analysisSummary={engine.analysisSummary}
             selectedCardType={selectedCardType} onSelectCard={setSelectedCardType}
             onConfirmCard={confirmCard}
-            onCardDetails={(t) => { setSelectedCardType(t); goToPhase(3); }}
-            onEditRequirements={() => goToPhase(0)}
+            onCardDetails={(t) => { setSelectedCardType(t); setPhase(3); }}
+            onEditRequirements={() => setPhase(0)}
             priorities={profile.priorities} setPriorities={profile.setPriorities}
             budgetMin={profile.budgetMin} setBudgetMin={profile.setBudgetMin}
             budgetMax={profile.budgetMax} setBudgetMax={profile.setBudgetMax}
@@ -109,7 +111,7 @@ export default function App() {
           <ExplanationPhase
             selectedCard={selectedCard}
             explanationTab={explanationTab} setExplanationTab={setExplanationTab}
-            onFinalSummary={() => goToPhase(4)} onBackToCards={() => goToPhase(2)}
+            onFinalSummary={() => setPhase(4)} onBackToCards={() => setPhase(2)}
           />
         )}
 
@@ -117,7 +119,7 @@ export default function App() {
           <SummaryPhase
             selectedCard={selectedCard} timeline={timeline}
             selectedPurchase={selectedPurchase} setSelectedPurchase={setSelectedPurchase}
-            onNewDecision={() => goToPhase(0)} onBackToExplanation={() => goToPhase(3)}
+            onNewDecision={() => setPhase(0)} onBackToExplanation={() => setPhase(3)}
           />
         )}
       </main>
