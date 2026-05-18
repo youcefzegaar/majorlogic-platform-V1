@@ -9,8 +9,11 @@ import { CognitiveAnalyzer } from "./modules/CognitiveAnalyzer.js";
 import { RecoveryEngine } from "./modules/RecoveryEngine.js";
 import { NarrativeCache } from "./NarrativeCache.js";
 
-// Singleton cache shared across all orchestrator instances in this process
+// Module-level singletons — shared across all orchestrator instances in this process
 const narrativeCache = new NarrativeCache();
+// IR cache: keyed by domainId+version so it survives across multiple orchestrator instances
+// and avoids re-compilation for every request (config is immutable between deployments)
+const _irCache = new Map();
 
 /**
  * Universal Decision Orchestrator
@@ -24,7 +27,6 @@ export class DecisionOrchestrator {
     this.compiler = new DecisionCompiler(this.logger);
     this.kernel = new DecisionKernel(this.logger);
     this.explainer = new DecisionExplainer(options.explainer || {});
-    this.irCache = new Map(); // Performance: Cache compiled IRs
 
     // Cognitive Sub-Modules
     this.intentEngine = new IntentEngine(this.logger);
@@ -108,7 +110,8 @@ export class DecisionOrchestrator {
 
   async _stepCompilation(ctx) {
       ctx.mappedProfile = this._mapProfile(ctx.userProfile, ctx.resolvedConfig.profileMapping || {});
-      ctx.ir = this._getCompiledIR(ctx.resolvedConfig);
+      const intentId = ctx.userProfile?.intentId || ctx.config?.defaultIntentId || "general";
+      ctx.ir = this._getCompiledIR(ctx.resolvedConfig, intentId);
   }
 
   async _stepKernelExecution(ctx) {
@@ -218,13 +221,14 @@ export class DecisionOrchestrator {
     if (!userProfile) throw new Error("Orchestrator Error: Missing userProfile");
   }
 
-  _getCompiledIR(config) {
-    const configHash = createHash("sha256").update(JSON.stringify(config)).digest("hex");
-    if (this.irCache.has(configHash)) {
-      return this.irCache.get(configHash);
+  _getCompiledIR(config, intentId = "general") {
+    // Key on domainId + version + intentId — each intent may merge different gates/scores
+    const cacheKey = `${config.domainId}:${config.version ?? "0"}:${intentId}`;
+    if (_irCache.has(cacheKey)) {
+      return _irCache.get(cacheKey);
     }
     const ir = this.compiler.compile(config);
-    this.irCache.set(configHash, ir);
+    _irCache.set(cacheKey, ir);
     return ir;
   }
 

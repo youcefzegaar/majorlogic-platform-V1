@@ -1,23 +1,25 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import AdminLayout from './layouts/AdminLayout';
-import CognitiveCommandCenter from './features/dashboard/CognitiveCommandCenter';
-import DomainsPage from './features/domains/DomainsPage';
-import DomainEditor from './features/domains/DomainEditor';
-import DecisionTraceView from './features/forensics/DecisionTraceView';
-import DecisionTopologyView from './features/forensics/DecisionTopologyView';
-import ShadowRunner from './features/shadow-runner/ShadowRunner';
 import DashboardHome from './features/dashboard/DashboardHome';
-import InterventionFeed from './features/governance/InterventionFeed';
-import GrowthLeads from './features/growth/GrowthLeads';
-import AffiliateManager from './features/affiliate/AffiliateManager';
-import LogicLab from './features/governance/LogicLab';
-import CommercialIntegrity from './features/governance/CommercialIntegrity';
-import AuditLog from './features/governance/AuditLog';
-import IntegrationsPage from './features/integrations/IntegrationsPage';
-import SettingsPage from './features/dashboard/SettingsPage';
-import GuidePage from './features/guide/GuidePage';
 import { useAppStore } from './stores/appStore';
 import './index.css';
+
+// Lazy-loaded feature pages — split into separate chunks to reduce initial bundle
+const CognitiveCommandCenter = lazy(() => import('./features/dashboard/CognitiveCommandCenter'));
+const DomainsPage             = lazy(() => import('./features/domains/DomainsPage'));
+const DomainEditor            = lazy(() => import('./features/domains/DomainEditor'));
+const DecisionTraceView       = lazy(() => import('./features/forensics/DecisionTraceView'));
+const DecisionTopologyView    = lazy(() => import('./features/forensics/DecisionTopologyView'));
+const ShadowRunner            = lazy(() => import('./features/shadow-runner/ShadowRunner'));
+const InterventionFeed        = lazy(() => import('./features/governance/InterventionFeed'));
+const GrowthLeads             = lazy(() => import('./features/growth/GrowthLeads'));
+const AffiliateManager        = lazy(() => import('./features/affiliate/AffiliateManager'));
+const LogicLab                = lazy(() => import('./features/governance/LogicLab'));
+const CommercialIntegrity     = lazy(() => import('./features/governance/CommercialIntegrity'));
+const AuditLog                = lazy(() => import('./features/governance/AuditLog'));
+const IntegrationsPage        = lazy(() => import('./features/integrations/IntegrationsPage'));
+const SettingsPage            = lazy(() => import('./features/dashboard/SettingsPage'));
+const GuidePage               = lazy(() => import('./features/guide/GuidePage'));
 
 const App = () => {
   const { currentPath, navigate, editingDomain } = useAppStore();
@@ -61,7 +63,13 @@ const App = () => {
 
   return (
     <AdminLayout>
-      {renderContent()}
+      <Suspense fallback={
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--text-muted, #9ca3af)', fontSize: 14 }}>
+          Loading…
+        </div>
+      }>
+        {renderContent()}
+      </Suspense>
     </AdminLayout>
   );
 };

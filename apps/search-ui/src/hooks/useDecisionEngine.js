@@ -34,23 +34,6 @@ function buildStabilityDescription(score, relaxed, status) {
   return 'Significant constraints relaxed. Consider adjusting your requirements.';
 }
 
-function fallbackCard(type) {
-  return {
-    name: `Standard ${type} Laptop`,
-    price: '$1,000',
-    originalPrice: null,
-    score: 80,
-    scoreClass: 'medium',
-    scoreLabel: 'Good Match',
-    whyChosen: 'Meets minimum specs.',
-    flaws: ['Generic fallback data'],
-    tradeOffs: { gained: ['Available'], lost: ['Generic'] },
-    excluded: [],
-    stability: { score: 70, status: 'medium', label: 'Average', description: 'Fallback logic used.' },
-    priorities: { performance: 80, battery: 80, portability: 80, price: 80 },
-    purchaseLinks: { amazon: '$1,000', bestbuy: '$1,000', direct: '$1,050' }
-  };
-}
 
 function buildProfile({ major, lang, budgetMax, priorities, goal }) {
   const perf = Number(priorities.performance);
@@ -201,9 +184,8 @@ export function useDecisionEngine() {
         setCards({});
       } else {
         setNoResults(null);
-        if (!newCards.hero) newCards.hero = { ...fallbackCard('Hero'), badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻' };
-        if (!newCards.future_proof) newCards.future_proof = { ...fallbackCard('Future Proof'), badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀' };
-        if (!newCards.smart_budget) newCards.smart_budget = { ...fallbackCard('Smart Budget'), badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎' };
+        // Only show cards the engine actually returned — no synthetic fallbacks.
+        // Showing fake data violates the transparency principle.
         setCards(newCards);
       }
 
