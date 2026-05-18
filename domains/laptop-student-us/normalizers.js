@@ -240,11 +240,11 @@ export function chooseOffer(entity, profile) {
   const offers = [...entity.market.offers].sort((left, right) => left.priceUsd - right.priceUsd);
   const allowedOffers = offers.filter((offer) => {
     if (offer.condition === "open_box") {
-      return profile.context.acceptsOpenBox;
+      return profile.context?.acceptsOpenBox ?? false;
     }
 
     if (offer.condition === "refurbished") {
-      return profile.context.acceptsRefurbished;
+      return profile.context?.acceptsRefurbished ?? false;
     }
 
     return true;

@@ -96,7 +96,7 @@ export function recommendOwnership({ profile, entity, heroCard }) {
   const refurbishedOffer = entity.market.offers.find((offer) => offer.condition === "refurbished");
   const openBoxOffer = entity.market.offers.find((offer) => offer.condition === "open_box");
 
-  if (profile.context.acceptsRefurbished && refurbishedOffer) {
+  if (profile.context?.acceptsRefurbished && refurbishedOffer) {
     return {
       mode: "refurbished_if_verified",
       explanation: "Use refurbished only as an ownership optimization after the device is chosen.",
@@ -104,7 +104,7 @@ export function recommendOwnership({ profile, entity, heroCard }) {
     };
   }
 
-  if (profile.context.acceptsOpenBox && openBoxOffer) {
+  if (profile.context?.acceptsOpenBox && openBoxOffer) {
     return {
       mode: "open_box_with_guardrails",
       explanation: "Open-box is allowed as an ownership path, not as a shortcut that changes the decision layer.",
