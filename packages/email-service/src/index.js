@@ -89,7 +89,8 @@ export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
     subject: template.subject,
     html: `
       <!DOCTYPE html>
-      <html><body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
+      <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+      <body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
         <div style="margin-bottom:24px;">
           <strong style="font-size:20px;">🧭 MajorLogic</strong>
         </div>
@@ -146,7 +147,8 @@ export async function sendNurtureEmail({ email, sequenceDay, metadata = {} }) {
     subject: template.subject,
     html: `
       <!DOCTYPE html>
-      <html><body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
+      <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+      <body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
         <div style="margin-bottom:24px;">
           <strong style="font-size:20px;">🧭 MajorLogic</strong>
         </div>
@@ -162,7 +164,8 @@ export async function sendPriceDropAlert({ email, entityId, oldPrice, newPrice, 
     subject: `🔥 Price Drop Alert — ${entityId} just got cheaper!`,
     html: `
       <!DOCTYPE html>
-      <html><body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
+      <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+      <body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
         <h2>Price Drop Detected!</h2>
         <p>The laptop you're watching just dropped from <s>$${oldPrice}</s> to <strong style="color:#16a34a;">$${newPrice}</strong>.</p>
         ${buyUrl ? `<p><a href="${buyUrl}" style="background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">Buy Now →</a></p>` : ""}
