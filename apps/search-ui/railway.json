@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "npx serve dist --no-clipboard -l $PORT",
+    "startCommand": "node_modules/.bin/serve dist -l $PORT --no-clipboard",
     "healthcheckPath": "/",
     "healthcheckTimeout": 30,
     "restartPolicyType": "ON_FAILURE",
