@@ -1,0 +1,49 @@
+name: Daily Automation Jobs
+
+on:
+  schedule:
+    # Run every day at 08:00 UTC (10:00 Algeria time)
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Job to run (price_monitor | email_nurture | all)'
+        required: true
+        default: 'all'
+
+jobs:
+  price-monitor:
+    name: Price Monitor
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event.inputs.job == 'price_monitor' || github.event.inputs.job == 'all'
+    steps:
+      - name: Run price monitor job
+        run: |
+          response=$(curl -s -w "\n%{http_code}" \
+            "${{ secrets.API_URL }}/api/v1/jobs/run?job=price_monitor&secret=${{ secrets.JOB_SECRET }}")
+          body=$(echo "$response" | head -n -1)
+          status=$(echo "$response" | tail -n 1)
+          echo "Status: $status"
+          echo "Response: $body"
+          if [ "$status" != "200" ]; then
+            echo "::error::Price monitor job failed with status $status"
+            exit 1
+          fi
+
+  email-nurture:
+    name: Email Nurture
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event.inputs.job == 'email_nurture' || github.event.inputs.job == 'all'
+    steps:
+      - name: Run email nurture job
+        run: |
+          response=$(curl -s -w "\n%{http_code}" \
+            "${{ secrets.API_URL }}/api/v1/jobs/run?job=email_nurture&secret=${{ secrets.JOB_SECRET }}")
+          body=$(echo "$response" | head -n -1)
+          status=$(echo "$response" | tail -n 1)
+          echo "Status: $status"
+          echo "Response: $body"
+          if [ "$status" != "200" ]; then
+            echo "::error::Email nurture job failed with status $status"
+            exit 1
+          fi
