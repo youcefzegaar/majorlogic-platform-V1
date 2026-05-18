@@ -1,40 +1,47 @@
-# Base image
-FROM node:20-slim AS base
+# ── Stage 1: Install & Build ─────────────────────────────────────────────────
+FROM node:20-slim AS builder
 
-# Install dependencies needed for some native packages if any
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy root package files
+# Install dependencies first (cached layer)
 COPY package*.json ./
-COPY turbo.json ./
+COPY apps/api/package*.json ./apps/api/
+COPY apps/admin-ui/package*.json ./apps/admin-ui/
+COPY packages/*/package*.json ./packages/
+RUN npm install --legacy-peer-deps
 
-# Copy all packages and apps
+# Copy source
 COPY packages ./packages
-COPY apps ./apps
+COPY apps/api ./apps/api
+COPY apps/admin-ui ./apps/admin-ui
 COPY domains ./domains
 COPY scripts ./scripts
 COPY rulesets ./rulesets
 COPY examples ./examples
 
-# Install all dependencies (Turborepo will handle this)
-RUN npm install
+# Build admin-ui (served by the API at /admin/*)
+RUN cd apps/admin-ui && npm run build
 
-# Build the project (if there are build steps, e.g. for React apps)
-RUN npx turbo run build
-
-# Production image
+# ── Stage 2: Production Image ─────────────────────────────────────────────────
 FROM node:20-slim AS runner
+
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-COPY --from=base /app /app
+# Copy only what the API needs at runtime
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/apps/api ./apps/api
+COPY --from=builder /app/apps/admin-ui/dist ./apps/admin-ui/dist
+COPY --from=builder /app/domains ./domains
+COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/rulesets ./rulesets
+COPY --from=builder /app/examples ./examples
 
 EXPOSE 3010
 
-# Start the API server by default
-CMD ["npm", "run", "start:api"]
+CMD ["node", "apps/api/src/server.js"]
