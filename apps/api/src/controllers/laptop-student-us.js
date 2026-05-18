@@ -16,6 +16,7 @@ import { executeUniversalPipeline } from "../../../../packages/platform-core/src
 import { laptopStudentUsDomainPack } from "../../../../domains/laptop-student-us/domain-pack.js";
 import { resolvePublishedCatalog } from "../../../../packages/postgres-persistence/src/catalog-loader.js";
 import { getRuleset, getRepository } from "../db/repository.js";
+import { getGeminiConfig, getClaudeConfig } from "../services/integrationService.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../../..");
@@ -150,6 +151,51 @@ export function buildSearchState(searchParams, defaultProfile) {
 }
 
 // ─────────────────────────────────────────────
+// AI Provider — Gemini → Claude → null fallback
+// ─────────────────────────────────────────────
+
+async function buildAIProvider() {
+  // 1. Try Gemini first (cheaper, faster for short narratives)
+  try {
+    const cfg = await getGeminiConfig();
+    if (cfg) {
+      const { GeminiProvider } = await import("../../../../packages/ai-provider-gemini/src/index.js");
+      return new GeminiProvider(cfg.apiKey, { modelName: cfg.modelName });
+    }
+  } catch { /* package not installed or key invalid — continue */ }
+
+  // 2. Fallback to Claude if Gemini not configured
+  try {
+    const cfg = await getClaudeConfig();
+    if (cfg) {
+      // Minimal Claude wrapper implementing the aiProvider interface
+      return {
+        async generate(prompt) {
+          const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+              "x-api-key": cfg.apiKey,
+              "anthropic-version": "2023-06-01",
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              model: cfg.model,
+              max_tokens: cfg.maxTokens ?? 250,
+              messages: [{ role: "user", content: prompt }]
+            })
+          });
+          if (!res.ok) throw new Error(`Claude API ${res.status}`);
+          const data = await res.json();
+          return data.content?.[0]?.text?.trim() ?? "";
+        }
+      };
+    }
+  } catch { /* key invalid or network error */ }
+
+  return null; // no AI configured — templates will be used
+}
+
+// ─────────────────────────────────────────────
 // runPipeline — with error boundary
 // ─────────────────────────────────────────────
 
@@ -171,14 +217,23 @@ export async function runPipeline(profile) {
       };
     }
 
+    // Load AI provider from admin integrations (Gemini → Claude → null)
+    const aiProvider = await buildAIProvider();
+
+    // Enable AI narratives in the config only when a provider is available
+    const decisionConfig = aiProvider
+      ? { ...ruleset, useAI: true }
+      : ruleset;
+
     const result = await executeUniversalPipeline({
       profile,
       domainPack:       laptopStudentUsDomainPack,
       publishedEntities:publishedCatalogState.entities,
       catalogVersion:   publishedCatalogState.catalogVersion,
       publishRunId:     publishedCatalogState.publishRunId,
-      decisionConfig:   ruleset,
-      repository
+      decisionConfig,
+      repository,
+      aiProvider
     });
 
     return { publishedCatalogSource: publishedCatalogState.source, ...result };

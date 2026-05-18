@@ -20,9 +20,14 @@ export async function executeUniversalPipeline({
   catalogVersion = null,
   publishRunId = null,
   repository = null,
-  domainPack = null
+  domainPack = null,
+  aiProvider = null   // optional: { generate(prompt) → string } — enables AI narratives
 }) {
   const ruleset = decisionConfig;
+
+  // Wire aiProvider into the singleton orchestrator's explainer for this request.
+  // Node.js is single-threaded so this is safe — no concurrent mutation risk.
+  orchestrator.explainer.aiProvider = aiProvider ?? null;
 
   // 1. Strategic Governance Check (if domainPack is provided)
   let governance = { ok: true };

@@ -73,6 +73,15 @@ export async function getWebhookUrl(slug) {
   return i.credentials.webhook_url;
 }
 
+export async function getGeminiConfig() {
+  const i = await getIntegration("gemini");
+  if (!i?.is_active || !i.credentials?.api_key) return null;
+  return {
+    apiKey:    i.credentials.api_key,
+    modelName: i.config?.model ?? "gemini-1.5-flash",
+  };
+}
+
 export async function getOpenAIConfig() {
   const i = await getIntegration("openai");
   if (!i?.is_active || !i.credentials?.api_key) return null;
