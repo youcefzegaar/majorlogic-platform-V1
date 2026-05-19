@@ -364,7 +364,12 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
     const { getRepository } = await import("../db/repository.js");
     const repository = await getRepository();
     if (!repository) return reply.status(503).send({ error: "db_offline" });
-    await repository.addCustomIntegration({ slug, name, description, category, icon_emoji, credentials, config });
+    try {
+      await repository.addCustomIntegration({ slug, name, description, category, icon_emoji, credentials, config });
+    } catch (err) {
+      fastify.log.error({ err, slug }, "addCustomIntegration failed");
+      return reply.status(500).send({ error: "failed_to_add", message: err.message });
+    }
     return reply.send({ success: true });
   });
 
