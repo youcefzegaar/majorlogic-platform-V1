@@ -131,11 +131,11 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
         affiliateUrl = `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=${fallbackTag}`;
       }
 
-      return reply.redirect(302, affiliateUrl);
+      return reply.redirect(affiliateUrl, 302);
     } catch (err) {
       request.log.error({ err }, "[AffiliateGateway] Error");
       const fallbackTag = process.env.DEFAULT_AFFILIATE_TAG ?? "majorlogic-20";
-      return reply.redirect(302, `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=${fallbackTag}`);
+      return reply.redirect(`https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=${fallbackTag}`, 302);
     }
   });
 
@@ -205,7 +205,7 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
   fastify.get("/laptops/:major/:budget", async (request, reply) => {
     const { major, budget } = request.params;
     const pageData = loadSeoPage(major, budget);
-    if (!pageData) return reply.redirect(302, `/laptops/${major}`);
+    if (!pageData) return reply.redirect(`/laptops/${major}`, 302);
     reply.type("text/html; charset=utf-8").send(renderSeoPage(pageData));
   });
 }
