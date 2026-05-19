@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/admin/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/admin/favicon.svg",
+      "destination": "/favicon.svg"
+    },
+    {
       "source": "/admin/:path*",
       "destination": "https://majorlogicapi-production.up.railway.app/admin/:path*"
     },
