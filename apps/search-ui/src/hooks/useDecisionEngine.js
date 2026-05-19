@@ -139,7 +139,7 @@ export function useDecisionEngine() {
           newCards[type] = {
             name: card.title,
             price: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
-            originalPrice: (card.priceUsd && card.priceUsd < budgetMax) ? `$${budgetMax.toLocaleString()}` : null,
+            originalPrice: null,
             badge: details.badge,
             badgeClass: details.badgeClass,
             score: rawScore,
@@ -162,9 +162,7 @@ export function useDecisionEngine() {
                 : ['Slightly heavier than average']
             },
             sacrificeVector: card.sacrifices || {},
-            excluded: card.excluded && card.excluded.length > 0
-              ? card.excluded
-              : [{ name: 'Generic High-End Option', reason: 'Exceeds budget constraints' }],
+            excluded: Array.isArray(card.excluded) ? card.excluded : [],
             stability: {
               score: stabilityScore ?? 0,
               status: stabilityStatus,

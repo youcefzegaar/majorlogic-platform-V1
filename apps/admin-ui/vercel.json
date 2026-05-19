@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/admin/login",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/admin/assets/:path*",
