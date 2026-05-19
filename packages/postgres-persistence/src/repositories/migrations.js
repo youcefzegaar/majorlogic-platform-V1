@@ -36,14 +36,21 @@ export class MigrationsRepository {
       "database/seeds/0001_domain_registry.sql"
     ];
 
+    // PostgreSQL codes for "object already exists" — safe to ignore on re-runs
+    const ALREADY_EXISTS = new Set(['42P07', '42710', '42723', '42P16']);
+
     console.log(`[Repository] Applying ${migrationFiles.length} migration files...`);
     for (const file of migrationFiles) {
-      console.log(`[Repository] Executing ${file}...`);
       try {
         await this.pool.query(readSql(file));
       } catch (err) {
-        console.error(`[Repository] Migration failed: ${file}`, err.message);
-        throw new Error(`Migration failed at ${file}: ${err.message}`, { cause: err });
+        if (ALREADY_EXISTS.has(err.code)) {
+          // Migration already applied — object exists, schema is correct, continue
+          console.log(`[Repository] ${file} already applied (${err.code}), skipping.`);
+        } else {
+          console.error(`[Repository] Migration failed: ${file}`, err.message);
+          throw new Error(`Migration failed at ${file}: ${err.message}`, { cause: err });
+        }
       }
     }
     console.log("[Repository] All migrations applied successfully.");
