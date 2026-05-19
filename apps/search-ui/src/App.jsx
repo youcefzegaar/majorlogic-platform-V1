@@ -62,7 +62,10 @@ export default function App() {
       />
 
       <main className="main-content">
-        <ProgressBar phase={phase} onStepClick={setPhase} />
+        <ProgressBar phase={phase} onStepClick={(p) => {
+          if ((p === 3 || p === 4) && !selectedCard) return;
+          setPhase(p);
+        }} />
 
         {engine.error && (
           <div style={{ padding: 20, background: 'rgba(244,63,94,0.1)', color: 'var(--accent-danger)', border: '1px solid var(--accent-danger)', borderRadius: 12, marginBottom: 20 }}>

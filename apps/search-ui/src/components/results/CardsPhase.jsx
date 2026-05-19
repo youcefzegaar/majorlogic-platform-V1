@@ -39,6 +39,15 @@ export default function CardsPhase({
           )}
           {noResults ? (
             <ZeroResultsView noResults={noResults} onEditRequirements={onEditRequirements} />
+          ) : Object.keys(cards).length === 0 ? (
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: 40, marginBottom: 16 }}>🔍</div>
+              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No results yet</div>
+              <div style={{ fontSize: 14 }}>Adjust your requirements and try again.</div>
+              <button className="btn btn-secondary" style={{ marginTop: 20 }} onClick={onEditRequirements}>
+                Edit Requirements
+              </button>
+            </div>
           ) : (
             <div className="decision-cards-grid">
               {Object.entries(cards).map(([type, card]) => (

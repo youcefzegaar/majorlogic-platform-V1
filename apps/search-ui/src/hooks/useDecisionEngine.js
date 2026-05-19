@@ -91,7 +91,8 @@ export function useDecisionEngine() {
     setError(null);
     try {
       const profile = buildProfile({ major, lang, budgetMax, priorities, goal });
-      const apiUrl = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:3010' : '');
+      // Direct Railway call — Vercel proxy is unreliable for POST requests
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
       const response = await fetch(`${apiUrl}/api/v1/laptop-student-us/decision/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -109,18 +110,31 @@ export function useDecisionEngine() {
         smart_budget: { badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎', scoreLabel: 'Excellent Value' }
       };
 
+      const isValidText = (s) => typeof s === 'string' && s.trim() !== '' && s !== 'null' && s !== 'undefined';
+
       if (result.decision?.cards) {
         result.decision.cards.forEach(card => {
           const type = card.cardType || 'hero';
           const details = typeDetails[type] || typeDetails.hero;
 
-          const stabilityScore = result.decision.stabilityScore !== undefined
-            ? Math.round(result.decision.stabilityScore * 100)
-            : null;
+          // stabilityScore: null means unavailable, not zero
+          const rawStability = result.decision.stabilityScore;
+          const stabilityScore = rawStability != null ? Math.round(rawStability * 100) : null;
+          const stabilityStatus = stabilityScore == null ? 'unknown'
+            : stabilityScore >= 80 ? 'high'
+            : stabilityScore >= 60 ? 'medium' : 'low';
 
-          const stabilityStatus = stabilityScore >= 80
-            ? 'high'
-            : (stabilityScore >= 60 || stabilityScore === null) ? 'medium' : 'low';
+          // score: guard against NaN from undefined arithmetic
+          const rawScore = card.score != null ? card.score
+            : card.confidenceScore != null ? Math.round(card.confidenceScore * 100)
+            : 85;
+
+          // purchaseLinks: use real buyRoute from commercialRoutes
+          const commercialRoute = result.commercialRoutes?.routes?.find(r => r.cardType === type);
+          const allOffers = commercialRoute?.allOffers || [];
+          const bestOffer = allOffers.find(o => !o.isAffiliate) || allOffers[0];
+          const affiliateOffer = allOffers.find(o => o.isAffiliate);
+          const makeBuyUrl = (route) => route?.buyRoute ? `${apiUrl}${route.buyRoute}` : null;
 
           newCards[type] = {
             name: card.title,
@@ -128,22 +142,22 @@ export function useDecisionEngine() {
             originalPrice: (card.priceUsd && card.priceUsd < budgetMax) ? `$${budgetMax.toLocaleString()}` : null,
             badge: details.badge,
             badgeClass: details.badgeClass,
-            score: Math.round(card.score || card.confidenceScore * 100 || 85),
-            scoreClass: (card.score || card.confidenceScore * 100 || 85) >= 80 ? 'high' : 'medium',
+            score: rawScore,
+            scoreClass: rawScore >= 80 ? 'high' : 'medium',
             scoreLabel: details.scoreLabel,
             icon: details.icon,
             image: resolveImage(card.entityId),
-            whyChosen: typeof card.whyThis === 'string' && card.whyThis.trim() !== ''
+            whyChosen: isValidText(card.whyThis)
               ? card.whyThis
               : 'This device perfectly balances your priorities based on our analysis.',
-            flaws: typeof card.badNews === 'string' && card.badNews.trim() !== '' && card.badNews !== 'null'
+            flaws: isValidText(card.badNews)
               ? [card.badNews]
               : ['Minor compromises based on budget constraints.'],
             tradeOffs: {
               gained: Array.isArray(card.topPros) && card.topPros.length > 0
                 ? card.topPros
                 : ['Performance above average'],
-              lost: typeof card.secondaryBadNews === 'string' && card.secondaryBadNews.trim() !== '' && card.secondaryBadNews !== 'null'
+              lost: isValidText(card.secondaryBadNews)
                 ? [card.secondaryBadNews]
                 : ['Slightly heavier than average']
             },
@@ -152,9 +166,9 @@ export function useDecisionEngine() {
               ? card.excluded
               : [{ name: 'Generic High-End Option', reason: 'Exceeds budget constraints' }],
             stability: {
-              score: stabilityScore || 0,
+              score: stabilityScore ?? 0,
               status: stabilityStatus,
-              label: stabilityScore >= 80 ? 'Stable' : 'Needs Review',
+              label: stabilityScore == null ? 'Unavailable' : stabilityScore >= 80 ? 'Stable' : 'Needs Review',
               description: buildStabilityDescription(
                 stabilityScore,
                 !!result.decision.relaxedConstraint,
@@ -168,9 +182,11 @@ export function useDecisionEngine() {
               build: 90
             },
             purchaseLinks: {
-              amazon: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
-              bestbuy: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
-              direct: `$${((card.priceUsd || budgetMax) + 50).toLocaleString()}`
+              primary: makeBuyUrl(bestOffer),
+              affiliate: makeBuyUrl(affiliateOffer),
+              primarySeller: bestOffer?.seller || null,
+              affiliateSeller: affiliateOffer?.seller || null,
+              priceUsd: card.priceUsd
             }
           };
         });
