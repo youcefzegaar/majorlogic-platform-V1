@@ -4,6 +4,19 @@ import { renderSearchPage, renderResultsPage } from "../views/templates.js";
 import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure } from "../views/legal.js";
 import { renderSeoPage } from "../views/seo-page.js";
 
+// Cache the generated catalog in memory to avoid repeated file reads
+let _catalogCache = null;
+let _catalogCachePath = null;
+function loadCatalogFile(filePath) {
+  if (_catalogCachePath === filePath && _catalogCache) return _catalogCache;
+  try {
+    const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    _catalogCache = Array.isArray(raw) ? raw : Object.values(raw);
+    _catalogCachePath = filePath;
+  } catch { _catalogCache = []; }
+  return _catalogCache;
+}
+
 export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEFAULT_DOMAIN, defaultProfile }) {
 
   // ── Robots & Sitemap ──────────────────────────────────────────────────────
@@ -72,66 +85,54 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
     const { domain, entityId } = request.params;
     const { seller = "" } = request.query;
 
+    const DEFAULT_TAG = process.env.DEFAULT_AFFILIATE_TAG ?? "majorlogic-20";
+
     try {
-      const { getRepository } = await import("../db/repository.js");
-      const repository = await getRepository();
+      // Always read from the generated file (source of truth) — avoids stale DB entities
+      const catalogPath = path.join(root, `domains/${domain}/generated/published-catalog.generated.json`);
+      const catalogEntities = loadCatalogFile(catalogPath);
+      const entity = catalogEntities.find(e => e.entityId === entityId);
 
-      let affiliateUrl = null;
+      if (entity) {
+        // Try direct affiliateUrl from bestOffer or offers list
+        const offers = entity.market?.offers || [];
+        const bestOfferUrl = entity.market?.bestOffer?.affiliateUrl;
+        const targetOffer = seller
+          ? offers.find(o => o.seller === seller)
+          : offers.sort((a, b) => (a.priceUsd || 0) - (b.priceUsd || 0))[0];
 
-      if (repository) {
-        const affiliateTagMap = await repository.getAffiliateTagMap();
-        const entities = await repository.getPublishedEntities({ domainId: domain, limit: 500 });
-        const entity = entities.find(e => e.entityId === entityId || e.title === entityId);
-
-        if (entity) {
-          const offers = entity.market?.offers || [];
-          const targetOffer = seller
-            ? offers.find(o => o.seller === seller)
-            : offers.sort((a, b) => a.priceUsd - b.priceUsd)[0];
-
-          if (targetOffer) {
-            const rawUrl = targetOffer.affiliateUrl || null;
-            if (rawUrl) {
-              try {
-                const parsed = new URL(rawUrl);
-                affiliateUrl = parsed.protocol === "https:" ? rawUrl : null;
-              } catch {
-                affiliateUrl = null;
-              }
+        const rawUrl = targetOffer?.affiliateUrl || bestOfferUrl || null;
+        if (rawUrl) {
+          try {
+            const parsed = new URL(rawUrl);
+            if (parsed.protocol === "https:") {
+              // Log click asynchronously — non-blocking
+              const { getRepository } = await import("../db/repository.js");
+              const repo = await getRepository();
+              if (repo) repo.logAffiliateClick({
+                domainId: domain, entityId,
+                seller: targetOffer?.seller || "Amazon",
+                priceUsd: targetOffer?.priceUsd || entity.market?.bestOffer?.priceUsd,
+                isAffiliate: true
+              }).catch(() => {});
+              return reply.redirect(rawUrl, 302);
             }
-
-            if (affiliateUrl && affiliateTagMap[targetOffer.seller]) {
-              const { tag, paramKey } = affiliateTagMap[targetOffer.seller];
-              try {
-                const url = new URL(affiliateUrl);
-                url.searchParams.set(paramKey, tag);
-                affiliateUrl = url.toString();
-              } catch {
-                affiliateUrl = null;
-              }
-            }
-
-            repository.logAffiliateClick({
-              domainId: domain, entityId,
-              seller: targetOffer.seller,
-              sellerType: targetOffer.sellerType,
-              priceUsd: targetOffer.priceUsd,
-              condition: targetOffer.condition,
-              isAffiliate: targetOffer.affiliate
-            }).catch(err => request.log.error({ err }, "[AffiliateGateway] Click log failed"));
-          }
+          } catch { /* invalid URL — fall through */ }
         }
 
-        if (!affiliateUrl) {
-          const amazonTag = affiliateTagMap["Amazon"]?.tag ?? process.env.DEFAULT_AFFILIATE_TAG ?? "majorlogic-20";
-          affiliateUrl = `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=${amazonTag}`;
-        }
-      } else {
-        const fallbackTag = process.env.DEFAULT_AFFILIATE_TAG ?? "majorlogic-20";
-        affiliateUrl = `https://www.amazon.com/s?k=${encodeURIComponent(entityId)}&tag=${fallbackTag}`;
+        // No direct URL — build clean Amazon search using real product title
+        const searchQuery = entity.title || entity.itemName || entityId;
+        return reply.redirect(
+          `https://www.amazon.com/s?k=${encodeURIComponent(searchQuery)}&tag=${DEFAULT_TAG}`,
+          302
+        );
       }
 
-      return reply.redirect(affiliateUrl, 302);
+      // Entity not in catalog — last resort fallback
+      return reply.redirect(
+        `https://www.amazon.com/s?k=${encodeURIComponent(entityId.replace(/-/g, " "))}&tag=${DEFAULT_TAG}`,
+        302
+      );
     } catch (err) {
       request.log.error({ err }, "[AffiliateGateway] Error");
       const fallbackTag = process.env.DEFAULT_AFFILIATE_TAG ?? "majorlogic-20";

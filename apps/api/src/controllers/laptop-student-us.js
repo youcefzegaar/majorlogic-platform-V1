@@ -207,6 +207,7 @@ export async function runPipeline(profile) {
     const publishedCatalogState = await resolvePublishedCatalog({
       repository,
       domainId: DOMAIN_ID,
+      preferDatabase: false,
       generatedFilePath: path.join(root, "domains/laptop-student-us/generated/published-catalog.generated.json")
     });
 
