@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://majorlogic-api.up.railway.app/api/:path*"
+      "destination": "https://majorlogicapi-production.up.railway.app/api/:path*"
     },
     {
       "source": "/(.*)",

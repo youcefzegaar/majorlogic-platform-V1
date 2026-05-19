@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/admin/:path*",
-      "destination": "https://majorlogic-api.up.railway.app/admin/:path*"
+      "destination": "https://majorlogicapi-production.up.railway.app/admin/:path*"
     },
     {
       "source": "/(.*)",
