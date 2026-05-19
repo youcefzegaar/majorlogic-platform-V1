@@ -338,7 +338,7 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
 
   // ── Integrations (Secrets Manager) ───────────────────────────────────────
 
-  fastify.post("/integrations/reseed", async (_request, reply) => {
+  fastify.get("/integrations/reseed", async (_request, reply) => {
     const { getRepository } = await import("../db/repository.js");
     const repository = await getRepository();
     if (!repository) return reply.status(503).send({ error: "db_offline" });

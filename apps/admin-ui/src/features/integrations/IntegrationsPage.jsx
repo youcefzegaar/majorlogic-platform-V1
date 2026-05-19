@@ -403,6 +403,11 @@ const IntegrationsPage = () => {
     onSuccess: () => qc.invalidateQueries(['integrations']),
   });
 
+  const reseedMut = useMutation({
+    mutationFn: () => adminService.reseedIntegrations(),
+    onSuccess: () => qc.invalidateQueries(['integrations']),
+  });
+
   const integrations = data?.integrations || [];
   const existingSlugs = integrations.map(i => i.slug);
   const activeCount = integrations.filter(i => i.is_active).length;
@@ -439,6 +444,12 @@ const IntegrationsPage = () => {
           <button className="btn btn-outline" onClick={() => refetch()} disabled={isFetching} style={{ padding: '7px' }}>
             <RefreshCw size={15} className={isFetching ? 'spin' : ''} />
           </button>
+          {integrations.length === 0 && (
+            <button className="btn btn-outline" onClick={() => reseedMut.mutate()} disabled={reseedMut.isPending}
+              style={{ fontSize: '0.82rem', color: 'var(--warning, #F59E0B)', borderColor: 'var(--warning, #F59E0B)' }}>
+              {reseedMut.isPending ? <RefreshCw className="spin" size={14} /> : '⚙️'} استعادة التكاملات
+            </button>
+          )}
           <div style={{ position: 'relative' }} ref={addBtnRef}>
             <button className="btn btn-primary" onClick={() => setShowDropdown(v => !v)}>
               <Plus size={15} /> Add Integration
