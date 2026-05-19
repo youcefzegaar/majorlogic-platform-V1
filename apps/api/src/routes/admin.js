@@ -137,7 +137,7 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
     const token = fastify.jwt.sign({ username });
     reply
       .setCookie("admin_token", token, {
-        domain: isProd ? "majorlogic.ai" : undefined,
+        domain: isProd ? "majorlogic.tech" : undefined,
         path: "/",
         secure: isProd,
         httpOnly: true,
