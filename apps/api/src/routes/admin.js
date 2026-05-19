@@ -338,6 +338,33 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
 
   // ── Integrations (Secrets Manager) ───────────────────────────────────────
 
+  fastify.post("/integrations/reseed", async (_request, reply) => {
+    const { getRepository } = await import("../db/repository.js");
+    const repository = await getRepository();
+    if (!repository) return reply.status(503).send({ error: "db_offline" });
+    await repository.pool.query(`
+      INSERT INTO ml_commercial.platform_integrations (slug, category, name, description, icon_emoji, config)
+      VALUES
+        ('claude',        'ai',        'Claude (Anthropic)',     'Decision explanation, narrative generation', '🧠', '{"model":"claude-sonnet-4-6","max_tokens":1024}'),
+        ('openai',        'ai',        'OpenAI',                'GPT-4o for fallback AI tasks',               '⚡', '{"model":"gpt-4o","max_tokens":1024}'),
+        ('gemini',        'ai',        'Google Gemini',         'Gemini Pro / Flash for AI tasks',            '🔷', '{"model":"gemini-2.0-flash"}'),
+        ('amazon_pa',     'ecommerce', 'Amazon PA API',         'Live prices, images, availability',          '🛒', '{"region":"us-east-1","marketplace":"www.amazon.com"}'),
+        ('sendgrid',      'email',     'SendGrid',              'Transactional emails',                       '📧', '{}'),
+        ('resend',        'email',     'Resend',                'Developer-friendly email API',               '✉️', '{}'),
+        ('slack_webhook', 'webhook',   'Slack Webhook',         'Alert notifications',                        '💬', '{}'),
+        ('reddit',        'reviews',   'Reddit API',            'Fetch laptop discussions',                   '🟠', '{"subreddits":"laptops,suggestalaptop"}'),
+        ('youtube',       'reviews',   'YouTube Data API',      'Fetch video reviews',                        '▶️', '{"max_results":5}'),
+        ('bestbuy',       'reviews',   'Best Buy API',          'Live prices and reviews',                    '🔵', '{}'),
+        ('google_search', 'reviews',   'Google Custom Search',  'Expert reviews search',                      '🔍', '{"num":5}'),
+        ('serpapi',       'reviews',   'SerpAPI',               'Shopping results',                           '🌐', '{}'),
+        ('redis',         'database',  'Redis / Upstash',       'Caching layer',                              '🔴', '{"tls":true}'),
+        ('postgres_read', 'database',  'Postgres Read Replica', 'Offload analytics queries',                  '🐘', '{}')
+      ON CONFLICT (slug) DO NOTHING
+    `);
+    const integrations = await repository.getIntegrations();
+    return reply.send({ success: true, inserted: integrations.length, integrations });
+  });
+
   fastify.get("/integrations", async (_request, reply) => {
     const { getRepository } = await import("../db/repository.js");
     const repository = await getRepository();
