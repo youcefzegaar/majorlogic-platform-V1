@@ -140,6 +140,9 @@ export default async function apiRoutes(fastify, { isProd }) {
     if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
     const { leadType = null, token } = request.query;
 
+    const exportSecret = process.env.ADMIN_EXPORT_SECRET;
+    if (!exportSecret) return reply.status(503).send({ error: "export_not_configured" });
+
     let isAuthorized = false;
     if (token) {
       const dotIdx = token.indexOf(".");
@@ -147,7 +150,7 @@ export default async function apiRoutes(fastify, { isProd }) {
       const sig = dotIdx > 0 ? token.slice(dotIdx + 1) : null;
       const expiresInt = parseInt(expires, 10);
       if (expires && sig && !isNaN(expiresInt) && Date.now() < expiresInt) {
-        const expected = createHmac("sha256", process.env.ADMIN_EXPORT_SECRET ?? "")
+        const expected = createHmac("sha256", exportSecret)
           .update(expires).digest("hex");
         try {
           if (timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) isAuthorized = true;

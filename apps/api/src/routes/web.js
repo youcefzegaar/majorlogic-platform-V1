@@ -106,10 +106,17 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
           : offers.sort((a, b) => (a.priceUsd || 0) - (b.priceUsd || 0))[0];
 
         const rawUrl = targetOffer?.affiliateUrl || bestOfferUrl || null;
-        if (rawUrl) {
+        // security: only redirect to known affiliate domains (SSRF prevention)
+      const AFFILIATE_HOSTS = new Set([
+        "www.amazon.com", "amazon.com", "amzn.to",
+        "www.ebay.com", "ebay.com",
+        "www.bestbuy.com", "bestbuy.com",
+        "www.walmart.com", "walmart.com",
+      ]);
+      if (rawUrl) {
           try {
             const parsed = new URL(rawUrl);
-            if (parsed.protocol === "https:") {
+            if (parsed.protocol === "https:" && AFFILIATE_HOSTS.has(parsed.hostname)) {
               // Log click asynchronously — non-blocking
               const { getRepository } = await import("../db/repository.js");
               const repo = await getRepository();
@@ -153,7 +160,9 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
   function loadSeoPage(major, budget = "any-budget") {
     if (!SAFE_SLUG.test(major) || !SAFE_SLUG.test(budget)) return null;
     const filePath = path.resolve(SEO_PAGES_DIR, `${major}__${budget}.json`);
-    if (!filePath.startsWith(path.resolve(SEO_PAGES_DIR) + path.sep)) return null;
+    // security: path.relative() correctly detects traversal on both Linux and Windows
+    const rel = path.relative(path.resolve(SEO_PAGES_DIR), filePath);
+    if (rel.startsWith("..") || path.isAbsolute(rel)) return null;
     if (!fs.existsSync(filePath)) return null;
     try { return JSON.parse(fs.readFileSync(filePath, "utf8")); }
     catch { return null; }
@@ -173,7 +182,7 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
       try { pages = JSON.parse(fs.readFileSync(indexPath, "utf8")).pages ?? []; } catch { /* invalid JSON — use empty list */ }
     }
     const links = pages.map(p =>
-      `<li><a href="${p.canonical}" style="color:#7C3AED;text-decoration:none;">${escapeHtml(p.h1)}</a></li>`
+      `<li><a href="${escapeHtml(p.canonical)}" style="color:#7C3AED;text-decoration:none;">${escapeHtml(p.h1)}</a></li>`
     ).join("");
 
     reply.type("text/html; charset=utf-8").send(`<!DOCTYPE html>

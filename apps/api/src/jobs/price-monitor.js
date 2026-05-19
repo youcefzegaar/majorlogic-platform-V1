@@ -8,6 +8,8 @@
 
 import { sendPriceDropAlert } from "../../../../packages/email-service/src/index.js";
 
+const DROP_THRESHOLD = 0.03; // 3% price drop triggers alert
+
 export async function runPriceMonitor(repository) {
   const results = { checked: 0, alerted: 0, errors: 0 };
 
@@ -60,8 +62,9 @@ export async function runPriceMonitor(repository) {
         continue;
       }
 
+      if (!(watchedPrice > 0)) continue; // guard: invalid baseline price
       const dropRatio = (watchedPrice - currentPrice) / watchedPrice;
-      if (dropRatio >= 0.03) {
+      if (dropRatio >= DROP_THRESHOLD) {
         // 3%+ drop detected — send alert
         await sendPriceDropAlert({
           email,

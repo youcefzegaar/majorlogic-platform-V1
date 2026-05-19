@@ -6,31 +6,31 @@
  * Application code should NEVER read process.env for API keys — use this service instead.
  */
 
-let _cache = new Map();
-let _cacheTs = 0;
+// Per-slug cache: Map<slug, { data, ts }>
+const _cache = new Map();
 const CACHE_TTL_MS = 60_000; // 1 minute
 
 export async function getIntegration(slug) {
   const now = Date.now();
-  if (_cache.has(slug) && now - _cacheTs < CACHE_TTL_MS) {
-    return _cache.get(slug);
+  const cached = _cache.get(slug);
+  if (cached && now - cached.ts < CACHE_TTL_MS) {
+    return cached.data;
   }
 
   const { getRepository } = await import("../db/repository.js");
   const repo = await getRepository();
-  if (!repo) return null;
+  if (!repo) {
+    console.warn(`[integrationService] DB unavailable — cannot fetch slug: ${slug}`);
+    return null;
+  }
 
   const integration = await repo.getIntegrationBySlug(slug);
-  if (integration) {
-    _cache.set(slug, integration);
-    _cacheTs = now;
-  }
+  _cache.set(slug, { data: integration ?? null, ts: now });
   return integration ?? null;
 }
 
 export function clearIntegrationCache() {
   _cache.clear();
-  _cacheTs = 0;
 }
 
 // ── Typed Accessors ───────────────────────────────────────────────────────────
