@@ -147,7 +147,7 @@ fastify.addHook("onRequest", async (req, reply) => {
     req.user = fastify.jwt.verify(token);
   } catch (err) {
     req.log.warn({ url }, `[AUTH] Unauthorized: ${err.message}`);
-    reply.redirect("/admin/login");
+    return reply.redirect("/admin/login", 302);
   }
 });
 

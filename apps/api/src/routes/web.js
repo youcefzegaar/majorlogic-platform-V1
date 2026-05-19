@@ -42,10 +42,10 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
     if (host.startsWith('admin.')) return reply.redirect('/admin/login', 302);
     return reply.redirect(FRONTEND_URL, 302);
   });
-  fastify.get("/search", async (_request, reply) => reply.redirect(FRONTEND_URL));
+  fastify.get("/search", async (_request, reply) => reply.redirect(FRONTEND_URL, 302));
   fastify.get("/results", async (request, reply) => {
     const url = new URL(request.raw.url, FRONTEND_URL);
-    reply.redirect(url.toString());
+    reply.redirect(url.toString(), 302);
   });
 
   // ── Legal Pages ───────────────────────────────────────────────────────────

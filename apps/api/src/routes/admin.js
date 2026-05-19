@@ -144,11 +144,11 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
         sameSite: "strict",
         maxAge: 86400
       })
-      .redirect("/admin/");
+      .redirect("/admin/", 302);
   });
 
   fastify.get("/logout", async (_request, reply) => {
-    reply.clearCookie("admin_token", { path: "/" }).redirect("/admin/login");
+    reply.clearCookie("admin_token", { path: "/" }).redirect("/admin/login", 302);
   });
 
   // ── Password (JSON API for React SPA) ────────────────────────────────────
@@ -202,7 +202,7 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
       .update(String(expires)).digest("hex");
     const token = `${expires}.${sig}`;
     const { domain } = request.params;
-    reply.redirect(`/api/v1/${domain}/growth/leads/export?token=${token}`);
+    reply.redirect(`/api/v1/${domain}/growth/leads/export?token=${token}`, 302);
   });
 
   // ── JSON APIs (consumed by React SPA) ────────────────────────────────────
