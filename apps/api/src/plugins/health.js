@@ -6,6 +6,11 @@ export default fp(async function healthPlugin(fastify) {
     return reply.send({ ok: true, uptime: process.uptime() });
   });
 
+  // Railway health check endpoint
+  fastify.get('/api/v1/health', async (_req, reply) => {
+    return reply.send({ ok: true, uptime: process.uptime() });
+  });
+
   fastify.get('/readiness', async (_req, reply) => {
     try {
       const { getRepository } = await import('../db/repository.js');
