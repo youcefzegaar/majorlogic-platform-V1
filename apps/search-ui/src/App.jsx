@@ -18,6 +18,7 @@ export default function App() {
   const [lang, setLang] = useState('en');
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [timeline, setTimeline] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const {
     phase, setPhase,
@@ -30,6 +31,8 @@ export default function App() {
   const engine = useDecisionEngine();
 
   useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
+
+  const closeSidebar = () => setSidebarOpen(false);
 
   const handleAnalyze = async () => {
     const success = await engine.runDecision({ ...profile, lang });
@@ -55,13 +58,27 @@ export default function App() {
   return (
     <div className="app-container">
       <AppSidebar
-        phase={phase} onNewDecision={() => setPhase(0)}
+        phase={phase}
+        onNewDecision={() => { setPhase(0); closeSidebar(); }}
         lang={lang} setLang={setLang}
         langMenuOpen={langMenuOpen} setLangMenuOpen={setLangMenuOpen}
         theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        sidebarOpen={sidebarOpen} onClose={closeSidebar}
       />
 
+      {sidebarOpen && <div className="sidebar-overlay" onClick={closeSidebar} />}
+
       <main className="main-content">
+        <div className="mobile-header">
+          <button className="hamburger-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+            <i className="fas fa-bars"></i>
+          </button>
+          <div className="mobile-logo">
+            <div className="logo-icon">🧠</div>
+            <span>MajorLogic</span>
+          </div>
+        </div>
+
         <ProgressBar phase={phase} onStepClick={(p) => {
           if ((p === 3 || p === 4) && !selectedCard) return;
           setPhase(p);

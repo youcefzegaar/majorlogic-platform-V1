@@ -1,8 +1,11 @@
-export default function AppSidebar({ phase, onNewDecision, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme }) {
+export default function AppSidebar({ phase, onNewDecision, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme, sidebarOpen, onClose }) {
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${sidebarOpen ? ' sidebar-open' : ''}`}>
       <div className="sidebar-header">
         <div className="logo"><div className="logo-icon">🧠</div><span>MajorLogic</span></div>
+        <button className="sidebar-close-btn" onClick={onClose} aria-label="Close menu">
+          <i className="fas fa-times"></i>
+        </button>
       </div>
       <nav>
         <div className={`nav-item ${phase === 0 ? 'active' : ''}`} onClick={onNewDecision}><i className="fas fa-plus-circle"></i><span>New Decision</span></div>
