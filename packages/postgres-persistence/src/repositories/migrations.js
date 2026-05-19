@@ -32,6 +32,7 @@ export class MigrationsRepository {
       "database/migrations/0023_admin_audit_log.sql",
       "database/migrations/0024_platform_integrations.sql",
       "database/migrations/0025_nurture_emails.sql",
+      "database/migrations/0026_ai_integrations_seed.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 

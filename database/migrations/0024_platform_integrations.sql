@@ -39,9 +39,5 @@ VALUES
   ('bestbuy',          'reviews', 'Best Buy API',            'Live prices, ratings, and reviews from Best Buy','🔵', '{"locale":"en-US","pageSize":10}'),
   ('google_search',    'reviews', 'Google Custom Search',    'Find expert reviews from RTINGS, Notebookcheck',  '🔍', '{"cx":"","num":5}'),
   ('trustpilot',       'reviews', 'Trustpilot API',          'Seller ratings and trust scores',                '⭐', '{"per_page":20}'),
-  ('serpapi',          'reviews', 'SerpAPI',                 'Google/Bing shopping results & review snippets', '🌐', '{"engine":"google_shopping","gl":"us","hl":"en"}'),
-  -- AI providers not in original seed
-  ('gemini',        'ai',        'Google Gemini',            'Gemini Pro / Flash for AI tasks',           '🔷', '{"model":"gemini-2.0-flash"}'),
-  ('mistral',       'ai',        'Mistral AI',               'Mistral & Mixtral fast models',             '🌬️', '{"model":"mistral-large-latest"}'),
-  ('groq',          'ai',        'Groq',                     'Ultra-fast LLM inference',                  '🚀', '{"model":"llama3-70b-8192"}')
+  ('serpapi',          'reviews', 'SerpAPI',                 'Google/Bing shopping results & review snippets', '🌐', '{"engine":"google_shopping","gl":"us","hl":"en"}')
 ON CONFLICT (slug) DO NOTHING;
