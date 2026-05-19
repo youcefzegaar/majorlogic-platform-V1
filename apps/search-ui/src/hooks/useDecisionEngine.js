@@ -91,7 +91,7 @@ export function useDecisionEngine() {
     setError(null);
     try {
       const profile = buildProfile({ major, lang, budgetMax, priorities, goal });
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3010';
+      const apiUrl = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:3010' : '');
       const response = await fetch(`${apiUrl}/api/v1/laptop-student-us/decision/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -136,14 +136,14 @@ export function useDecisionEngine() {
             whyChosen: typeof card.whyThis === 'string' && card.whyThis.trim() !== ''
               ? card.whyThis
               : 'This device perfectly balances your priorities based on our analysis.',
-            flaws: typeof card.badNews === 'string' && card.badNews.trim() !== ''
+            flaws: typeof card.badNews === 'string' && card.badNews.trim() !== '' && card.badNews !== 'null'
               ? [card.badNews]
               : ['Minor compromises based on budget constraints.'],
             tradeOffs: {
               gained: Array.isArray(card.topPros) && card.topPros.length > 0
                 ? card.topPros
                 : ['Performance above average'],
-              lost: typeof card.secondaryBadNews === 'string' && card.secondaryBadNews.trim() !== ''
+              lost: typeof card.secondaryBadNews === 'string' && card.secondaryBadNews.trim() !== '' && card.secondaryBadNews !== 'null'
                 ? [card.secondaryBadNews]
                 : ['Slightly heavier than average']
             },
