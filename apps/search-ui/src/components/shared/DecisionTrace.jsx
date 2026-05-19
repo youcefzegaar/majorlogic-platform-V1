@@ -1,5 +1,3 @@
-import React from 'react';
-
 const RadarChart = ({ data }) => {
   const cx = 120;
   const cy = 120;
@@ -19,7 +17,7 @@ const RadarChart = ({ data }) => {
   ].join(' ');
 
   return (
-    <svg width="240" height="240" viewBox="0 0 240 240" style={{ overflow: 'visible' }}>
+    <svg width="100%" viewBox="0 0 240 240" style={{ overflow: 'visible', maxWidth: 240, display: 'block' }}>
       <polygon points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`} fill="rgba(255,255,255,0.02)" stroke="var(--border)" strokeWidth="1" strokeDasharray="4" />
       <polygon points={`${cx},${cy - r * 0.5} ${cx + r * 0.5},${cy} ${cx},${cy + r * 0.5} ${cx - r * 0.5},${cy}`} fill="none" stroke="var(--border)" strokeWidth="1" strokeDasharray="4" />
       <line x1={cx} y1={cy - r} x2={cx} y2={cy + r} stroke="var(--border)" strokeWidth="1" />
@@ -59,7 +57,6 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
         {detectedConflicts.map(insight => {
           const isHarmony = insight.type === 'harmony';
           const isRisk = insight.type === 'risk';
-
           const icon = isHarmony ? 'fa-check-circle' : isRisk ? 'fa-info-circle' : 'fa-bolt';
           const colorClass = isHarmony ? 'ok' : isRisk ? 'info' : 'warning';
           const barColorClass = isHarmony ? 'low' : isRisk ? 'medium' : 'high';
@@ -105,38 +102,38 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 24 }}>
-        <div style={{ padding: 16, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, width: '100%', textAlign: 'left', color: 'var(--text-primary)' }}>
+      <div className="analysis-grid">
+        <div className="analysis-panel">
+          <div className="analysis-panel-title">
             <i className="fas fa-bullseye" style={{ color: 'var(--accent-info)', marginRight: 8 }}></i> Dimensional Profile
           </div>
           <RadarChart data={priorities} />
         </div>
 
-        <div style={{ padding: 16, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary)' }}>
+        <div className="analysis-panel analysis-panel-summary">
+          <div className="analysis-panel-title">
             <i className="fas fa-chart-pie" style={{ color: 'var(--accent-warning)', marginRight: 8 }}></i> Analysis Summary
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, flex: 1 }}>
-            <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-              <div style={{ fontSize: 24, marginBottom: 8 }}>⚠️</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-warning)', lineHeight: 1 }}>{analysisSummary.conflicts}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Conflicts</div>
+          <div className="analysis-stats-grid">
+            <div className="analysis-stat-card">
+              <div style={{ fontSize: 22, marginBottom: 6 }}>⚠️</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--accent-warning)', lineHeight: 1 }}>{analysisSummary.conflicts}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>Conflicts</div>
             </div>
-            <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-              <div style={{ fontSize: 24, marginBottom: 8 }}>💻</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-success)', lineHeight: 1 }}>{analysisSummary.devices}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Viable Devices</div>
+            <div className="analysis-stat-card">
+              <div style={{ fontSize: 22, marginBottom: 6 }}>💻</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--accent-success)', lineHeight: 1 }}>{analysisSummary.devices}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>Viable Devices</div>
             </div>
-            <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-              <div style={{ fontSize: 24, marginBottom: 8 }}>🧭</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-info)', lineHeight: 1 }}>{analysisSummary.paths}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Resolution Paths</div>
+            <div className="analysis-stat-card">
+              <div style={{ fontSize: 22, marginBottom: 6 }}>🧭</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--accent-info)', lineHeight: 1 }}>{analysisSummary.paths}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>Resolution Paths</div>
             </div>
-            <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-              <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
+            <div className="analysis-stat-card">
+              <div style={{ fontSize: 22, marginBottom: 6 }}>🎯</div>
               <div style={{
-                fontSize: 28,
+                fontSize: 26,
                 fontWeight: 800,
                 color: analysisSummary.confidence >= 80
                   ? 'var(--accent-success)'
@@ -147,7 +144,7 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
               }}>
                 {analysisSummary.confidence}%
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 8, fontWeight: 500 }}>Confidence</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>Confidence</div>
             </div>
           </div>
         </div>

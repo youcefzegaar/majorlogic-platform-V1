@@ -1,24 +1,17 @@
-import React from 'react';
-
 export default function ExplainabilityPanel({ selectedCard, explanationTab, setExplanationTab }) {
   return (
     <>
-      <div className="selected-card-banner" style={{ display: 'flex', alignItems: 'center', gap: 24, padding: 0, overflow: 'hidden' }}>
-        <div style={{
-          width: 200, minHeight: 140,
-          background: 'linear-gradient(145deg, #0d1b2a 0%, #1b2838 40%, #0a1628 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          position: 'relative', overflow: 'hidden', borderRadius: '12px 0 0 12px', flexShrink: 0
-        }}>
-          <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '60%', background: 'radial-gradient(ellipse, rgba(100,160,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+      <div className="explain-banner">
+        <div className="explain-banner-image">
+          <div className="explain-banner-glow"></div>
           {selectedCard.image ? (
-            <img src={selectedCard.image} alt={selectedCard.name} style={{ width: '80%', maxHeight: '110px', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))', position: 'relative', zIndex: 1 }} />
+            <img src={selectedCard.image} alt={selectedCard.name} className="explain-banner-img" />
           ) : (
             <i className="fas fa-check-circle" style={{ fontSize: 48, color: 'var(--accent-success)' }}></i>
           )}
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%', background: 'linear-gradient(to top, rgba(13,27,42,0.9), transparent)', pointerEvents: 'none', zIndex: 2 }}></div>
+          <div className="explain-banner-fade"></div>
         </div>
-        <div style={{ flex: 1, padding: '16px 20px 16px 0' }}>
+        <div className="explain-banner-body">
           <div className="selected-card-name" style={{ fontSize: 18 }}>{selectedCard.name}</div>
           <div className="selected-card-type" style={{ marginTop: 4 }}>{selectedCard.badge} — Judgment Score: {selectedCard.score}%</div>
           <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -39,24 +32,24 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
 
         <div className="explanation-tabs">
           <button className={`explanation-tab ${explanationTab === 'why-chosen' ? 'active' : ''}`} onClick={() => setExplanationTab('why-chosen')}>Why Chosen?</button>
-          <button className={`explanation-tab ${explanationTab === 'excluded' ? 'active' : ''}`} onClick={() => setExplanationTab('excluded')}>Excluded Alternatives</button>
+          <button className={`explanation-tab ${explanationTab === 'excluded' ? 'active' : ''}`} onClick={() => setExplanationTab('excluded')}>Excluded</button>
           <button className={`explanation-tab ${explanationTab === 'trade-offs' ? 'active' : ''}`} onClick={() => setExplanationTab('trade-offs')}>Trade-offs</button>
-          <button className={`explanation-tab ${explanationTab === 'stability' ? 'active' : ''}`} onClick={() => setExplanationTab('stability')}>Decision Stability</button>
+          <button className={`explanation-tab ${explanationTab === 'stability' ? 'active' : ''}`} onClick={() => setExplanationTab('stability')}>Stability</button>
         </div>
 
         {explanationTab === 'why-chosen' && (
           <div className="explanation-content active">
-            <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 20 }}>
-              <div style={{ background: 'linear-gradient(145deg, #0d1b2a 0%, #1b2838 40%, #0a1628 100%)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, position: 'relative', overflow: 'hidden', minHeight: 160 }}>
-                <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '60%', background: 'radial-gradient(ellipse, rgba(100,160,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+            <div className="explain-why-grid">
+              <div className="explain-why-image">
+                <div className="explain-banner-glow"></div>
                 {selectedCard.image ? (
                   <img src={selectedCard.image} alt={selectedCard.name} style={{ width: '90%', maxHeight: '130px', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))', position: 'relative', zIndex: 1 }} />
                 ) : (
                   <span style={{ fontSize: 64 }}>💻</span>
                 )}
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%', background: 'linear-gradient(to top, rgba(13,27,42,0.9), transparent)', pointerEvents: 'none', zIndex: 2 }}></div>
+                <div className="explain-banner-fade"></div>
               </div>
-              <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
+              <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', minWidth: 0 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>{selectedCard.name}</div>
                 <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
                   <strong style={{ color: 'var(--accent-success)' }}>✓</strong> {selectedCard.whyChosen}<br />
@@ -70,14 +63,14 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
         {explanationTab === 'trade-offs' && (
           <div className="explanation-content active">
             <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="trade-off-grid">
                 <div style={{ padding: 16, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 10, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                   <div style={{ fontSize: 12, color: 'var(--accent-success)', fontWeight: 700, marginBottom: 8 }}>✓ What You Gained</div>
-                  {selectedCard.tradeOffs.gained.map(g => <div key={g} style={{ fontSize: 13 }}>• {g}</div>)}
+                  {selectedCard.tradeOffs.gained.map(g => <div key={g} style={{ fontSize: 13, marginBottom: 4 }}>• {g}</div>)}
                 </div>
                 <div style={{ padding: 16, background: 'rgba(244, 63, 94, 0.05)', borderRadius: 10, border: '1px solid rgba(244, 63, 94, 0.2)' }}>
                   <div style={{ fontSize: 12, color: 'var(--accent-danger)', fontWeight: 700, marginBottom: 8 }}>✗ What You Lost</div>
-                  {selectedCard.tradeOffs.lost.map(l => <div key={l} style={{ fontSize: 13 }}>• {l}</div>)}
+                  {selectedCard.tradeOffs.lost.map(l => <div key={l} style={{ fontSize: 13, marginBottom: 4 }}>• {l}</div>)}
                 </div>
               </div>
               {Object.keys(selectedCard.sacrificeVector || {}).length > 0 && (

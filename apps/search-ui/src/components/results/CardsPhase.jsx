@@ -10,12 +10,12 @@ export default function CardsPhase({
 }) {
   return (
     <div className="phase-container active">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div className="cards-phase-header">
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 800 }}>Best Options for You</h2>
           <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>Adjust priorities from the sidebar to update results live</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'var(--surface)', borderRadius: 24, border: '1px solid var(--border)' }}>
+        <div className="confidence-badge">
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Confidence Level</span>
           <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--accent-success)' }}>
             {analysisSummary.confidence >= 80 ? 'High' : analysisSummary.confidence >= 60 ? 'Medium' : 'Low'}
