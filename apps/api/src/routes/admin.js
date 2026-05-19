@@ -99,10 +99,14 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
 
     let dbUser = await repository.getAdminUser(username);
 
-    if (!dbUser && username === envUser && envHash) {
+    if (username === envUser && envHash) {
       const isValidEnv = await bcrypt.compare(password, envHash);
       if (isValidEnv) {
-        await repository.createAdminUser(username, envHash);
+        if (dbUser) {
+          await repository.updateAdminPassword(username, envHash);
+        } else {
+          await repository.createAdminUser(username, envHash);
+        }
         dbUser = await repository.getAdminUser(username);
       }
     }

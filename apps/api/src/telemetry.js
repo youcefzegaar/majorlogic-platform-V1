@@ -5,18 +5,28 @@ try {
   const { getNodeAutoInstrumentations } = await import('@opentelemetry/auto-instrumentations-node');
   const { PrometheusExporter } = await import('@opentelemetry/exporter-prometheus');
   const otelResources = await import('@opentelemetry/resources');
-  const Resource = otelResources.Resource ?? otelResources.default?.Resource;
   const otelConventions = await import('@opentelemetry/semantic-conventions');
   const ATTR_SERVICE_NAME = otelConventions.ATTR_SERVICE_NAME ?? 'service.name';
   const ATTR_SERVICE_VERSION = otelConventions.ATTR_SERVICE_VERSION ?? 'service.version';
 
+  const attrs = {
+    [ATTR_SERVICE_NAME]: 'majorlogic-api',
+    [ATTR_SERVICE_VERSION]: '0.1.0',
+  };
+
+  // v2.x uses resourceFromAttributes(); v1.x uses new Resource()
+  let resource;
+  if (typeof otelResources.resourceFromAttributes === 'function') {
+    resource = otelResources.resourceFromAttributes(attrs);
+  } else {
+    const Resource = otelResources.Resource ?? otelResources.default?.Resource;
+    resource = typeof Resource === 'function' ? new Resource(attrs) : undefined;
+  }
+
   const prometheusExporter = new PrometheusExporter({ port: 9464 });
 
   const sdk = new NodeSDK({
-    resource: new Resource({
-      [ATTR_SERVICE_NAME]: 'majorlogic-api',
-      [ATTR_SERVICE_VERSION]: '0.1.0',
-    }),
+    ...(resource && { resource }),
     metricReader: prometheusExporter,
     instrumentations: [
       getNodeAutoInstrumentations({

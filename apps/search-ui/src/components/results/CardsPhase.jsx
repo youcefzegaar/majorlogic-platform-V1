@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import HeroCard from './HeroCard';
 import ZeroResultsView from './ZeroResultsView';
 
@@ -8,6 +9,17 @@ export default function CardsPhase({
   budgetMin, setBudgetMin, budgetMax, setBudgetMax,
   isAnalyzing, onUpdateResults, onResetPriorities
 }) {
+  const firstRender = useRef(true);
+  const debounceTimer = useRef(null);
+
+  useEffect(() => {
+    if (firstRender.current) { firstRender.current = false; return; }
+    if (isAnalyzing) return;
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => { onUpdateResults(); }, 600);
+    return () => clearTimeout(debounceTimer.current);
+  }, [priorities, budgetMin, budgetMax]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="phase-container active">
       <div className="cards-phase-header">
@@ -107,7 +119,7 @@ export default function CardsPhase({
 
           <div className="live-update-indicator">
             <div className="live-dot"></div>
-            <span>Changes affect cards instantly</span>
+            <span>{isAnalyzing ? 'Updating results...' : 'Auto-updates on change'}</span>
           </div>
         </div>
       </div>
