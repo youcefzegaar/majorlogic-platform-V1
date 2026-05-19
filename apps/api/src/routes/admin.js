@@ -87,6 +87,7 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
       }
     }
   }, async (request, reply) => {
+    try {
     const { username, password } = request.body || {};
     const envUser = process.env.ADMIN_USER;
     const envHash = process.env.ADMIN_PASSWORD_HASH;
@@ -149,6 +150,10 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
         maxAge: 86400
       })
       .redirect("/admin/", 302);
+    } catch (err) {
+      fastify.log.error({ err, ip: request.ip }, "[LOGIN] Unexpected error in login handler");
+      return reply.type("text/html").send(renderLoginHtml({ error: "An unexpected error occurred. Please try again." }));
+    }
   });
 
   fastify.get("/logout", async (_request, reply) => {

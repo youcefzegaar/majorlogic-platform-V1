@@ -1,5 +1,6 @@
 import "./telemetry.js"; // Must be first import — OpenTelemetry SDK init (v3)
 import { initSentry, sentryPlugin } from "./monitoring/sentry.js";
+import { alertServerError, alertStartup, alertDbOffline } from "./monitoring/telegram.js";
 initSentry(); // before anything else so errors during startup are captured
 
 import path from "node:path";
@@ -81,7 +82,10 @@ fastify.register(cors, {
     if (!origin || ALLOWED_ORIGINS.includes(origin)) {
       cb(null, true);
     } else {
-      cb(new Error(`CORS: origin '${origin}' not allowed`), false);
+      // security: unknown origin — don't set CORS headers. Don't throw an
+      // Error here because that would trigger the 500 handler for form POSTs
+      // that come through the Vercel proxy with Origin set.
+      cb(null, false);
     }
   },
   credentials: true
@@ -157,6 +161,10 @@ fastify.setErrorHandler((error, request, reply) => {
   if (error.validation) {
     return reply.status(400).send({ error: "validation_error", details: error.validation });
   }
+  // Don't alert on expected client errors (rate limit, 4xx)
+  if (!error.statusCode || error.statusCode >= 500) {
+    alertServerError(error, request.method, request.url);
+  }
   reply.status(500).send({
     error: "internal_error",
     message: isProd ? "A server error occurred. Please try again later." : error.message
@@ -195,6 +203,7 @@ const start = async () => {
   try {
     await fastify.listen({ port, host: "0.0.0.0" });
     fastify.log.info(`MajorLogic API running on http://localhost:${port}`);
+    alertStartup(port);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
