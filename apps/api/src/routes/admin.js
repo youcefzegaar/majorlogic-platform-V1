@@ -492,6 +492,21 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
         ok = res.ok;
         message = ok ? "Trustpilot API connected." : `Trustpilot error: ${res.status}`;
 
+      } else if (slug === "gemini") {
+        const key = integration.credentials?.api_key;
+        if (!key) throw new Error("No API key configured");
+        const model = integration.config?.model ?? "gemini-1.5-flash";
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+          {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: "ping" }] }] })
+          }
+        );
+        ok = res.ok;
+        message = ok ? "Gemini API connected successfully." : `Gemini API error: ${res.status}`;
+
       } else {
         message = "No automated test for this integration. Mark as verified manually.";
         ok = true;
