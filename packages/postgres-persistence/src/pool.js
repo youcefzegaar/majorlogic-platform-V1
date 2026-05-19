@@ -26,11 +26,13 @@ export async function createPostgresClient(connectionString = process.env.DATABA
   }
 
   const { Pool } = await importPg();
+  const isRemote = !/localhost|127\.0\.0\.1/.test(connectionString);
   const pool = new Pool({
     connectionString,
-    max: 20, // Maximum number of clients in the pool
+    max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
+    ...(isRemote && { ssl: { rejectUnauthorized: false } }),
   });
 
   pool.on("error", (err) => {
