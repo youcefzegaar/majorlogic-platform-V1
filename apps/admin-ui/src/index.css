@@ -288,3 +288,125 @@ h1, h2, h3, h4, h5, h6 {
 .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
 .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 .badge-primary { background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); }
+
+/* ── Topbar search & hamburger ───────────────────────────────────────────── */
+.topbar-search {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  width: 280px;
+  border: 1px solid var(--border-subtle);
+}
+
+.menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+.menu-btn:hover { background: rgba(255,255,255,0.06); }
+
+.sidebar-overlay {
+  display: none;
+}
+
+/* ── Sidebar close button (mobile only) ─────────────────────────────────── */
+.sidebar-close-btn {
+  display: none;
+}
+
+/* ── Topbar username (hidden on very small screens) ─────────────────────── */
+.topbar-username { display: block; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet (< 1024px)
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1023px) {
+  /* Show hamburger */
+  .menu-btn { display: flex; }
+
+  /* Sidebar slides in from left */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform var(--transition-smooth);
+    box-shadow: none;
+  }
+  .app-container.sidebar-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 4px 0 40px rgba(0,0,0,0.6);
+  }
+
+  /* Backdrop overlay */
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(2px);
+    z-index: 199;
+  }
+
+  /* Main content takes full width */
+  .main-content { width: 100%; }
+
+  .topbar { padding: 0 20px; }
+  .topbar-search { width: 220px; }
+
+  .page-content { padding: 24px 20px; }
+
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile (< 768px)
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .topbar { padding: 0 12px; height: 60px; }
+  .topbar-search { display: none; }        /* Search hidden — content needs space */
+  .topbar-username { display: none; }      /* Hide name, keep avatar */
+
+  .page-content { padding: 16px 12px; }
+
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+
+  .metric-value { font-size: 1.8rem; }
+
+  .card { padding: 16px; }
+
+  .table-container th,
+  .table-container td { padding: 10px 8px; font-size: 0.85rem; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Small Mobile (< 480px)
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 479px) {
+  .topbar { padding: 0 10px; }
+
+  .page-content { padding: 12px 10px; }
+
+  .grid-4 { grid-template-columns: 1fr; }
+
+  .btn { padding: 9px 14px; font-size: 0.85rem; }
+
+  .metric-value { font-size: 1.5rem; }
+
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.2rem; }
+}

@@ -2022,3 +2022,63 @@ body {
 }
 
 .hidden { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE FIX — Extra Small (< 360px)
+   Handles Samsung Galaxy A-series, older iPhones, etc.
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 359px) {
+    .main-content { padding: 10px 10px; }
+
+    .intake-grid { gap: 12px; }
+
+    /* Prevent any fixed-width element from overflowing */
+    .card, .result-card, .intake-card {
+        min-width: 0;
+        width: 100%;
+    }
+
+    /* Shrink step labels even further */
+    .step-label { font-size: 9px; }
+
+    /* Buttons full width */
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Reduce heavy padding */
+    .card { padding: 12px; }
+    .result-header { padding: 12px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TOUCH TARGETS — Better tap areas on all mobile
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    /* Minimum 44px touch target (Apple HIG / WCAG) */
+    .btn-primary, .btn-secondary, .nav-item, .sidebar-item {
+        min-height: 44px;
+    }
+
+    /* Prevent text overflow on small cards */
+    .card h3, .card h4, .result-card h3 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+
+    /* Specialization grid: stay 2 columns on mobile (better than 3) */
+    .spec-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Tables scroll horizontally instead of breaking */
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+}
