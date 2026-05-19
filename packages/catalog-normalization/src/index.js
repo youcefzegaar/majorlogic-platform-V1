@@ -11,7 +11,7 @@ const POLICIES_PATH = path.join(__dirname, "global-policies.json");
 function loadPolicies() {
   try {
     return JSON.parse(fs.readFileSync(POLICIES_PATH, "utf8"));
-  } catch (err) {
+  } catch {
     console.warn("[Normalization] Failed to load global policies, using fallbacks.");
     return { catalog_entry_policies: { min_spec_floor: { ram_gb: 8, storage_gb: 256 } } };
   }

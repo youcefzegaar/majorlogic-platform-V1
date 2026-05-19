@@ -224,7 +224,7 @@ export class CommercialRepository {
       this.pool.query(
         `SELECT id, username, action, resource, details, ip_address, status, created_at
          FROM ml_commercial.admin_audit_log ${where}
-         ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx++}`,
+         ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx}`,
         [...params, limit, offset]
       ),
       this.pool.query(

@@ -21,19 +21,12 @@ export default [
       "tmp-*.mjs",
       "tmp-*.js",
       ".claude/**",
-      "apps/api/fix_api.cjs",
+      "**/*.cjs",
     ],
   },
 
-  // Recommended rules scoped to our target files only
+  // Global language options — no files restriction so globals apply everywhere
   {
-    ...js.configs.recommended,
-    files: TARGET_FILES,
-  },
-
-  // Custom rules for API + packages + tests
-  {
-    files: TARGET_FILES,
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
@@ -54,6 +47,17 @@ export default [
         AbortSignal: "readonly",
       },
     },
+  },
+
+  // Recommended rules scoped to our target files only
+  {
+    ...js.configs.recommended,
+    files: TARGET_FILES,
+  },
+
+  // Custom rules for API + packages + tests
+  {
+    files: TARGET_FILES,
     rules: {
       "no-restricted-syntax": [
         "error",

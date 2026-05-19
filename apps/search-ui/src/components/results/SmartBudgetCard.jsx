@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSelectedPurchase }) {
   const [email, setEmail] = useState('');
   const [alertSaved, setAlertSaved] = useState(false);
+  const [alertError, setAlertError] = useState(null);
 
   const { purchaseLinks } = selectedCard;
   const offers = [
@@ -30,20 +31,22 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
 
   const handleSaveAlert = async () => {
     if (!email) return;
+    setAlertError(null);
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
     try {
-      await fetch('https://majorlogicapi-production.up.railway.app/api/v1/leads', {
+      const res = await fetch(`${apiUrl}/api/v1/laptop-student-us/growth/lead`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           leadType: 'price_alert',
-          domainId: 'laptop-student-us',
           trackingData: { entityId: selectedCard.entityId, priceUsd: purchaseLinks.priceUsd }
         })
       });
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
       setAlertSaved(true);
-    } catch {
-      setAlertSaved(true);
+    } catch (err) {
+      setAlertError('Could not save alert. Please try again.');
     }
   };
 
@@ -127,19 +130,26 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
               ✓ Alerts enabled — we'll notify you of price drops.
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: 8 }}>
-              <input
-                type="email"
-                className="form-input"
-                placeholder="Your email address"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                style={{ flex: 1 }}
-              />
-              <button className="btn btn-primary" style={{ padding: '12px 20px' }} onClick={handleSaveAlert}>
-                <i className="fas fa-bell"></i>
-              </button>
-            </div>
+            <>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input
+                  type="email"
+                  className="form-input"
+                  placeholder="Your email address"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <button className="btn btn-primary" style={{ padding: '12px 20px' }} onClick={handleSaveAlert}>
+                  <i className="fas fa-bell"></i>
+                </button>
+              </div>
+              {alertError && (
+                <div style={{ marginTop: 6, fontSize: 12, color: 'var(--accent-error, #ef4444)' }}>
+                  {alertError}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

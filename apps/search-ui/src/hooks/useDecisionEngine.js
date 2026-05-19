@@ -137,6 +137,7 @@ export function useDecisionEngine() {
           const makeBuyUrl = (route) => route?.buyRoute ? `${apiUrl}${route.buyRoute}` : null;
 
           newCards[type] = {
+            entityId: card.entityId,
             name: card.title,
             price: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
             originalPrice: null,

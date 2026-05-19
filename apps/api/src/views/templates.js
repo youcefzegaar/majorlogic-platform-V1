@@ -175,12 +175,6 @@ export function renderSearchPage({ uiState }) {
   return renderShell({ title: "MajorLogic - Matchmaker", body });
 }
 
-function metricText(card, index) {
-  if (index === 0) return { performance: "Extreme", battery: "10h+", portability: "Light" };
-  if (index === 1) return { performance: "Solid", battery: "8h+", portability: "Standard" };
-  if (index === 2) return { performance: "High", battery: "6h", portability: "Heavy" };
-  return { performance: "Good", battery: "Var.", portability: "Var." };
-}
 
 export function renderResultsPage({ state, result, requestUrl = "" }) {
   if (!result || result.error) {

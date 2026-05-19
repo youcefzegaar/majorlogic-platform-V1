@@ -164,7 +164,7 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
     if (!/[A-Z]/.test(newPassword)) pwErrors.push("At least one uppercase letter");
     if (!/[a-z]/.test(newPassword)) pwErrors.push("At least one lowercase letter");
     if (!/[0-9]/.test(newPassword)) pwErrors.push("At least one number");
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)) pwErrors.push("At least one symbol");
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(newPassword)) pwErrors.push("At least one symbol");
     if (newPassword !== confirmPassword) pwErrors.push("New passwords do not match");
 
     if (pwErrors.length > 0) {
@@ -392,8 +392,8 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
     const integration = await repository.getIntegrationBySlug(slug);
     if (!integration) return reply.status(404).send({ error: "Integration not found" });
 
-    let ok = false;
-    let message = "No test implemented for this integration type.";
+    let ok;
+    let message;
 
     try {
       if (slug === "claude") {

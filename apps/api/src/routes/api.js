@@ -39,6 +39,8 @@ export default async function apiRoutes(fastify, { isProd }) {
   });
 
   fastify.post("/api/v1/:domain/telemetry/click", async (request, reply) => {
+    const { domain } = request.params;
+    if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
     const { decisionRunId, entityId, clickType = "buy_now_clicked" } = request.body;
 
     if (!decisionRunId || !entityId) {
@@ -81,11 +83,11 @@ export default async function apiRoutes(fastify, { isProd }) {
       let enrichedMetadata = { ...trackingData };
       if (leadType === "price_alert" && trackingData.entityId && !enrichedMetadata.watchedPriceUsd) {
         try {
-          const entities = await repository.getPublishedEntities({ domainId });
+          const entities = await repository.getPublishedEntities({ domainId: domain });
           const entity = entities.find(e => e.entityId === trackingData.entityId);
           const currentPrice = entity?.market?.bestOffer?.priceUsd;
           if (currentPrice != null) enrichedMetadata.watchedPriceUsd = currentPrice;
-        } catch (_) { /* non-fatal */ }
+        } catch { /* non-fatal */ }
       }
 
       const lead = await repository.saveGrowthLead({ domainId: domain, email, leadType, metadata: enrichedMetadata, optedIn });
@@ -99,14 +101,33 @@ export default async function apiRoutes(fastify, { isProd }) {
     }
   });
 
-  fastify.post("/api/v1/:domain/feedback", async (request, reply) => {
-    const { decisionRunId, score, comment, tags } = request.body;
-    const { getRepository } = await import("../db/repository.js");
-    const repository = await getRepository();
-    if (repository) {
-      await repository.saveFeedback({ decisionRunId, score, comment, tags });
+  fastify.post("/api/v1/:domain/feedback", {
+    schema: {
+      body: {
+        type: "object",
+        properties: {
+          decisionRunId: { type: "string", minLength: 1 },
+          score: { type: "integer", minimum: 1, maximum: 5 },
+          comment: { type: "string", maxLength: 1000 },
+          tags: { type: "array", items: { type: "string" }, maxItems: 20 }
+        },
+        required: ["decisionRunId", "score"]
+      }
     }
-    return reply.send({ status: "received" });
+  }, async (request, reply) => {
+    const { domain } = request.params;
+    if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
+    const { decisionRunId, score, comment, tags } = request.body;
+    try {
+      const { getRepository } = await import("../db/repository.js");
+      const repository = await getRepository();
+      if (!repository) return reply.status(503).send({ error: "db_offline" });
+      await repository.saveFeedback({ decisionRunId, score, comment, tags });
+      return reply.send({ status: "received" });
+    } catch (err) {
+      request.log.error({ err, decisionRunId }, "Feedback save failed");
+      return reply.status(500).send({ error: "feedback_failed" });
+    }
   });
 
   // CSV Export (HMAC token only — no static secret)
@@ -126,9 +147,11 @@ export default async function apiRoutes(fastify, { isProd }) {
       const sig = dotIdx > 0 ? token.slice(dotIdx + 1) : null;
       const expiresInt = parseInt(expires, 10);
       if (expires && sig && !isNaN(expiresInt) && Date.now() < expiresInt) {
-        const expected = createHmac("sha256", process.env.ADMIN_EXPORT_SECRET)
+        const expected = createHmac("sha256", process.env.ADMIN_EXPORT_SECRET ?? "")
           .update(expires).digest("hex");
-        if (sig === expected) isAuthorized = true;
+        try {
+          if (timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) isAuthorized = true;
+        } catch { /* length mismatch — not authorized */ }
       }
     }
 

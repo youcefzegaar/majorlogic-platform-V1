@@ -75,13 +75,11 @@ export class DecisionKernel {
         trace.scores[node.id] = values[node.id];
         break;
 
-      case "gate":
+      case "gate": {
         const passed = this._evaluateCondition(node.condition, values, trace);
         if (!passed) {
           trace.isEligible = false;
           trace.exclusions.push(node.id);
-          
-          // Record as a critical sacrifice if we are tracking them
           trace.sacrifices[node.id] = {
             type: "gate_violation",
             severity: node.weight ?? 1.0,
@@ -89,8 +87,9 @@ export class DecisionKernel {
           };
         }
         break;
+      }
 
-      case "score":
+      case "score": {
         let score = 0;
         // Weighted sum
         for (const [metric, weight] of Object.entries(node.weights || {})) {
@@ -126,6 +125,7 @@ export class DecisionKernel {
           values.final_score = values[node.id];
         }
         break;
+      }
     }
   }
 
@@ -159,30 +159,34 @@ export class DecisionKernel {
         case "add":
           result = resolveArgs().reduce((sum, v) => sum + v, 0);
           break;
-        case "subtract":
+        case "subtract": {
           const subArgs = resolveArgs();
           result = subArgs.length ? subArgs.reduce((a, b) => a - b) : 0;
           break;
+        }
         case "multiply":
           result = resolveArgs().reduce((prod, v) => prod * v, 1);
           break;
-        case "min":
+        case "min": {
           const minArgs = resolveArgs();
           result = minArgs.length ? Math.min(...minArgs) : 0;
           break;
-        case "max":
+        }
+        case "max": {
           const maxArgs = resolveArgs();
           result = maxArgs.length ? Math.max(...maxArgs) : 0;
           break;
+        }
         case "average": {
           const vals = resolveArgs();
           result = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0;
           break;
         }
-        case "clamp":
+        case "clamp": {
           const [val, lo, hi] = resolveArgs();
           result = Math.max(lo, Math.min(hi, val));
           break;
+        }
         case "inverse": {
           const v = this._resolveArg(formula.arg, values, trace);
           result = v === 0 ? 0 : 1 / v;

@@ -20,6 +20,12 @@ export default [
         clearTimeout: "readonly",
         setInterval: "readonly",
         clearInterval: "readonly",
+        // Node.js 18+ native fetch
+        fetch: "readonly",
+        AbortController: "readonly",
+        AbortSignal: "readonly",
+        crypto: "readonly",
+        TextEncoder: "readonly",
       },
     },
     rules: {

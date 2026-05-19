@@ -1,6 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
-
 async function fetchPageText(url) {
   // In a real environment, this uses Puppeteer or fetch & cheerio.
   console.log(`  [Sensor:Crawler] Crawling URL -> ${url}`);

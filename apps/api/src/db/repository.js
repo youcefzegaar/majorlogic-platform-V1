@@ -51,7 +51,7 @@ export async function getRuleset(relativePath) {
   try {
     parsed = JSON.parse(raw);
   } catch (e) {
-    throw new Error(`[Repository] Failed to parse ${relativePath}: ${e.message}`);
+    throw new Error(`[Repository] Failed to parse ${relativePath}: ${e.message}`, { cause: e });
   }
 
   // Lazy Migration: If we have a DB, save the disk config to it

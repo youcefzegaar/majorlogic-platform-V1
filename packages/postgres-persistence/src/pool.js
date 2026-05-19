@@ -12,9 +12,10 @@ export function readSql(relativePath) {
 export async function importPg() {
   try {
     return await import("pg");
-  } catch (error) {
+  } catch (err) {
     throw new Error(
-      "The `pg` package is required for Postgres persistence. Run `npm install` in the repository before using DATABASE_URL-backed persistence."
+      "The `pg` package is required for Postgres persistence. Run `npm install` in the repository before using DATABASE_URL-backed persistence.",
+      { cause: err }
     );
   }
 }
@@ -29,7 +30,7 @@ export async function createPostgresClient(connectionString = process.env.DATABA
     connectionString,
     max: 20, // Maximum number of clients in the pool
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 60000,
+    connectionTimeoutMillis: 10000,
   });
 
   pool.on("error", (err) => {

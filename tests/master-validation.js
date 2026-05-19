@@ -6,7 +6,7 @@ import { DecisionKernel } from "../packages/decision-kernel/src/index.js";
 import { DecisionReconstructor } from "../packages/decision-governance/src/index.js";
 import { AcquisitionManager, RedditExtractor } from "../packages/catalog-acquisition/src/index.js";
 import { classifyReviewSignals, computeReviewRisk, produceReviewIntelligence, computeBayesianConfidence, detectFatalPatterns } from "../packages/catalog-review-intelligence/src/index.js";
-import { IdentityManager, resolveConflicts } from "../packages/catalog-identity/src/index.js";
+import { IdentityManager } from "../packages/catalog-identity/src/index.js";
 import { DecisionExplainer } from "../packages/decision-explanation/src/index.js";
 
 let passed = 0;

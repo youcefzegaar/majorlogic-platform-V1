@@ -18,12 +18,6 @@ const conditionSchema = z.lazy(() => z.union([
   })
 ]));
 
-// Formula schema
-const formulaSchema = z.object({
-  op: z.enum(["add", "subtract", "multiply", "min", "max", "average", "clamp", "inverse"]),
-  args: z.array(z.union([z.string(), z.number()]))
-});
-
 // Gate Node
 const gateSchema = z.object({
   node: z.string(),

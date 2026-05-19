@@ -24,6 +24,8 @@ export class MigrationsRepository {
       "database/migrations/0015_external_acquisition_store.sql",
       "database/migrations/0016_performance_optimization_indices.sql",
       "database/migrations/0017_decision_governance_ledger.sql",
+      "database/migrations/0018_cognitive_domains.sql",
+      "database/migrations/0019_admin_dashboard_infrastructure.sql",
       "database/migrations/0020_user_feedback.sql",
       "database/migrations/0021_decision_interventions.sql",
       "database/migrations/0022_decision_logic.sql",
@@ -36,7 +38,12 @@ export class MigrationsRepository {
     console.log(`[Repository] Applying ${migrationFiles.length} migration files...`);
     for (const file of migrationFiles) {
       console.log(`[Repository] Executing ${file}...`);
-      await this.pool.query(readSql(file));
+      try {
+        await this.pool.query(readSql(file));
+      } catch (err) {
+        console.error(`[Repository] Migration failed: ${file}`, err.message);
+        throw new Error(`Migration failed at ${file}: ${err.message}`, { cause: err });
+      }
     }
     console.log("[Repository] All migrations applied successfully.");
   }

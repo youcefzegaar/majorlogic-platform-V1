@@ -1,5 +1,4 @@
 import { DecisionKernel } from "../../decision-kernel/src/index.js";
-import { createHash } from "node:crypto";
 
 /**
  * DecisionReconstructor — Deterministic Replay & Verification Engine.

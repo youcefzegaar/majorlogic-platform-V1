@@ -83,7 +83,7 @@ export class GrowthRepository {
       this.pool.query(
         `SELECT id, email, lead_type, metadata, opted_in, created_at
          FROM ml_growth.leads WHERE ${where}
-         ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx++}`,
+         ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx}`,
         [...params, limit, offset]
       ),
       this.pool.query(`SELECT COUNT(*) as total FROM ml_growth.leads WHERE ${where}`, params)
@@ -164,18 +164,20 @@ export class GrowthRepository {
 
   async getLeadsForNurtureDay(sequenceDay) {
     const windowMap = { 1: [0, 2], 3: [2, 4], 7: [6, 9] };
-    const [minDays, maxDays] = windowMap[sequenceDay] ?? [0, 2];
+    if (!windowMap[sequenceDay]) throw new Error(`Invalid sequenceDay: ${sequenceDay}`);
+    const [minDays, maxDays] = windowMap[sequenceDay];
     const result = await this.pool.query(
       `SELECT l.id, l.email, l.domain_id, l.metadata, l.created_at
        FROM ml_growth.leads l
-       WHERE l.created_at >= NOW() - INTERVAL '${maxDays} days'
-         AND l.created_at <  NOW() - INTERVAL '${minDays} days'
+       WHERE l.created_at >= NOW() - ($1 * INTERVAL '1 day')
+         AND l.created_at <  NOW() - ($2 * INTERVAL '1 day')
          AND NOT EXISTS (
            SELECT 1 FROM ml_growth.nurture_emails n
-           WHERE n.lead_id = l.id AND n.sequence_day = ${sequenceDay}
+           WHERE n.lead_id = l.id AND n.sequence_day = $3
          )
        ORDER BY l.created_at ASC
-       LIMIT 500`
+       LIMIT 500`,
+      [maxDays, minDays, sequenceDay]
     );
     return result.rows;
   }

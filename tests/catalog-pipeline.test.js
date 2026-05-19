@@ -11,7 +11,7 @@ import fs from "node:fs";
 import { acquireAndStage }                       from "../packages/catalog-core/src/index.js";
 import { resolveIdentities }                     from "../packages/catalog-identity/src/index.js";
 import { normalizeObservations, filterMinimumViable } from "../packages/catalog-normalization/src/index.js";
-import { resolveEntityTruth, resolveAndValidateCatalog } from "../packages/catalog-validation/src/index.js";
+import { resolveAndValidateCatalog } from "../packages/catalog-validation/src/index.js";
 import { runCatalogPipeline, generatePublishedCatalog } from "../packages/catalog-publish/src/index.js";
 import { laptopStudentUsDomainPack }             from "../domains/laptop-student-us/domain-pack.js";
 
@@ -93,7 +93,7 @@ test("أخطاء التطبيع يجب أن تكون صفراً على بيان�
     `Normalization errors: ${JSON.stringify(normErrors)}`);
 });
 
-const { valid: viable, rejected: minViableRejected } = filterMinimumViable(normalized);
+const { valid: viable } = filterMinimumViable(normalized);
 
 test("filterMinimumViable يجب أن يُمرّر جميع السجلات الصحيحة", () => {
   assert.ok(viable.length > 0, "All observations were rejected by minimum-viable filter");
@@ -135,7 +135,7 @@ test("كل كيان يجب أن يمتلك entityId وobservations غير فار
 // ─── Layer 7: Truth Resolution + Quality Gates ────────────────────────────────
 console.log("\nLayer 7: Truth Resolution (catalog-validation)");
 
-const { resolved: validatedEntities, blocked } = resolveAndValidateCatalog(entities, {
+const { resolved: validatedEntities } = resolveAndValidateCatalog(entities, {
   qualityGates: { minConfidence: 0.50, minObservations: 1 },
   resolveFieldsFn: laptopStudentUsDomainPack.resolveEntityFields.bind(laptopStudentUsDomainPack)
 });

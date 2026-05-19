@@ -64,7 +64,7 @@ async function runDemo() {
   
   if (Object.keys(bestCard.sacrifices).length > 0) {
     console.log("\x1b[33m[مصفوفة التضحيات (Sacrifice Vector)]:\x1b[0m");
-    Object.entries(bestCard.sacrifices).forEach(([id, s]) => {
+    Object.entries(bestCard.sacrifices).forEach(([, s]) => {
         console.log(` - ${s.meaning} (الشدة: ${s.severity * 100}%)`);
     });
   } else {

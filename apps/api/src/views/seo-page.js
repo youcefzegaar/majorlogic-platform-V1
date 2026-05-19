@@ -97,9 +97,6 @@ export function renderSeoPage(pageData) {
     }))
   };
 
-  const lcpCard = cards[0];
-  const lcpRoute = commercialRoutes.find(r => r.entityId === lcpCard?.entityId);
-
   const relatedBudgetLinks = Object.entries(BUDGET_TIERS_META)
     .filter(([k]) => k !== budget)
     .map(([k, v]) => `<a href="/laptops/${major}/${k}" style="display:inline-block;background:#1a1a2e;border:1px solid #2d2d4e;border-radius:8px;padding:6px 14px;color:#c4b5fd;font-size:13px;text-decoration:none;">${v.label}</a>`)

@@ -60,7 +60,7 @@ export class DecisionExplainer {
 
   explainStrengths(trace, atlas, locale) {
     const scores = Object.entries(trace.scores)
-      .filter(([id, val]) => val > 70)
+      .filter(([, val]) => val > 70)
       .sort((a, b) => b[1] - a[1]);
 
     if (!scores.length) {

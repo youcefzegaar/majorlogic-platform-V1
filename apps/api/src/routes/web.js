@@ -170,7 +170,7 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
     const indexPath = path.join(SEO_PAGES_DIR, "_index.json");
     let pages = [];
     if (fs.existsSync(indexPath)) {
-      try { pages = JSON.parse(fs.readFileSync(indexPath, "utf8")).pages ?? []; } catch {}
+      try { pages = JSON.parse(fs.readFileSync(indexPath, "utf8")).pages ?? []; } catch { /* invalid JSON — use empty list */ }
     }
     const links = pages.map(p =>
       `<li><a href="${p.canonical}" style="color:#7C3AED;text-decoration:none;">${escapeHtml(p.h1)}</a></li>`
