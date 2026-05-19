@@ -20,6 +20,7 @@ COPY domains ./domains
 COPY scripts ./scripts
 COPY rulesets ./rulesets
 COPY examples ./examples
+COPY database ./database
 
 # Build admin-ui (served by the API at /admin/*)
 RUN cd apps/admin-ui && npm run build
@@ -41,6 +42,7 @@ COPY --from=builder /app/domains ./domains
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/rulesets ./rulesets
 COPY --from=builder /app/examples ./examples
+COPY --from=builder /app/database ./database
 
 EXPOSE 3010
 
