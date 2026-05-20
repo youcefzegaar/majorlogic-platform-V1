@@ -8,7 +8,7 @@ export class GeminiProvider {
   constructor(apiKey, options = {}) {
     this.apiKey = apiKey;
     this.logger = options.logger || console;
-    this.modelName = options.modelName || "gemini-2.0-flash"; // Updated: 1.5-flash deprecated
+    this.modelName = options.modelName || "gemini-2.5-flash";
     
     if (!this.apiKey) {
       this.logger.error("[GeminiProvider] Initialization failed: No API Key provided.");

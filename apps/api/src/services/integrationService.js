@@ -78,7 +78,7 @@ export async function getGeminiConfig() {
   if (!i?.is_active || !i.credentials?.api_key) return null;
   return {
     apiKey:    i.credentials.api_key,
-    modelName: i.config?.model ?? "gemini-2.0-flash",
+    modelName: i.config?.model ?? "gemini-2.5-flash",
   };
 }
 
