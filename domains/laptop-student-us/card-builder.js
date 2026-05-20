@@ -92,6 +92,69 @@ export async function buildCard(cardType, selection, profile, ctx = {}) {
   };
 }
 
+export function findRenewedOpportunityCard(profile, entities, heroCard, ownershipConfig = {}) {
+  if (!heroCard || !entities?.length) return null;
+
+  const budget = profile.budgetUsd;
+  const [renewedMin, renewedMax] = ownershipConfig.renewedDiscountRange ?? [0.15, 0.32];
+  const heroPerf = heroCard.specs?.performance ?? 50;
+  const tag = ownershipConfig.affiliateTag || 'majorlogic-20';
+
+  const candidates = [];
+
+  for (const entity of entities) {
+    const newPrice = entity.market?.bestOffer?.priceUsd;
+    if (!newPrice) continue;
+    if (newPrice <= budget) continue; // eligible already — pipeline already considered it
+
+    const overRatio = newPrice / budget;
+    if (overRatio < 1.10 || overRatio > 1.35) continue; // 10–35% above budget only
+
+    const entityPerf = entity.specs?.performance ?? 50;
+    if (entityPerf <= heroPerf) continue; // must outperform hero on the key axis
+
+    // Score-weighted discount: higher quality devices hold value → smaller discount
+    const scorePct = entityPerf / 100;
+    const renewedDiscount = renewedMin + (1 - scorePct) * (renewedMax - renewedMin);
+    const renewedPrice = Math.round(newPrice * (1 - renewedDiscount));
+
+    if (renewedPrice > budget) continue; // renewed must fit budget
+
+    const enc = encodeURIComponent(entity.title);
+    candidates.push({
+      entity,
+      newPrice,
+      renewedPrice,
+      entityPerf,
+      renewedSavings: newPrice - renewedPrice,
+      renewedUrl: `https://www.amazon.com/s?k=${enc}+renewed&rh=p_n_condition-type%3A2224371011&tag=${tag}`,
+    });
+  }
+
+  if (!candidates.length) return null;
+
+  // Best candidate = highest-performance device that beats hero
+  candidates.sort((a, b) => b.entityPerf - a.entityPerf);
+  const best = candidates[0];
+
+  return {
+    cardType: 'renewed_value',
+    entityId: best.entity.entityId,
+    title: best.entity.title,
+    priceUsd: best.renewedPrice,
+    originalPriceUsd: best.newPrice,
+    score: best.entityPerf,
+    renewedEntry: true,
+    renewedSavings: best.renewedSavings,
+    heroScoreGap: best.entityPerf - heroPerf,
+    renewedUrl: best.renewedUrl,
+    specs: best.entity.specs,
+    media: best.entity.media,
+    badNews: best.entity.reviewIntelligence?.primaryWarning ?? null,
+    topPros: best.entity.reviewIntelligence?.topPros ?? [],
+  };
+}
+
 export function recommendOwnership({ profile, entity, heroCard }) {
   const refurbishedOffer = entity.market.offers.find((offer) => offer.condition === "refurbished");
   const openBoxOffer = entity.market.offers.find((offer) => offer.condition === "open_box");

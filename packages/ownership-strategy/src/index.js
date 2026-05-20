@@ -72,10 +72,10 @@ export function buildOwnershipStrategy({ profile, catalog, decision, domainPack 
 
     const domainRecommendation = domainPack.recommendOwnership
       ? domainPack.recommendOwnership({
-          profile,
-          entity,
-          heroCard: card
-        })
+        profile,
+        entity,
+        heroCard: card
+      })
       : { mode: "buy_new", explanation: "Default ownership path." };
 
     return {
@@ -84,6 +84,7 @@ export function buildOwnershipStrategy({ profile, catalog, decision, domainPack 
       title: card.title,
       lifecycle,
       recommendation: domainRecommendation,
+      ownershipConfig: domainPack.ownershipConfig ?? null,
       summary: `${card.title}: $${lifecycle.costPerYear}/year effective cost over ${ownershipYears} years. Resale recovery ~$${lifecycle.estimatedResaleValue}.`
     };
   });

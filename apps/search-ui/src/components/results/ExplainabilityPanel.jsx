@@ -51,10 +51,16 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
               </div>
               <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', minWidth: 0 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>{selectedCard.name}</div>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-                  <strong style={{ color: 'var(--accent-success)' }}>✓</strong> {selectedCard.whyChosen}<br />
-                  {selectedCard.flaws.map(f => <div key={f}><strong style={{ color: 'var(--accent-danger)' }}>✗</strong> {f}</div>)}
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 12 }}>
+                  {String(selectedCard.whyChosen || '').split('\n\n').map((para, i) => (
+                    <p key={i} style={{ margin: '0 0 10px 0' }}>{para}</p>
+                  ))}
                 </div>
+                {selectedCard.flaws.map(f => (
+                  <div key={f} style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                    <strong style={{ color: 'var(--accent-danger)' }}>✗</strong> {f}
+                  </div>
+                ))}
               </div>
             </div>
           </div>

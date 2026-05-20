@@ -14,6 +14,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { executeUniversalPipeline } from "../../../../packages/platform-core/src/index.js";
 import { laptopStudentUsDomainPack } from "../../../../domains/laptop-student-us/domain-pack.js";
+import { findRenewedOpportunityCard } from "../../../../domains/laptop-student-us/card-builder.js";
 import { resolvePublishedCatalog } from "../../../../packages/postgres-persistence/src/catalog-loader.js";
 import { getRuleset, getRepository } from "../db/repository.js";
 import { getGeminiConfig, getClaudeConfig } from "../services/integrationService.js";
@@ -236,6 +237,18 @@ export async function runPipeline(profile) {
       repository,
       aiProvider
     });
+
+    // Post-pipeline: surface devices excluded by new price but accessible via renewed
+    const heroCard = result.decision?.cards?.find(c => c.cardType === 'hero');
+    if (heroCard && publishedCatalogState.entities?.length && result.decision?.cards) {
+      const renewedOpp = findRenewedOpportunityCard(
+        profile,
+        publishedCatalogState.entities,
+        heroCard,
+        laptopStudentUsDomainPack.ownershipConfig
+      );
+      if (renewedOpp) result.decision.cards.push(renewedOpp);
+    }
 
     return { publishedCatalogSource: publishedCatalogState.source, ...result };
 

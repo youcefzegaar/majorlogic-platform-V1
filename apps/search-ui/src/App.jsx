@@ -12,6 +12,7 @@ import AnalysisPhase from './components/shared/AnalysisPhase';
 import CardsPhase from './components/results/CardsPhase';
 import ExplanationPhase from './components/results/ExplanationPhase';
 import SummaryPhase from './components/results/SummaryPhase';
+import OwnershipPhase from './components/results/OwnershipPhase';
 
 export default function App() {
   const [theme, setTheme] = useState('dark');
@@ -24,7 +25,6 @@ export default function App() {
     phase, setPhase,
     selectedCardType, setSelectedCardType,
     explanationTab, setExplanationTab,
-    selectedPurchase, setSelectedPurchase
   } = useDecisionStore();
 
   const profile = useSessionProfile();
@@ -80,7 +80,7 @@ export default function App() {
         </div>
 
         <ProgressBar phase={phase} onStepClick={(p) => {
-          if ((p === 3 || p === 4) && !selectedCard) return;
+          if ((p === 3 || p === 4 || p === 5) && !selectedCard) return;
           setPhase(p);
         }} />
 
@@ -136,10 +136,18 @@ export default function App() {
         )}
 
         {phase === 4 && selectedCard && (
+          <OwnershipPhase
+            selectedCard={selectedCard}
+            budgetMax={profile.budgetMax}
+            onNext={() => setPhase(5)}
+            onBack={() => setPhase(3)}
+          />
+        )}
+
+        {phase === 5 && selectedCard && (
           <SummaryPhase
             selectedCard={selectedCard} timeline={timeline}
-            selectedPurchase={selectedPurchase} setSelectedPurchase={setSelectedPurchase}
-            onNewDecision={() => setPhase(0)} onBackToExplanation={() => setPhase(3)}
+            onNewDecision={() => setPhase(0)} onBackToExplanation={() => setPhase(4)}
           />
         )}
       </main>

@@ -37,5 +37,18 @@ export const laptopStudentUsDomainPack = {
   detectIntentConflicts,
   attemptRecovery,
   detectArchetype,
-  buildGrowthArtifacts
+  buildGrowthArtifacts,
+
+  ownershipConfig: {
+    renewedDiscountRange: [0.15, 0.32],
+    openBoxDiscountRange: [0.08, 0.14],
+    defaultOwnershipYears: 4,
+    apr: 0.189,
+    affiliateTag: 'majorlogic-20',
+    marketSources: {
+      renewed:    'amazon_renewed',
+      openBox:    'ebay',
+      financing:  'amazon',
+    },
+  },
 };

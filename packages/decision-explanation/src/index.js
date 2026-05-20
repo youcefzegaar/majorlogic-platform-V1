@@ -16,7 +16,7 @@ export class DecisionExplainer {
    * Main entry point for generating the human story.
    */
   async explain(trace, entityName, domainContext = {}) {
-    const { atlas = {}, expertIdentity = "Expert Advisor", locale = "en", useAI = false } = domainContext;
+    const { useAI = false } = domainContext;
 
     if (useAI && this.aiProvider) {
       try {
@@ -27,7 +27,7 @@ export class DecisionExplainer {
       }
     }
 
-    return this._renderWithTemplates(trace, entityName, atlas, expertIdentity, locale);
+    return this._renderWithTemplates(trace, entityName, domainContext);
   }
 
   /**
@@ -46,16 +46,190 @@ export class DecisionExplainer {
     return `We excluded "${name}" because it ${reasons.join(" and ")}.`;
   }
 
-  _renderWithTemplates(trace, name, atlas, identity, locale) {
-    if (!trace.isEligible) return this.explainExclusion(trace, name, { atlas, locale });
+  _renderWithTemplates(trace, name, domainContext) {
+    const {
+      atlas = {},
+      locale = "en",
+      confidence = null,
+      relaxedConstraint = null,
+      intent = null
+    } = domainContext;
 
-    const strengths = this.explainStrengths(trace, atlas, locale);
-    const sacrifices = this.explainSacrifices(trace, atlas, locale);
-    
+    if (!trace.isEligible) return this.explainExclusion(trace, name, domainContext);
+
+    const t = (key, fallback = "") => atlas[locale]?.[key] ?? atlas["en"]?.[key] ?? fallback;
+
+    // Strengths: all dimensions scoring above 60, sorted descending
+    const topStrengths = Object.entries(trace.scores || {})
+      .filter(([, v]) => typeof v === "number" && v > 60)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([id]) => t(id, id.replace(/^score_|_score$/g, "").replace(/_/g, " ")));
+
+    // Sacrifices: human-readable list from sacrifice vector
+    const sacrificeList = Object.values(trace.sacrifices || {})
+      .map(s => t(`sacrifice_${s.meaning}`, s.meaning?.replace(/_/g, " ") ?? String(s.meaning)))
+      .filter(Boolean);
+
+    const confidenceLevel = confidence?.level ?? "high";
+    const conflictCount = confidence?.conflicts?.length ?? 0;
+    const intentTitle = intent?.title ?? null;
+    const futureProjection = intent?.futureProjection ?? null;
+
     if (locale === "ar") {
-      return `بصفتي ${identity}، أنصح بـ "${name}" لأنها ${strengths}. ${sacrifices}`;
+      return this._buildArExplanation(name, topStrengths, sacrificeList, confidenceLevel, conflictCount, relaxedConstraint, intentTitle, futureProjection);
     }
-    return `As your ${identity}, I recommend "${name}" because it ${strengths}. ${sacrifices}`;
+    return this._buildEnExplanation(name, topStrengths, sacrificeList, confidenceLevel, conflictCount, relaxedConstraint, intentTitle, futureProjection);
+  }
+
+  _buildEnExplanation(name, strengths, sacrifices, confidenceLevel, conflictCount, relaxedConstraint, intentTitle, futureProjection) {
+    const parts = [];
+    const context = intentTitle ? ` for ${intentTitle}` : "";
+
+    // § 1 — The Recommendation
+    if (strengths.length >= 2) {
+      parts.push(
+        `After evaluating your requirements${context}, the ${name} is the strongest match. ` +
+        `It scores exceptionally well on ${strengths.slice(0, 2).join(" and ")}` +
+        (strengths[2] ? `, with solid ${strengths[2]} as well` : "") +
+        ` — the factors that matter most for your use case.`
+      );
+    } else if (strengths.length === 1) {
+      parts.push(
+        `After evaluating your requirements${context}, the ${name} is the strongest match. ` +
+        `It particularly excels at ${strengths[0]}, which is the highest-impact factor for your profile.`
+      );
+    } else {
+      parts.push(
+        `After evaluating your requirements${context}, the ${name} meets your core needs ` +
+        `with consistent capability across the board.`
+      );
+    }
+
+    // § 2 — Confidence & conflict context
+    if (confidenceLevel === "low" && conflictCount > 0) {
+      parts.push(
+        `I need to be upfront: your requirements contain ${conflictCount > 1 ? `${conflictCount} competing priorities` : "a competing priority"}, ` +
+        `which means this recommendation involves real trade-offs. ` +
+        `The ${name} navigates those tensions better than any other option in the catalog — ` +
+        `but no single machine can fully satisfy every constraint you have set.`
+      );
+    } else if (confidenceLevel === "medium" && conflictCount > 0) {
+      parts.push(
+        `Your requirements involve some natural tension — ` +
+        `${conflictCount > 1 ? `${conflictCount} priorities are in partial conflict` : "one priority works against another"}. ` +
+        `This device handles that tension better than the alternatives, ` +
+        `though it is worth understanding exactly where it compromises.`
+      );
+    }
+
+    // § 3 — Relaxed constraint disclosure
+    if (relaxedConstraint) {
+      const humanConstraint = relaxedConstraint.replace(/_gate$/, "").replace(/_/g, " ").trim();
+      parts.push(
+        `Important: to find any viable option at all, the algorithm had to stretch on "${humanConstraint}". ` +
+        `This is a genuine compromise — not a failure, but a real signal that your requirements were demanding. Keep it in mind.`
+      );
+    }
+
+    // § 4 — The Sacrifice Vector
+    if (sacrifices.length > 0) {
+      const listed = sacrifices.length === 1
+        ? sacrifices[0]
+        : `${sacrifices.slice(0, -1).join(", ")} and ${sacrifices[sacrifices.length - 1]}`;
+      parts.push(
+        `Choosing the ${name} means consciously accepting these trade-offs: ${listed}. ` +
+        `These are real costs, not marketing caveats. ` +
+        `If any of them are critical to your daily workflow, weigh that carefully before committing.`
+      );
+    } else {
+      parts.push(
+        `Notably, this device meets all your stated requirements without forcing any significant compromises. ` +
+        `That is the best possible outcome — take it.`
+      );
+    }
+
+    // § 5 — Future projection
+    if (futureProjection) {
+      parts.push(`Looking ahead: ${futureProjection}`);
+    }
+
+    return parts.join("\n\n");
+  }
+
+  _buildArExplanation(name, strengths, sacrifices, confidenceLevel, conflictCount, relaxedConstraint, intentTitle, futureProjection) {
+    const parts = [];
+    const context = intentTitle ? ` لـ${intentTitle}` : "";
+
+    // § 1 — التوصية
+    if (strengths.length >= 2) {
+      parts.push(
+        `بعد تقييم متطلباتك${context}، يبرز ${name} بوصفه الخيار الأمثل. ` +
+        `يتميز بشكل استثنائي في ${strengths.slice(0, 2).join(" و ")}` +
+        (strengths[2] ? `، مع مستوى جيد في ${strengths[2]} أيضاً` : "") +
+        ` — وهي الجوانب الأكثر أهمية لملفك الشخصي.`
+      );
+    } else if (strengths.length === 1) {
+      parts.push(
+        `بعد تقييم متطلباتك${context}، يُعدّ ${name} الخيار الأنسب. ` +
+        `يتفوق بشكل خاص في ${strengths[0]}، وهو العامل الأكثر تأثيراً في قرارك.`
+      );
+    } else {
+      parts.push(
+        `بعد تقييم متطلباتك${context}، يُلبّي ${name} احتياجاتك الأساسية ` +
+        `بأداء متسق عبر مختلف الجوانب.`
+      );
+    }
+
+    // § 2 — مستوى الثقة والتعارضات
+    if (confidenceLevel === "low" && conflictCount > 0) {
+      parts.push(
+        `يجب أن أكون صريحاً: متطلباتك تحتوي على ${conflictCount > 1 ? `${conflictCount} أولويات متعارضة` : "أولوية متعارضة"}، ` +
+        `مما يعني أن هذه التوصية تتضمن تسويات حقيقية. ` +
+        `يتعامل ${name} مع هذه التوترات أفضل من أي خيار آخر في الكتالوج ` +
+        `— لكن لا يوجد جهاز واحد يلبي كل شرط وضعته بالكامل.`
+      );
+    } else if (confidenceLevel === "medium" && conflictCount > 0) {
+      parts.push(
+        `متطلباتك تنطوي على توتر طبيعي — ` +
+        `${conflictCount > 1 ? `${conflictCount} أولويات في تعارض جزئي` : "إحدى الأولويات تتعارض مع أخرى"}. ` +
+        `هذا الجهاز يدير هذا التوتر بشكل أفضل من البدائل، ` +
+        `وإن كان من الضروري فهم جوانب التسوية بدقة.`
+      );
+    }
+
+    // § 3 — الكشف عن القيد المُخفَّف
+    if (relaxedConstraint) {
+      const humanConstraint = relaxedConstraint.replace(/_gate$/, "").replace(/_/g, " ").trim();
+      parts.push(
+        `ملاحظة مهمة: لإيجاد أي خيار مناسب، اضطر النظام إلى التساهل في "${humanConstraint}". ` +
+        `هذه تسوية حقيقية — ليست إخفاقاً، بل إشارة تدل على أن متطلباتك كانت متطلبة جداً. خذها بعين الاعتبار.`
+      );
+    }
+
+    // § 4 — متجه التضحية
+    if (sacrifices.length > 0) {
+      const listed = sacrifices.length === 1
+        ? sacrifices[0]
+        : `${sacrifices.slice(0, -1).join(" و")} و${sacrifices[sacrifices.length - 1]}`;
+      parts.push(
+        `اختيار ${name} يعني قبول هذه التسويات بوعي: ${listed}. ` +
+        `هذه تكاليف حقيقية، لا مجرد تحفظات تسويقية. ` +
+        `إذا كان أي منها حاسماً في عملك اليومي، ففكّر في ذلك بجدية قبل الالتزام.`
+      );
+    } else {
+      parts.push(
+        `والجدير بالذكر أن هذا الجهاز يُلبّي جميع متطلباتك دون فرض أي تسويات جوهرية. ` +
+        `هذه أفضل نتيجة ممكنة — استفد منها.`
+      );
+    }
+
+    // § 5 — النظرة المستقبلية
+    if (futureProjection) {
+      parts.push(`نظرة مستقبلية: ${futureProjection}`);
+    }
+
+    return parts.join("\n\n");
   }
 
   explainStrengths(trace, atlas, locale) {

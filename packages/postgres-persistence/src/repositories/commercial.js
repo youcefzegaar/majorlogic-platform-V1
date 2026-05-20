@@ -235,4 +235,35 @@ export class CommercialRepository {
 
     return { rows: dataResult.rows, total: parseInt(countResult.rows[0].total) };
   }
+
+  // ─────────────────────────────────────────────
+  // Domain Ownership Configs
+  // ─────────────────────────────────────────────
+
+  async getOwnershipConfig(domainSlug) {
+    const result = await this.pool.query(
+      `SELECT config, preset_key, updated_at, updated_by
+       FROM ml_commercial.domain_ownership_configs
+       WHERE domain_slug = $1 LIMIT 1`,
+      [domainSlug]
+    );
+    if (!result.rows.length) return null;
+    const row = result.rows[0];
+    return { ...row.config, _presetKey: row.preset_key, _updatedAt: row.updated_at, _updatedBy: row.updated_by };
+  }
+
+  async saveOwnershipConfig(domainSlug, config, updatedBy = 'admin') {
+    const { _presetKey, _updatedAt, _updatedBy, ...cleanConfig } = config;
+    await this.pool.query(
+      `INSERT INTO ml_commercial.domain_ownership_configs
+         (domain_slug, preset_key, config, updated_at, updated_by)
+       VALUES ($1, $2, $3, now(), $4)
+       ON CONFLICT (domain_slug) DO UPDATE SET
+         preset_key = EXCLUDED.preset_key,
+         config     = EXCLUDED.config,
+         updated_at = now(),
+         updated_by = EXCLUDED.updated_by`,
+      [domainSlug, config.presetKey ?? null, JSON.stringify(cleanConfig), updatedBy]
+    );
+  }
 }

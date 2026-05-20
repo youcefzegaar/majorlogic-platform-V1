@@ -65,4 +65,7 @@ export const adminService = {
   saveLogicConfig: (domainId, data) => apiClient.post(`/logic-config/${domainId}`, data),
   rebuildCatalog: (domainId) => apiClient.post('/catalog/rebuild', { domainId }),
   getCatalogRebuildStatus: (jobId) => apiClient.get(`/catalog/rebuild/${jobId}`),
+  getOwnershipConfig: (domainSlug) => apiClient.get(`/domains/${domainSlug}/ownership-config`).then(r => r.data),
+  saveOwnershipConfig: (domainSlug, data) => apiClient.put(`/domains/${domainSlug}/ownership-config`, data).then(r => r.data),
+  getOwnershipPresets: () => apiClient.get('/ownership-presets').then(r => r.data),
 };

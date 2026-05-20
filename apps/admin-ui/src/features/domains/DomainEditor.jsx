@@ -1,34 +1,226 @@
-import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
-  ShieldCheck,
-  RefreshCw,
   Layout,
   Zap,
   CheckCircle,
   AlertTriangle,
   ArrowLeft,
   Sliders,
-  Lock
+  Lock,
+  ShoppingCart,
+  Save,
+  RefreshCw,
 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { adminService } from '../../api/apiClient';
 
-const DomainEditor = ({ domain, onBack }) => {
-  const { navigate } = useAppStore();
-  const [feedback, setFeedback] = useState(null);
+// ── Ownership Config Panel ────────────────────────────────────────────────────
+function OwnershipConfigPanel({ domainSlug }) {
+  const [localCfg, setLocalCfg] = useState(null);
+  const [saveFeedback, setSaveFeedback] = useState(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['ownership-config', domainSlug],
+    queryFn: () => adminService.getOwnershipConfig(domainSlug),
+    onSuccess: (d) => { if (!localCfg) setLocalCfg(d.config); },
+  });
+
+  const presets = data?.presets ?? {};
+  const cfg = localCfg ?? data?.config ?? {};
 
   const saveMutation = useMutation({
-    mutationFn: (config) => adminService.saveLogicConfig(domain.slug || domain.id, config),
-    onSuccess: (data) => {
-      setFeedback({ type: 'success', message: `Logic v${data.version} deployed successfully.` });
-      setTimeout(() => setFeedback(null), 4000);
+    mutationFn: (c) => adminService.saveOwnershipConfig(domainSlug, c),
+    onSuccess: () => {
+      setSaveFeedback({ type: 'success', message: 'Ownership config saved.' });
+      setTimeout(() => setSaveFeedback(null), 3000);
     },
-    onError: (err) => {
-      setFeedback({ type: 'error', message: err?.response?.data?.message || 'Save failed.' });
-      setTimeout(() => setFeedback(null), 5000);
-    }
+    onError: () => {
+      setSaveFeedback({ type: 'error', message: 'Save failed.' });
+      setTimeout(() => setSaveFeedback(null), 4000);
+    },
   });
+
+  const applyPreset = (key) => {
+    const preset = presets[key];
+    if (preset) setLocalCfg({ ...preset, presetKey: key });
+  };
+
+  const set = (field, value) => setLocalCfg(prev => ({ ...prev, [field]: value }));
+  const setRange = (field, idx, raw) => {
+    const val = parseFloat(raw);
+    if (isNaN(val)) return;
+    setLocalCfg(prev => {
+      const range = [...(prev[field] ?? [0, 0])];
+      range[idx] = val;
+      return { ...prev, [field]: range };
+    });
+  };
+
+  if (isLoading) return <div style={{ padding: 20, color: 'var(--text-secondary)' }}>Loading config…</div>;
+
+  return (
+    <div className="card" style={{ marginTop: 24 }}>
+      <h3 style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <ShoppingCart size={20} color="var(--accent-secondary)" /> Ownership Acquisition Config
+        {data?.isDefault && (
+          <span style={{ fontSize: 11, background: 'rgba(245,158,11,0.15)', color: 'var(--warning)', padding: '2px 8px', borderRadius: 4 }}>
+            Using default preset
+          </span>
+        )}
+      </h3>
+      <p style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', marginBottom: 20 }}>
+        Calibrates the financial model used in the Ownership Phase — discount ranges, APR, and market sources.
+      </p>
+
+      {/* Preset selector */}
+      <div style={{ marginBottom: 20 }}>
+        <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>Apply Preset</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {Object.entries(presets).map(([key, p]) => (
+            <button
+              key={key}
+              className="btn btn-outline"
+              style={{ padding: '5px 12px', fontSize: 12, opacity: cfg.presetKey === key ? 1 : 0.6 }}
+              onClick={() => applyPreset(key)}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Fields */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+
+        <div>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+            Renewed Discount Range
+          </label>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input type="number" step="0.01" min="0" max="1"
+              value={cfg.renewedDiscountRange?.[0] ?? ''}
+              onChange={e => setRange('renewedDiscountRange', 0, e.target.value)}
+              style={{ width: 80, padding: '6px 10px', background: 'var(--surface-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 13 }}
+            />
+            <span style={{ color: 'var(--text-tertiary)' }}>→</span>
+            <input type="number" step="0.01" min="0" max="1"
+              value={cfg.renewedDiscountRange?.[1] ?? ''}
+              onChange={e => setRange('renewedDiscountRange', 1, e.target.value)}
+              style={{ width: 80, padding: '6px 10px', background: 'var(--surface-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 13 }}
+            />
+            <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+              ({Math.round((cfg.renewedDiscountRange?.[0]??0)*100)}%–{Math.round((cfg.renewedDiscountRange?.[1]??0)*100)}% off)
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+            Open Box Discount Range
+          </label>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input type="number" step="0.01" min="0" max="1"
+              value={cfg.openBoxDiscountRange?.[0] ?? ''}
+              onChange={e => setRange('openBoxDiscountRange', 0, e.target.value)}
+              style={{ width: 80, padding: '6px 10px', background: 'var(--surface-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 13 }}
+            />
+            <span style={{ color: 'var(--text-tertiary)' }}>→</span>
+            <input type="number" step="0.01" min="0" max="1"
+              value={cfg.openBoxDiscountRange?.[1] ?? ''}
+              onChange={e => setRange('openBoxDiscountRange', 1, e.target.value)}
+              style={{ width: 80, padding: '6px 10px', background: 'var(--surface-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 13 }}
+            />
+            <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+              ({Math.round((cfg.openBoxDiscountRange?.[0]??0)*100)}%–{Math.round((cfg.openBoxDiscountRange?.[1]??0)*100)}% off)
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+            Default Ownership Years
+          </label>
+          <input type="number" step="0.5" min="0.5" max="30"
+            value={cfg.defaultOwnershipYears ?? ''}
+            onChange={e => set('defaultOwnershipYears', parseFloat(e.target.value))}
+            style={{ width: 100, padding: '6px 10px', background: 'var(--surface-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 13 }}
+          />
+        </div>
+
+        <div>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+            Financing APR
+          </label>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input type="number" step="0.001" min="0" max="1"
+              value={cfg.apr ?? ''}
+              onChange={e => set('apr', parseFloat(e.target.value))}
+              style={{ width: 100, padding: '6px 10px', background: 'var(--surface-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 13 }}
+            />
+            <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+              ({Math.round((cfg.apr??0)*100)}% annual)
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+            Affiliate Tag
+          </label>
+          <input type="text" maxLength={60}
+            value={cfg.affiliateTag ?? ''}
+            onChange={e => set('affiliateTag', e.target.value)}
+            style={{ width: '100%', padding: '6px 10px', background: 'var(--surface-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 13 }}
+          />
+        </div>
+
+        <div>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+            Market Sources
+          </label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {['renewed', 'openBox', 'financing'].map(key => (
+              <div key={key} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span style={{ width: 70, fontSize: 12, color: 'var(--text-tertiary)' }}>{key}</span>
+                <input type="text" maxLength={40}
+                  value={cfg.marketSources?.[key] ?? ''}
+                  onChange={e => set('marketSources', { ...cfg.marketSources, [key]: e.target.value })}
+                  style={{ flex: 1, padding: '5px 8px', background: 'var(--surface-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: 12 }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+      {/* Save */}
+      <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button
+          className="btn btn-primary"
+          style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+          onClick={() => saveMutation.mutate(cfg)}
+          disabled={saveMutation.isLoading}
+        >
+          {saveMutation.isLoading
+            ? <><RefreshCw size={14} className="spin" /> Saving…</>
+            : <><Save size={14} /> Save Config</>}
+        </button>
+        {saveFeedback && (
+          <span style={{ fontSize: 13, color: saveFeedback.type === 'success' ? 'var(--success)' : 'var(--error)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            {saveFeedback.type === 'success' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
+            {saveFeedback.message}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── DomainEditor ──────────────────────────────────────────────────────────────
+const DomainEditor = ({ domain, onBack }) => {
+  const { navigate } = useAppStore();
 
   if (!domain) return <div style={{ padding: '40px', color: 'var(--text-secondary)' }}>No domain selected.</div>;
 
@@ -66,23 +258,6 @@ const DomainEditor = ({ domain, onBack }) => {
           </button>
         </div>
       </div>
-
-      {/* Feedback Banner */}
-      {feedback && (
-        <div style={{
-          marginBottom: '20px', padding: '14px 20px', borderRadius: 'var(--radius-md)',
-          background: feedback.type === 'success' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-          border: `1px solid ${feedback.type === 'success' ? 'var(--success)' : 'var(--error)'}`,
-          display: 'flex', alignItems: 'center', gap: '10px'
-        }}>
-          {feedback.type === 'success'
-            ? <CheckCircle size={18} color="var(--success)" />
-            : <AlertTriangle size={18} color="var(--error)" />}
-          <span style={{ color: feedback.type === 'success' ? 'var(--success)' : 'var(--error)' }}>
-            {feedback.message}
-          </span>
-        </div>
-      )}
 
       <div className="grid-2">
         {/* Gates Panel */}
@@ -163,6 +338,10 @@ const DomainEditor = ({ domain, onBack }) => {
           <Sliders size={18} /> Open Logic Lab
         </button>
       </div>
+
+      {/* Ownership Config Panel */}
+      <OwnershipConfigPanel domainSlug={domain.slug || domain.id} />
+
     </div>
   );
 };

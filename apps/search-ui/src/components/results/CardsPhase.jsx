@@ -60,21 +60,83 @@ export default function CardsPhase({
                 Edit Requirements
               </button>
             </div>
-          ) : (
-            <div className="decision-cards-grid">
-              {Object.entries(cards).map(([type, card]) => (
-                <HeroCard
-                  key={type}
-                  type={type}
-                  card={card}
-                  isSelected={selectedCardType === type}
-                  onSelect={onSelectCard}
-                  onConfirm={onConfirmCard}
-                  onDetails={onCardDetails}
-                />
-              ))}
-            </div>
-          )}
+          ) : (() => {
+            const mainEntries = Object.entries(cards).filter(([t]) => t !== 'renewed_value');
+            const renewedCard = cards['renewed_value'] || null;
+            return (
+              <>
+                <div className="decision-cards-grid">
+                  {mainEntries.map(([type, card]) => (
+                    <HeroCard
+                      key={type}
+                      type={type}
+                      card={card}
+                      isSelected={selectedCardType === type}
+                      onSelect={onSelectCard}
+                      onConfirm={onConfirmCard}
+                      onDetails={onCardDetails}
+                    />
+                  ))}
+                </div>
+
+                {renewedCard && (
+                  <div className="renewed-opp-section">
+                    <div className="renewed-opp-section-header">
+                      <span className="renewed-opp-gem-icon">♻️</span>
+                      <div>
+                        <div className="renewed-opp-section-title">Hidden Gem — Renewed Opportunity</div>
+                        <div className="renewed-opp-section-sub">
+                          This device exceeds your budget at retail, but its certified-renewed price fits — and it outperforms your hero pick.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`renewed-opp-card${selectedCardType === 'renewed_value' ? ' renewed-opp-card--selected' : ''}`}
+                      onClick={() => onSelectCard('renewed_value')}
+                    >
+                      <div className="renewed-opp-badge">Renewed Opportunity</div>
+                      <div className="renewed-opp-content">
+                        <img
+                          src={renewedCard.image}
+                          alt={renewedCard.name}
+                          className="renewed-opp-img"
+                          onError={e => { e.target.style.display = 'none'; }}
+                        />
+                        <div className="renewed-opp-info">
+                          <div className="renewed-opp-name">{renewedCard.name}</div>
+                          <div className="renewed-opp-stats">
+                            <span className="renewed-opp-stat-pill">+{renewedCard.heroScoreGap} pts vs Hero</span>
+                            <span className="renewed-opp-stat-pill">Saves ${renewedCard.renewedSavings?.toLocaleString()} vs retail</span>
+                          </div>
+                          {Array.isArray(renewedCard.tradeOffs?.gained) && renewedCard.tradeOffs.gained.length > 0 && (
+                            <div className="renewed-opp-pros">
+                              {renewedCard.tradeOffs.gained.slice(0, 2).map((p, i) => (
+                                <span key={i} className="renewed-opp-pro">✓ {p}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className="renewed-opp-pricing">
+                          {renewedCard.originalPrice && (
+                            <div className="renewed-opp-original">{renewedCard.originalPrice} new</div>
+                          )}
+                          <div className="renewed-opp-price">{renewedCard.price}</div>
+                          <div className="renewed-opp-condition">certified renewed</div>
+                          <button
+                            className="renewed-opp-btn"
+                            onClick={e => { e.stopPropagation(); onConfirmCard('renewed_value'); }}
+                          >
+                            Choose This
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
 
         <div className="cards-sidebar">

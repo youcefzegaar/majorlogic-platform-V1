@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, onDetails }) {
   return (
     <div
@@ -78,7 +76,9 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
 
         <div className="card-section" style={{ marginBottom: 12 }}>
           <div className="card-section-title">Why this choice?</div>
-          <div className="card-section-text">{card.whyChosen}</div>
+          <div className="card-section-text">
+            {String(card.whyChosen || '').split('\n\n')[0]}
+          </div>
         </div>
 
         <div

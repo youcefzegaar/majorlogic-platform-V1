@@ -1,6 +1,6 @@
 import React from 'react';
 
-const STEPS = ['Goal', 'Analysis', 'Cards', 'Explanation', 'Summary'];
+const STEPS = ['Goal', 'Analysis', 'Cards', 'Explanation', 'Ownership', 'Summary'];
 
 export default function ProgressBar({ phase, onStepClick }) {
   return (

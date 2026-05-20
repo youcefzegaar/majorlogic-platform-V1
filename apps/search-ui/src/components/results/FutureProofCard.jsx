@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function FutureProofCard({ selectedCard, timeline }) {
   return (
     <div>
@@ -76,7 +74,11 @@ export default function FutureProofCard({ selectedCard, timeline }) {
 
           <div className="final-section">
             <div className="final-section-title">Why This Decision?</div>
-            <div className="final-section-text">{selectedCard.whyChosen}</div>
+            <div className="final-section-text">
+              {String(selectedCard.whyChosen || '').split('\n\n').map((para, i) => (
+                <p key={i} style={{ margin: '0 0 8px 0' }}>{para}</p>
+              ))}
+            </div>
           </div>
 
           <div className="final-section">

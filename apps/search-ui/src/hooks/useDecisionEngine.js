@@ -56,8 +56,8 @@ function buildProfile({ major, lang, budgetMax, priorities, goal }) {
       portability: Number(priorities.portability)
     },
     context: {
-      acceptsOpenBox: false,
-      acceptsRefurbished: false,
+      acceptsOpenBox: true,
+      acceptsRefurbished: true,
       financingAllowed: true
     },
     productIntent: {
@@ -86,7 +86,7 @@ export function useDecisionEngine() {
     integrityScore: 1.0
   });
 
-  const runDecision = async ({ major, lang, budgetMax, budgetMin, priorities, goal }) => {
+  const runDecision = async ({ major, lang, budgetMax, priorities, goal }) => {
     setIsAnalyzing(true);
     setError(null);
     try {
@@ -107,7 +107,8 @@ export function useDecisionEngine() {
       const typeDetails = {
         hero: { badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻', scoreLabel: 'High Match' },
         future_proof: { badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀', scoreLabel: 'Exceptional Longevity' },
-        smart_budget: { badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎', scoreLabel: 'Excellent Value' }
+        smart_budget: { badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎', scoreLabel: 'Excellent Value' },
+        renewed_value: { badge: 'Renewed Opportunity', badgeClass: 'badge-renewed', icon: '♻️', scoreLabel: 'Premium Performance' },
       };
 
       const isValidText = (s) => typeof s === 'string' && s.trim() !== '' && s !== 'null' && s !== 'undefined';
@@ -136,11 +137,21 @@ export function useDecisionEngine() {
           const affiliateOffer = allOffers.find(o => o.isAffiliate);
           const makeBuyUrl = (route) => route?.buyRoute ? `${apiUrl}${route.buyRoute}` : null;
 
+          // Attach ownership strategy for this card type (lifecycle cost + acquisition recommendation)
+          const ownershipStrategy = result.ownership?.strategies?.find(s => s.cardType === type) ?? null;
+
+          // Renewed opportunity cards carry their own purchase URL
+          const isRenewed = type === 'renewed_value';
+          const renewedPurchaseUrl = isRenewed && card.renewedUrl ? card.renewedUrl : null;
+
           newCards[type] = {
             entityId: card.entityId,
             name: card.title,
             price: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
-            originalPrice: null,
+            originalPrice: isRenewed && card.originalPriceUsd ? `$${card.originalPriceUsd.toLocaleString()}` : null,
+            renewedEntry: card.renewedEntry || false,
+            renewedSavings: card.renewedSavings || 0,
+            heroScoreGap: card.heroScoreGap || 0,
             badge: details.badge,
             badgeClass: details.badgeClass,
             score: rawScore,
@@ -181,12 +192,16 @@ export function useDecisionEngine() {
               build: 90
             },
             purchaseLinks: {
-              primary: makeBuyUrl(bestOffer),
-              affiliate: makeBuyUrl(affiliateOffer),
-              primarySeller: bestOffer?.seller || null,
-              affiliateSeller: affiliateOffer?.seller || null,
-              priceUsd: card.priceUsd
-            }
+              primary: renewedPurchaseUrl || makeBuyUrl(bestOffer),
+              affiliate: renewedPurchaseUrl || makeBuyUrl(affiliateOffer),
+              primarySeller: isRenewed ? 'Amazon Renewed' : (bestOffer?.seller || null),
+              affiliateSeller: isRenewed ? 'Amazon Renewed' : (affiliateOffer?.seller || null),
+              // For renewed_value cards, pass the ORIGINAL new price as the baseline
+              // so OwnershipPhase calculates discounts correctly from retail price.
+              priceUsd: isRenewed ? (card.originalPriceUsd || card.priceUsd) : card.priceUsd,
+              renewedPriceUsd: isRenewed ? card.priceUsd : null,
+            },
+            ownershipStrategy
           };
         });
       }
