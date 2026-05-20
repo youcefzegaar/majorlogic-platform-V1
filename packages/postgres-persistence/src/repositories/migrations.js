@@ -34,6 +34,7 @@ export class MigrationsRepository {
       "database/migrations/0025_nurture_emails.sql",
       "database/migrations/0026_ai_integrations_seed.sql",
       "database/migrations/0027_domain_ownership_configs.sql",
+      "database/migrations/0028_fix_gemini_model.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
