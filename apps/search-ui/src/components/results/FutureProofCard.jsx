@@ -106,6 +106,31 @@ export default function FutureProofCard({ selectedCard, timeline }) {
             </div>
           </div>
 
+          {/* ── Where to Buy ── */}
+          {selectedCard.purchaseLinks?.primary && (
+            <div className="final-section">
+              <div className="final-section-title">Where to Buy</div>
+              <a
+                href={selectedCard.purchaseLinks.primary}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="final-buy-btn"
+              >
+                <i className="fas fa-shopping-cart"></i>
+                &nbsp;Buy Now — {selectedCard.price}
+                {selectedCard.purchaseLinks.primarySeller && (
+                  <span className="final-buy-seller"> via {selectedCard.purchaseLinks.primarySeller}</span>
+                )}
+              </a>
+              <div className="final-affiliate-disclosure">
+                {selectedCard.purchaseLinks.isAffiliate
+                  ? <>🤝 Affiliate link — we earn a small commission at no extra cost to you.</>
+                  : <>✅ Direct link — no commission earned.</>
+                }
+              </div>
+            </div>
+          )}
+
           <div className="final-section">
             <div className="final-section-title">Decision Stability</div>
             <div style={{ textAlign: 'center', padding: 16 }}>

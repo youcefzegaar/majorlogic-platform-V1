@@ -428,8 +428,7 @@
       },
       {
         "type": "future_proof",
-        "pickBy": "highest_score",
-        "minScore": 35
+        "pickBy": "highest_score"
       }
     ],
     "noDuplicates": true

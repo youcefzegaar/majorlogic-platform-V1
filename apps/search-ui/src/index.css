@@ -2678,6 +2678,51 @@ body {
     color: var(--text-primary);
 }
 
+/* Affiliate disclosure — OwnershipPhase */
+.op-affiliate-disclosure {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+.op-affiliate-badge { font-size: 13px; }
+
+/* Final buy button — SummaryPhase */
+.final-buy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: var(--accent-success);
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    margin-bottom: 8px;
+}
+.final-buy-btn:hover { opacity: 0.9; }
+.final-buy-seller {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.85;
+}
+.final-affiliate-disclosure {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 6px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
 /* Price alert */
 .op-alert-section {
     background: var(--surface);

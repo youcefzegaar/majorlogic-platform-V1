@@ -2,16 +2,7 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
   return (
     <>
       <div className="explain-banner">
-        <div className="explain-banner-image">
-          <div className="explain-banner-glow"></div>
-          {selectedCard.image ? (
-            <img src={selectedCard.image} alt={selectedCard.name} className="explain-banner-img" />
-          ) : (
-            <i className="fas fa-check-circle" style={{ fontSize: 48, color: 'var(--accent-success)' }}></i>
-          )}
-          <div className="explain-banner-fade"></div>
-        </div>
-        <div className="explain-banner-body">
+        <div className="explain-banner-body" style={{ padding: '20px 24px' }}>
           <div className="selected-card-name" style={{ fontSize: 18 }}>{selectedCard.name}</div>
           <div className="selected-card-type" style={{ marginTop: 4 }}>{selectedCard.badge} — Judgment Score: {selectedCard.score}%</div>
           <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -39,29 +30,18 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
 
         {explanationTab === 'why-chosen' && (
           <div className="explanation-content active">
-            <div className="explain-why-grid">
-              <div className="explain-why-image">
-                <div className="explain-banner-glow"></div>
-                {selectedCard.image ? (
-                  <img src={selectedCard.image} alt={selectedCard.name} style={{ width: '90%', maxHeight: '130px', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))', position: 'relative', zIndex: 1 }} />
-                ) : (
-                  <span style={{ fontSize: 64 }}>💻</span>
-                )}
-                <div className="explain-banner-fade"></div>
-              </div>
-              <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)', minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>{selectedCard.name}</div>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 12 }}>
-                  {String(selectedCard.whyChosen || '').split('\n\n').map((para, i) => (
-                    <p key={i} style={{ margin: '0 0 10px 0' }}>{para}</p>
-                  ))}
-                </div>
-                {selectedCard.flaws.map(f => (
-                  <div key={f} style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                    <strong style={{ color: 'var(--accent-danger)' }}>✗</strong> {f}
-                  </div>
+            <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>{selectedCard.name}</div>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 12 }}>
+                {String(selectedCard.whyChosen || '').split('\n\n').map((para, i) => (
+                  <p key={i} style={{ margin: '0 0 10px 0' }}>{para}</p>
                 ))}
               </div>
+              {selectedCard.flaws.map(f => (
+                <div key={f} style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--accent-danger)' }}>✗</strong> {f}
+                </div>
+              ))}
             </div>
           </div>
         )}

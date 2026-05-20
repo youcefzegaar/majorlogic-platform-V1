@@ -357,9 +357,17 @@ export default function OwnershipPhase({ selectedCard, budgetMax, onNext, onBack
       {/* ── CTA Buttons ───────────────────────────────── */}
       <div className="op-cta-section">
         {urlMap[currentPath] && (
-          <a href={urlMap[currentPath]} target="_blank" rel="noopener noreferrer" className="op-cta-primary">
-            <i className="fas fa-external-link-alt"></i> {ctaMap[currentPath]}
-          </a>
+          <>
+            <a href={urlMap[currentPath]} target="_blank" rel="noopener noreferrer" className="op-cta-primary">
+              <i className="fas fa-external-link-alt"></i> {ctaMap[currentPath]}
+            </a>
+            <div className="op-affiliate-disclosure">
+              {selectedCard.purchaseLinks?.isAffiliate
+                ? <><span className="op-affiliate-badge">🤝</span> Affiliate link — we earn a small commission at no extra cost to you.</>
+                : <><span className="op-affiliate-badge">✅</span> Direct link — no commission earned.</>
+              }
+            </div>
+          </>
         )}
         <div className="op-cta-alts">
           {Object.keys(pathLabels).filter(k => k !== currentPath).map(k => (

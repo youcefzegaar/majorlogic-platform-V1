@@ -118,15 +118,15 @@ export function useDecisionEngine() {
           const type = card.cardType || 'hero';
           const details = typeDetails[type] || typeDetails.hero;
 
-          // stabilityScore: null means unavailable, not zero
-          const rawStability = result.decision.stabilityScore;
+          // stabilityScore: use API value if available, fall back to decisionConfidenceScore
+          const rawStability = result.decision.stabilityScore ?? result.trust?.decisionConfidenceScore;
           const stabilityScore = rawStability != null ? Math.round(rawStability * 100) : null;
           const stabilityStatus = stabilityScore == null ? 'unknown'
             : stabilityScore >= 80 ? 'high'
             : stabilityScore >= 60 ? 'medium' : 'low';
 
-          // score: guard against NaN from undefined arithmetic
-          const rawScore = card.score != null ? card.score
+          // score: round to integer so it fits in the score circle (52px)
+          const rawScore = card.score != null ? Math.round(card.score)
             : card.confidenceScore != null ? Math.round(card.confidenceScore * 100)
             : 85;
 
@@ -143,6 +143,12 @@ export function useDecisionEngine() {
           // Renewed opportunity cards carry their own purchase URL
           const isRenewed = type === 'renewed_value';
           const renewedPurchaseUrl = isRenewed && card.renewedUrl ? card.renewedUrl : null;
+
+          // Affiliate transparency from commercialRoutes
+          const transparency = commercialRoute?.transparency ?? null;
+          const isAffiliate = transparency?.isAffiliate ?? true;
+          // Amazon search fallback when no direct offer URL is available
+          const amazonFallback = `https://www.amazon.com/s?k=${encodeURIComponent(card.title || '')}&tag=majorlogic-20`;
 
           newCards[type] = {
             entityId: card.entityId,
@@ -192,14 +198,14 @@ export function useDecisionEngine() {
               build: 90
             },
             purchaseLinks: {
-              primary: renewedPurchaseUrl || makeBuyUrl(bestOffer),
-              affiliate: renewedPurchaseUrl || makeBuyUrl(affiliateOffer),
-              primarySeller: isRenewed ? 'Amazon Renewed' : (bestOffer?.seller || null),
-              affiliateSeller: isRenewed ? 'Amazon Renewed' : (affiliateOffer?.seller || null),
-              // For renewed_value cards, pass the ORIGINAL new price as the baseline
-              // so OwnershipPhase calculates discounts correctly from retail price.
+              primary: renewedPurchaseUrl || makeBuyUrl(bestOffer) || amazonFallback,
+              affiliate: renewedPurchaseUrl || makeBuyUrl(affiliateOffer) || amazonFallback,
+              primarySeller: isRenewed ? 'Amazon Renewed' : (bestOffer?.seller || 'Amazon'),
+              affiliateSeller: isRenewed ? 'Amazon Renewed' : (affiliateOffer?.seller || 'Amazon'),
               priceUsd: isRenewed ? (card.originalPriceUsd || card.priceUsd) : card.priceUsd,
               renewedPriceUsd: isRenewed ? card.priceUsd : null,
+              isAffiliate,
+              affiliateLabel: transparency?.label ?? 'Verified Partner',
             },
             ownershipStrategy
           };
