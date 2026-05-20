@@ -75,15 +75,16 @@ export async function getWebhookUrl(slug) {
 
 export async function getGeminiConfig() {
   const i = await getIntegration("gemini");
-  // DB integration takes priority; env variable is the fallback for Railway deployments
-  const apiKey = i?.credentials?.api_key || process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
-  const isActive = i?.is_active ?? true; // env-based key is always considered active
-  if (!isActive) return null;
-  return {
-    apiKey,
-    modelName: i?.config?.model ?? "gemini-2.5-flash",
-  };
+  // DB credentials + active flag take priority
+  if (i?.is_active && i.credentials?.api_key) {
+    return { apiKey: i.credentials.api_key, modelName: i.config?.model ?? "gemini-2.5-flash" };
+  }
+  // Fallback: env variable bypasses DB activation (for Railway deployments)
+  const envKey = process.env.GEMINI_API_KEY;
+  if (envKey) {
+    return { apiKey: envKey, modelName: i?.config?.model ?? "gemini-2.5-flash" };
+  }
+  return null;
 }
 
 export async function getOpenAIConfig() {
