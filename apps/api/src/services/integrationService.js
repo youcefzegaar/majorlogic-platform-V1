@@ -82,7 +82,7 @@ export async function getGeminiConfig() {
   // Fallback: env variable bypasses DB activation (for Railway deployments)
   const envKey = process.env.GEMINI_API_KEY;
   if (envKey) {
-    return { apiKey: envKey, modelName: i?.config?.model ?? "gemini-2.5-flash" };
+    return { apiKey: envKey, modelName: "gemini-2.5-flash" };
   }
   return null;
 }
