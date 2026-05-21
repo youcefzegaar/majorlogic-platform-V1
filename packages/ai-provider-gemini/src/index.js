@@ -34,7 +34,7 @@ export class GeminiProvider {
           contents: [{ role: "user", parts: [{ text: prompt }] }],
           generationConfig: {
               temperature: 0.2, // Low temperature for factual, deterministic rendering
-              maxOutputTokens: 250,
+              maxOutputTokens: 800,
           }
       });
       
