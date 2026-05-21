@@ -352,21 +352,30 @@ export class DecisionOrchestrator {
     // Narrative cache: skip AI call on repeated (irHash, inputHash, entityId) combos
     const { irHash, inputHash } = domainContext._cacheKeys || {};
     const entityId = kernelResult.entityId;
-    let story = narrativeCache.get(irHash, inputHash, entityId);
-    if (story !== null) {
+    let narrativeResult = narrativeCache.get(irHash, inputHash, entityId);
+    if (narrativeResult !== null) {
       const cacheStats = narrativeCache.stats();
       this.logger.log(
         `[NarrativeCache] HIT irHash:${irHash?.slice(0, 8)}… entity:${entityId} ratio:${cacheStats.hitRate}`
       );
     } else {
-      story = await this.explainer.explain(
+      narrativeResult = await this.explainer.explain(
         kernelResult.trace,
         rawEntity.title || rawEntity.itemName || entityId,
         domainContext
       );
-      narrativeCache.set(irHash, inputHash, entityId, story);
+      narrativeCache.set(irHash, inputHash, entityId, narrativeResult);
     }
-    const tradeoff = this.explainer.explainTradeoff(kernelResult.trace, domainContext.atlas, domainContext.locale) || intelligence.primaryWarning;
+
+    // Unpack structured narrative — explainer always returns { story, tradeoff, badNews }
+    const story    = narrativeResult?.story    ?? narrativeResult ?? '';
+    const aiTradeoff = narrativeResult?.tradeoff ?? null;
+    const aiBadNews  = narrativeResult?.badNews  ?? null;
+
+    // Fall back to rule-based tradeoff if AI didn't produce one
+    const tradeoff = aiTradeoff
+      || this.explainer.explainTradeoff(kernelResult.trace, domainContext.atlas, domainContext.locale)
+      || intelligence.primaryWarning;
 
     const context = {
       entity: rawEntity,
@@ -389,6 +398,8 @@ export class DecisionOrchestrator {
     card.title = card.title || rawEntity.title || rawEntity.itemName || kernelResult.entityId;
     card.story = story;
     card.tradeoff = card.tradeoff || tradeoff;
+    // Attach AI-generated badNews directly if present (overrides template null)
+    if (aiBadNews) card.badNews = aiBadNews;
     
     // Legacy support for fitState if it exists in entity for the current segment
     if (rawEntity.fitStates && rawEntity.fitStates[context.segment]) {

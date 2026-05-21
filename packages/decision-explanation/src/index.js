@@ -14,6 +14,7 @@ export class DecisionExplainer {
 
   /**
    * Main entry point for generating the human story.
+   * Returns { story, tradeoff, badNews } — all fields always present.
    */
   async explain(trace, entityName, domainContext = {}) {
     const { useAI = false } = domainContext;
@@ -27,7 +28,8 @@ export class DecisionExplainer {
       }
     }
 
-    return this._renderWithTemplates(trace, entityName, domainContext);
+    const story = this._renderWithTemplates(trace, entityName, domainContext);
+    return { story, tradeoff: null, badNews: null };
   }
 
   /**
@@ -267,76 +269,97 @@ export class DecisionExplainer {
   /**
    * The "Expert AI" Presentation Layer.
    * AI doesn't decide; it only narrates the deterministic cognitive state.
+   * Returns { story, tradeoff, badNews } as a structured object.
    */
   async _renderWithAI(trace, name, context) {
     const prompt = this.buildPrompt(trace, name, context);
     
     this.logger.log(`[CognitiveRenderer] Sending prompt for "${name}" (Confidence: ${context.confidence?.score}%)`);
     
-    // In a real scenario, this would call the AI API.
-    const narrative = await this.aiProvider.generate(prompt);
-    return narrative;
+    const raw = await this.aiProvider.generate(prompt);
+
+    // Parse structured JSON response from AI
+    try {
+      // Strip markdown code fences if AI wraps output in ```json ... ```
+      const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+      const parsed = JSON.parse(cleaned);
+      return {
+        story:    typeof parsed.story    === 'string' ? parsed.story.trim()    : raw.trim(),
+        tradeoff: typeof parsed.tradeoff === 'string' ? parsed.tradeoff.trim() : null,
+        badNews:  typeof parsed.badNews  === 'string' ? parsed.badNews.trim()  : null
+      };
+    } catch {
+      // AI didn't return valid JSON — use raw text as story only
+      this.logger.warn('[CognitiveRenderer] AI response was not valid JSON, using as plain story');
+      return { story: raw.trim(), tradeoff: null, badNews: null };
+    }
   }
 
   /**
    * Build a Strict Cognitive Prompt.
    * This is the "Brain-to-Voice" bridge.
+   * Returns a prompt that instructs the AI to respond with structured JSON.
    */
   buildPrompt(trace, name, context) {
     const { expertIdentity = "Expert", locale = "en", atlas = {} } = context;
     const intent = context.intent || { title: "General Intent", futureProjection: null };
     const confidence = context.confidence || { level: "high", score: 100, conflicts: [] };
     const relaxedConstraint = context.relaxedConstraint || null;
+    const isAr = locale === 'ar';
     
     const cognitiveState = {
-        subject: name,
-        intent: intent.title,
-        expertRole: expertIdentity,
-        confidenceLevel: confidence.level,
-        confidenceScore: confidence.score,
-        conflictsFound: confidence.conflicts.map(c => c.pair),
-        relaxedConstraint: relaxedConstraint,
-        futureProjection: intent.futureProjection,
-        sacrifices: trace.sacrifices || {}, // The Sacrifice Vector (Constitution v1.0)
-        defects: {
-            primary: context.reviewWarnings?.primary || null,
-            secondary: context.reviewWarnings?.secondary || null
-        },
-        technicalTrace: {
-            scores: trace.scores,
-            exclusions: trace.exclusions,
-            topStrengths: Object.entries(trace.scores)
-                .filter(s => s[1] > 70)
-                .map(s => s[0])
-        }
+      subject: name,
+      intent: intent.title,
+      expertRole: expertIdentity,
+      confidenceLevel: confidence.level,
+      confidenceScore: confidence.score,
+      conflictsFound: (confidence.conflicts || []).map(c => c.pair || c),
+      relaxedConstraint,
+      futureProjection: intent.futureProjection,
+      sacrifices: trace.sacrifices || {},
+      defects: {
+        primary: context.reviewWarnings?.primary || null,
+        secondary: context.reviewWarnings?.secondary || null
+      },
+      technicalTrace: {
+        scores: trace.scores,
+        topStrengths: Object.entries(trace.scores || {})
+          .filter(([, v]) => typeof v === 'number' && v > 70)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([k]) => k)
+      }
     };
 
+    const langInstruction = isAr
+      ? 'Respond entirely in Arabic (العربية). Use natural, educated Arabic prose.'
+      : 'Respond entirely in English. Use clear, direct professional prose.';
+
     return `
-      SYSTEM INSTRUCTION:
-      You are the "${expertIdentity}". Your role is to explain a deterministic decision result to a user who has the intent: "${intent.title}".
-      
-      CORE PRINCIPLE: "Truth Capital". 
-      If confidence is LOW or MEDIUM, start by addressing the CONFLICTS and TRADE-OFFS. Do not hide them.
-      
-      TECHNICAL TRUTH:
-      ${JSON.stringify(cognitiveState, null, 2)}
-      
-      LOCALE: ${locale}
-      DICTIONARY: ${JSON.stringify(atlas[locale])}
-      
-      WRITING RULES:
-      1. PERSPECTIVE: Speak as an objective human expert, not a machine.
-      2. OBSERVATION: Describe the cognitive state and the trade-offs factually. 
-      3. SACRIFICES: You MUST explicitly mention the following sacrifices: ${JSON.stringify(cognitiveState.sacrifices)}. 
-         Explain what the user is losing in human terms (e.g., "you are sacrificing battery life"). 
-      4. DEFECTS: You MUST explicitly address these specific hardware defects reported by users: ${JSON.stringify(cognitiveState.defects)}. 
-         Do not downplay them. Be honest about how they might affect the user's workflow.
-      ${relaxedConstraint ? `5. COMPROMISE: You MUST explicitly state that the constraint "${relaxedConstraint}" was compromised to find this option.` : `5. CONSTRAINTS: All constraints were met perfectly.`}
-      6. FUTURE: Incorporate this projection: "${intent.futureProjection || "N/A"}".
-      6. INTEGRITY: Never invent specifications. Be completely honest. No sales fluff.
-      
-      RESPONSE FORMAT: One or two highly impactful, honest paragraphs.
-    `;
+You are "${expertIdentity}", an expert academic technology advisor.
+Your task: explain this device recommendation to a student with intent "${intent.title}".
+
+${langInstruction}
+
+COGNITIVE STATE (deterministic engine output — do NOT invent any specs):
+${JSON.stringify(cognitiveState, null, 2)}
+
+WRITING RULES:
+1. PERSPECTIVE: Speak as an honest human expert, not a machine. Use "I recommend" or "أوصي".
+2. STRENGTHS: Highlight the top scoring dimensions in human terms (e.g. battery life, build quality, value).
+3. SACRIFICES: Explicitly name every item in "sacrifices" in plain language. Never hide them.
+4. DEFECTS: Address any hardware defects in "defects" honestly. Do not downplay them.
+5. CONFLICTS: If confidenceLevel is "low" or "medium" and conflictsFound is non-empty, open with a brief honest warning.
+${relaxedConstraint ? `6. COMPROMISE: State clearly that the "${relaxedConstraint}" constraint was relaxed to find this option.` : '6. CONSTRAINTS: All constraints were met — state this positively.'}
+7. INTEGRITY: Never fabricate specs. Be concise and honest. No marketing fluff.
+
+RESPONSE FORMAT — return ONLY this JSON object, no extra text:
+{
+  "story": "<2-3 sentence recommendation paragraph — why this device was chosen, key strengths, future outlook>",
+  "tradeoff": "<1 concise sentence about the single most significant trade-off or hardware limitation>",
+  "badNews": "<1 honest sentence about the main weakness or sacrifice the student must accept>"
+}
+`;
   }
 
   /**
