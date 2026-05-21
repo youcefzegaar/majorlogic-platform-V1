@@ -22,16 +22,31 @@ function resolveImage(entityId) {
   return match ? IMAGE_REGISTRY[match] : '/laptops/dell-inspiron-14.png';
 }
 
-function buildStabilityDescription(score, relaxed, status) {
-  if (status === 'COGNITIVE_COLLAPSE')
-    return 'No rational decision possible within these constraints.';
-  if (relaxed)
-    return 'One constraint was relaxed to find results. Stability reduced.';
-  if (score >= 80)
-    return 'All core constraints met. Sacrifice profile aligns with your priorities.';
-  if (score >= 60)
-    return 'Mild compromise detected. Review the trade-offs carefully.';
-  return 'Significant constraints relaxed. Consider adjusting your requirements.';
+function buildStabilityDescription(score, relaxed, status, lang) {
+  const isAr = lang === 'ar';
+  if (status === 'COGNITIVE_COLLAPSE') {
+    return isAr 
+      ? 'لا يمكن اتخاذ قرار عقلاني في ظل هذه القيود الصارمة.' 
+      : 'No rational decision possible within these constraints.';
+  }
+  if (relaxed) {
+    return isAr 
+      ? 'تم تخفيف أحد القيود للعثور على نتائج. تم تقليل استقرار القرار.' 
+      : 'One constraint was relaxed to find results. Stability reduced.';
+  }
+  if (score >= 80) {
+    return isAr 
+      ? 'تمت تلبية جميع القيود الأساسية. ملف التضحيات يتوافق تماماً مع أولوياتك.' 
+      : 'All core constraints met. Sacrifice profile aligns with your priorities.';
+  }
+  if (score >= 60) {
+    return isAr 
+      ? 'تم رصد تسوية طفيفة. يرجى مراجعة التنازلات والمقايضات بعناية.' 
+      : 'Mild compromise detected. Review the trade-offs carefully.';
+  }
+  return isAr 
+    ? 'تم تخفيف قيود هامة. يرجى التفكير في تعديل متطلباتك.' 
+    : 'Significant constraints relaxed. Consider adjusting your requirements.';
 }
 
 
@@ -105,15 +120,41 @@ export function useDecisionEngine() {
 
       const newCards = {};
       const typeDetails = {
-        hero: { badge: 'Hero Pick', badgeClass: 'badge-balance', icon: '💻', scoreLabel: 'High Match' },
-        future_proof: { badge: 'Future Proof', badgeClass: 'badge-performance', icon: '🚀', scoreLabel: 'Exceptional Longevity' },
-        smart_budget: { badge: 'Smart Budget', badgeClass: 'badge-value', icon: '💎', scoreLabel: 'Excellent Value' },
-        renewed_value: { badge: 'Renewed Opportunity', badgeClass: 'badge-renewed', icon: '♻️', scoreLabel: 'Premium Performance' },
+        hero: { 
+          badge: lang === 'ar' ? 'خيارنا الأفضل' : 'Hero Pick', 
+          badgeClass: 'badge-balance', 
+          icon: '💻', 
+          scoreLabel: lang === 'ar' ? 'أعلى توافق' : 'High Match' 
+        },
+        future_proof: { 
+          badge: lang === 'ar' ? 'للمستقبل' : 'Future Proof', 
+          badgeClass: 'badge-performance', 
+          icon: '🚀', 
+          scoreLabel: lang === 'ar' ? 'عمر استثنائي طويل' : 'Exceptional Longevity' 
+        },
+        smart_budget: { 
+          badge: lang === 'ar' ? 'الميزانية الذكية' : 'Smart Budget', 
+          badgeClass: 'badge-value', 
+          icon: '💎', 
+          scoreLabel: lang === 'ar' ? 'قيمة ممتازة' : 'Excellent Value' 
+        },
+        renewed_value: { 
+          badge: lang === 'ar' ? 'فرصة مجددة' : 'Renewed Opportunity', 
+          badgeClass: 'badge-renewed', 
+          icon: '♻️', 
+          scoreLabel: lang === 'ar' ? 'أداء ممتاز' : 'Premium Performance' 
+        },
       };
 
       const isValidText = (s) => typeof s === 'string' && s.trim() !== '' && s !== 'null' && s !== 'undefined';
 
       if (result.decision?.cards) {
+        // Build exclusions list with UI-compatible keys (name, reason)
+        const excludedList = (result.decision?.topExcludedStories || []).map(item => ({
+          name: item.title || item.name,
+          reason: item.reason
+        }));
+
         result.decision.cards.forEach(card => {
           const type = card.cardType || 'hero';
           const details = typeDetails[type] || typeDetails.hero;
@@ -150,9 +191,53 @@ export function useDecisionEngine() {
           // Amazon search fallback when no direct offer URL is available
           const amazonFallback = `https://www.amazon.com/s?k=${encodeURIComponent(card.title || '')}&tag=majorlogic-20`;
 
+          // Gained/Lost dynamically evaluated from rule scores and intelligence payload
+          const gained = [];
+          const scores = card.trace?.scores || {};
+          if (scores.portability_score >= 80) {
+            gained.push(lang === 'ar' ? 'أداء استثنائي في التنقل والوزن الخفيف' : 'Superb portability and lightweight mobility');
+          }
+          if (scores.value_score >= 80) {
+            gained.push(lang === 'ar' ? 'قيمة اقتصادية ممتازة مقابل المواصفات والأداء' : 'Outstanding price-to-performance value');
+          }
+          if (scores.userPreferenceScore >= 60) {
+            gained.push(lang === 'ar' ? 'توافق قوي جداً مع تفضيلات الأداء والبطارية التي حددتها' : 'Strong alignment with your specified performance and battery preferences');
+          }
+          if (gained.length === 0) {
+            gained.push(lang === 'ar' ? 'توازن ممتاز للأداء والموثوقية لتخصصك الجامعي' : 'Excellent performance and reliability balance for your major');
+          }
+
+          const lost = [];
+          const primaryWarn = lang === 'ar' ? (card.intelligence?.primaryWarningAr || card.intelligence?.primaryWarning) : card.intelligence?.primaryWarning;
+          const secondaryWarn = lang === 'ar' ? (card.intelligence?.secondaryWarningAr || card.intelligence?.secondaryWarning) : card.intelligence?.secondaryWarning;
+
+          if (isValidText(primaryWarn)) lost.push(primaryWarn);
+          if (isValidText(secondaryWarn)) lost.push(secondaryWarn);
+
+          const sacrifices = card.sacrifices || card.trace?.sacrifices || {};
+          Object.keys(sacrifices).forEach(gate => {
+            const info = sacrifices[gate];
+            const meaning = info?.meaning;
+            if (meaning) {
+              lost.push(meaning);
+            } else {
+              const formattedGate = gate.replace(/_/g, ' ');
+              lost.push(lang === 'ar' ? `التضحية بـ ${formattedGate}` : `Sacrificed ${formattedGate}`);
+            }
+          });
+
+          if (lost.length === 0) {
+            if (isValidText(card.badNews)) {
+              lost.push(card.badNews);
+            } else {
+              lost.push(lang === 'ar' ? 'تعديلات طفيفة لتلائم ميزانيتك' : 'Minor compromises based on budget limits');
+            }
+          }
+
           newCards[type] = {
             entityId: card.entityId,
             name: card.title,
+            locale: lang,
             price: `$${(card.priceUsd || budgetMax).toLocaleString()}`,
             originalPrice: isRenewed && card.originalPriceUsd ? `$${card.originalPriceUsd.toLocaleString()}` : null,
             renewedEntry: card.renewedEntry || false,
@@ -167,28 +252,33 @@ export function useDecisionEngine() {
             image: resolveImage(card.entityId),
             whyChosen: isValidText(card.whyThis)
               ? card.whyThis
-              : 'This device perfectly balances your priorities based on our analysis.',
+              : (lang === 'ar' 
+                  ? 'يوازن هذا الجهاز تماماً بين أولوياتك بناءً على تحليلنا الدقيق.' 
+                  : 'This device perfectly balances your priorities based on our analysis.'),
             flaws: isValidText(card.badNews)
               ? [card.badNews]
-              : ['Minor compromises based on budget constraints.'],
+              : [(lang === 'ar' 
+                  ? 'تنازلات طفيفة بناءً على قيود الميزانية.' 
+                  : 'Minor compromises based on budget constraints.')],
             tradeOffs: {
-              gained: Array.isArray(card.topPros) && card.topPros.length > 0
-                ? card.topPros
-                : ['Performance above average'],
-              lost: isValidText(card.secondaryBadNews)
-                ? [card.secondaryBadNews]
-                : ['Slightly heavier than average']
+              gained,
+              lost
             },
             sacrificeVector: card.sacrifices || {},
-            excluded: Array.isArray(card.excluded) ? card.excluded : [],
+            excluded: excludedList,
             stability: {
               score: stabilityScore ?? 0,
               status: stabilityStatus,
-              label: stabilityScore == null ? 'Unavailable' : stabilityScore >= 80 ? 'Stable' : 'Needs Review',
+              label: stabilityScore == null 
+                ? (lang === 'ar' ? 'غير متوفر' : 'Unavailable') 
+                : stabilityScore >= 80 
+                  ? (lang === 'ar' ? 'مستقر' : 'Stable') 
+                  : (lang === 'ar' ? 'بحاجة لمراجعة' : 'Needs Review'),
               description: buildStabilityDescription(
                 stabilityScore,
                 !!result.decision.relaxedConstraint,
-                result.decision.status
+                result.decision.status,
+                lang
               )
             },
             priorities: card.specs || {

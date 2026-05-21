@@ -13,10 +13,14 @@ export default async function apiRoutes(fastify, { isProd }) {
       body: {
         type: "object",
         properties: {
+          id: { type: "string" },
           major: { type: "string" },
+          locale: { type: "string" },
           budgetUsd: { type: "number", minimum: 100, maximum: 20000 },
           preferences: { type: "object", additionalProperties: true },
-          locale: { type: "string" }
+          sliders: { type: "object", additionalProperties: true },
+          context: { type: "object", additionalProperties: true },
+          productIntent: { type: "object", additionalProperties: true }
         },
         required: ["major", "budgetUsd"]
       }

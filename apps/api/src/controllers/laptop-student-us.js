@@ -67,6 +67,8 @@ export function buildSearchState(searchParams, defaultProfile) {
     MAJOR_OPTIONS.find((o) => o.value === (searchParams.get("major") ?? defaultMajor.value)) ??
     MAJOR_OPTIONS[0];
 
+  const locale = searchParams.get("locale") ?? searchParams.get("lang") ?? defaultProfile.locale ?? "en";
+
   const portabilityScore = normalizePreferenceScale(
     searchParams.get("portabilityScore"),
     Math.round((defaultProfile.preferences?.portability ?? 50) / 10)
@@ -86,6 +88,7 @@ export function buildSearchState(searchParams, defaultProfile) {
   const uiState = {
     major:               majorOption.value,
     majorLabel:          majorOption.label,
+    locale,
     budgetUsd:           normalizeBudget(searchParams.get("budgetUsd"), defaultProfile.budgetUsd),
     stretchBudget:       parseBooleanFlag(searchParams.get("stretchBudget"), false),
     performancePreference,
@@ -118,6 +121,7 @@ export function buildSearchState(searchParams, defaultProfile) {
   const profile = {
     id: `web_${Date.now()}`,
     major: majorOption.engineMajor,
+    locale,
     budgetUsd: uiState.budgetUsd + stretchDelta,
     preferences: {
       portability: uiState.portabilityImportance,

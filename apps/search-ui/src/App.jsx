@@ -32,6 +32,19 @@ export default function App() {
 
   useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
 
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }, [lang]);
+
+  useEffect(() => {
+    // If language switches while results are open, automatically re-run
+    // decision engine to pull localized explanations and warnings.
+    if (phase > 0) {
+      engine.runDecision({ ...profile, lang });
+    }
+  }, [lang]);
+
   const closeSidebar = () => setSidebarOpen(false);
 
   const handleAnalyze = async () => {
