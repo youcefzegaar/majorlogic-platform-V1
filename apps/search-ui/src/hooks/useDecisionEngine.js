@@ -208,12 +208,17 @@ export function useDecisionEngine() {
           }
 
           const lost = [];
+
+          // 1. Gemini AI tradeoff — most specific and human (highest priority)
+          if (isValidText(card.tradeoff)) lost.push(card.tradeoff);
+
+          // 2. Review intelligence warnings
           const primaryWarn = lang === 'ar' ? (card.intelligence?.primaryWarningAr || card.intelligence?.primaryWarning) : card.intelligence?.primaryWarning;
           const secondaryWarn = lang === 'ar' ? (card.intelligence?.secondaryWarningAr || card.intelligence?.secondaryWarning) : card.intelligence?.secondaryWarning;
+          if (isValidText(primaryWarn) && primaryWarn !== card.tradeoff) lost.push(primaryWarn);
+          if (isValidText(secondaryWarn) && secondaryWarn !== card.tradeoff) lost.push(secondaryWarn);
 
-          if (isValidText(primaryWarn)) lost.push(primaryWarn);
-          if (isValidText(secondaryWarn)) lost.push(secondaryWarn);
-
+          // 3. Kernel sacrifice vector
           const sacrifices = card.sacrifices || card.trace?.sacrifices || {};
           Object.keys(sacrifices).forEach(gate => {
             const info = sacrifices[gate];
@@ -226,6 +231,7 @@ export function useDecisionEngine() {
             }
           });
 
+          // 4. Final fallback
           if (lost.length === 0) {
             if (isValidText(card.badNews)) {
               lost.push(card.badNews);
@@ -255,6 +261,7 @@ export function useDecisionEngine() {
               : (lang === 'ar' 
                   ? 'يوازن هذا الجهاز تماماً بين أولوياتك بناءً على تحليلنا الدقيق.' 
                   : 'This device perfectly balances your priorities based on our analysis.'),
+            aiTradeoff: isValidText(card.tradeoff) ? card.tradeoff : null,
             flaws: isValidText(card.badNews)
               ? [card.badNews]
               : [(lang === 'ar' 

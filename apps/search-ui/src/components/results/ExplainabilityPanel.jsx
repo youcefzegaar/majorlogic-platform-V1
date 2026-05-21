@@ -87,15 +87,50 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
         {explanationTab === 'why-chosen' && (
           <div className="explanation-content active">
             <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
+              {/* Device name + story */}
               <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>{selectedCard.name}</div>
-              <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 12 }}>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 16 }}>
                 {String(selectedCard.whyChosen || '').split('\n\n').map((para, i) => (
                   <p key={i} style={{ margin: '0 0 10px 0' }}>{para}</p>
                 ))}
               </div>
+
+              {/* AI Key Trade-off block */}
+              {selectedCard.aiTradeoff && (
+                <div style={{
+                  padding: '12px 16px',
+                  background: 'rgba(245, 158, 11, 0.07)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: 10,
+                  marginBottom: 12,
+                  display: 'flex',
+                  gap: 10,
+                  alignItems: 'flex-start'
+                }}>
+                  <span style={{ fontSize: 16, lineHeight: 1 }}>⚖️</span>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(245,158,11,0.9)', marginBottom: 4, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                      {isRtl ? 'التنازل الرئيسي' : 'Key Trade-off'}
+                    </div>
+                    <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                      {selectedCard.aiTradeoff}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Honest flaws */}
               {selectedCard.flaws.map(f => (
-                <div key={f} style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 8 }}>
-                  <strong style={{ color: 'var(--accent-danger)', marginRight: isRtl ? 0 : 4, marginLeft: isRtl ? 4 : 0 }}>✗</strong> {f}
+                <div key={f} style={{
+                  fontSize: 13,
+                  color: 'var(--text-secondary)',
+                  marginTop: 8,
+                  paddingLeft: isRtl ? 0 : 8,
+                  paddingRight: isRtl ? 8 : 0,
+                  borderLeft: isRtl ? 'none' : '2px solid var(--accent-danger)',
+                  borderRight: isRtl ? '2px solid var(--accent-danger)' : 'none',
+                }}>
+                  <strong style={{ color: 'var(--accent-danger)', marginRight: isRtl ? 0 : 6, marginLeft: isRtl ? 6 : 0 }}>✗</strong> {f}
                 </div>
               ))}
             </div>
@@ -106,15 +141,42 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
           <div className="explanation-content active">
             <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
               <div className="trade-off-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+                {/* Gained column */}
                 <div style={{ padding: 16, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 10, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                   <div style={{ fontSize: 12, color: 'var(--accent-success)', fontWeight: 700, marginBottom: 8 }}>{t.whatGained}</div>
                   {selectedCard.tradeOffs.gained.map(g => <div key={g} style={{ fontSize: 13, marginBottom: 4 }}>• {g}</div>)}
                 </div>
+
+                {/* Lost column */}
                 <div style={{ padding: 16, background: 'rgba(244, 63, 94, 0.05)', borderRadius: 10, border: '1px solid rgba(244, 63, 94, 0.2)' }}>
                   <div style={{ fontSize: 12, color: 'var(--accent-danger)', fontWeight: 700, marginBottom: 8 }}>{t.whatLost}</div>
-                  {selectedCard.tradeOffs.lost.map(l => <div key={l} style={{ fontSize: 13, marginBottom: 4 }}>• {l}</div>)}
+                  {selectedCard.tradeOffs.lost.map((l, i) => (
+                    <div key={i} style={{ fontSize: 13, marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                      <span style={{ color: 'var(--accent-danger)', flexShrink: 0, marginTop: 1 }}>•</span>
+                      <span style={{ lineHeight: 1.5 }}>
+                        {l}
+                        {/* Badge for AI-generated first item */}
+                        {i === 0 && selectedCard.aiTradeoff && l === selectedCard.aiTradeoff && (
+                          <span style={{
+                            display: 'inline-block',
+                            marginLeft: isRtl ? 0 : 6,
+                            marginRight: isRtl ? 6 : 0,
+                            fontSize: 10,
+                            fontWeight: 700,
+                            padding: '1px 5px',
+                            borderRadius: 4,
+                            background: 'rgba(99,102,241,0.15)',
+                            color: 'var(--accent-primary)',
+                            letterSpacing: '0.04em'
+                          }}>AI</span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
+
+              {/* Sacrifice Vector */}
               {Object.keys(selectedCard.sacrificeVector || {}).length > 0 && (
                 <div style={{ marginTop: 16, padding: 16, background: 'rgba(99, 102, 241, 0.05)', borderRadius: 10, border: '1px solid rgba(99, 102, 241, 0.2)' }}>
                   <div style={{ fontSize: 12, color: 'var(--accent-primary)', fontWeight: 700, marginBottom: 8 }}>{t.whyThisChoiceOverAlternatives}</div>
