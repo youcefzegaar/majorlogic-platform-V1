@@ -280,9 +280,11 @@ export class DecisionExplainer {
 
     // Parse structured JSON response from AI
     try {
-      // Strip markdown code fences if AI wraps output in ```json ... ```
-      const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
-      const parsed = JSON.parse(cleaned);
+      const cleanedJson = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+      
+      console.log("[CognitiveRenderer] Raw JSON:", cleanedJson);
+
+      const parsed = JSON.parse(cleanedJson);
       return {
         story:    typeof parsed.story    === 'string' ? parsed.story.trim()    : raw.trim(),
         tradeoff: typeof parsed.tradeoff === 'string' ? parsed.tradeoff.trim() : null,
@@ -331,9 +333,7 @@ export class DecisionExplainer {
       }
     };
 
-    const langInstruction = isAr
-      ? 'Respond entirely in Arabic (العربية). Use natural, educated Arabic prose.'
-      : 'Respond entirely in English. Use clear, direct professional prose.';
+    const langInstruction = 'Respond entirely in English. Use clear, direct professional prose.';
 
     return `
 You are "${expertIdentity}", an expert academic technology advisor.
@@ -345,7 +345,7 @@ COGNITIVE STATE (deterministic engine output — do NOT invent any specs):
 ${JSON.stringify(cognitiveState, null, 2)}
 
 WRITING RULES:
-1. PERSPECTIVE: Speak as an honest human expert, not a machine. Use "I recommend" or "أوصي".
+1. PERSPECTIVE: Speak as an honest human expert, not a machine. Use "I recommend".
 2. STRENGTHS: Highlight the top scoring dimensions in human terms (e.g. battery life, build quality, value).
 3. SACRIFICES: Explicitly name every item in "sacrifices" in plain language. Never hide them.
 4. DEFECTS: Address any hardware defects in "defects" honestly. Do not downplay them.
