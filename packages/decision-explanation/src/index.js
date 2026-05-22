@@ -303,7 +303,7 @@ export class DecisionExplainer {
    * Returns a prompt that instructs the AI to respond with structured JSON.
    */
   buildPrompt(trace, name, context) {
-    const { expertIdentity = "Expert", locale = "en", atlas = {} } = context;
+    const { expertIdentity = "Expert", locale = "en" } = context;
     const intent = context.intent || { title: "General Intent", futureProjection: null };
     const confidence = context.confidence || { level: "high", score: 100, conflicts: [] };
     const relaxedConstraint = context.relaxedConstraint || null;

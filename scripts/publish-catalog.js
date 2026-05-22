@@ -62,8 +62,8 @@ async function run() {
     });
 
     const generatedDir = path.resolve(`domains/${domainId}/generated`);
-    await fs.promises.mkdir(generatedDir, { recursive: true });
-    await fs.promises.writeFile(
+    fs.mkdirSync(generatedDir, { recursive: true });
+    fs.writeFileSync(
       path.join(generatedDir, "published-catalog.generated.json"),
       JSON.stringify(publishedEntities, null, 2)
     );
