@@ -1,6 +1,6 @@
 import "./telemetry.js"; // Must be first import — OpenTelemetry SDK init (v3)
 import { initSentry, sentryPlugin } from "./monitoring/sentry.js";
-import { alertServerError, alertStartup, alertDbOffline } from "./monitoring/telegram.js";
+import { alertServerError, alertStartup } from "./monitoring/telegram.js";
 initSentry(); // before anything else so errors during startup are captured
 
 import path from "node:path";

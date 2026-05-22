@@ -253,7 +253,10 @@ export class CommercialRepository {
   }
 
   async saveOwnershipConfig(domainSlug, config, updatedBy = 'admin') {
-    const { _presetKey, _updatedAt, _updatedBy, ...cleanConfig } = config;
+    const cleanConfig = { ...config };
+    delete cleanConfig._presetKey;
+    delete cleanConfig._updatedAt;
+    delete cleanConfig._updatedBy;
     await this.pool.query(
       `INSERT INTO ml_commercial.domain_ownership_configs
          (domain_slug, preset_key, config, updated_at, updated_by)
