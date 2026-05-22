@@ -279,22 +279,44 @@ export class DecisionExplainer {
     const raw = await this.aiProvider.generate(prompt);
 
     // Parse structured JSON response from AI
-    try {
-      const cleanedJson = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-      
-      console.log("[CognitiveRenderer] Raw JSON:", cleanedJson);
+    // Strategy 1: direct JSON.parse (handles clean responses)
+    const cleanedJson = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+    console.log("[CognitiveRenderer] Raw JSON length:", cleanedJson.length);
 
+    try {
       const parsed = JSON.parse(cleanedJson);
-      return {
-        story:    typeof parsed.story    === 'string' ? parsed.story.trim()    : raw.trim(),
-        tradeoff: typeof parsed.tradeoff === 'string' ? parsed.tradeoff.trim() : null,
-        badNews:  typeof parsed.badNews  === 'string' ? parsed.badNews.trim()  : null
+      if (parsed && typeof parsed === 'object') {
+        return {
+          story:    typeof parsed.story    === 'string' && parsed.story.trim()    ? parsed.story.trim()    : null,
+          tradeoff: typeof parsed.tradeoff === 'string' && parsed.tradeoff.trim() ? parsed.tradeoff.trim() : null,
+          badNews:  typeof parsed.badNews  === 'string' && parsed.badNews.trim()  ? parsed.badNews.trim()  : null
+        };
+      }
+    } catch { /* fall through to Strategy 2 */ }
+
+    // Strategy 2: Regex-based field extraction.
+    // Handles cases where product names with embedded quotes (e.g. MacBook Air M3 13")
+    // cause JSON.parse to fail. Extracts each field value with a greedy regex that
+    // stops at the closing brace of the JSON object.
+    this.logger.warn('[CognitiveRenderer] JSON.parse failed — attempting regex extraction');
+    try {
+      const extractField = (fieldName) => {
+        // Match "fieldName": "..." allowing escaped quotes inside the value
+        const re = new RegExp(`"${fieldName}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`);
+        const m = cleanedJson.match(re);
+        return m ? m[1].replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\\\/g, '\\').trim() : null;
       };
-    } catch {
-      // AI didn't return valid JSON — use raw text as story only
-      this.logger.warn('[CognitiveRenderer] AI response was not valid JSON, using as plain story');
-      return { story: raw.trim(), tradeoff: null, badNews: null };
-    }
+      const story    = extractField('story');
+      const tradeoff = extractField('tradeoff');
+      const badNews  = extractField('badNews');
+      if (story) {
+        return { story, tradeoff, badNews };
+      }
+    } catch { /* fall through to Strategy 3 */ }
+
+    // Strategy 3: raw text as story — last resort
+    this.logger.warn('[CognitiveRenderer] Regex extraction failed — using raw as plain story');
+    return { story: cleanedJson.length > 10 ? cleanedJson : null, tradeoff: null, badNews: null };
   }
 
   /**
