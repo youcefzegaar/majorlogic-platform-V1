@@ -333,7 +333,9 @@ export class DecisionExplainer {
       }
     };
 
-    const langInstruction = 'Respond entirely in English. Use clear, direct professional prose.';
+    const langInstruction = isAr
+      ? 'CRITICAL: The JSON keys must be exactly "story", "tradeoff", and "badNews". The VALUES for these keys MUST be written entirely in Arabic. Use clear, direct professional prose.'
+      : 'Respond entirely in English. Use clear, direct professional prose.';
 
     return `
 You are "${expertIdentity}", an expert academic technology advisor.

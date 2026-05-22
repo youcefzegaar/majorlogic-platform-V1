@@ -256,8 +256,8 @@ export function useDecisionEngine() {
             scoreLabel: details.scoreLabel,
             icon: details.icon,
             image: resolveImage(card.entityId),
-            whyChosen: isValidText(card.whyThis)
-              ? card.whyThis
+            whyChosen: isValidText(card.story)
+              ? card.story
               : (lang === 'ar' 
                   ? 'يوازن هذا الجهاز تماماً بين أولوياتك بناءً على تحليلنا الدقيق.' 
                   : 'This device perfectly balances your priorities based on our analysis.'),
