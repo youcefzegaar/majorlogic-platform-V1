@@ -48,7 +48,7 @@ const GAINS_LOSSES = {
   },
 };
 
-export default function OwnershipPhase({ selectedCard, budgetMax, onNext, onBack }) {
+export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplanation, onNext, onBack }) {
   // If user picked the Renewed Opportunity card, pre-land on the "renewed" path
   const isRenewedCard = selectedCard.renewedEntry === true;
   const [activePath, setActivePath]         = useState(isRenewedCard ? 'renewed' : null);
@@ -408,10 +408,23 @@ export default function OwnershipPhase({ selectedCard, budgetMax, onNext, onBack
 
       {/* ── Commitment Ceremony ───────────────────────── */}
       {!ceremonyComplete && (
-        <CommitmentCeremony
-          selectedCard={selectedCard}
-          onReady={() => setCeremonyComplete(true)}
-        />
+        <div>
+          <CommitmentCeremony
+            selectedCard={selectedCard}
+            onReady={() => setCeremonyComplete(true)}
+          />
+          {!cameFromExplanation && (
+            <div style={{ textAlign: 'center', marginTop: 8, marginBottom: 4 }}>
+              <button
+                className="btn btn-secondary"
+                style={{ fontSize: 12, padding: '6px 16px', opacity: 0.7 }}
+                onClick={() => setCeremonyComplete(true)}
+              >
+                Skip to purchase →
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
       {/* ── CTA Buttons (revealed after commitment) ───── */}

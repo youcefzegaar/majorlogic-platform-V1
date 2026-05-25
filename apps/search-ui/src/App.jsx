@@ -25,6 +25,7 @@ export default function App() {
     phase, setPhase,
     selectedCardType, setSelectedCardType,
     explanationTab, setExplanationTab,
+    cameFromExplanation, setCameFromExplanation,
   } = useDecisionStore();
 
   const profile = useSessionProfile();
@@ -62,7 +63,13 @@ export default function App() {
 
   const confirmCard = (type) => {
     setSelectedCardType(type);
+    setCameFromExplanation(false);
     setTimeline(prev => [...prev, { date: new Date().toLocaleTimeString(), title: 'Final Decision', desc: `${engine.cards[type].name} - ${engine.cards[type].badge}` }]);
+    setPhase(4);
+  };
+
+  const confirmFromExplanation = () => {
+    setCameFromExplanation(true);
     setPhase(4);
   };
 
@@ -145,7 +152,7 @@ export default function App() {
           <ExplanationPhase
             selectedCard={selectedCard}
             explanationTab={explanationTab} setExplanationTab={setExplanationTab}
-            onFinalSummary={() => setPhase(4)} onBackToCards={() => setPhase(2)}
+            onFinalSummary={confirmFromExplanation} onBackToCards={() => setPhase(2)}
           />
         )}
 
@@ -153,6 +160,7 @@ export default function App() {
           <OwnershipPhase
             selectedCard={selectedCard}
             budgetMax={profile.budgetMax}
+            cameFromExplanation={cameFromExplanation}
             onNext={() => setPhase(5)}
             onBack={() => setPhase(3)}
           />

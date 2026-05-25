@@ -24,8 +24,8 @@ export default function CardsPhase({
     <div className="phase-container active">
       <div className="cards-phase-header">
         <div>
-          <h2 style={{ fontSize: 22, fontWeight: 800 }}>Your Decision Landscape</h2>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>3 strategies with different trade-offs — not ranked, Pareto-optimal</p>
+          <h2 style={{ fontSize: 22, fontWeight: 800 }}>Best Options For You</h2>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>3 strategies — tap "Why this?" to go deeper</p>
         </div>
         <div className="confidence-badge">
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Confidence Level</span>
