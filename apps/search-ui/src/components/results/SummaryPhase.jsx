@@ -1,14 +1,277 @@
+import { useState } from 'react';
 import FutureProofCard from './FutureProofCard';
+
+function DecisionCertificate({ selectedCard }) {
+  const irHash        = selectedCard?.irHash ?? null;
+  const integrityScore = selectedCard?.integrityScore ?? 100;
+  const date          = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const shortHash     = irHash ? irHash.slice(0, 12) : null;
+
+  // 3-sentence journey summary
+  const traceScores = selectedCard?.traceScores ?? {};
+  const priorities  = selectedCard?.priorities  ?? {};
+  const DIMS = [
+    { key: 'portability_score', priorityKey: 'portability', label: 'portability' },
+    { key: 'performance_score', priorityKey: 'performance',  label: 'performance'  },
+    { key: 'display_score',     priorityKey: 'display',      label: 'display'      },
+    { key: 'value_score',       priorityKey: 'resale',       label: 'value'        },
+  ];
+  const topSacrifice = DIMS
+    .map(d => {
+      const score = traceScores[d.key] != null ? Math.round(traceScores[d.key]) : null;
+      const ideal = Math.round(priorities[d.priorityKey] ?? 50);
+      if (score == null) return null;
+      return { ...d, score, ideal, delta: score - ideal };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.delta - b.delta)
+    .find(d => d.delta < -4);
+
+  const topGain = DIMS
+    .map(d => {
+      const score = traceScores[d.key] != null ? Math.round(traceScores[d.key]) : null;
+      const ideal = Math.round(priorities[d.priorityKey] ?? 50);
+      if (score == null) return null;
+      return { ...d, score, ideal, delta: score - ideal };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.delta - a.delta)
+    .find(d => d.delta > 4);
+
+  const ownerYears  = 4;
+  const priceUsd    = selectedCard?.purchaseLinks?.priceUsd ?? 0;
+  const resaleEst   = Math.round(priceUsd * 0.30);
+  const netDayStr   = priceUsd > 0
+    ? `$${((priceUsd - resaleEst) / (ownerYears * 365)).toFixed(2)}/day`
+    : null;
+
+  const sentences = [
+    topSacrifice && topGain
+      ? `You accepted ${topSacrifice.label} at ${topSacrifice.score}/100 to gain ${topGain.label} at ${topGain.score}/100.`
+      : null,
+    integrityScore < 100
+      ? `Integrity ${integrityScore}% — one constraint was relaxed to find this result.`
+      : `Integrity 100% — all constraints fully satisfied.`,
+    netDayStr
+      ? `If used daily for ${ownerYears} years: ${netDayStr} net after estimated resale. Based on what you told us.`
+      : null,
+  ].filter(Boolean);
+
+  return (
+    <div style={{
+      padding: '20px 24px',
+      background: 'var(--surface-elevated)',
+      border: '1px solid var(--border)',
+      borderRadius: 14,
+      marginBottom: 24,
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.1em', marginBottom: 4 }}>
+            DECISION CERTIFICATE
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)' }}>
+            {selectedCard.name}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+            {date}
+          </div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div
+            style={{
+              display: 'inline-block',
+              padding: '4px 10px',
+              borderRadius: 6,
+              background: integrityScore >= 100 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+              border: `1px solid ${integrityScore >= 100 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
+              fontSize: 12,
+              fontWeight: 700,
+              color: integrityScore >= 100 ? 'var(--accent-success)' : 'var(--accent-warning)',
+            }}
+          >
+            integrity {integrityScore}%
+          </div>
+          {shortHash && (
+            <div style={{ fontFamily: 'monospace', fontSize: 10, color: 'var(--text-muted)', marginTop: 6 }}>
+              {shortHash}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Journey summary */}
+      {sentences.length > 0 && (
+        <div style={{
+          padding: '12px 14px',
+          background: 'rgba(255,255,255,0.02)',
+          borderRadius: 8,
+          border: '1px solid var(--border)',
+          marginBottom: 16,
+        }}>
+          {sentences.map((s, i) => (
+            <div
+              key={i}
+              style={{
+                fontSize: 13,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.65,
+                marginBottom: i < sentences.length - 1 ? 6 : 0,
+              }}
+            >
+              {s}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Deterministic proof */}
+      {shortHash && (
+        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+          This decision is <strong style={{ color: 'var(--text-secondary)' }}>deterministic</strong> —
+          the same inputs always produce the same result.
+          Verification fingerprint: <span style={{ fontFamily: 'monospace' }}>{irHash}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FollowUpSection() {
+  const [submitted, setSubmitted] = useState(false);
+  const [satisfaction, setSatisfaction] = useState(null);
+  const [regret, setRegret] = useState(null);
+
+  if (submitted) {
+    return (
+      <div style={{
+        padding: '16px 20px',
+        background: 'rgba(16, 185, 129, 0.06)',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
+        borderRadius: 12,
+        marginTop: 24,
+        fontSize: 13,
+        color: 'var(--accent-success)',
+        fontWeight: 600,
+        textAlign: 'center',
+      }}>
+        ✓ Thank you — your feedback helps improve decision quality for everyone.
+      </div>
+    );
+  }
+
+  const allAnswered = satisfaction !== null && regret !== null;
+
+  return (
+    <div style={{
+      padding: '20px 24px',
+      background: 'var(--surface-elevated)',
+      border: '1px solid var(--border)',
+      borderRadius: 12,
+      marginTop: 24,
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 4 }}>
+        CLOSING THE LOOP — 30-DAY FOLLOW-UP (OPTIONAL)
+      </div>
+      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
+        Come back in 30 days and tell us how it went.
+      </div>
+      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
+        Your answers help us understand whether high-integrity decisions lead to better outcomes —
+        the only way to prove decision quality empirically.
+      </div>
+
+      {/* Satisfaction */}
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
+          How satisfied are you with this device?
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[1, 2, 3, 4, 5].map(n => (
+            <button
+              key={n}
+              onClick={() => setSatisfaction(n)}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                border: `2px solid ${satisfaction === n ? 'var(--accent-success)' : 'var(--border)'}`,
+                background: satisfaction === n ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
+                color: satisfaction === n ? 'var(--accent-success)' : 'var(--text-secondary)',
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {n}
+            </button>
+          ))}
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', alignSelf: 'center', marginLeft: 4 }}>
+            1 = regret · 5 = great
+          </span>
+        </div>
+      </div>
+
+      {/* Regret */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
+          Would you make the same decision again?
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {['Yes', 'No'].map(v => (
+            <button
+              key={v}
+              onClick={() => setRegret(v)}
+              style={{
+                padding: '7px 20px',
+                borderRadius: 8,
+                border: `2px solid ${regret === v ? 'var(--accent-info)' : 'var(--border)'}`,
+                background: regret === v ? 'rgba(14, 165, 233, 0.08)' : 'transparent',
+                color: regret === v ? 'var(--accent-info)' : 'var(--text-secondary)',
+                fontWeight: 600,
+                fontSize: 13,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <button
+        className="btn btn-secondary"
+        disabled={!allAnswered}
+        style={{ opacity: allAnswered ? 1 : 0.4 }}
+        onClick={() => setSubmitted(true)}
+      >
+        Submit feedback
+      </button>
+    </div>
+  );
+}
 
 export default function SummaryPhase({ selectedCard, timeline, onNewDecision, onBackToExplanation }) {
   return (
     <div className="phase-container active">
+      <DecisionCertificate selectedCard={selectedCard} />
+
       <div className="final-summary-layout">
         <FutureProofCard selectedCard={selectedCard} timeline={timeline} />
       </div>
-      <div className="btn-group" style={{ marginTop: 32 }}>
-        <button className="btn btn-primary" onClick={onNewDecision}><i className="fas fa-plus"></i> New Decision</button>
-        <button className="btn btn-secondary" onClick={onBackToExplanation}><i className="fas fa-arrow-left"></i> Back to Ownership</button>
+
+      <FollowUpSection />
+
+      <div className="btn-group" style={{ marginTop: 24 }}>
+        <button className="btn btn-primary" onClick={onNewDecision}>
+          <i className="fas fa-plus"></i> New Decision
+        </button>
+        <button className="btn btn-secondary" onClick={onBackToExplanation}>
+          <i className="fas fa-arrow-left"></i> Back to Ownership
+        </button>
       </div>
     </div>
   );

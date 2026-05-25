@@ -1,228 +1,571 @@
-const TRANSLATIONS = {
-  ar: {
-    decisionExplanation: 'تفاصيل قرار محرك التوصية',
-    fullTransparency: 'شفافية كاملة في الأسباب والمقايضات والبدائل المستبعدة',
-    whyChosen: 'لماذا تم اختياره؟',
-    excluded: 'البدائل المستبعدة',
-    tradeOffs: 'المقايضات والتنازلات',
-    stability: 'استقرار القرار',
-    whatGained: '✓ ما كسبته في هذا الخيار',
-    whatLost: '✗ ما ضحيت به في هذا الخيار',
-    whyThisChoiceOverAlternatives: '⚖ لماذا تم تفضيل هذا الخيار على البدائل',
-    relaxedConstraint: 'تخفيف قيد',
-    judgmentScore: 'درجة الملاءمة',
-    noExclusions: 'لا توجد بدائل مستبعدة تفي بالحد الأدنى من القيود.',
-  },
-  en: {
-    decisionExplanation: 'Decision Explanation in Detail',
-    fullTransparency: 'Full transparency in reasons, trade-offs, and excluded alternatives',
-    whyChosen: 'Why Chosen?',
-    excluded: 'Excluded',
-    tradeOffs: 'Trade-offs',
-    stability: 'Stability',
-    whatGained: '✓ What You Gained',
-    whatLost: '✗ What You Lost',
-    whyThisChoiceOverAlternatives: '⚖ Why This Choice Over Alternatives',
-    relaxedConstraint: 'Relaxed',
-    judgmentScore: 'Judgment Score',
-    noExclusions: 'No excluded alternatives met the minimum baseline.',
-  }
-};
+import DecisionTrust from '../shared/DecisionTrust';
 
 const GATE_NAMES = {
-  ar: {
-    specs_performance: 'الأداء',
-    specs_battery: 'البطارية',
-    specs_portability: 'سهولة التنقل والوزن',
-    specs_display: 'الشاشة والوضوح',
-    specs_resale: 'قيمة إعادة البيع',
-    budgetUsd: 'الميزانية القصوى',
-  },
-  en: {
-    specs_performance: 'performance',
-    specs_battery: 'battery',
-    specs_portability: 'portability',
-    specs_display: 'display quality',
-    specs_resale: 'resale value',
-    budgetUsd: 'maximum budget',
-  }
+  specs_performance: 'performance',
+  specs_battery: 'battery',
+  specs_portability: 'portability',
+  specs_display: 'display quality',
+  specs_resale: 'resale value',
+  budgetUsd: 'maximum budget',
 };
 
-export default function ExplainabilityPanel({ selectedCard, explanationTab, setExplanationTab }) {
-  const lang = selectedCard?.locale === 'ar' ? 'ar' : 'en';
-  const t = TRANSLATIONS[lang];
-  const isRtl = lang === 'ar';
+const DIMENSION_MAP = {
+  performance_score: { label: 'Performance', priorityKey: 'performance' },
+  display_score:     { label: 'Display',      priorityKey: 'display'      },
+  portability_score: { label: 'Portability',  priorityKey: 'portability'  },
+  battery_score:     { label: 'Battery',      priorityKey: 'battery'      },
+  value_score:       { label: 'Value',        priorityKey: 'resale'       },
+  economic_score:    { label: 'Value',        priorityKey: 'resale'       },
+};
+
+function resolveScore(traceScores, key) {
+  if (traceScores[key] != null) return Math.round(traceScores[key]);
+  if (key === 'value_score' && traceScores.economic_score != null)
+    return Math.round(traceScores.economic_score);
+  return null;
+}
+
+function computeDims(traceScores = {}, priorities = {}) {
+  const seen = new Set();
+  return Object.keys(DIMENSION_MAP)
+    .filter(k => {
+      const meta = DIMENSION_MAP[k];
+      if (seen.has(meta.label)) return false;
+      const score = resolveScore(traceScores, k);
+      if (score == null) return false;
+      seen.add(meta.label);
+      return true;
+    })
+    .map(k => {
+      const meta = DIMENSION_MAP[k];
+      const score = resolveScore(traceScores, k);
+      const userIdeal = Math.round(priorities[meta.priorityKey] ?? 50);
+      const delta = score - userIdeal;
+      return { key: k, ...meta, score, userIdeal, delta };
+    });
+}
+
+// ── Step ① — User intent statement ─────────────────────────────────────
+function StepIntent({ intent }) {
+  if (!intent) return null;
+  return (
+    <div style={{
+      padding: '12px 16px',
+      background: 'rgba(14, 165, 233, 0.06)',
+      border: '1px solid rgba(14, 165, 233, 0.18)',
+      borderRadius: 10,
+      marginBottom: 16,
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent-info)', letterSpacing: '0.08em', marginBottom: 6 }}>
+        ① YOU DESCRIBED
+      </div>
+      <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.65 }}>
+        "{intent}"
+      </div>
+    </div>
+  );
+}
+
+// ── Step ② — Market-observed tension (hypothesis, not law) ──────────────
+function StepPhysics({ conflictsFound = [] }) {
+  const tension = conflictsFound.find(c => c.gravity > 0.4 && c.type !== 'harmony');
+  if (!tension) return null;
+
+  const trendLabel = tension.trend === 'weakening'
+    ? 'weakening with newer hardware'
+    : tension.trend === 'strengthening'
+    ? 'strengthening in current market'
+    : 'stable in current market';
+
+  const confidencePct = tension.confidence != null
+    ? Math.round(tension.confidence * 100)
+    : null;
 
   return (
-    <div dir={isRtl ? 'rtl' : 'ltr'} style={{ textAlign: isRtl ? 'right' : 'left' }}>
+    <div style={{
+      padding: '12px 16px',
+      background: 'rgba(99, 102, 241, 0.05)',
+      border: '1px solid rgba(99, 102, 241, 0.2)',
+      borderRadius: 10,
+      marginBottom: 16,
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#818cf8', letterSpacing: '0.08em', marginBottom: 6 }}>
+        ② WHY THIS TENSION EXISTS
+      </div>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
+        {tension.title}
+      </div>
+      <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: 8 }}>
+        {tension.description}
+      </div>
+      <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+        <span>
+          Observed strength: <strong style={{ color: 'var(--text-secondary)' }}>{Math.round(tension.gravity * 100)}%</strong>
+        </span>
+        {confidencePct != null && (
+          <span>
+            Confidence: <strong style={{ color: 'var(--text-secondary)' }}>{confidencePct}%</strong>
+          </span>
+        )}
+        {tension.trend && (
+          <span style={{
+            color: tension.trend === 'weakening' ? 'var(--accent-success)' : 'var(--text-muted)',
+            fontStyle: 'italic',
+          }}>
+            Trend: {trendLabel}
+          </span>
+        )}
+        {tension.sample_period && (
+          <span>Calibrated on {tension.sample_period} market data</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Step ③ — Pareto delta visual ────────────────────────────────────────
+function StepPareto({ dims }) {
+  const sacrifices = dims.filter(d => d.delta < -4).sort((a, b) => a.delta - b.delta);
+  const gains = dims.filter(d => d.delta > 4).sort((a, b) => b.delta - a.delta);
+  const neutral = dims.filter(d => d.delta >= -4 && d.delta <= 4);
+
+  if (sacrifices.length === 0 && gains.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 10 }}>
+        ③ YOUR PARETO TRADE
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: sacrifices.length > 0 && gains.length > 0 ? '1fr 1fr' : '1fr', gap: 12 }}>
+        {sacrifices.length > 0 && (
+          <div style={{
+            padding: '12px 14px',
+            background: 'rgba(245, 158, 11, 0.06)',
+            border: '1px solid rgba(245, 158, 11, 0.2)',
+            borderRadius: 10,
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-warning)', marginBottom: 8 }}>
+              You sacrifice
+            </div>
+            {sacrifices.map(d => (
+              <div key={d.key} style={{ marginBottom: 5 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
+                  <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{d.label}</span>
+                  <span style={{ color: 'var(--accent-warning)', fontWeight: 700 }}>{d.delta}</span>
+                </div>
+                <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ width: `${d.score}%`, height: '100%', background: 'var(--accent-warning)', opacity: 0.7, borderRadius: 2 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {gains.length > 0 && (
+          <div style={{
+            padding: '12px 14px',
+            background: 'rgba(16, 185, 129, 0.06)',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            borderRadius: 10,
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-success)', marginBottom: 8 }}>
+              You gain
+            </div>
+            {gains.map(d => (
+              <div key={d.key} style={{ marginBottom: 5 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
+                  <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{d.label}</span>
+                  <span style={{ color: 'var(--accent-success)', fontWeight: 700 }}>+{d.delta}</span>
+                </div>
+                <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ width: `${d.score}%`, height: '100%', background: 'var(--accent-success)', opacity: 0.7, borderRadius: 2 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      {neutral.length > 0 && (
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-muted)' }}>
+          Within range of your priorities: {neutral.map(d => d.label).join(', ')}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Step ④ — Full story (real-life language) ────────────────────────────
+function StepStory({ whyChosen }) {
+  if (!whyChosen) return null;
+  const paragraphs = String(whyChosen).split(/\n\n+/).filter(Boolean);
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 8 }}>
+        ④ IN YOUR LIFE
+      </div>
+      {paragraphs.map((para, i) => (
+        <p key={i} style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.85, margin: '0 0 12px 0' }}>
+          {para}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+// ── Step ⑤ — User voices ────────────────────────────────────────────────
+function StepUserVoices({ userSignals = [] }) {
+  if (userSignals.length === 0) return null;
+  const count = userSignals.length;
+  const shown = userSignals.slice(0, 3);
+  return (
+    <div style={{
+      padding: '12px 16px',
+      background: 'rgba(16, 185, 129, 0.04)',
+      border: '1px solid rgba(16, 185, 129, 0.15)',
+      borderRadius: 10,
+      marginBottom: 16,
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent-success)', letterSpacing: '0.08em', marginBottom: 8 }}>
+        ⑤ VERIFIED BUYERS SAY ({count} with similar priorities)
+      </div>
+      {shown.map((signal, i) => (
+        <div
+          key={i}
+          style={{
+            fontSize: 13,
+            color: 'var(--text-secondary)',
+            lineHeight: 1.6,
+            marginBottom: i < shown.length - 1 ? 8 : 0,
+            paddingBottom: i < shown.length - 1 ? 8 : 0,
+            borderBottom: i < shown.length - 1 ? '1px solid rgba(16,185,129,0.1)' : 'none',
+          }}
+        >
+          "{signal}"
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Step ⑥ — Why not others ─────────────────────────────────────────────
+function StepExcluded({ excluded = [] }) {
+  if (excluded.length === 0) return null;
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 8 }}>
+        ⑥ WHY NOT THE ALTERNATIVES
+      </div>
+      {excluded.slice(0, 3).map((item, i) => (
+        <div
+          key={i}
+          style={{
+            display: 'flex',
+            gap: 10,
+            marginBottom: 8,
+            paddingBottom: 8,
+            borderBottom: i < Math.min(excluded.length, 3) - 1 ? '1px solid var(--border)' : 'none',
+            alignItems: 'flex-start',
+          }}
+        >
+          <span style={{ color: 'var(--accent-danger)', flexShrink: 0, fontWeight: 700, fontSize: 14, marginTop: 1 }}>✗</span>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>
+              {item.name}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              {item.reason}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Step ⑦ — Transfer of agency ────────────────────────────────────────
+function StepAgency({ dims, onBack }) {
+  const topSacrifice = dims
+    .filter(d => d.delta < -4)
+    .sort((a, b) => a.delta - b.delta)[0];
+
+  return (
+    <div style={{
+      padding: '16px 20px',
+      background: 'rgba(233, 69, 96, 0.04)',
+      border: '1px solid rgba(233, 69, 96, 0.2)',
+      borderRadius: 12,
+      marginBottom: 4,
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.08em', marginBottom: 10 }}>
+        ⑦ THE FINAL QUESTION IS YOURS
+      </div>
+      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.55, marginBottom: 16 }}>
+        {topSacrifice
+          ? `Does ${topSacrifice.label.toLowerCase()} at ${topSacrifice.score}/100 (your priority: ${topSacrifice.userIdeal}) matter to you daily?`
+          : 'Does this decision feel right for your actual day-to-day needs?'}
+      </div>
+      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
+        Based on what you told us — only you know if the remaining trade-offs fit your life.
+        This is not our recommendation to accept blindly.
+      </div>
+      {onBack && (
+        <button
+          className="btn btn-secondary"
+          style={{ fontSize: 12, padding: '6px 14px' }}
+          onClick={onBack}
+        >
+          <i className="fas fa-sliders-h"></i> Adjust priorities and re-analyze
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── "3 things that might bother you" ────────────────────────────────────
+function BotherSection({ flaws = [], topPros = [] }) {
+  if (flaws.length === 0) return null;
+  return (
+    <div style={{ marginTop: 20 }}>
+      <div style={{
+        fontSize: 11,
+        fontWeight: 700,
+        color: 'var(--text-muted)',
+        letterSpacing: '0.07em',
+        marginBottom: 12,
+      }}>
+        3 THINGS THAT MIGHT BOTHER YOU — AND HOW TO HANDLE THEM
+      </div>
+      {flaws.slice(0, 3).map((flaw, i) => (
+        <div
+          key={i}
+          style={{
+            display: 'flex',
+            gap: 10,
+            marginBottom: 10,
+            paddingBottom: 10,
+            borderBottom: i < Math.min(flaws.length, 3) - 1 ? '1px solid var(--border)' : 'none',
+          }}
+        >
+          <span style={{ color: 'var(--accent-warning)', flexShrink: 0, fontWeight: 700, marginTop: 2 }}>⚠</span>
+          <div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55, marginBottom: 4 }}>
+              {flaw}
+            </div>
+            {topPros[i] && (
+              <div style={{ fontSize: 11, color: 'var(--accent-success)', fontStyle: 'italic' }}>
+                Counterbalance: {topPros[i]}
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── "How we calculated?" tab ─────────────────────────────────────────────
+function HowWeCalculated({ integrityScore, irHash, relaxedConstraint, dims }) {
+  const shortHash = irHash ? irHash.slice(0, 16) : null;
+
+  return (
+    <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.07em', marginBottom: 10 }}>
+          INTEGRITY SCORE
+        </div>
+        <div style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)' }}>
+          integrityScore = [Σ(weight × satisfied) / Σ(weight)] × 100<br />
+          <span style={{ color: integrityScore >= 100 ? 'var(--accent-success)' : 'var(--accent-warning)' }}>
+            Result: {integrityScore}%
+          </span>
+          {integrityScore < 100 && relaxedConstraint && (
+            <><br /><span style={{ color: 'var(--accent-warning)', fontSize: 11 }}>
+              "{relaxedConstraint}" was relaxed to find results
+            </span></>
+          )}
+        </div>
+      </div>
+
+      {dims.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.07em', marginBottom: 10 }}>
+            PARETO DELTA — how scores compare to your priorities
+          </div>
+          <div style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 2 }}>
+            {dims.map(d => (
+              <div key={d.key}>
+                {d.label.padEnd(14)}{' '}
+                device: {String(d.score).padStart(3)}{' '}
+                your priority: {String(d.userIdeal).padStart(3)}{' '}
+                delta:{' '}
+                <span style={{ color: d.delta > 4 ? 'var(--accent-success)' : d.delta < -4 ? 'var(--accent-warning)' : 'var(--text-muted)' }}>
+                  {d.delta > 0 ? `+${d.delta}` : d.delta}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {shortHash && (
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.07em', marginBottom: 8 }}>
+            DECISION FINGERPRINT
+          </div>
+          <div style={{
+            fontFamily: 'monospace',
+            fontSize: 12,
+            color: 'var(--text-secondary)',
+            background: 'rgba(255,255,255,0.03)',
+            padding: '8px 12px',
+            borderRadius: 6,
+            border: '1px solid var(--border)',
+            wordBreak: 'break-all',
+          }}>
+            {irHash}
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>
+            This decision is deterministic — the same inputs always produce the same results.
+            You can verify by re-running with identical parameters.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function ExplainabilityPanel({ selectedCard, explanationTab, setExplanationTab, onBack }) {
+  const traceScores = selectedCard?.traceScores ?? {};
+  const priorities  = selectedCard?.priorities  ?? {};
+  const dims = computeDims(traceScores, priorities);
+
+  const integrityScore = selectedCard?.integrityScore ?? 100;
+  const irHash         = selectedCard?.irHash ?? null;
+  const relaxedConstraint = selectedCard?.relaxedConstraint ?? null;
+  const conflictsFound    = selectedCard?.conflictsFound    ?? [];
+
+  return (
+    <div>
       <div className="explain-banner">
         <div className="explain-banner-body" style={{ padding: '20px 24px' }}>
           <div className="selected-card-name" style={{ fontSize: 18 }}>{selectedCard.name}</div>
           <div className="selected-card-type" style={{ marginTop: 4 }}>
-            {selectedCard.badge} — {t.judgmentScore}: {selectedCard.score}%
+            {selectedCard.badge} · {selectedCard.price}
           </div>
-          <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', justifyContent: isRtl ? 'flex-start' : 'flex-start' }}>
-            <span className={`selected-card-badge ${selectedCard.badgeClass}`}>{selectedCard.badge}</span>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{selectedCard.price}</span>
+          <div style={{ marginTop: 10 }}>
+            <DecisionTrust
+              integrityScore={integrityScore}
+              irHash={irHash}
+              relaxedConstraint={relaxedConstraint}
+            />
           </div>
         </div>
       </div>
 
       <div className="card">
-        <div className="card-header" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <div className="card-icon" style={{ background: 'rgba(14, 165, 233, 0.15)', color: 'var(--accent-info)', minWidth: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 32, borderRadius: 8 }}>🔍</div>
-          <div>
-            <div className="card-title">{t.decisionExplanation}</div>
-            <div className="card-subtitle">{t.fullTransparency}</div>
-          </div>
-        </div>
-
         <div className="explanation-tabs" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
-          <button className={`explanation-tab ${explanationTab === 'why-chosen' ? 'active' : ''}`} onClick={() => setExplanationTab('why-chosen')}>{t.whyChosen}</button>
-          <button className={`explanation-tab ${explanationTab === 'excluded' ? 'active' : ''}`} onClick={() => setExplanationTab('excluded')}>{t.excluded}</button>
-          <button className={`explanation-tab ${explanationTab === 'trade-offs' ? 'active' : ''}`} onClick={() => setExplanationTab('trade-offs')}>{t.tradeOffs}</button>
-          <button className={`explanation-tab ${explanationTab === 'stability' ? 'active' : ''}`} onClick={() => setExplanationTab('stability')}>{t.stability}</button>
+          <button className={`explanation-tab ${explanationTab === 'decision' ? 'active' : ''}`} onClick={() => setExplanationTab('decision')}>
+            The Decision
+          </button>
+          <button className={`explanation-tab ${explanationTab === 'trade-offs' ? 'active' : ''}`} onClick={() => setExplanationTab('trade-offs')}>
+            Trade-offs
+          </button>
+          <button className={`explanation-tab ${explanationTab === 'excluded' ? 'active' : ''}`} onClick={() => setExplanationTab('excluded')}>
+            Alternatives
+          </button>
+          <button className={`explanation-tab ${explanationTab === 'how' ? 'active' : ''}`} onClick={() => setExplanationTab('how')}>
+            How we calculated
+          </button>
         </div>
 
-        {explanationTab === 'why-chosen' && (
+        {/* ── Tab: The Decision — 7-step constructive sequence ── */}
+        {explanationTab === 'decision' && (
           <div className="explanation-content active">
             <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
-              {/* Device name + story */}
-              <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>{selectedCard.name}</div>
-              <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 16 }}>
-                {String(selectedCard.whyChosen || '').split('\n\n').map((para, i) => (
-                  <p key={i} style={{ margin: '0 0 10px 0' }}>{para}</p>
-                ))}
-              </div>
 
-              {/* AI Key Trade-off block */}
-              {selectedCard.aiTradeoff && (
-                <div style={{
-                  padding: '12px 16px',
-                  background: 'rgba(245, 158, 11, 0.07)',
-                  border: '1px solid rgba(245, 158, 11, 0.3)',
-                  borderRadius: 10,
-                  marginBottom: 12,
-                  display: 'flex',
-                  gap: 10,
-                  alignItems: 'flex-start'
-                }}>
-                  <span style={{ fontSize: 16, lineHeight: 1 }}>⚖️</span>
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(245,158,11,0.9)', marginBottom: 4, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                      {isRtl ? 'التنازل الرئيسي' : 'Key Trade-off'}
-                    </div>
-                    <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                      {selectedCard.aiTradeoff}
-                    </div>
-                  </div>
-                </div>
-              )}
+              <StepIntent intent={selectedCard.naturalLanguageIntent} />
+              <StepPhysics conflictsFound={conflictsFound} />
+              <StepPareto dims={dims} />
+              <StepStory whyChosen={selectedCard.whyChosen} />
+              <StepUserVoices userSignals={selectedCard.userSignals ?? []} />
+              <StepExcluded excluded={selectedCard.excluded ?? []} />
+              <StepAgency dims={dims} onBack={onBack} />
 
-              {/* Honest flaws */}
-              {selectedCard.flaws.map(f => (
-                <div key={f} style={{
-                  fontSize: 13,
-                  color: 'var(--text-secondary)',
-                  marginTop: 8,
-                  paddingLeft: isRtl ? 0 : 8,
-                  paddingRight: isRtl ? 8 : 0,
-                  borderLeft: isRtl ? 'none' : '2px solid var(--accent-danger)',
-                  borderRight: isRtl ? '2px solid var(--accent-danger)' : 'none',
-                }}>
-                  <strong style={{ color: 'var(--accent-danger)', marginRight: isRtl ? 0 : 6, marginLeft: isRtl ? 6 : 0 }}>✗</strong> {f}
-                </div>
-              ))}
+              <BotherSection flaws={selectedCard.flaws ?? []} topPros={selectedCard.topPros ?? []} />
             </div>
           </div>
         )}
 
+        {/* ── Tab: Trade-offs ── */}
         {explanationTab === 'trade-offs' && (
           <div className="explanation-content active">
             <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
-              <div className="trade-off-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-                {/* Gained column */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
                 <div style={{ padding: 16, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 10, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--accent-success)', fontWeight: 700, marginBottom: 8 }}>{t.whatGained}</div>
-                  {selectedCard.tradeOffs.gained.map(g => <div key={g} style={{ fontSize: 13, marginBottom: 4 }}>• {g}</div>)}
+                  <div style={{ fontSize: 12, color: 'var(--accent-success)', fontWeight: 700, marginBottom: 8 }}>✓ What You Gained</div>
+                  {(selectedCard.tradeOffs?.gained ?? []).map((g, i) => (
+                    <div key={i} style={{ fontSize: 13, marginBottom: 4 }}>• {g}</div>
+                  ))}
                 </div>
-
-                {/* Lost column */}
                 <div style={{ padding: 16, background: 'rgba(244, 63, 94, 0.05)', borderRadius: 10, border: '1px solid rgba(244, 63, 94, 0.2)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--accent-danger)', fontWeight: 700, marginBottom: 8 }}>{t.whatLost}</div>
-                  {selectedCard.tradeOffs.lost.map((l, i) => (
-                    <div key={i} style={{ fontSize: 13, marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                      <span style={{ color: 'var(--accent-danger)', flexShrink: 0, marginTop: 1 }}>•</span>
-                      <span style={{ lineHeight: 1.5 }}>
-                        {l}
-                        {/* Badge for AI-generated first item */}
-                        {i === 0 && selectedCard.aiTradeoff && l === selectedCard.aiTradeoff && (
-                          <span style={{
-                            display: 'inline-block',
-                            marginLeft: isRtl ? 0 : 6,
-                            marginRight: isRtl ? 6 : 0,
-                            fontSize: 10,
-                            fontWeight: 700,
-                            padding: '1px 5px',
-                            borderRadius: 4,
-                            background: 'rgba(99,102,241,0.15)',
-                            color: 'var(--accent-primary)',
-                            letterSpacing: '0.04em'
-                          }}>AI</span>
-                        )}
+                  <div style={{ fontSize: 12, color: 'var(--accent-danger)', fontWeight: 700, marginBottom: 8 }}>✗ What You Lost</div>
+                  {(selectedCard.tradeOffs?.lost ?? []).map((l, i) => (
+                    <div key={i} style={{ fontSize: 13, marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 6, lineHeight: 1.5 }}>
+                      <span style={{ color: 'var(--accent-danger)', flexShrink: 0 }}>•</span>
+                      <span>{l}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {Object.keys(selectedCard.sacrificeVector || {}).length > 0 && (
+                <div style={{ marginTop: 16, padding: 16, background: 'rgba(99, 102, 241, 0.05)', borderRadius: 10, border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+                  <div style={{ fontSize: 12, color: '#818cf8', fontWeight: 700, marginBottom: 4 }}>
+                    ⚖ These trade-offs are intentional — you chose this device knowing their cost
+                  </div>
+                  {Object.entries(selectedCard.sacrificeVector).map(([gate, info]) => (
+                    <div key={gate} style={{ fontSize: 13, marginBottom: 6, color: 'var(--text-secondary)', display: 'flex', gap: 6 }}>
+                      <span style={{ color: '#818cf8', flexShrink: 0 }}>→</span>
+                      <span>
+                        <strong style={{ color: 'var(--text-primary)' }}>
+                          {GATE_NAMES[gate] || gate.replace(/_/g, ' ')}
+                        </strong>
+                        {info?.meaning ? ` — ${info.meaning}` : ''}
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Sacrifice Vector */}
-              {Object.keys(selectedCard.sacrificeVector || {}).length > 0 && (
-                <div style={{ marginTop: 16, padding: 16, background: 'rgba(99, 102, 241, 0.05)', borderRadius: 10, border: '1px solid rgba(99, 102, 241, 0.2)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--accent-primary)', fontWeight: 700, marginBottom: 8 }}>{t.whyThisChoiceOverAlternatives}</div>
-                  {Object.entries(selectedCard.sacrificeVector).map(([gate, info]) => (
-                    <div key={gate} style={{ fontSize: 13, marginBottom: 4, color: 'var(--text-secondary)' }}>
-                      • {isRtl ? 'تخفيف قيد ' : 'Relaxed '}
-                      <strong style={{ color: 'var(--text-primary)' }}>
-                        {GATE_NAMES[lang][gate] || gate.replace(/_/g, ' ')}
-                      </strong>
-                      {info?.meaning ? ` — ${info.meaning}` : ''}
-                    </div>
-                  ))}
-                </div>
               )}
             </div>
           </div>
         )}
 
-        {explanationTab === 'stability' && (
-          <div className="explanation-content active">
-            <div style={{ textAlign: 'center', padding: 20 }}>
-              <div className={`stability-circle ${selectedCard.stability.status}`}>
-                <div className={`stability-score ${selectedCard.stability.status}`}>{selectedCard.stability.score}%</div>
-                <div className="stability-label">{selectedCard.stability.label}</div>
-              </div>
-              <div style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 500, margin: '0 auto', marginTop: 16 }}>
-                {selectedCard.stability.description}
-              </div>
-            </div>
-          </div>
-        )}
-
+        {/* ── Tab: Alternatives ── */}
         {explanationTab === 'excluded' && (
           <div className="explanation-content active">
-            {selectedCard.excluded.length === 0 ? (
+            {(selectedCard.excluded ?? []).length === 0 ? (
               <div style={{ padding: 20, color: 'var(--text-muted)', fontSize: 13, textAlign: 'center' }}>
-                {t.noExclusions}
+                No excluded alternatives met the minimum baseline.
               </div>
             ) : (
-              selectedCard.excluded.map((item, idx) => (
-                <div key={idx} className="excluded-item" style={{ padding: 12, borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              (selectedCard.excluded ?? []).map((item, idx) => (
+                <div key={idx} style={{ padding: 14, borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 4 }}>
                   <span style={{ fontWeight: 600, fontSize: 14 }}>{item.name}</span>
-                  <span className="excluded-reason" style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>{item.reason}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>{item.reason}</span>
                 </div>
               ))
             )}
+          </div>
+        )}
+
+        {/* ── Tab: How we calculated ── */}
+        {explanationTab === 'how' && (
+          <div className="explanation-content active">
+            <HowWeCalculated
+              integrityScore={integrityScore}
+              irHash={irHash}
+              relaxedConstraint={relaxedConstraint}
+              dims={dims}
+            />
           </div>
         )}
       </div>

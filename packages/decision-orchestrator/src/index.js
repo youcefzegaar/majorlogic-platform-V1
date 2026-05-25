@@ -359,10 +359,38 @@ export class DecisionOrchestrator {
         `[NarrativeCache] HIT irHash:${irHash?.slice(0, 8)}… entity:${entityId} ratio:${cacheStats.hitRate}`
       );
     } else {
+      // Build an enriched narrative context with all available engine + DB data.
+      // Without this, review intelligence (defects) is always null in the prompt,
+      // atlas IDs are opaque, and user intent/preferences never reach the AI.
+      const narrativeContext = {
+        ...domainContext,
+        // Review intelligence — classified signals, risk level, human-readable warnings
+        reviewIntelligence: intelligence,
+        // Raw hardware specs so the AI can ground claims in actual numbers
+        entitySpecs: {
+          price:       rawEntity.market?.bestOffer?.priceUsd   ?? null,
+          ramGb:       rawEntity.specs?.ramGb                  ?? null,
+          storageGb:   rawEntity.specs?.storageGb              ?? null,
+          performance: rawEntity.specs?.performance            ?? null,
+          battery:     rawEntity.specs?.battery                ?? null,
+          portability: rawEntity.specs?.portability            ?? null,
+          display:     rawEntity.specs?.display                ?? null,
+          thermals:    rawEntity.specs?.thermals               ?? null,
+          brand:       rawEntity.brand                         ?? null
+        },
+        // Slot role drives narrative framing (hero vs budget vs future-proof)
+        cardType,
+        // Budget delta: how close is this device to what the student can spend?
+        userBudget:   userProfile?.budgetUsd                              ?? null,
+        // User-stated priorities so AI can connect strengths to what they care about
+        userPreferences: userProfile?.preferences                         ?? null,
+        // The student's own words about what they need — gold for personalisation
+        naturalLanguageIntent: userProfile?.productIntent?.naturalLanguageIntent ?? null
+      };
       narrativeResult = await this.explainer.explain(
         kernelResult.trace,
         rawEntity.title || rawEntity.itemName || entityId,
-        domainContext
+        narrativeContext
       );
       narrativeCache.set(irHash, inputHash, entityId, narrativeResult);
     }

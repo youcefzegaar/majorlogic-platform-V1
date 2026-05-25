@@ -119,6 +119,7 @@ export default function App() {
             priorities={profile.priorities}
             analysisSummary={engine.analysisSummary}
             detectedConflicts={engine.detectedConflicts}
+            decisionMetadata={engine.decisionMetadata}
             budgetMin={profile.budgetMin} budgetMax={profile.budgetMax}
             onViewCards={() => setPhase(2)} onAdjustPriorities={() => setPhase(0)}
           />
@@ -130,7 +131,7 @@ export default function App() {
             decisionMetadata={engine.decisionMetadata} analysisSummary={engine.analysisSummary}
             selectedCardType={selectedCardType} onSelectCard={setSelectedCardType}
             onConfirmCard={confirmCard}
-            onCardDetails={(t) => { setSelectedCardType(t); setPhase(3); }}
+            onCardDetails={(t) => { setSelectedCardType(t); setExplanationTab('decision'); setPhase(3); }}
             onEditRequirements={() => setPhase(0)}
             priorities={profile.priorities} setPriorities={profile.setPriorities}
             budgetMin={profile.budgetMin} setBudgetMin={profile.setBudgetMin}

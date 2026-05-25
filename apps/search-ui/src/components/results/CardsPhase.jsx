@@ -24,8 +24,8 @@ export default function CardsPhase({
     <div className="phase-container active">
       <div className="cards-phase-header">
         <div>
-          <h2 style={{ fontSize: 22, fontWeight: 800 }}>Best Options for You</h2>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>Adjust priorities from the sidebar to update results live</p>
+          <h2 style={{ fontSize: 22, fontWeight: 800 }}>Your Decision Landscape</h2>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>3 strategies with different trade-offs — not ranked, Pareto-optimal</p>
         </div>
         <div className="confidence-badge">
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Confidence Level</span>
@@ -87,51 +87,22 @@ export default function CardsPhase({
                         <div className="renewed-opp-section-title">Hidden Gem — Renewed Opportunity</div>
                         <div className="renewed-opp-section-sub">
                           This device exceeds your budget at retail, but its certified-renewed price fits — and it outperforms your hero pick.
+                          {renewedCard.heroScoreGap > 0 && (
+                            <span style={{ marginLeft: 8, color: 'var(--accent-success)', fontWeight: 600 }}>
+                              +{renewedCard.heroScoreGap} pts vs Hero · Saves ${renewedCard.renewedSavings?.toLocaleString()} vs retail
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
-
-                    <div
-                      className={`renewed-opp-card${selectedCardType === 'renewed_value' ? ' renewed-opp-card--selected' : ''}`}
-                      onClick={() => onSelectCard('renewed_value')}
-                    >
-                      <div className="renewed-opp-badge">Renewed Opportunity</div>
-                      <div className="renewed-opp-content">
-                        <img
-                          src={renewedCard.image}
-                          alt={renewedCard.name}
-                          className="renewed-opp-img"
-                          onError={e => { e.target.style.display = 'none'; }}
-                        />
-                        <div className="renewed-opp-info">
-                          <div className="renewed-opp-name">{renewedCard.name}</div>
-                          <div className="renewed-opp-stats">
-                            <span className="renewed-opp-stat-pill">+{renewedCard.heroScoreGap} pts vs Hero</span>
-                            <span className="renewed-opp-stat-pill">Saves ${renewedCard.renewedSavings?.toLocaleString()} vs retail</span>
-                          </div>
-                          {Array.isArray(renewedCard.tradeOffs?.gained) && renewedCard.tradeOffs.gained.length > 0 && (
-                            <div className="renewed-opp-pros">
-                              {renewedCard.tradeOffs.gained.slice(0, 2).map((p, i) => (
-                                <span key={i} className="renewed-opp-pro">✓ {p}</span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <div className="renewed-opp-pricing">
-                          {renewedCard.originalPrice && (
-                            <div className="renewed-opp-original">{renewedCard.originalPrice} new</div>
-                          )}
-                          <div className="renewed-opp-price">{renewedCard.price}</div>
-                          <div className="renewed-opp-condition">certified renewed</div>
-                          <button
-                            className="renewed-opp-btn"
-                            onClick={e => { e.stopPropagation(); onConfirmCard('renewed_value'); }}
-                          >
-                            Choose This
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                    <HeroCard
+                      type="renewed_value"
+                      card={renewedCard}
+                      isSelected={selectedCardType === 'renewed_value'}
+                      onSelect={onSelectCard}
+                      onConfirm={onConfirmCard}
+                      onDetails={onCardDetails}
+                    />
                   </div>
                 )}
               </>

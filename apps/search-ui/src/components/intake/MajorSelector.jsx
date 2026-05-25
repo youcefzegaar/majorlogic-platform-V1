@@ -1,5 +1,3 @@
-import React from 'react';
-
 const SPECS = [
   { id: 'cs', icon: '💻', label: 'CS / IT' },
   { id: 'engineering', icon: '⚙️', label: 'Engineering' },

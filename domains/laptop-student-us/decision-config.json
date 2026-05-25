@@ -440,11 +440,46 @@
     "badNews": "{tradeoff}"
   },
   "conflictMap": {
-    "performance:battery": 60,
-    "performance:portability": 55,
-    "gaming:battery": 70,
-    "video_4k:battery": 50,
-    "virtual_machines:portability": 45
+    "performance:battery": {
+      "correlation": 0.60,
+      "confidence": 0.84,
+      "trend": "stable",
+      "sample_period": "2024-2026",
+      "physics_type": "power_budget",
+      "note": "High-performance chips draw more power — this correlation is unlikely to disappear but weakens as efficiency improves"
+    },
+    "performance:portability": {
+      "correlation": 0.55,
+      "confidence": 0.76,
+      "trend": "weakening",
+      "sample_period": "2024-2026",
+      "physics_type": "thermal_mass",
+      "note": "ARM-class chips and vapor chambers are reducing this tension; anomalies already visible in 2025 ultrabooks"
+    },
+    "gaming:battery": {
+      "correlation": 0.70,
+      "confidence": 0.88,
+      "trend": "stable",
+      "sample_period": "2024-2026",
+      "physics_type": "power_budget",
+      "note": "Discrete GPUs remain power-hungry; unlikely to change without fundamental battery chemistry advances"
+    },
+    "video_4k:battery": {
+      "correlation": 0.50,
+      "confidence": 0.71,
+      "trend": "weakening",
+      "sample_period": "2024-2026",
+      "physics_type": "display_power",
+      "note": "OLED and mini-LED efficiency improvements are reducing this tension faster than other categories"
+    },
+    "virtual_machines:portability": {
+      "correlation": 0.45,
+      "confidence": 0.68,
+      "trend": "weakening",
+      "sample_period": "2024-2026",
+      "physics_type": "thermal_mass",
+      "note": "Apple Silicon demonstrated that VM workloads are possible in thin designs; x86 alternatives following"
+    }
   },
   "intentGraph": {
     "cs": {

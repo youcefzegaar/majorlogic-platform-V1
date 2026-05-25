@@ -320,68 +320,235 @@ export class DecisionExplainer {
   }
 
   /**
-   * Build a Strict Cognitive Prompt.
-   * This is the "Brain-to-Voice" bridge.
-   * Returns a prompt that instructs the AI to respond with structured JSON.
+   * Build a Strict Cognitive Prompt — the "Brain-to-Voice" bridge.
+   *
+   * Consumes ALL signals the engine and DB produce:
+   *   - Atlas-resolved score names (no opaque IDs)
+   *   - Atlas-resolved sacrifice names
+   *   - Review intelligence signals (classified, severity-ordered)
+   *   - Budget delta (device price vs user budget)
+   *   - Hardware specs (RAM, storage, thermals)
+   *   - User preferences (what they stated they care about)
+   *   - Natural language intent (the student's own words)
+   *   - Slot role (hero / smart_budget / future_proof)
+   *   - Integrity score (how much was compromised in recovery)
    */
   buildPrompt(trace, name, context) {
-    const { expertIdentity = "Expert", locale = "en" } = context;
+    const {
+      expertIdentity = "Expert",
+      locale = "en",
+      atlas = {},
+      reviewIntelligence = null,
+      entitySpecs = null,
+      cardType = "hero",
+      userBudget = null,
+      userPreferences = null,
+      naturalLanguageIntent = null
+    } = context;
+
     const intent = context.intent || { title: "General Intent", futureProjection: null };
     const confidence = context.confidence || { level: "high", score: 100, conflicts: [] };
     const relaxedConstraint = context.relaxedConstraint || null;
     const isAr = locale === 'ar';
-    
+
+    // Resolve an atlas ID to its human-readable label in the current locale
+    const t = (id) =>
+      atlas[locale]?.[id] || atlas['en']?.[id] ||
+      id.replace(/^score_|_score$/g, '').replace(/_/g, ' ');
+
+    // ── Scores: opaque IDs → human names ────────────────────────────────
+    const resolvedScores = Object.fromEntries(
+      Object.entries(trace.scores || {})
+        .filter(([, v]) => typeof v === 'number')
+        .map(([id, val]) => [t(id), Math.round(val)])
+    );
+
+    // Top 3 strengths above 70, human-named with scores
+    const topStrengths = Object.entries(trace.scores || {})
+      .filter(([, v]) => typeof v === 'number' && v > 70)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([id, val]) => ({ name: t(id), score: Math.round(val) }));
+
+    // ── Sacrifices: IDs → atlas-resolved human descriptions ─────────────
+    const resolvedSacrifices = Object.entries(trace.sacrifices || {}).map(([id, s]) => {
+      const atlasKey = `sacrifice_${s.meaning}`;
+      const humanName =
+        atlas[locale]?.[atlasKey] || atlas['en']?.[atlasKey] ||
+        s.meaning?.replace(/_/g, ' ') || id;
+      return {
+        name: humanName,
+        type: s.type,             // gate_violation | soft_sacrifice
+        weight: Math.round((s.severity ?? 0) * 100) + '%'
+      };
+    });
+
+    // ── Review intelligence: classified signals from DB ──────────────────
+    // Previously always null because reviewWarnings was never set on domainContext.
+    const reviewWarnings = reviewIntelligence ? {
+      riskLevel:     reviewIntelligence.risk?.riskLevel     || 'low',
+      dominantIssue: reviewIntelligence.risk?.dominantCategory || null,
+      hasHighRisk:   reviewIntelligence.hasHighRisk          || false,
+      confirmedIssues: (reviewIntelligence.signals || [])
+        .filter(s => s.severity === 'high' || s.severity === 'medium')
+        .map(s => ({
+          issue:    isAr ? (s.userFacingAr || s.userFacing) : s.userFacing,
+          severity: s.severity,
+          category: s.category
+        }))
+        .slice(0, 4)
+    } : null;
+
+    // ── Budget context: device price vs student budget ───────────────────
+    const budgetContext = (entitySpecs?.price && userBudget) ? {
+      devicePrice: entitySpecs.price,
+      userBudget,
+      delta:       Math.round(userBudget - entitySpecs.price),
+      fit:         entitySpecs.price <= userBudget ? 'within_budget' : 'over_budget'
+    } : null;
+
+    // ── User priorities: sorted by weight (highest first) ───────────────
+    const userPriorities = userPreferences
+      ? Object.fromEntries(
+          Object.entries(userPreferences).sort(([, a], [, b]) => b - a)
+        )
+      : null;
+
+    // ── Slot framing: drives opening sentence tone ───────────────────────
+    const slotFraming = {
+      hero:         isAr ? 'أفضل خيار شامل'            : 'best overall pick',
+      smart_budget: isAr ? 'أفضل قيمة مقابل السعر'     : 'best value for money',
+      future_proof: isAr ? 'الأفضل للمدى الطويل'        : 'best long-term investment'
+    }[cardType] || (isAr ? 'الخيار الموصى به' : 'recommended choice');
+
+    // ── Full cognitive state ─────────────────────────────────────────────
     const cognitiveState = {
-      subject: name,
-      intent: intent.title,
-      expertRole: expertIdentity,
-      confidenceLevel: confidence.level,
-      confidenceScore: confidence.score,
-      conflictsFound: (confidence.conflicts || []).map(c => c.pair || c),
+      subject:        name,
+      slotRole:       slotFraming,
+      intent:         intent.title,
+      expertRole:     expertIdentity,
+
+      // The student's own words — ground the narrative in their intent
+      userNaturalLanguageIntent: naturalLanguageIntent || null,
+
+      // Confidence & conflict analysis
+      confidenceLevel:  confidence.level,
+      confidenceScore:  confidence.score,
+      conflictsFound:   (confidence.conflicts || []).map(c => c.pair || c),
       relaxedConstraint,
+      integrityScore:   context.integrityScore ?? 100,
+
+      // Future projection for the chosen major
       futureProjection: intent.futureProjection,
-      sacrifices: trace.sacrifices || {},
-      defects: {
-        primary: context.reviewWarnings?.primary || null,
-        secondary: context.reviewWarnings?.secondary || null
-      },
-      technicalTrace: {
-        scores: trace.scores,
-        topStrengths: Object.entries(trace.scores || {})
-          .filter(([, v]) => typeof v === 'number' && v > 70)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 3)
-          .map(([k]) => k)
-      }
+
+      // All scores with human-readable dimension names
+      scores:     resolvedScores,
+      topStrengths,
+
+      // All sacrifices with human-readable descriptions
+      sacrifices: resolvedSacrifices,
+
+      // Review signals from DB (classified, severity-ordered)
+      reviewWarnings,
+
+      // Budget fit
+      budgetContext,
+
+      // Hardware specs for spec-grounded claims
+      hardwareSpecs: entitySpecs ? {
+        ramGb:      entitySpecs.ramGb,
+        storageGb:  entitySpecs.storageGb,
+        priceUsd:   entitySpecs.price,
+        thermals:   entitySpecs.thermals
+      } : null,
+
+      // What the student said they value most
+      userPriorities
     };
 
+    // ── Dynamic writing rules derived from actual data ───────────────────
     const langInstruction = isAr
-      ? 'CRITICAL: The JSON keys must be exactly "story", "tradeoff", and "badNews". The VALUES for these keys MUST be written entirely in Arabic. Use clear, direct professional prose.'
+      ? 'CRITICAL: The JSON keys must be exactly "story", "tradeoff", and "badNews". The VALUES MUST be written entirely in Arabic. Use clear, direct professional prose.'
       : 'Respond entirely in English. Use clear, direct professional prose.';
 
-    return `
-You are "${expertIdentity}", an expert academic technology advisor.
-Your task: explain this device recommendation to a student with intent "${intent.title}".
+    const sacrificeRule = resolvedSacrifices.length > 0
+      ? `3. SACRIFICES: Explicitly name every sacrifice: ${resolvedSacrifices.map(s => `"${s.name}" (${s.type}, weight ${s.weight})`).join(', ')}. Never hide them.`
+      : `3. SACRIFICES: No trade-offs were forced — state this as a clean win.`;
+
+    const defectsRule = reviewWarnings?.confirmedIssues?.length
+      ? `4. DEFECTS: Address these confirmed review issues honestly (do not downplay): ${reviewWarnings.confirmedIssues.map(i => `"${i.issue}" [${i.severity}/${i.category}]`).join('; ')}.`
+      : `4. DEFECTS: No confirmed hardware warnings — do not fabricate any.`;
+
+    const compromiseRule = relaxedConstraint
+      ? `6. COMPROMISE: State that the "${relaxedConstraint}" constraint was relaxed to find this option (integrityScore: ${context.integrityScore ?? 100}%). Be honest about it.`
+      : `6. CONSTRAINTS: All constraints were fully met — state this positively.`;
+
+    const budgetRule = budgetContext
+      ? `8. BUDGET: Device costs $${budgetContext.devicePrice} vs student budget of $${budgetContext.userBudget} (delta: ${budgetContext.delta >= 0 ? '+' : ''}$${budgetContext.delta}, ${budgetContext.fit}).`
+      : '';
+
+    const intentRule = naturalLanguageIntent
+      ? `9. USER INTENT: The student said: "${naturalLanguageIntent}". Connect strengths directly to their words.`
+      : '';
+
+    // Anchor sentence hint: the strongest concrete score for the opening
+    const anchor = topStrengths[0]
+      ? `${topStrengths[0].name} (${topStrengths[0].score}/100)`
+      : null;
+
+    return `You are "${expertIdentity}", an expert academic technology advisor.
+Your task: write the explanation for why this device is the ${slotFraming} for a student with intent "${intent.title}".
 
 ${langInstruction}
 
-COGNITIVE STATE (deterministic engine output — do NOT invent any specs):
+COGNITIVE STATE (deterministic engine output — do NOT invent any specs or scores):
 ${JSON.stringify(cognitiveState, null, 2)}
 
-WRITING RULES:
-1. PERSPECTIVE: Speak as an honest human expert, not a machine. Use "I recommend".
-2. STRENGTHS: Highlight the top scoring dimensions in human terms (e.g. battery life, build quality, value).
-3. SACRIFICES: Explicitly name every item in "sacrifices" in plain language. Never hide them.
-4. DEFECTS: Address any hardware defects in "defects" honestly. Do not downplay them.
-5. CONFLICTS: If confidenceLevel is "low" or "medium" and conflictsFound is non-empty, open with a brief honest warning.
-${relaxedConstraint ? `6. COMPROMISE: State clearly that the "${relaxedConstraint}" constraint was relaxed to find this option.` : '6. CONSTRAINTS: All constraints were met — state this positively.'}
-7. INTEGRITY: Never fabricate specs. Be concise and honest. No marketing fluff.
+WRITING RULES — grounded in behavioral decision science:
+
+1. ECHO & ANCHOR (Tversky/Kahneman anchoring effect)
+   - If userNaturalLanguageIntent is set, open by restating their need in 3-5 words.
+   - Immediately anchor with the top strength: "${anchor || 'the top dimension'}".
+   - Example opener: "For [their words], this machine leads with [top strength] — the strongest fit in your profile."
+   - Do NOT open with "I recommend" — open with their intent, then the score.
+
+2. SPECIFICITY OVER VAGUENESS (Hsee 1998 evaluability theory)
+   - Never say "excellent", "strong", or "good" without citing the score from topStrengths.
+   - Always write: "[dimension name] scores [N]/100" — not just "performs well".
+   - Mention all topStrengths entries (up to 3) with their numeric scores.
+
+${sacrificeRule}
+
+${defectsRule}
+
+5. LOSS FRAMING (Kahneman loss aversion — losses feel 2× stronger than gains)
+   - Name each sacrifice as a concrete workflow cost, not an abstract label.
+   - Bad: "sacrifices portability" — Good: "you'll carry more weight across campus daily".
+   - If reviewWarnings.confirmedIssues exist, name the highest-severity one in tradeoff.
+
+6. CONFLICT DISCLOSURE
+   If confidenceLevel is "low" or "medium" and conflictsFound is non-empty, open story with a one-line warning before the recommendation: "Your priorities have a tension — [name it briefly]."
+
+${compromiseRule}
+
+7. PEAK-END STRUCTURE (Kahneman peak-end rule)
+   - story sentence 1: ECHO + ANCHOR (intent echo → top strength score).
+   - story sentence 2: 2nd and 3rd strengths with scores, or budget context if compelling.
+   - story sentence 3: FORWARD PROJECTION — if futureProjection is set, end here. Otherwise, close with the slot role rationale.
+   The last sentence must leave the student feeling informed and forward-looking, not anxious.
+
+8. INTEGRITY
+   Never fabricate any spec, score, or review signal not present in cognitiveState.
+   No marketing language ("incredible", "perfect", "amazing"). Honest precision builds trust.
+
+${budgetRule}
+${intentRule}
 
 RESPONSE FORMAT — return ONLY this JSON object, no extra text:
 {
-  "story": "<2-3 sentence recommendation paragraph — why this device was chosen, key strengths, future outlook>",
-  "tradeoff": "<1 concise sentence about the single most significant trade-off or hardware limitation>",
-  "badNews": "<1 honest sentence about the main weakness or sacrifice the student must accept>"
+  "story": "<3 sentences: (1) echo their intent + anchor top strength with score, (2) 2nd-3rd strengths with scores or budget fit, (3) forward projection or slot rationale>",
+  "tradeoff": "<1 sentence: the single most significant cost from sacrifices or reviewWarnings — name it with its real-world consequence for their workflow>",
+  "badNews": "<1 sentence: the main weakness they must consciously accept — be precise, not alarming. If budget was stretched, say so with the amount.>"
 }
 `;
   }

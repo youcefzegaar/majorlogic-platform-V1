@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function BudgetSelector({ budgetMin, setBudgetMin, budgetMax, setBudgetMax }) {
   return (
     <div className="intake-card full-width">

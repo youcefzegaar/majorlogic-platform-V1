@@ -262,11 +262,23 @@ export function useDecisionEngine() {
                   ? 'يوازن هذا الجهاز تماماً بين أولوياتك بناءً على تحليلنا الدقيق.' 
                   : 'This device perfectly balances your priorities based on our analysis.'),
             aiTradeoff: isValidText(card.tradeoff) ? card.tradeoff : null,
-            flaws: isValidText(card.badNews)
-              ? [card.badNews]
-              : [(lang === 'ar' 
-                  ? 'تنازلات طفيفة بناءً على قيود الميزانية.' 
-                  : 'Minor compromises based on budget constraints.')],
+            flaws: (() => {
+              const collected = [];
+              if (isValidText(card.badNews)) collected.push(card.badNews);
+              const pWarn = lang === 'ar'
+                ? (card.intelligence?.primaryWarningAr || card.intelligence?.primaryWarning)
+                : card.intelligence?.primaryWarning;
+              const sWarn = lang === 'ar'
+                ? (card.intelligence?.secondaryWarningAr || card.intelligence?.secondaryWarning)
+                : card.intelligence?.secondaryWarning;
+              if (isValidText(pWarn) && !collected.includes(pWarn)) collected.push(pWarn);
+              if (isValidText(sWarn) && !collected.includes(sWarn)) collected.push(sWarn);
+              return collected.length > 0 ? collected : [
+                lang === 'ar'
+                  ? 'تنازلات طفيفة بناءً على قيود الميزانية.'
+                  : 'Minor compromises based on budget constraints.'
+              ];
+            })(),
             tradeOffs: {
               gained,
               lost
@@ -304,7 +316,33 @@ export function useDecisionEngine() {
               isAffiliate,
               affiliateLabel: transparency?.label ?? 'Verified Partner',
             },
-            ownershipStrategy
+            ownershipStrategy,
+
+            // ─── Decision Intelligence Layer (all missing data now flows through) ─────
+            naturalLanguageIntent: profile.productIntent.naturalLanguageIntent,
+            intelligence:          card.intelligence      ?? null,
+            topPros:               card.topPros           ?? [],
+            userSignals:           card.intelligence?.userSignals ?? card.userSignals ?? [],
+            decision_confidence:   card.decision_confidence ?? result.decision?.confidence ?? null,
+            tcoEstimate:           card.tcoEstimate ?? ownershipStrategy?.tco ?? null,
+            fitStates:             card.fitStates ?? result.decision?.fitStates ?? null,
+            traceScores:           card.trace?.scores ?? {},
+
+            // ─── Response-level governance (identical for all cards in this decision) ─
+            integrityScore: (() => {
+              const raw = result.decision?.integrityScore ?? 1.0;
+              return raw <= 1.0 ? Math.round(raw * 100) : Math.round(raw);
+            })(),
+            // detectIntentConflicts (result.decision.conflicts) has title+description+gravity+confidence+trend
+            // CognitiveAnalyzer (result.decision.confidence.conflicts) has raw pair data only
+            // UI needs the former for StepPhysics and AnalysisPhase
+            conflictsFound:     result.decision?.conflicts?.length > 0
+                                ? result.decision.conflicts
+                                : result.decision?.confidence?.conflicts ?? [],
+            irHash:             result.governance?.irHash ?? null,
+            candidateCount:     result.trust?.trace?.candidateCount ?? 0,
+            topExcludedStories: result.decision?.topExcludedStories ?? [],
+            relaxedConstraint:  result.decision?.relaxedConstraint ?? null,
           };
         });
       }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import CommitmentCeremony from '../shared/CommitmentCeremony';
 
 const MODE_TO_PATH = {
   buy_new:                  'new',
@@ -50,10 +51,11 @@ const GAINS_LOSSES = {
 export default function OwnershipPhase({ selectedCard, budgetMax, onNext, onBack }) {
   // If user picked the Renewed Opportunity card, pre-land on the "renewed" path
   const isRenewedCard = selectedCard.renewedEntry === true;
-  const [activePath, setActivePath] = useState(isRenewedCard ? 'renewed' : null);
-  const [email, setEmail]           = useState('');
-  const [alertSaved, setAlertSaved] = useState(false);
-  const [alertError, setAlertError] = useState(null);
+  const [activePath, setActivePath]         = useState(isRenewedCard ? 'renewed' : null);
+  const [email, setEmail]                   = useState('');
+  const [alertSaved, setAlertSaved]         = useState(false);
+  const [alertError, setAlertError]         = useState(null);
+  const [ceremonyComplete, setCeremonyComplete] = useState(false);
 
   // priceUsd is always the RETAIL (new) price so all discounts are computed from the same baseline
   const priceUsd    = selectedCard.purchaseLinks?.priceUsd || 0;
@@ -239,9 +241,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, onNext, onBack
           <div className="op-device-name">{name}</div>
           <div className="op-page-title">How to Own It</div>
         </div>
-        <div className={`judgment-score ${selectedCard.scoreClass}`} style={{ width: 52, height: 52, fontSize: 14 }}>
-          {selectedCard.score}%
-        </div>
+        <span className={`decision-card-badge ${selectedCard.badgeClass}`}>{selectedCard.badge}</span>
       </div>
 
       {/* ── Renewed Entry Notice ─────────────────────── */}
@@ -262,7 +262,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, onNext, onBack
       <div className="op-why-banner">
         <div className="op-why-icon">⚡</div>
         <div style={{ flex: 1 }}>
-          <div className="op-why-label">Why we recommend: <strong>{bars.find(b => b.key === recPath)?.label}</strong></div>
+          <div className="op-why-label">What the engine suggests: <strong>{bars.find(b => b.key === recPath)?.label}</strong></div>
           <div className="op-why-text">{whyText}</div>
         </div>
         <div className="op-confidence-badge" title="Estimate confidence based on market data richness, lifecycle availability, and device tier predictability">
@@ -270,6 +270,58 @@ export default function OwnershipPhase({ selectedCard, budgetMax, onNext, onBack
           <div className="op-confidence-label">confidence</div>
         </div>
       </div>
+
+      {/* ── Tri-Frame Mental Accounting ───────────────── */}
+      {priceUsd > 0 && (() => {
+        const pathPrices      = { new: priceUsd, renewed: renewedPrice, open_box: openBoxPrice, installments: total12 };
+        const pathResaleVals  = { new: resaleVal, renewed: renewedResaleVal, open_box: openBoxResaleVal, installments: resaleVal };
+        const pathCostPerYear = { new: costPerYearNew, renewed: costPerYearRenewed, open_box: costPerYearOpenBox, installments: costPerYearFinancing };
+        const activePrice       = pathPrices[currentPath] ?? priceUsd;
+        const activeResale      = pathResaleVals[currentPath] ?? resaleVal;
+        const activeCostPerYear = pathCostPerYear[currentPath] ?? costPerYearNew;
+        const grossPerYear = Math.round(activePrice / ownerYears);
+        const grossPerDay  = (activePrice / (ownerYears * 365)).toFixed(2);
+        const netPerDay    = (activeCostPerYear / 365).toFixed(2);
+        const frames = [
+          { label: 'Purchase price',         value: `$${activePrice.toLocaleString()}`,       note: 'the anchor' },
+          { label: `Per year (${ownerYears} yr use)`, value: `$${grossPerYear.toLocaleString()}/yr`, note: 'normalized' },
+          { label: 'Per day (gross)',         value: `$${grossPerDay}/day`,                  note: 'if used daily' },
+          { label: 'Per day (net)',           value: `$${netPerDay}/day`,                    note: `after ~$${activeResale.toLocaleString()} resale` },
+        ];
+        return (
+          <div className="op-section">
+            <div className="op-section-title">
+              What this actually costs you
+              <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 8 }}>
+                — if used daily for {ownerYears} years, based on what you told us
+              </span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+              {frames.map((f, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: '12px 14px',
+                    background: i === 3 ? 'rgba(16, 185, 129, 0.07)' : 'var(--surface-elevated)',
+                    border: `1px solid ${i === 3 ? 'rgba(16, 185, 129, 0.25)' : 'var(--border)'}`,
+                    borderRadius: 10,
+                    textAlign: 'center',
+                  }}
+                >
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>{f.label}</div>
+                  <div style={{
+                    fontSize: i === 0 ? 18 : 20,
+                    fontWeight: 800,
+                    color: i === 3 ? 'var(--accent-success)' : 'var(--text-primary)',
+                    marginBottom: 4,
+                  }}>{f.value}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)', fontStyle: 'italic' }}>{f.note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Comparison Table ──────────────────────────── */}
       <div className="op-section">
@@ -354,31 +406,51 @@ export default function OwnershipPhase({ selectedCard, budgetMax, onNext, onBack
         </div>
       </div>
 
-      {/* ── CTA Buttons ───────────────────────────────── */}
-      <div className="op-cta-section">
-        {urlMap[currentPath] && (
-          <>
-            <a href={urlMap[currentPath]} target="_blank" rel="noopener noreferrer" className="op-cta-primary">
-              <i className="fas fa-external-link-alt"></i> {ctaMap[currentPath]}
-            </a>
-            <div className="op-affiliate-disclosure">
-              {selectedCard.purchaseLinks?.isAffiliate
-                ? <><span className="op-affiliate-badge">🤝</span> Affiliate link — we earn a small commission at no extra cost to you.</>
-                : <><span className="op-affiliate-badge">✅</span> Direct link — no commission earned.</>
-              }
-            </div>
-          </>
-        )}
-        <div className="op-cta-alts">
-          {Object.keys(pathLabels).filter(k => k !== currentPath).map(k => (
-            urlMap[k] && (
-              <a key={k} href={urlMap[k]} target="_blank" rel="noopener noreferrer" className="op-cta-secondary" onClick={() => setActivePath(k)}>
-                {pathLabels[k]}
+      {/* ── Commitment Ceremony ───────────────────────── */}
+      {!ceremonyComplete && (
+        <CommitmentCeremony
+          selectedCard={selectedCard}
+          onReady={() => setCeremonyComplete(true)}
+        />
+      )}
+
+      {/* ── CTA Buttons (revealed after commitment) ───── */}
+      {ceremonyComplete && (
+        <div className="op-cta-section">
+          {urlMap[currentPath] && (
+            <>
+              <a href={urlMap[currentPath]} target="_blank" rel="noopener noreferrer" className="op-cta-primary">
+                <i className="fas fa-external-link-alt"></i> {ctaMap[currentPath]}
               </a>
-            )
-          ))}
+              <div className="op-affiliate-disclosure">
+                {selectedCard.purchaseLinks?.isAffiliate
+                  ? <><span className="op-affiliate-badge">🤝</span> Affiliate link — we earn a small commission at no extra cost to you.</>
+                  : <><span className="op-affiliate-badge">✅</span> Direct link — no commission earned.</>
+                }
+                <span style={{ marginLeft: 12, fontSize: 11 }}>
+                  <a
+                    href="/how-we-work"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--accent-info)', textDecoration: 'underline' }}
+                  >
+                    Search without affiliate link →
+                  </a>
+                </span>
+              </div>
+            </>
+          )}
+          <div className="op-cta-alts">
+            {Object.keys(pathLabels).filter(k => k !== currentPath).map(k => (
+              urlMap[k] && (
+                <a key={k} href={urlMap[k]} target="_blank" rel="noopener noreferrer" className="op-cta-secondary" onClick={() => setActivePath(k)}>
+                  {pathLabels[k]}
+                </a>
+              )
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Price Alert ───────────────────────────────── */}
       <div className="op-alert-section">

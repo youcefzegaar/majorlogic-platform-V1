@@ -1,81 +1,112 @@
 // detectIntentConflicts, attemptRecovery, detectArchetype, buildGrowthArtifacts
 import { evaluateCandidate } from "./scoring.js";
 
+/**
+ * Conflict gravity values are market-observed correlations, NOT physical laws.
+ * Each has a confidence level and trend direction so the UI can present them
+ * as hypotheses rather than absolutes. When new device generations break a
+ * pattern (e.g., ARM laptops with high performance + low weight), the
+ * correlation weakens and the description updates accordingly.
+ *
+ * Structure:
+ *   gravity       — current observed correlation strength (0–1)
+ *   confidence    — how certain we are of this correlation (0–1)
+ *   trend         — "stable" | "weakening" | "strengthening"
+ *   sample_period — market window this was calibrated on
+ */
+
 export function detectIntentConflicts({ profile, ruleset }) {
   const insights = [];
   const { sliders, preferences, major, budgetUsd } = profile;
-  const lang = profile.locale === 'ar' ? 'AR' : 'EN';
 
-  // 1. Major vs Budget (Economic Risk / Sacrifice)
+  // 1. Major vs Budget — Economic constraint
   const demandingMajors = ["engineering", "design", "ai"];
   if (demandingMajors.includes(major) && budgetUsd < 850) {
     insights.push({
       id: "econ_major_bottleneck",
       type: "conflict",
       gravity: 0.95,
+      confidence: 0.91,
+      trend: "stable",
+      sample_period: "2024-2026",
       dimensions: ["budget", "major"],
-      title: lang === 'AR' ? "عنق زجاجة مالي" : "Economic Bottleneck",
-      description: lang === 'AR' ? `تخصصك (${major.toUpperCase()}) يتطلب قدرة معالجة ورسوميات عالية، لكن الميزانية الحالية (${budgetUsd}$) تقيد الخيارات بالأجهزة الاقتصادية، مما يعني تضحية حتمية في دورة حياة الجهاز.` : `Your major (${major.toUpperCase()}) requires high processing/graphics power, but your budget ($${budgetUsd}) restricts you to economy devices, meaning an inevitable sacrifice in longevity.`
+      title: "Economic Bottleneck",
+      description: `Your major (${major.toUpperCase()}) typically requires significant processing and graphics power. At $${budgetUsd}, the available catalog is constrained to economy-tier devices — an almost certain compromise in longevity or peak performance.`
     });
   }
 
-  // 2. Physics Law: Performance vs Portability
+  // 2. Performance vs Portability — thermally driven, but weakening
   if (sliders.performance > 75 && sliders.portability > 75) {
     insights.push({
       id: "phys_limit_perf_port",
       type: "conflict",
-      gravity: 0.88,
+      gravity: 0.82,
+      confidence: 0.76,
+      trend: "weakening",
+      sample_period: "2024-2026",
       dimensions: ["performance", "portability"],
-      title: lang === 'AR' ? "قانون الفيزياء الحرارية" : "Law of Thermal Physics",
-      description: lang === 'AR' ? "طلبك لأداء فائق مع تصميم خفيف ومحمول سيؤدي إلى تقييد حراري (Thermal Throttling) للوصول لوزن خفيف، أو زيادة هائلة في السعر لهندسة التبريد." : "Demanding extreme performance in a highly portable design leads to thermal throttling or a massive price spike for advanced cooling engineering."
+      title: "Performance–Portability Tension",
+      description: "In most current x86 laptops, high performance still correlates with heavier chassis due to cooling requirements. Some 2025 designs (ARM-based, vapor-chamber) are beginning to challenge this pattern — but in the mainstream market it remains a real trade-off today."
     });
   }
 
-  // 3. Power Tax: Performance vs Battery
+  // 3. Performance vs Battery — power budget constraint
   if (sliders.performance > 80 && preferences.battery > 70) {
     insights.push({
       id: "power_tax_perf_batt",
       type: "conflict",
-      gravity: 0.82,
+      gravity: 0.78,
+      confidence: 0.84,
+      trend: "stable",
+      sample_period: "2024-2026",
       dimensions: ["performance", "battery"],
-      title: lang === 'AR' ? "ضريبة الطاقة" : "Power Tax",
-      description: lang === 'AR' ? "المكونات ذات الأداء المطلق تستهلك موارد طاقة ضخمة بشراهة. المطالبة ببطارية طويلة الأمد مع هذا الأداء تُشكل تضحية متبادلة لا مفر منها." : "Absolute performance components consume massive power. Demanding all-day battery life with this performance is an unavoidable mutual sacrifice."
+      title: "Performance–Battery Trade-off",
+      description: "High-performance components draw significantly more power. In the current market, combining all-day battery with peak performance typically requires either a larger battery (adding weight) or performance caps under load. This correlation is stable across 2024–2026 mainstream devices."
     });
   }
 
-  // 4. Strategic Harmony: Code/AI + VM Setup
+  // 4. Strategic Harmony — CS + VM alignment
   if (["cs", "ai"].includes(major) && sliders.virtual_machines >= 70 && sliders.performance >= 75) {
     insights.push({
       id: "harmony_cs_setup",
       type: "harmony",
       gravity: 0.90,
+      confidence: 0.88,
+      trend: "stable",
+      sample_period: "2024-2026",
       dimensions: ["major", "performance"],
-      title: lang === 'AR' ? "تناغم استراتيجي" : "Strategic Alignment",
-      description: lang === 'AR' ? "تخصيصك العالي للأداء والآلات الوهمية يتطابق تماماً مع طبيعة التخصص البرمجي ويضمن لك بيئة تطوير مستقرة وخالية من الانهيارات." : "Your high allocation for performance and virtual machines perfectly aligns with your programming major, ensuring a rock-solid development environment."
+      title: "Strategic Alignment",
+      description: "Your performance and VM allocation closely match what CS/AI workloads actually demand — this is a well-calibrated profile with low risk of over- or under-speccing."
     });
   }
 
-  // 5. Investment Harmony: Premium Ultrabook Path
+  // 5. Investment Harmony — Premium Ultrabook path
   if (budgetUsd > 1400 && preferences.battery > 60 && sliders.portability > 60 && sliders.performance <= 70) {
     insights.push({
       id: "harmony_premium_ultra",
       type: "harmony",
       gravity: 0.85,
+      confidence: 0.82,
+      trend: "stable",
+      sample_period: "2024-2026",
       dimensions: ["budget", "portability"],
-      title: lang === 'AR' ? "مسار استثماري ذكي" : "Smart Investment Path",
-      description: lang === 'AR' ? "الميزانية المرتفعة مع التركيز على جودة البطارية والوزن تفتح مساراً ممتازاً نحو أجهزة الفئة العُليا (Premium Ultrabooks) التي تدوم لسنوات طويلة." : "A high budget focused on battery and portability opens an excellent path toward Premium Ultrabooks that boast exceptional longevity."
+      title: "Smart Investment Path",
+      description: "High budget focused on battery and portability (rather than peak performance) is well-aligned with premium ultrabooks — devices that consistently show strong longevity and high resale retention in this price tier."
     });
   }
 
-  // 6. Overkill Risk: Resource Waste
+  // 6. Overkill Risk
   if (["general", "medical"].includes(major) && sliders.performance > 85 && budgetUsd > 1500) {
     insights.push({
       id: "risk_overkill",
       type: "risk",
       gravity: 0.70,
+      confidence: 0.75,
+      trend: "stable",
+      sample_period: "2024-2026",
       dimensions: ["major", "budget"],
-      title: lang === 'AR' ? "إهدار الموارد المحتمل" : "Potential Resource Waste",
-      description: lang === 'AR' ? "طبيعة تخصصك لا تتطلب هذا المستوى الهائل من الأداء. المحرك يقترح إعادة توجيه الميزانية نحو جودة الشاشة أو خفة الوزن للحصول على قيمة حقيقية." : "Your major doesn't strictly require this massive level of performance. The engine suggests redirecting budget toward screen quality or portability for real value."
+      title: "Potential Resource Mismatch",
+      description: "Based on typical workloads for this major, this performance level exceeds observed needs. Budget redirected toward display quality or portability would likely deliver more day-to-day value."
     });
   }
 
@@ -117,7 +148,7 @@ export function attemptRecovery({ profile, catalog, ruleset }) {
   for (const attempt of relaxationAttempts) {
     cumulativeRelaxation += attempt.weight;
 
-    // Law of Semantic Drift: Stop if we've relaxed >30%
+    // Stop if we've relaxed >30% — cognitive collapse territory
     if (cumulativeRelaxation > 0.30) {
       console.warn('[RECOVERY] Relaxation exceeded 30%. Cognitive collapse imminent.');
       break;
@@ -142,7 +173,6 @@ export function attemptRecovery({ profile, catalog, ruleset }) {
         resultCount: candidates.length
       });
 
-      // Early exit if we found good options
       if (candidates.length >= 3) {
         return {
           relaxationScore: cumulativeRelaxation,
