@@ -4,6 +4,17 @@
 
 BEGIN;
 
+-- auth.role() stub for plain-PostgreSQL CI environments.
+-- In Supabase production, the real auth schema already exists and this block is skipped.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'auth') THEN
+    CREATE SCHEMA auth;
+    CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql AS $fn$ SELECT 'authenticated'::text; $fn$;
+  END IF;
+END
+$$;
+
 -- 1. Create the Cognitive Domains table
 CREATE TABLE IF NOT EXISTS public.cognitive_domains (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
