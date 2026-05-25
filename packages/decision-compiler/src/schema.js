@@ -59,7 +59,17 @@ export const DomainConfigSchema = z.object({
   profileMapping: z.record(z.string(), z.string()).optional(),
   
   intentGraph: z.record(z.string(), intentNodeSchema).optional(),
-  conflictMap: z.record(z.string(), z.number()).optional(),
+  conflictMap: z.record(z.string(), z.union([
+    z.number(),
+    z.object({
+      correlation: z.number(),
+      confidence: z.number().optional(),
+      trend: z.string().optional(),
+      sample_period: z.string().optional(),
+      physics_type: z.string().optional(),
+      note: z.string().optional(),
+    }),
+  ])).optional(),
   
   gates: z.record(z.string(), gateSchema).optional(),
   scores: z.record(z.string(), scoreSchema).optional(),
