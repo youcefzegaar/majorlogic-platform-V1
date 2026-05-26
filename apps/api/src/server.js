@@ -18,7 +18,7 @@ import { loadEnvFile } from "../../../scripts/env.js";
 import { loadJsonSync } from "./db/repository.js";
 import { validateEnv } from "./config/validate-env.js";
 
-import adminRoutes from "./routes/admin.js";
+import adminRoutes from "./routes/admin/index.js";
 import apiRoutes from "./routes/api.js";
 import webRoutes from "./routes/web.js";
 import { csrfPlugin } from "./middleware/csrf.js";

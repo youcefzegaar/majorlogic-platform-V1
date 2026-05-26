@@ -120,4 +120,46 @@ describe('Kernel Determinism', () => {
     expect(resultLow.results[0].trace.inputHash).not.toBe(resultHigh.results[0].trace.inputHash);
     expect(resultLow.results[0].trace.decisionId).not.toBe(resultHigh.results[0].trace.decisionId);
   });
+
+  /**
+   * Regression: isFinal with score=0
+   *
+   * Bug: `if (node.isFinal && !values.final_score)` treated 0 as falsy, allowing
+   * a later isFinal node to overwrite a legitimately-zero first score.
+   * Fix: changed to `values.final_score === undefined`.
+   *
+   * The IR below has two isFinal score nodes. The first produces 0 (all-zero
+   * weights), the second would produce a nonzero value. The final_score must
+   * remain 0 — locked by the first isFinal node, never overwritten by the second.
+   */
+  it('preserves final_score of 0 — does not overwrite a zero score with a later isFinal node', () => {
+    const IR_ZERO_FINAL = {
+      id: 'test-zero-final',
+      version: '1.0.0',
+      irHash: 'zero-final-hash',
+      executionPlan: [
+        { id: 'value', type: 'attribute' },
+        {
+          id: 'score_zero',
+          type: 'score',
+          isFinal: true,
+          weights: { value: 0 }, // always produces score=0
+        },
+        {
+          id: 'score_nonzero',
+          type: 'score',
+          isFinal: true,
+          weights: { value: 5 }, // would produce score=50 for value=10
+        },
+      ],
+    };
+
+    const entity = { entityId: 'test-zero', value: 10 };
+    const result = kernel.execute(IR_ZERO_FINAL, [entity], {});
+    const { score } = result.results[0];
+
+    // The first isFinal node claims the slot (score=0).
+    // With the bug, !0 === true would let score_nonzero overwrite it.
+    expect(score).toBe(0);
+  });
 });

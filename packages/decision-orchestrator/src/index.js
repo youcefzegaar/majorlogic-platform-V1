@@ -12,7 +12,7 @@ import { NarrativeCache } from "./NarrativeCache.js";
 // Stable JSON serialization: sorts keys recursively so the hash is independent of
 // object key insertion order. Prevents spurious cache misses when the same profile
 // arrives with different key ordering from different callers.
-function _stableStringify(val) {
+export function _stableStringify(val) {
   if (Array.isArray(val)) return `[${val.map(_stableStringify).join(",")}]`;
   if (val !== null && typeof val === "object") {
     const keys = Object.keys(val).sort();
@@ -25,6 +25,8 @@ function _stableStringify(val) {
 const narrativeCache = new NarrativeCache();
 // IR cache: keyed by domainId+version so it survives across multiple orchestrator instances
 // and avoids re-compilation for every request (config is immutable between deployments)
+export const IR_CACHE_MAX_SIZE = 50;
+export function _irCacheSize() { return _irCache.size; }
 const _irCache = new Map();
 
 /**
@@ -237,9 +239,16 @@ export class DecisionOrchestrator {
     // Key on domainId + version + intentId — each intent may merge different gates/scores
     const cacheKey = `${config.domainId}:${config.version ?? "0"}:${intentId}`;
     if (_irCache.has(cacheKey)) {
-      return _irCache.get(cacheKey);
+      // LRU promotion: delete + re-insert moves entry to Map tail (evicted last)
+      const ir = _irCache.get(cacheKey);
+      _irCache.delete(cacheKey);
+      _irCache.set(cacheKey, ir);
+      return ir;
     }
     const ir = this.compiler.compile(config);
+    if (_irCache.size >= IR_CACHE_MAX_SIZE) {
+      _irCache.delete(_irCache.keys().next().value); // evict oldest (Map head)
+    }
     _irCache.set(cacheKey, ir);
     return ir;
   }

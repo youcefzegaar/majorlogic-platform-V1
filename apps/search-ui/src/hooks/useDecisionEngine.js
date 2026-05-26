@@ -110,7 +110,7 @@ function buildStabilityDescription(score, relaxed, status, lang) {
 
 // Converts any value to a valid slider integer [0, 100]. Guards against NaN from
 // undefined/missing priority fields — Number(undefined) = NaN which would corrupt the API payload.
-function toSlider(v, fallback = 50) {
+export function toSlider(v, fallback = 50) {
   const n = Number(v);
   return isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : fallback;
 }
@@ -435,16 +435,19 @@ export function useDecisionEngine() {
         paths: result.decision?.cards?.length ?? 0,
         confidence: Math.round((result.trust?.decisionConfidenceScore ?? 0.78) * 100)
       });
+      const rawIntegrity = result.decision?.integrityScore ?? 1.0;
       setDecisionMetadata({
         relaxedConstraint: result.decision?.relaxedConstraint || null,
-        integrityScore: result.decision?.integrityScore || 1.0
+        integrityScore: rawIntegrity <= 1.0 ? Math.round(rawIntegrity * 100) : Math.round(rawIntegrity)
       });
       setDetectedConflicts(localConflicts);
 
       return true;
     } catch (err) {
-      console.error(err);
-      setError('Could not connect to the Decision Engine.');
+      const isNetworkError = err instanceof TypeError;
+      setError(isNetworkError
+        ? 'Could not connect to the server. Check your internet connection.'
+        : (err?.message || 'The analysis could not be completed. Please try again.'));
       return false;
     } finally {
       setIsAnalyzing(false);
