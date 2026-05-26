@@ -2,6 +2,7 @@
 import { normalizeId } from "../../packages/shared-kernel/src/index.js";
 import { produceReviewIntelligence } from "../../packages/catalog-review-intelligence/src/index.js";
 import { detectBrand, estimateResaleScore, resolveSellerTier, buildProductImageDataUri, resolveFitContext } from "./normalizers.js";
+import { computeVendorTrustScore } from "../../packages/commercial-routing/src/vendorTrust.js";
 
 function calculateTCO(entity) {
   const price = entity.market?.bestOffer?.priceUsd ?? 1000;
@@ -13,7 +14,12 @@ function calculateTCO(entity) {
 export function publishEntity(observation, { fitContexts, resolvedSpecs = null }) {
   const specs = resolvedSpecs || observation.specs;
   const entityId = normalizeId(observation.itemName, observation.variantName);
-  const offers = [...observation.offers].sort((left, right) => left.priceUsd - right.priceUsd);
+  const offers = [...observation.offers]
+    .map(offer => {
+      const { score, platform } = computeVendorTrustScore(offer);
+      return { ...offer, vendorTrustScore: score, platform };
+    })
+    .sort((left, right) => left.priceUsd - right.priceUsd);
   const bestOffer = offers[0];
   const resaleScore = estimateResaleScore({
     itemName: observation.itemName,

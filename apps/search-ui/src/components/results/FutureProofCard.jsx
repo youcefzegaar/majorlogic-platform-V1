@@ -1,7 +1,13 @@
 import { useTranslation } from 'react-i18next';
 
-export default function FutureProofCard({ selectedCard, timeline }) {
+export default function FutureProofCard({ selectedCard, timeline, ownershipChoice }) {
   const { t } = useTranslation();
+
+  // Resolve purchase link from ownership choice (set in OwnershipPhase) or fall back to primary link
+  const buyUrl = ownershipChoice?.url || selectedCard.purchaseLinks?.primary;
+  const buyCta = ownershipChoice?.cta || (selectedCard.price ? `Buy Now — ${selectedCard.price}` : 'Buy Now');
+  const buyIsAffiliate = ownershipChoice?.isAffiliate ?? selectedCard.purchaseLinks?.isAffiliate ?? false;
+  const buyFallbackSeller = !ownershipChoice && selectedCard.purchaseLinks?.primarySeller;
 
   return (
     <div>
@@ -110,23 +116,23 @@ export default function FutureProofCard({ selectedCard, timeline }) {
             </div>
           </div>
 
-          {selectedCard.purchaseLinks?.primary && (
+          {buyUrl && (
             <div className="final-section">
               <div className="final-section-title">{t('future.where_to_buy')}</div>
               <a
-                href={selectedCard.purchaseLinks.primary}
+                href={buyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="final-buy-btn"
               >
                 <i className="fas fa-shopping-cart"></i>
-                &nbsp;{t('future.buy_now', { price: selectedCard.price })}
-                {selectedCard.purchaseLinks.primarySeller && (
-                  <span className="final-buy-seller"> {t('future.via_seller', { seller: selectedCard.purchaseLinks.primarySeller })}</span>
+                &nbsp;{buyCta}
+                {buyFallbackSeller && (
+                  <span className="final-buy-seller"> {t('future.via_seller', { seller: buyFallbackSeller })}</span>
                 )}
               </a>
               <div className="final-affiliate-disclosure">
-                {selectedCard.purchaseLinks.isAffiliate
+                {buyIsAffiliate
                   ? t('future.affiliate_link')
                   : t('future.direct_link')
                 }

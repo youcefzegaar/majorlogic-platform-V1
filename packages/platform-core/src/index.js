@@ -54,8 +54,13 @@ export async function executeUniversalPipeline({
   });
 
   // 3. Post-Decision Value Layers
-  const commercialRoutes = attachCommercialRoutes({ decision, catalog, domainPack });
+  // ownership must run before commercialRoutes — it provides ownershipStrategies
+  // for per-card trust filtering. Previously these were independent; now sequential.
   const ownership = buildOwnershipStrategy({ profile, catalog, decision, domainPack });
+  const commercialRoutes = attachCommercialRoutes({
+    decision, catalog, domainPack,
+    ownershipStrategies: ownership.strategies
+  });
   const trust = auditDecision({ catalog, decision, domainPack });
   const growth = buildGrowthArtifacts({ profile, decision, domainPack });
 

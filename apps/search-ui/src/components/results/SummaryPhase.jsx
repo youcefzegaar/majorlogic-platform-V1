@@ -266,14 +266,14 @@ function FollowUpSection({ decisionRunId }) {
   );
 }
 
-export default function SummaryPhase({ selectedCard, timeline, onNewDecision, onBackToExplanation }) {
+export default function SummaryPhase({ selectedCard, timeline, ownershipChoice, onNewDecision, onBackToExplanation }) {
   const { t } = useTranslation();
   return (
     <div className="phase-container active">
       <DecisionCertificate selectedCard={selectedCard} />
 
       <div className="final-summary-layout">
-        <FutureProofCard selectedCard={selectedCard} timeline={timeline} />
+        <FutureProofCard selectedCard={selectedCard} timeline={timeline} ownershipChoice={ownershipChoice} />
       </div>
 
       <FollowUpSection decisionRunId={selectedCard?.decisionRunId} />

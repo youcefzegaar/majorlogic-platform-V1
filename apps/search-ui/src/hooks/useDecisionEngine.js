@@ -383,6 +383,20 @@ export function useDecisionEngine() {
               affiliateLabel: transparency?.label ?? 'Verified Partner',
             },
             ownershipStrategy,
+            ownershipMode: isRenewed
+              ? 'refurbished_if_verified'
+              : (commercialRoute?.ownershipMode ?? ownershipStrategy?.recommendation?.mode ?? null),
+            effectiveOwnershipMode: isRenewed
+              ? 'refurbished_if_verified'
+              : (commercialRoute?.effectiveOwnershipMode ?? ownershipStrategy?.recommendation?.mode ?? null),
+            filteredByOwnership: isRenewed ? true : (commercialRoute?.filteredByOwnership ?? null),
+            offerTrustData: isRenewed
+              ? [{ seller: 'Amazon Renewed', vendorTrustScore: 92, platform: 'amazon_renewed' }]
+              : (commercialRoute?.allOffers ?? []).map(o => ({
+                  seller: o.seller,
+                  vendorTrustScore: o.vendorTrustScore ?? null,
+                  platform: o.platform ?? null,
+                })),
 
             // ─── Decision Intelligence Layer (all missing data now flows through) ─────
             naturalLanguageIntent: profile.productIntent.naturalLanguageIntent,

@@ -1,44 +1,21 @@
 /**
- * Commercial Routing — Ethical Multi-Store Offer Ranking
+ * Commercial Routing — Ethical Multi-Store Offer Ranking (Layer 2)
  *
- * المبادئ الأخلاقية المُطبَّقة هنا:
- *  1. محرك القرار (Decision Engine) لا يعلم بوجود روابط أفيليت — يوصي بالمواصفات فقط.
- *  2. هذه الطبقة تُنشَّط بعد صدور القرار، ولا تؤثر عليه بأي شكل.
- *  3. الترتيب: الأرخص أولاً لمصلحة المستخدم. وإذا تساوت أسعار، نُفضّل الأفيليت.
- *  4. نُظهر كل المتاجر للمستخدم — لا إخفاء، لا تلاعب.
- *  5. نُفصح صراحةً عن وجود عمولة أفيليت في رد الـ API.
+ * Ethical principles applied here:
+ *  1. The Decision Engine has no knowledge of affiliate links — it recommends specs only.
+ *  2. This layer activates after the decision is issued, and never influences it.
+ *  3. Ranking: cheapest first for user benefit. Trust and certifications break ties.
+ *  4. All stores are shown — no hiding, no manipulation.
+ *  5. Affiliate commission is disclosed explicitly in the API response.
+ *  6. Offers are filtered by ownership method trust thresholds before ranking.
  */
 
-const CONDITION_RANK = {
-  "new":          1,
-  "open_box":     2,
-  "refurbished":  3,
-  "used":         4
-};
+import {
+  filterOffersByOwnershipMethod,
+  rankOffersEthically,
+} from './vendorTrust.js';
 
-/**
- * ترتيب العروض بالمعيار الأخلاقي:
- * الأولوية: السعر الأقل → ثم حالة المنتج الأفضل → ثم وجود رابط أفيليت (كمُرجِّح فقط)
- */
-function rankOffersEthically(validOffers) {
-  return [...validOffers].sort((a, b) => {
-    // 1. الأرخص أولاً (مصلحة المستخدم)
-    if (a.priceUsd !== b.priceUsd) return a.priceUsd - b.priceUsd;
-
-    // 2. إذا تساوى السعر: نُفضّل حالة المنتج الأفضل (new > open_box > refurbished)
-    const rankA = CONDITION_RANK[a.condition] ?? 9;
-    const rankB = CONDITION_RANK[b.condition] ?? 9;
-    if (rankA !== rankB) return rankA - rankB;
-
-    // 3. إذا تساوى السعر والحالة: الأفيليت يُرجِّح فقط هنا (وليس في أي خطوة سابقة)
-    if (a.affiliate && !b.affiliate) return -1;
-    if (!a.affiliate && b.affiliate) return 1;
-
-    return 0;
-  });
-}
-
-export function attachCommercialRoutes({ decision, catalog, domainPack }) {
+export function attachCommercialRoutes({ decision, catalog, domainPack, ownershipStrategies }) {
   if (decision.status !== "ok") {
     return { status: decision.status, routes: [], affiliateDisclosure: null };
   }
@@ -52,23 +29,30 @@ export function attachCommercialRoutes({ decision, catalog, domainPack }) {
       return { cardType: card.cardType, entityId: card.entityId, status: "unresolved", offers: [] };
     }
 
-    const allOffers = entity.market?.offers || [];
-    const validOffers = allOffers.filter(o => o.priceUsd > 0);
+    const allOffers = (entity.market?.offers ?? []).filter(o => o.priceUsd > 0);
 
-    if (!validOffers.length) {
+    if (!allOffers.length) {
       return { cardType: card.cardType, entityId: card.entityId, status: "no_route_available", offers: [] };
     }
 
-    // Custom domain routing hook (optional override)
+    // Resolve ownership method for this card (from buildOwnershipStrategy output)
+    const ownershipStrategy = ownershipStrategies?.find(s => s.cardType === card.cardType);
+    const ownershipMode = ownershipStrategy?.recommendation?.mode ?? 'buy_new';
+    const thresholds = domainPack?.ownershipConfig?.trustThresholds;
+
+    // Layer 2: filter by ownership method trust thresholds
+    const { filtered, applied, effectiveMode } =
+      filterOffersByOwnershipMethod(allOffers, ownershipMode, thresholds);
+
+    // Rank: domain hook (receives trust-filtered offers) or default 7-level ethical ranking
     let rankedOffers;
     if (domainPack?.resolveCommercialRoutes) {
-      rankedOffers = domainPack.resolveCommercialRoutes(entity, validOffers);
+      rankedOffers = domainPack.resolveCommercialRoutes(entity, filtered);
       if (!Array.isArray(rankedOffers)) rankedOffers = [rankedOffers].filter(Boolean);
     } else {
-      rankedOffers = rankOffersEthically(validOffers);
+      rankedOffers = rankOffersEthically(filtered);
     }
 
-    // Normalize offer shape for API consumers
     const normalizedOffers = rankedOffers.map((offer, idx) => {
       if (offer.affiliate) hasAnyAffiliate = true;
 
@@ -78,11 +62,11 @@ export function attachCommercialRoutes({ decision, catalog, domainPack }) {
         sellerType: offer.sellerType ?? "unknown",
         priceUsd: offer.priceUsd,
         condition: offer.condition,
+        vendorTrustScore: offer.vendorTrustScore ?? null,
+        platform: offer.platform ?? null,
         commissionRate: offer.commissionRate ?? 0,
-        isBestDeal: idx === 0,           // الأرخص دائماً يحمل شارة "Best Deal"
+        isBestDeal: idx === 0,
         isAffiliate: offer.affiliate === true,
-        // رابط البوابة النظيف (نمرره عبر السيرفر، لا مباشرة)
-        // الـ Frontend سيستخدم: /go/:domain/:entityId?seller=Amazon
         buyRoute: `/go/laptop-student-us/${encodeURIComponent(card.entityId)}?seller=${encodeURIComponent(offer.seller)}`
       };
     });
@@ -91,21 +75,23 @@ export function attachCommercialRoutes({ decision, catalog, domainPack }) {
       cardType: card.cardType,
       entityId: card.entityId,
       status: "routed",
+      filteredByOwnership: applied,
+      ownershipMode,
+      effectiveOwnershipMode: effectiveMode,
       transparency: {
         isAffiliate: rankedOffers[0]?.affiliate === true,
         isNeutral: rankedOffers[0]?.commissionRate === 0,
         badge: rankedOffers[0]?.commissionRate === 0 ? "💎" : "🤝",
         label: rankedOffers[0]?.commissionRate === 0 ? "Pure Recommendation" : "Verified Partner"
       },
-      bestOffer: normalizedOffers[0],     // الأرخص دائماً لمصلحة المستخدم
-      allOffers: normalizedOffers          // الشفافية الكاملة
+      bestOffer: normalizedOffers[0],
+      allOffers: normalizedOffers
     };
   });
 
   return {
     status: "ok",
     routes,
-    // إفصاح صريح ومدمج في الرد — يُستخدَم في الـ UI
     affiliateDisclosure: hasAnyAffiliate
       ? "Some 'Buy Now' links are affiliate links. We earn a small commission if you purchase — this never influences our recommendations, which are based solely on specs and fit."
       : null
