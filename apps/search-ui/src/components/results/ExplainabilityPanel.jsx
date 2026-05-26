@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import DecisionTrust from '../shared/DecisionTrust';
 
 const GATE_NAMES = {
@@ -15,7 +16,7 @@ const DIMENSION_MAP = {
   portability_score: { label: 'Portability',  priorityKey: 'portability'  },
   battery_score:     { label: 'Battery',      priorityKey: 'battery'      },
   value_score:       { label: 'Value',        priorityKey: 'resale'       },
-  economic_score:    { label: 'Value',        priorityKey: 'resale'       },
+  // economic_score is intentionally absent: resolveScore() aliases it through value_score
 };
 
 function resolveScore(traceScores, key) {
@@ -47,7 +48,8 @@ function computeDims(traceScores = {}, priorities = {}) {
 
 // ── Step ① — User intent statement ─────────────────────────────────────
 function StepIntent({ intent }) {
-  const text = intent || "No specific goal described — engine used default parameters.";
+  const { t } = useTranslation();
+  const text = intent || t('explanation.step_no_intent');
   return (
     <div style={{
       padding: '12px 16px',
@@ -57,7 +59,7 @@ function StepIntent({ intent }) {
       marginBottom: 16,
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent-info)', letterSpacing: '0.08em', marginBottom: 6 }}>
-        ① YOU DESCRIBED
+        {t('explanation.step_you_described')}
       </div>
       <div style={{ fontSize: 13, color: intent ? 'var(--text-secondary)' : 'var(--text-muted)', fontStyle: 'italic', lineHeight: 1.65 }}>
         "{text}"
@@ -68,14 +70,15 @@ function StepIntent({ intent }) {
 
 // ── Step ② — Market-observed tension (hypothesis, not law) ──────────────
 function StepPhysics({ conflictsFound = [] }) {
+  const { t } = useTranslation();
   const tension = conflictsFound.find(c => c.gravity > 0.4 && c.type !== 'harmony');
   if (!tension) return null;
 
   const trendLabel = tension.trend === 'weakening'
-    ? 'weakening with newer hardware'
+    ? t('explanation.trend_weakening')
     : tension.trend === 'strengthening'
-    ? 'strengthening in current market'
-    : 'stable in current market';
+    ? t('explanation.trend_strengthening')
+    : t('explanation.trend_stable');
 
   const confidencePct = tension.confidence != null
     ? Math.round(tension.confidence * 100)
@@ -90,7 +93,7 @@ function StepPhysics({ conflictsFound = [] }) {
       marginBottom: 16,
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: '#818cf8', letterSpacing: '0.08em', marginBottom: 6 }}>
-        ② WHY THIS TENSION EXISTS
+        {t('explanation.step_why_tension')}
       </div>
       <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
         {tension.title}
@@ -100,11 +103,11 @@ function StepPhysics({ conflictsFound = [] }) {
       </div>
       <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
         <span>
-          Observed strength: <strong style={{ color: 'var(--text-secondary)' }}>{Math.round(tension.gravity * 100)}%</strong>
+          {t('explanation.observed_strength')}: <strong style={{ color: 'var(--text-secondary)' }}>{Math.round(tension.gravity * 100)}%</strong>
         </span>
         {confidencePct != null && (
           <span>
-            Confidence: <strong style={{ color: 'var(--text-secondary)' }}>{confidencePct}%</strong>
+            {t('explanation.confidence_pct')}: <strong style={{ color: 'var(--text-secondary)' }}>{confidencePct}%</strong>
           </span>
         )}
         {tension.trend && (
@@ -116,7 +119,7 @@ function StepPhysics({ conflictsFound = [] }) {
           </span>
         )}
         {tension.sample_period && (
-          <span>Calibrated on {tension.sample_period} market data</span>
+          <span>{t('explanation.calibrated_on', { period: tension.sample_period })}</span>
         )}
       </div>
     </div>
@@ -125,6 +128,7 @@ function StepPhysics({ conflictsFound = [] }) {
 
 // ── Step ③ — Pareto delta visual ────────────────────────────────────────
 function StepPareto({ dims }) {
+  const { t } = useTranslation();
   const sacrifices = dims.filter(d => d.delta < -4).sort((a, b) => a.delta - b.delta);
   const gains = dims.filter(d => d.delta > 4).sort((a, b) => b.delta - a.delta);
   const neutral = dims.filter(d => d.delta >= -4 && d.delta <= 4);
@@ -132,10 +136,10 @@ function StepPareto({ dims }) {
   if (dims.length === 0) return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 8 }}>
-        ③ YOUR PARETO TRADE
+        {t('explanation.step_pareto')}
       </div>
       <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
-        Score breakdown not available for this device.
+        {t('explanation.pareto_no_scores')}
       </div>
     </div>
   );
@@ -143,14 +147,14 @@ function StepPareto({ dims }) {
   if (sacrifices.length === 0 && gains.length === 0) return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 8 }}>
-        ③ YOUR PARETO TRADE
+        {t('explanation.step_pareto')}
       </div>
       <div style={{ fontSize: 12, color: 'var(--accent-success)', fontStyle: 'italic' }}>
-        All dimensions align closely with your priorities — minimal trade-offs detected.
+        {t('explanation.pareto_aligned')}
       </div>
       {neutral.length > 0 && (
         <div style={{ marginTop: 6, fontSize: 11, color: 'var(--text-muted)' }}>
-          Within range: {neutral.map(d => d.label).join(', ')}
+          {t('explanation.pareto_within_range')}: {neutral.map(d => d.label).join(', ')}
         </div>
       )}
     </div>
@@ -159,7 +163,7 @@ function StepPareto({ dims }) {
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 10 }}>
-        ③ YOUR PARETO TRADE
+        {t('explanation.step_pareto')}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: sacrifices.length > 0 && gains.length > 0 ? '1fr 1fr' : '1fr', gap: 12 }}>
         {sacrifices.length > 0 && (
@@ -170,7 +174,7 @@ function StepPareto({ dims }) {
             borderRadius: 10,
           }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-warning)', marginBottom: 8 }}>
-              You sacrifice
+              {t('explanation.you_sacrifice')}
             </div>
             {sacrifices.map(d => (
               <div key={d.key} style={{ marginBottom: 5 }}>
@@ -193,7 +197,7 @@ function StepPareto({ dims }) {
             borderRadius: 10,
           }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-success)', marginBottom: 8 }}>
-              You gain
+              {t('explanation.you_gain')}
             </div>
             {gains.map(d => (
               <div key={d.key} style={{ marginBottom: 5 }}>
@@ -211,7 +215,7 @@ function StepPareto({ dims }) {
       </div>
       {neutral.length > 0 && (
         <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-muted)' }}>
-          Within range of your priorities: {neutral.map(d => d.label).join(', ')}
+          {t('explanation.pareto_within_range')}: {neutral.map(d => d.label).join(', ')}
         </div>
       )}
     </div>
@@ -220,12 +224,13 @@ function StepPareto({ dims }) {
 
 // ── Step ④ — Full story (real-life language) ────────────────────────────
 function StepStory({ whyChosen }) {
+  const { t } = useTranslation();
   if (!whyChosen) return null;
   const paragraphs = String(whyChosen).split(/\n\n+/).filter(Boolean);
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 8 }}>
-        ④ IN YOUR LIFE
+        {t('explanation.step_in_your_life')}
       </div>
       {paragraphs.map((para, i) => (
         <p key={i} style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.85, margin: '0 0 12px 0' }}>
@@ -238,6 +243,7 @@ function StepStory({ whyChosen }) {
 
 // ── Step ⑤ — Key strengths (verified buyers or engine-assessed pros) ────
 function StepUserVoices({ userSignals = [], isEngineGenerated = false }) {
+  const { t } = useTranslation();
   if (userSignals.length === 0) return null;
   const shown = userSignals.slice(0, 3);
   return (
@@ -250,8 +256,8 @@ function StepUserVoices({ userSignals = [], isEngineGenerated = false }) {
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent-success)', letterSpacing: '0.08em', marginBottom: 8 }}>
         {isEngineGenerated
-          ? '⑤ KEY STRENGTHS FOR YOUR PROFILE'
-          : `⑤ VERIFIED BUYERS SAY (${shown.length} with similar priorities)`}
+          ? t('explanation.step_key_strengths')
+          : `${t('explanation.step_verified_buyers')} (${shown.length} with similar priorities)`}
       </div>
       {shown.map((signal, i) => (
         <div
@@ -270,7 +276,7 @@ function StepUserVoices({ userSignals = [], isEngineGenerated = false }) {
       ))}
       {isEngineGenerated && (
         <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 8, fontStyle: 'italic' }}>
-          Engine-assessed — buyer review data not yet linked.
+          {t('explanation.engine_assessed')}
         </div>
       )}
     </div>
@@ -279,11 +285,12 @@ function StepUserVoices({ userSignals = [], isEngineGenerated = false }) {
 
 // ── Step ⑥ — Why not others ─────────────────────────────────────────────
 function StepExcluded({ excluded = [] }) {
+  const { t } = useTranslation();
   if (excluded.length === 0) return null;
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 8 }}>
-        ⑥ WHY NOT THE ALTERNATIVES
+        {t('explanation.step_why_not')}
       </div>
       {excluded.slice(0, 3).map((item, i) => (
         <div
@@ -314,6 +321,7 @@ function StepExcluded({ excluded = [] }) {
 
 // ── Step ⑦ — Transfer of agency ────────────────────────────────────────
 function StepAgency({ dims, onBack }) {
+  const { t } = useTranslation();
   const topSacrifice = dims
     .filter(d => d.delta < -4)
     .sort((a, b) => a.delta - b.delta)[0];
@@ -327,7 +335,7 @@ function StepAgency({ dims, onBack }) {
       marginBottom: 4,
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.08em', marginBottom: 10 }}>
-        ⑦ THE FINAL QUESTION IS YOURS
+        {t('explanation.step_final')}
       </div>
       <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.55, marginBottom: 16 }}>
         {topSacrifice
@@ -335,8 +343,7 @@ function StepAgency({ dims, onBack }) {
           : 'Does this decision feel right for your actual day-to-day needs?'}
       </div>
       <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
-        Based on what you told us — only you know if the remaining trade-offs fit your life.
-        This is not our recommendation to accept blindly.
+        {t('explanation.final_body')}
       </div>
       {onBack && (
         <button
@@ -344,7 +351,7 @@ function StepAgency({ dims, onBack }) {
           style={{ fontSize: 12, padding: '6px 14px' }}
           onClick={onBack}
         >
-          <i className="fas fa-sliders-h"></i> Adjust priorities and re-analyze
+          <i className="fas fa-sliders-h"></i> {t('buttons.adjust_priorities_btn')}
         </button>
       )}
     </div>
@@ -353,6 +360,7 @@ function StepAgency({ dims, onBack }) {
 
 // ── "3 things that might bother you" ────────────────────────────────────
 function BotherSection({ flaws = [], topPros = [] }) {
+  const { t } = useTranslation();
   if (flaws.length === 0) return null;
   return (
     <div style={{ marginTop: 20 }}>
@@ -363,7 +371,7 @@ function BotherSection({ flaws = [], topPros = [] }) {
         letterSpacing: '0.07em',
         marginBottom: 12,
       }}>
-        3 THINGS THAT MIGHT BOTHER YOU — AND HOW TO HANDLE THEM
+        {t('explanation.bother_title')}
       </div>
       {flaws.slice(0, 3).map((flaw, i) => (
         <div
@@ -383,7 +391,7 @@ function BotherSection({ flaws = [], topPros = [] }) {
             </div>
             {topPros[i] && (
               <div style={{ fontSize: 11, color: 'var(--accent-success)', fontStyle: 'italic' }}>
-                Counterbalance: {topPros[i]}
+                {t('explanation.counterbalance')}: {topPros[i]}
               </div>
             )}
           </div>
@@ -395,13 +403,14 @@ function BotherSection({ flaws = [], topPros = [] }) {
 
 // ── "How we calculated?" tab ─────────────────────────────────────────────
 function HowWeCalculated({ integrityScore, irHash, relaxedConstraint, dims }) {
+  const { t } = useTranslation();
   const shortHash = irHash ? irHash.slice(0, 16) : null;
 
   return (
     <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.07em', marginBottom: 10 }}>
-          INTEGRITY SCORE
+          {t('explanation.integrity_score_label')}
         </div>
         <div style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)' }}>
           integrityScore = [Σ(weight × satisfied) / Σ(weight)] × 100<br />
@@ -419,15 +428,12 @@ function HowWeCalculated({ integrityScore, irHash, relaxedConstraint, dims }) {
       {dims.length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.07em', marginBottom: 10 }}>
-            PARETO DELTA — how scores compare to your priorities
+            {t('explanation.pareto_delta_label')}
           </div>
-          <div style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 2 }}>
+          <div style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 2, whiteSpace: 'pre' }}>
             {dims.map(d => (
               <div key={d.key}>
-                {d.label.padEnd(14)}{' '}
-                device: {String(d.score).padStart(3)}{' '}
-                your priority: {String(d.userIdeal).padStart(3)}{' '}
-                delta:{' '}
+                {d.label.padEnd(14)}device: {String(d.score).padStart(3)}  your priority: {String(d.userIdeal).padStart(3)}  delta:{' '}
                 <span style={{ color: d.delta > 4 ? 'var(--accent-success)' : d.delta < -4 ? 'var(--accent-warning)' : 'var(--text-muted)' }}>
                   {d.delta > 0 ? `+${d.delta}` : d.delta}
                 </span>
@@ -440,7 +446,7 @@ function HowWeCalculated({ integrityScore, irHash, relaxedConstraint, dims }) {
       {shortHash && (
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.07em', marginBottom: 8 }}>
-            DECISION FINGERPRINT
+            {t('explanation.fingerprint_label')}
           </div>
           <div style={{
             fontFamily: 'monospace',
@@ -455,8 +461,7 @@ function HowWeCalculated({ integrityScore, irHash, relaxedConstraint, dims }) {
             {irHash}
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>
-            This decision is deterministic — the same inputs always produce the same results.
-            You can verify by re-running with identical parameters.
+            {t('explanation.deterministic_note')}
           </div>
         </div>
       )}
@@ -465,14 +470,17 @@ function HowWeCalculated({ integrityScore, irHash, relaxedConstraint, dims }) {
 }
 
 export default function ExplainabilityPanel({ selectedCard, explanationTab, setExplanationTab, onBack }) {
-  const traceScores = selectedCard?.traceScores ?? {};
-  const priorities  = selectedCard?.priorities  ?? {};
+  const { t } = useTranslation();
+  if (!selectedCard) return null;
+
+  const traceScores = selectedCard.traceScores ?? {};
+  const priorities  = selectedCard.priorities  ?? {};
   const dims = computeDims(traceScores, priorities);
 
-  const integrityScore = selectedCard?.integrityScore ?? 100;
-  const irHash         = selectedCard?.irHash ?? null;
-  const relaxedConstraint = selectedCard?.relaxedConstraint ?? null;
-  const conflictsFound    = selectedCard?.conflictsFound    ?? [];
+  const integrityScore = selectedCard.integrityScore ?? 100;
+  const irHash         = selectedCard.irHash ?? null;
+  const relaxedConstraint = selectedCard.relaxedConstraint ?? null;
+  const conflictsFound    = selectedCard.conflictsFound    ?? [];
 
   return (
     <div>
@@ -495,16 +503,16 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
       <div className="card">
         <div className="explanation-tabs" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
           <button className={`explanation-tab ${explanationTab === 'decision' ? 'active' : ''}`} onClick={() => setExplanationTab('decision')}>
-            The Decision
+            {t('explanation.tab_decision')}
           </button>
           <button className={`explanation-tab ${explanationTab === 'trade-offs' ? 'active' : ''}`} onClick={() => setExplanationTab('trade-offs')}>
-            Trade-offs
+            {t('explanation.tab_tradeoffs')}
           </button>
           <button className={`explanation-tab ${explanationTab === 'excluded' ? 'active' : ''}`} onClick={() => setExplanationTab('excluded')}>
-            Alternatives
+            {t('explanation.tab_alternatives')}
           </button>
           <button className={`explanation-tab ${explanationTab === 'how' ? 'active' : ''}`} onClick={() => setExplanationTab('how')}>
-            How we calculated
+            {t('explanation.tab_how')}
           </button>
         </div>
 
@@ -512,7 +520,6 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
         {explanationTab === 'decision' && (
           <div className="explanation-content active">
             <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
-
               <StepIntent intent={selectedCard.naturalLanguageIntent} />
               <StepPhysics conflictsFound={conflictsFound} />
               <StepPareto dims={dims} />
@@ -523,7 +530,6 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
               />
               <StepExcluded excluded={selectedCard.excluded ?? []} />
               <StepAgency dims={dims} onBack={onBack} />
-
               <BotherSection flaws={selectedCard.flaws ?? []} topPros={selectedCard.topPros ?? []} />
             </div>
           </div>
@@ -535,13 +541,13 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
             <div style={{ padding: 20, background: 'var(--surface-elevated)', borderRadius: 12, border: '1px solid var(--border)' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
                 <div style={{ padding: 16, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 10, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--accent-success)', fontWeight: 700, marginBottom: 8 }}>✓ What You Gained</div>
+                  <div style={{ fontSize: 12, color: 'var(--accent-success)', fontWeight: 700, marginBottom: 8 }}>{t('explanation.gained')}</div>
                   {(selectedCard.tradeOffs?.gained ?? []).map((g, i) => (
                     <div key={i} style={{ fontSize: 13, marginBottom: 4 }}>• {g}</div>
                   ))}
                 </div>
                 <div style={{ padding: 16, background: 'rgba(244, 63, 94, 0.05)', borderRadius: 10, border: '1px solid rgba(244, 63, 94, 0.2)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--accent-danger)', fontWeight: 700, marginBottom: 8 }}>✗ What You Lost</div>
+                  <div style={{ fontSize: 12, color: 'var(--accent-danger)', fontWeight: 700, marginBottom: 8 }}>{t('explanation.lost')}</div>
                   {(selectedCard.tradeOffs?.lost ?? []).map((l, i) => (
                     <div key={i} style={{ fontSize: 13, marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 6, lineHeight: 1.5 }}>
                       <span style={{ color: 'var(--accent-danger)', flexShrink: 0 }}>•</span>
@@ -554,7 +560,7 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
               {Object.keys(selectedCard.sacrificeVector || {}).length > 0 && (
                 <div style={{ marginTop: 16, padding: 16, background: 'rgba(99, 102, 241, 0.05)', borderRadius: 10, border: '1px solid rgba(99, 102, 241, 0.2)' }}>
                   <div style={{ fontSize: 12, color: '#818cf8', fontWeight: 700, marginBottom: 4 }}>
-                    ⚖ These trade-offs are intentional — you chose this device knowing their cost
+                    {t('explanation.intentional_tradeoffs')}
                   </div>
                   {Object.entries(selectedCard.sacrificeVector).map(([gate, info]) => (
                     <div key={gate} style={{ fontSize: 13, marginBottom: 6, color: 'var(--text-secondary)', display: 'flex', gap: 6 }}>
@@ -578,7 +584,7 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
           <div className="explanation-content active">
             {(selectedCard.excluded ?? []).length === 0 ? (
               <div style={{ padding: 20, color: 'var(--text-muted)', fontSize: 13, textAlign: 'center' }}>
-                No excluded alternatives met the minimum baseline.
+                {t('explanation.no_alternatives')}
               </div>
             ) : (
               (selectedCard.excluded ?? []).map((item, idx) => (

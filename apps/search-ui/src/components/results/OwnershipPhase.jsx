@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import CommitmentCeremony from '../shared/CommitmentCeremony';
 
 const MODE_TO_PATH = {
@@ -49,6 +50,7 @@ const GAINS_LOSSES = {
 };
 
 export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplanation, onNext, onBack }) {
+  const { t } = useTranslation();
   // If user picked the Renewed Opportunity card, pre-land on the "renewed" path
   const isRenewedCard = selectedCard.renewedEntry === true;
   const [activePath, setActivePath]         = useState(isRenewedCard ? 'renewed' : null);
@@ -239,7 +241,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
       <div className="op-header">
         <div>
           <div className="op-device-name">{name}</div>
-          <div className="op-page-title">How to Own It</div>
+          <div className="op-page-title">{t('ownership.title')}</div>
         </div>
         <span className={`decision-card-badge ${selectedCard.badgeClass}`}>{selectedCard.badge}</span>
       </div>
@@ -262,7 +264,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
       <div className="op-why-banner">
         <div className="op-why-icon">⚡</div>
         <div style={{ flex: 1 }}>
-          <div className="op-why-label">What the engine suggests: <strong>{bars.find(b => b.key === recPath)?.label}</strong></div>
+          <div className="op-why-label">{t('ownership.what_engine_suggests')}: <strong>{bars.find(b => b.key === recPath)?.label}</strong></div>
           <div className="op-why-text">{whyText}</div>
         </div>
         <div className="op-confidence-badge" title="Estimate confidence based on market data richness, lifecycle availability, and device tier predictability">
@@ -484,7 +486,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
       {/* ── Navigation ────────────────────────────────── */}
       <div className="btn-group" style={{ marginTop: 8 }}>
         <button className="btn btn-primary" onClick={onNext}><i className="fas fa-arrow-right"></i> Final Summary</button>
-        <button className="btn btn-secondary" onClick={onBack}><i className="fas fa-arrow-left"></i> Back to Explanation</button>
+        <button className="btn btn-secondary" onClick={onBack}><i className="fas fa-arrow-left"></i> {t('buttons.back_to_explanation')}</button>
       </div>
 
     </div>

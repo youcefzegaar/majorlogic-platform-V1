@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import './index.css';
 
+import i18n from './i18n/index.js';
+import { getDir } from './i18n/languages.js';
 import { useSessionProfile } from './hooks/useSessionProfile';
 import { useDecisionEngine } from './hooks/useDecisionEngine';
 import { useDecisionStore } from './stores/decisionStore';
@@ -34,8 +36,9 @@ export default function App() {
   useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
 
   useEffect(() => {
+    i18n.changeLanguage(lang);
     document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = getDir(lang);
   }, [lang]);
 
   useEffect(() => {
@@ -44,7 +47,7 @@ export default function App() {
     if (phase > 0) {
       engine.runDecision({ ...profile, lang });
     }
-  }, [lang]);
+  }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const closeSidebar = () => setSidebarOpen(false);
 

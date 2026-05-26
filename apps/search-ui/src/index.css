@@ -2990,3 +2990,14 @@ body {
     font-size: 14px;
     margin-bottom: 4px;
 }
+
+
+/* ── RTL Support ────────────────────────────────────────────────────── */
+[dir="rtl"] .cards-phase-header { flex-direction: row-reverse; }
+[dir="rtl"] .sidebar-slider-label { flex-direction: row-reverse; }
+[dir="rtl"] .decision-cards-grid { direction: rtl; }
+[dir="rtl"] .btn-group { flex-direction: row-reverse; }
+[dir="rtl"] .explain-banner { text-align: right; }
+[dir="rtl"] .live-dot { margin-left: 0; margin-right: 6px; }
+[dir="rtl"] .recovery-warning { flex-direction: row-reverse; }
+[dir="rtl"] .renewed-opp-section-header { flex-direction: row-reverse; }

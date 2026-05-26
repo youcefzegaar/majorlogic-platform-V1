@@ -1,19 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 
-/**
- * CommitmentCeremony — psychological ownership acknowledgment before purchase.
- *
- * The user explicitly confirms they understand:
- *   ① The sacrifice they accepted (from Pareto delta)
- *   ② The decision integrity (if a constraint was relaxed)
- *   ③ The primary known issue
- *
- * Only after all three are checked does the actual buy button appear.
- * This is not a legal disclaimer — it is a transfer-of-agency protocol.
- * The framing is "your decision", not "our recommendation confirmed."
- */
 export default function CommitmentCeremony({ selectedCard, onReady }) {
+  const { t } = useTranslation();
   const [checked, setChecked] = useState({ sacrifice: false, integrity: false, flaw: false });
   const [revealed, setRevealed] = useState(false);
 
@@ -21,7 +11,6 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
   const relaxedConstraint = selectedCard?.relaxedConstraint ?? null;
   const primaryFlaw       = selectedCard?.flaws?.[0] ?? null;
 
-  // Build the primary sacrifice label from traceScores vs priorities
   const traceScores = selectedCard?.traceScores ?? {};
   const priorities  = selectedCard?.priorities  ?? {};
   const DIMS = [
@@ -111,7 +100,6 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
         BEFORE YOU BUY — CONFIRM YOU UNDERSTAND
       </div>
 
-      {/* ① Sacrifice acknowledgment */}
       <div style={rowStyle(checked.sacrifice)} onClick={() => toggle('sacrifice')}>
         <div style={checkboxStyle(checked.sacrifice)}>
           {checked.sacrifice && <span style={{ fontSize: 10, color: 'var(--accent-success)' }}>✓</span>}
@@ -120,12 +108,11 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
           {topSacrifice
             ? <>I accept that <strong style={{ color: 'var(--text-primary)' }}>{topSacrifice.label}</strong> scores{' '}
                 <strong style={{ color: 'var(--accent-warning)' }}>{topSacrifice.score}/100</strong> (my priority was {topSacrifice.ideal}).</>
-            : <>I understand the trade-offs of this device for my use case.</>
+            : <>{t('ownership.commitment_check1')}</>
           }
         </div>
       </div>
 
-      {/* ② Integrity acknowledgment */}
       <div style={rowStyle(checked.integrity)} onClick={() => toggle('integrity')}>
         <div style={checkboxStyle(checked.integrity)}>
           {checked.integrity && <span style={{ fontSize: 10, color: 'var(--accent-success)' }}>✓</span>}
@@ -133,12 +120,11 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
           {integrityScore < 100 && relaxedConstraint
             ? <>I understand that <strong style={{ color: 'var(--accent-warning)' }}>"{relaxedConstraint}"</strong> was relaxed to find this result — integrity score: {integrityScore}%.</>
-            : <>This decision is clean — all my constraints were fully satisfied (integrity: {integrityScore}%).</>
+            : <>{t('ownership.commitment_check2')}</>
           }
         </div>
       </div>
 
-      {/* ③ Primary flaw acknowledgment */}
       <div style={rowStyle(checked.flaw)} onClick={() => toggle('flaw')}>
         <div style={checkboxStyle(checked.flaw)}>
           {checked.flaw && <span style={{ fontSize: 10, color: 'var(--accent-success)' }}>✓</span>}
@@ -146,7 +132,7 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
           {primaryFlaw
             ? <>I've read the known issue: <strong style={{ color: 'var(--text-primary)' }}>"{primaryFlaw}"</strong></>
-            : <>No critical issues were detected in reviews for this device.</>
+            : <>{t('ownership.commitment_check3')}</>
           }
         </div>
       </div>
@@ -161,7 +147,7 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
             style={{ width: '100%', marginTop: 8, justifyContent: 'center' }}
             onClick={handleReady}
           >
-            I'm ready — this is my decision
+            {t('ownership.commitment_proceed')}
           </motion.button>
         )}
       </AnimatePresence>

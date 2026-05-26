@@ -1,13 +1,14 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FutureProofCard from './FutureProofCard';
 
 function DecisionCertificate({ selectedCard }) {
+  const { t } = useTranslation();
   const irHash        = selectedCard?.irHash ?? null;
   const integrityScore = selectedCard?.integrityScore ?? 100;
   const date          = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const shortHash     = irHash ? irHash.slice(0, 12) : null;
 
-  // 3-sentence journey summary
   const traceScores = selectedCard?.traceScores ?? {};
   const priorities  = selectedCard?.priorities  ?? {};
   const DIMS = [
@@ -65,11 +66,10 @@ function DecisionCertificate({ selectedCard }) {
       borderRadius: 14,
       marginBottom: 24,
     }}>
-      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.1em', marginBottom: 4 }}>
-            DECISION CERTIFICATE
+            {t('summary.certificate_title')}
           </div>
           <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)' }}>
             {selectedCard.name}
@@ -91,7 +91,7 @@ function DecisionCertificate({ selectedCard }) {
               color: integrityScore >= 100 ? 'var(--accent-success)' : 'var(--accent-warning)',
             }}
           >
-            integrity {integrityScore}%
+            {t('summary.integrity_label')} {integrityScore}%
           </div>
           {shortHash && (
             <div style={{ fontFamily: 'monospace', fontSize: 10, color: 'var(--text-muted)', marginTop: 6 }}>
@@ -101,7 +101,6 @@ function DecisionCertificate({ selectedCard }) {
         </div>
       </div>
 
-      {/* Journey summary */}
       {sentences.length > 0 && (
         <div style={{
           padding: '12px 14px',
@@ -126,12 +125,9 @@ function DecisionCertificate({ selectedCard }) {
         </div>
       )}
 
-      {/* Deterministic proof */}
       {shortHash && (
         <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-          This decision is <strong style={{ color: 'var(--text-secondary)' }}>deterministic</strong> —
-          the same inputs always produce the same result.
-          Verification fingerprint: <span style={{ fontFamily: 'monospace' }}>{irHash}</span>
+          {t('summary.deterministic_note')} <span style={{ fontFamily: 'monospace' }}>{irHash}</span>
         </div>
       )}
     </div>
@@ -139,6 +135,7 @@ function DecisionCertificate({ selectedCard }) {
 }
 
 function FollowUpSection({ decisionRunId }) {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
   const [satisfaction, setSatisfaction] = useState(null);
   const [regret, setRegret] = useState(null);
@@ -152,7 +149,7 @@ function FollowUpSection({ decisionRunId }) {
         body: JSON.stringify({
           decisionRunId: decisionRunId || 'anonymous',
           score: satisfaction,
-          tags: regret === 'Yes' ? ['would_repurchase'] : ['would_not_repurchase'],
+          tags: regret === t('summary.regret_yes') ? ['would_repurchase'] : ['would_not_repurchase'],
         }),
       });
     } catch {
@@ -174,7 +171,7 @@ function FollowUpSection({ decisionRunId }) {
         fontWeight: 600,
         textAlign: 'center',
       }}>
-        ✓ Thank you — your feedback helps improve decision quality for everyone.
+        {t('summary.thank_you')}
       </div>
     );
   }
@@ -190,20 +187,18 @@ function FollowUpSection({ decisionRunId }) {
       marginTop: 24,
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 4 }}>
-        CLOSING THE LOOP — 30-DAY FOLLOW-UP (OPTIONAL)
+        {t('summary.followup_section')}
       </div>
       <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
-        Come back in 30 days and tell us how it went.
+        {t('summary.followup_title')}
       </div>
       <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
-        Your answers help us understand whether high-integrity decisions lead to better outcomes —
-        the only way to prove decision quality empirically.
+        {t('summary.followup_body')}
       </div>
 
-      {/* Satisfaction */}
       <div style={{ marginBottom: 14 }}>
         <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
-          How satisfied are you with this device?
+          {t('summary.satisfaction_question')}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {[1, 2, 3, 4, 5].map(n => (
@@ -227,18 +222,17 @@ function FollowUpSection({ decisionRunId }) {
             </button>
           ))}
           <span style={{ fontSize: 11, color: 'var(--text-muted)', alignSelf: 'center', marginLeft: 4 }}>
-            1 = regret · 5 = great
+            {t('summary.satisfaction_scale')}
           </span>
         </div>
       </div>
 
-      {/* Regret */}
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
-          Would you make the same decision again?
+          {t('summary.regret_question')}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          {['Yes', 'No'].map(v => (
+          {[t('summary.regret_yes'), t('summary.regret_no')].map(v => (
             <button
               key={v}
               onClick={() => setRegret(v)}
@@ -266,13 +260,14 @@ function FollowUpSection({ decisionRunId }) {
         style={{ opacity: allAnswered ? 1 : 0.4 }}
         onClick={handleSubmit}
       >
-        Submit feedback
+        {t('buttons.submit_feedback')}
       </button>
     </div>
   );
 }
 
 export default function SummaryPhase({ selectedCard, timeline, onNewDecision, onBackToExplanation }) {
+  const { t } = useTranslation();
   return (
     <div className="phase-container active">
       <DecisionCertificate selectedCard={selectedCard} />
@@ -285,10 +280,10 @@ export default function SummaryPhase({ selectedCard, timeline, onNewDecision, on
 
       <div className="btn-group" style={{ marginTop: 24 }}>
         <button className="btn btn-primary" onClick={onNewDecision}>
-          <i className="fas fa-plus"></i> New Decision
+          <i className="fas fa-plus"></i> {t('buttons.new_decision')}
         </button>
         <button className="btn btn-secondary" onClick={onBackToExplanation}>
-          <i className="fas fa-arrow-left"></i> Back to Ownership
+          <i className="fas fa-arrow-left"></i> {t('buttons.back_to_ownership')}
         </button>
       </div>
     </div>

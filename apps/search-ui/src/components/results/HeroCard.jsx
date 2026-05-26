@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 function resolveIdentityStatement(card) {
   const fs = card.fitStates;
   if (!fs) return null;
@@ -12,14 +14,13 @@ function resolveIdentityStatement(card) {
 }
 
 export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, onDetails }) {
+  const { t } = useTranslation();
   const identityStatement = resolveIdentityStatement(card);
 
-  // AI expert voice — first paragraph only
   const aiVoice = card.whyChosen
     ? String(card.whyChosen).split(/\n\n/)[0]
     : identityStatement;
 
-  // One key flaw and one top pro
   const keyFlaw = card.flaws?.[0] ?? null;
   const keyPro  = card.topPros?.[0] ?? null;
 
@@ -28,7 +29,6 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
       className={`decision-card ${isSelected ? 'recommended' : ''}`}
       onClick={() => onSelect(type)}
     >
-      {/* Image */}
       <div
         className="decision-card-image"
         style={{
@@ -81,7 +81,6 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
       </div>
 
       <div className="decision-card-body">
-        {/* Badge + Name + Price */}
         <div className="decision-card-header">
           <span className={`decision-card-badge ${card.badgeClass}`}>{card.badge}</span>
         </div>
@@ -91,7 +90,6 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
           {card.originalPrice && <span className="original">{card.originalPrice}</span>}
         </div>
 
-        {/* AI voice — short anchor (1-2 sentences) */}
         {aiVoice && (
           <div
             style={{
@@ -108,7 +106,6 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
           </div>
         )}
 
-        {/* Key pro — single chip */}
         {keyPro && (
           <div
             style={{
@@ -128,7 +125,6 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
           </div>
         )}
 
-        {/* Key flaw — proactive single warning */}
         {keyFlaw && (
           <div
             style={{
@@ -147,19 +143,18 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
           </div>
         )}
 
-        {/* Actions */}
         <div className="card-actions">
           <button
             className="card-action-btn select"
             onClick={(e) => { e.stopPropagation(); onConfirm(type); }}
           >
-            <i className="fas fa-check-circle"></i> Choose This
+            <i className="fas fa-check-circle"></i> {t('buttons.choose_this')}
           </button>
           <button
             className="card-action-btn details"
             onClick={(e) => { e.stopPropagation(); onDetails(type); }}
           >
-            Why this? →
+            {t('buttons.why_this')}
           </button>
         </div>
       </div>

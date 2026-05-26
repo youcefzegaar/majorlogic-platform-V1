@@ -11,12 +11,16 @@
     "start": "serve dist -l $PORT --no-clipboard"
   },
   "dependencies": {
-    "serve": "^14.2.4",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
+    "i18next": "^26.2.0",
+    "i18next-icu": "^2.4.3",
+    "i18next-resources-to-backend": "^1.2.1",
     "lucide-react": "^1.14.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-i18next": "^17.0.8",
+    "serve": "^14.2.4",
     "tailwind-merge": "^3.6.0",
     "zustand": "^5.0.13"
   },

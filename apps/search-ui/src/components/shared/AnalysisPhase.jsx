@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import DecisionTrace from './DecisionTrace';
 import DecisionTrust from './DecisionTrust';
 
@@ -5,6 +6,7 @@ export default function AnalysisPhase({
   priorities, analysisSummary, detectedConflicts, decisionMetadata,
   budgetMin, budgetMax, onViewCards, onAdjustPriorities
 }) {
+  const { t } = useTranslation();
   const conflictCount = detectedConflicts.filter(c => c.type !== 'harmony').length;
   const hasConflicts = conflictCount > 0;
 
@@ -27,19 +29,18 @@ export default function AnalysisPhase({
             {hasConflicts ? '⚠️' : '✓'}
           </div>
           <div>
-            <div className="card-title">Decision Analysis</div>
+            <div className="card-title">{t('analysis.title')}</div>
             <div className="card-subtitle">
               {analysisSummary.devices > 0
-                ? `Scanned ${analysisSummary.devices} devices within your budget`
+                ? t('analysis.devices_evaluated', { count: analysisSummary.devices })
                 : 'Analyzing your requirements'}
               {hasConflicts
-                ? ` · ${conflictCount} tension${conflictCount > 1 ? 's' : ''} detected`
+                ? ` · ${t('analysis.conflicts_found', { count: conflictCount })}`
                 : ' · priorities aligned'}
             </div>
           </div>
         </div>
 
-        {/* Real conflict alerts from the decision engine */}
         {detectedConflicts.filter(c => c.type === 'conflict' || c.type === 'risk').map(conflict => (
           <div
             key={conflict.id}
@@ -73,7 +74,6 @@ export default function AnalysisPhase({
           </div>
         ))}
 
-        {/* Harmony notice when no conflicts */}
         {!hasConflicts && detectedConflicts.length > 0 && (
           <div
             className="conflict-alert"
@@ -97,7 +97,6 @@ export default function AnalysisPhase({
           budgetMax={budgetMax}
         />
 
-        {/* Integrity banner — always visible after analysis */}
         <div style={{ marginTop: 16 }}>
           <DecisionTrust
             integrityScore={integrityPercent}
@@ -109,10 +108,10 @@ export default function AnalysisPhase({
 
       <div className="btn-group">
         <button className="btn btn-primary" onClick={onViewCards}>
-          <i className="fas fa-magic"></i> View Decision Paths
+          <i className="fas fa-magic"></i> {t('analysis.view_paths')}
         </button>
         <button className="btn btn-secondary" onClick={onAdjustPriorities}>
-          <i className="fas fa-arrow-left"></i> Adjust Priorities
+          <i className="fas fa-arrow-left"></i> {t('cards.adjust_priorities')}
         </button>
       </div>
     </div>
