@@ -95,6 +95,7 @@ export class PostgresPlatformRepository {
   setIntegrationTestResult(...args)       { return this._commercial.setIntegrationTestResult(...args); }
   deleteIntegrationCredentials(...args)   { return this._commercial.deleteIntegrationCredentials(...args); }
   deleteIntegration(...args)              { return this._commercial.deleteIntegration(...args); }
+  seedDefaultIntegrations(...args)        { return this._commercial.seedDefaultIntegrations(...args); }
   logAuditEvent(...args)                  { return this._commercial.logAuditEvent(...args); }
   getAuditLog(...args)                    { return this._commercial.getAuditLog(...args); }
 }

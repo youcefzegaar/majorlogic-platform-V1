@@ -13,6 +13,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createPostgresClient, PostgresPlatformRepository } from "../../../../packages/postgres-persistence/src/index.js";
 import { alertDbOffline } from "../monitoring/telegram.js";
+import { createLogger } from "../../../../packages/shared-kernel/src/logger.js";
+
+const log = createLogger("repository");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root      = path.resolve(__dirname, "../../../..");
@@ -60,7 +63,7 @@ export async function getRuleset(relativePath) {
     const domainId = domainMatch[1];
     const repo = await getRepository();
     if (repo) {
-      console.log(`[Repository] Lazy migrating config for ${domainId} to database...`);
+      log.info({ domainId }, "[Repository] Lazy migrating config to database");
       await repo.saveDecisionLogic(domainId, parsed);
     }
   }
@@ -87,7 +90,7 @@ async function _doInit() {
 
       // On unexpected disconnect, invalidate singletons so next request reconnects
       client.on("error", (err) => {
-        console.error(`[DB] Connection error:`, err.message);
+        log.error({ err: err.message }, "[DB] Connection error — resetting singleton");
         repositoryInstance = null;
         _initPromise       = null;
       });
@@ -96,7 +99,7 @@ async function _doInit() {
       return repository;
 
     } catch (err) {
-      console.warn(`[DB] Connection attempt ${attempt}/${MAX_ATTEMPTS} failed:`, err.message);
+      log.warn({ attempt, maxAttempts: MAX_ATTEMPTS, err: err.message }, "[DB] Connection attempt failed");
       if (attempt < MAX_ATTEMPTS) {
         await new Promise((r) => setTimeout(r, attempt * 500)); // exponential back-off
       }
@@ -104,7 +107,7 @@ async function _doInit() {
   }
 
   const reason = "All 3 connection attempts failed — running without database.";
-  console.error(`[DB] ${reason}`);
+  log.error(reason);
   alertDbOffline(reason);
   return null;
 }

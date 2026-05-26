@@ -6,3 +6,14 @@ apps/**/.env
 apps/**/.env.local
 coverage/
 .claude/
+
+# Debug / test output files
+prod_out.txt
+prod_err.txt
+prod_response*.txt
+prod_response*.json
+server_out.txt
+server_err.txt
+response*.txt
+response*.json
+domains/*/generated/test.txt

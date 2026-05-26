@@ -121,7 +121,7 @@ export class DecisionKernel {
 
         values[node.id] = Math.max(0, Math.min(100, score));
         trace.scores[node.id] = values[node.id];
-        if (node.isFinal && !values.final_score) {
+        if (node.isFinal && values.final_score === undefined) {
           values.final_score = values[node.id];
         }
         break;

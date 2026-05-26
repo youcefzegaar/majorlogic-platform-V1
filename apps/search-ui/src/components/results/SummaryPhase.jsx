@@ -138,10 +138,28 @@ function DecisionCertificate({ selectedCard }) {
   );
 }
 
-function FollowUpSection() {
+function FollowUpSection({ decisionRunId }) {
   const [submitted, setSubmitted] = useState(false);
   const [satisfaction, setSatisfaction] = useState(null);
   const [regret, setRegret] = useState(null);
+
+  const handleSubmit = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
+    try {
+      await fetch(`${apiUrl}/api/v1/laptop-student-us/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          decisionRunId: decisionRunId || 'anonymous',
+          score: satisfaction,
+          tags: regret === 'Yes' ? ['would_repurchase'] : ['would_not_repurchase'],
+        }),
+      });
+    } catch {
+      // Feedback is best-effort — don't block the UI on network failure
+    }
+    setSubmitted(true);
+  };
 
   if (submitted) {
     return (
@@ -246,7 +264,7 @@ function FollowUpSection() {
         className="btn btn-secondary"
         disabled={!allAnswered}
         style={{ opacity: allAnswered ? 1 : 0.4 }}
-        onClick={() => setSubmitted(true)}
+        onClick={handleSubmit}
       >
         Submit feedback
       </button>
@@ -263,7 +281,7 @@ export default function SummaryPhase({ selectedCard, timeline, onNewDecision, on
         <FutureProofCard selectedCard={selectedCard} timeline={timeline} />
       </div>
 
-      <FollowUpSection />
+      <FollowUpSection decisionRunId={selectedCard?.decisionRunId} />
 
       <div className="btn-group" style={{ marginTop: 24 }}>
         <button className="btn btn-primary" onClick={onNewDecision}>

@@ -5,7 +5,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
   const [alertSaved, setAlertSaved] = useState(false);
   const [alertError, setAlertError] = useState(null);
 
-  const { purchaseLinks } = selectedCard;
+  const { purchaseLinks = {} } = selectedCard || {};
   const offers = [
     purchaseLinks.primary && {
       key: 'primary',
@@ -46,6 +46,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       setAlertSaved(true);
     } catch (err) {
+      console.error('[SmartBudgetCard] Price alert save failed:', err);
       setAlertError('Could not save alert. Please try again.');
     }
   };
@@ -107,7 +108,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
-            { icon: '💰', title: 'Price Drop', desc: `Alert when price drops below $${Math.round((purchaseLinks.priceUsd || 1000) * 0.9).toLocaleString()}` },
+            { icon: '💰', title: 'Price Drop', desc: purchaseLinks.priceUsd > 0 ? `Alert when price drops below $${Math.round(purchaseLinks.priceUsd * 0.9).toLocaleString()}` : 'Alert when price drops' },
             { icon: '🆕', title: 'Better Option', desc: 'If a superior device appears in your budget' },
             { icon: '⚡', title: 'Stock Alert', desc: 'If this device goes out of stock' }
           ].map(item => (

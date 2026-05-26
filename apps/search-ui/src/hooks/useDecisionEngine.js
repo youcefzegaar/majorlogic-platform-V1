@@ -1,5 +1,63 @@
 import { useState } from 'react';
 
+// Ported from domains/laptop-student-us/insights.js — pure profile logic, no imports needed.
+function detectConflicts(profile) {
+  const insights = [];
+  const { sliders, preferences, major, budgetUsd } = profile;
+  if (!sliders || !preferences) return insights;
+
+  const demandingMajors = ["engineering", "design", "ai"];
+  if (demandingMajors.includes(major) && budgetUsd < 850) {
+    insights.push({
+      id: "econ_major_bottleneck", type: "conflict",
+      gravity: 0.95, confidence: 0.91, trend: "stable", sample_period: "2024-2026",
+      dimensions: ["budget", "major"], title: "Economic Bottleneck",
+      description: `Your major (${major.toUpperCase()}) typically requires significant processing power. At $${budgetUsd}, the catalog is constrained to economy-tier devices — almost certain compromise in longevity or peak performance.`
+    });
+  }
+  if (sliders.performance > 75 && sliders.portability > 75) {
+    insights.push({
+      id: "phys_limit_perf_port", type: "conflict",
+      gravity: 0.82, confidence: 0.76, trend: "weakening", sample_period: "2024-2026",
+      dimensions: ["performance", "portability"], title: "Performance–Portability Tension",
+      description: "In most current x86 laptops, high performance still correlates with heavier chassis due to cooling. ARM-based and vapor-chamber designs are beginning to challenge this — but in the mainstream market it remains a real trade-off."
+    });
+  }
+  if (sliders.performance > 80 && preferences.battery > 70) {
+    insights.push({
+      id: "power_tax_perf_batt", type: "conflict",
+      gravity: 0.78, confidence: 0.84, trend: "stable", sample_period: "2024-2026",
+      dimensions: ["performance", "battery"], title: "Performance–Battery Trade-off",
+      description: "High-performance components draw significantly more power. Combining all-day battery with peak performance typically requires either a larger battery (adding weight) or performance caps under load."
+    });
+  }
+  if (["cs", "ai"].includes(major) && sliders.virtual_machines >= 70 && sliders.performance >= 75) {
+    insights.push({
+      id: "harmony_cs_setup", type: "harmony",
+      gravity: 0.90, confidence: 0.88, trend: "stable", sample_period: "2024-2026",
+      dimensions: ["major", "performance"], title: "Strategic Alignment",
+      description: "Your performance and VM allocation closely match what CS/AI workloads actually demand — a well-calibrated profile with low risk of over- or under-speccing."
+    });
+  }
+  if (budgetUsd > 1400 && preferences.battery > 60 && sliders.portability > 60 && sliders.performance <= 70) {
+    insights.push({
+      id: "harmony_premium_ultra", type: "harmony",
+      gravity: 0.85, confidence: 0.82, trend: "stable", sample_period: "2024-2026",
+      dimensions: ["budget", "portability"], title: "Smart Investment Path",
+      description: "High budget focused on battery and portability (rather than peak performance) is well-aligned with premium ultrabooks — devices with strong longevity and high resale retention in this price tier."
+    });
+  }
+  if (["general", "medical"].includes(major) && sliders.performance > 85 && budgetUsd > 1500) {
+    insights.push({
+      id: "risk_overkill", type: "risk",
+      gravity: 0.70, confidence: 0.75, trend: "stable", sample_period: "2024-2026",
+      dimensions: ["major", "budget"], title: "Potential Resource Mismatch",
+      description: "Based on typical workloads for this major, this performance level exceeds observed needs. Budget redirected toward display quality or portability would likely deliver more day-to-day value."
+    });
+  }
+  return insights;
+}
+
 const IMAGE_REGISTRY = {
   'thinkpad-p1': '/laptops/thinkpad-p1-gen-6.png',
   'zephyrus-g14': '/laptops/asus-zephyrus-g14.png',
@@ -106,6 +164,7 @@ export function useDecisionEngine() {
     setError(null);
     try {
       const profile = buildProfile({ major, lang, budgetMax, priorities, goal });
+      const localConflicts = detectConflicts(profile);
       // Direct Railway call — Vercel proxy is unreliable for POST requests
       const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
       const response = await fetch(`${apiUrl}/api/v1/laptop-student-us/decision/run`, {
@@ -333,13 +392,9 @@ export function useDecisionEngine() {
               const raw = result.decision?.integrityScore ?? 1.0;
               return raw <= 1.0 ? Math.round(raw * 100) : Math.round(raw);
             })(),
-            // detectIntentConflicts (result.decision.conflicts) has title+description+gravity+confidence+trend
-            // CognitiveAnalyzer (result.decision.confidence.conflicts) has raw pair data only
-            // UI needs the former for StepPhysics and AnalysisPhase
-            conflictsFound:     result.decision?.conflicts?.length > 0
-                                ? result.decision.conflicts
-                                : result.decision?.confidence?.conflicts ?? [],
-            irHash:             result.governance?.irHash ?? null,
+            conflictsFound:     localConflicts,
+            irHash:             result.decision?.governance?.irHash ?? null,
+            decisionRunId:      result.decision?.decisionRunId ?? null,
             candidateCount:     result.trust?.trace?.candidateCount ?? 0,
             topExcludedStories: result.decision?.topExcludedStories ?? [],
             relaxedConstraint:  result.decision?.relaxedConstraint ?? null,
@@ -361,7 +416,7 @@ export function useDecisionEngine() {
       }
 
       setAnalysisSummary({
-        conflicts: result.decision?.conflicts?.length ?? 0,
+        conflicts: localConflicts.filter(c => c.type !== 'harmony').length,
         devices: result.trust?.trace?.candidateCount ?? 0,
         paths: result.decision?.cards?.length ?? 0,
         confidence: Math.round((result.trust?.decisionConfidenceScore ?? 0.78) * 100)
@@ -370,7 +425,7 @@ export function useDecisionEngine() {
         relaxedConstraint: result.decision?.relaxedConstraint || null,
         integrityScore: result.decision?.integrityScore || 1.0
       });
-      setDetectedConflicts(result.decision.conflicts || []);
+      setDetectedConflicts(localConflicts);
 
       return true;
     } catch (err) {

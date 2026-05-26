@@ -9,6 +9,18 @@ import { CognitiveAnalyzer } from "./modules/CognitiveAnalyzer.js";
 import { RecoveryEngine } from "./modules/RecoveryEngine.js";
 import { NarrativeCache } from "./NarrativeCache.js";
 
+// Stable JSON serialization: sorts keys recursively so the hash is independent of
+// object key insertion order. Prevents spurious cache misses when the same profile
+// arrives with different key ordering from different callers.
+function _stableStringify(val) {
+  if (Array.isArray(val)) return `[${val.map(_stableStringify).join(",")}]`;
+  if (val !== null && typeof val === "object") {
+    const keys = Object.keys(val).sort();
+    return `{${keys.map(k => `${JSON.stringify(k)}:${_stableStringify(val[k])}`).join(",")}}`;
+  }
+  return JSON.stringify(val);
+}
+
 // Module-level singletons — shared across all orchestrator instances in this process
 const narrativeCache = new NarrativeCache();
 // IR cache: keyed by domainId+version so it survives across multiple orchestrator instances
@@ -161,7 +173,7 @@ export class DecisionOrchestrator {
       if (ctx.abort) return;
       // Attach governance hashes to domainContext so _buildCard can use them for cache keying.
       // irHash comes from the compiled IR; inputHash mirrors _stepGovernanceTrace logic.
-      const inputHash = createHash("sha256").update(JSON.stringify(ctx.userProfile)).digest("hex");
+      const inputHash = createHash("sha256").update(_stableStringify(ctx.userProfile)).digest("hex");
       ctx.domainContext._cacheKeys = {
           irHash: ctx.ir?.irHash,
           inputHash
@@ -178,7 +190,7 @@ export class DecisionOrchestrator {
   }
 
   async _stepGovernanceTrace(ctx) {
-      const inputHash = createHash("sha256").update(JSON.stringify(ctx.userProfile)).digest("hex");
+      const inputHash = createHash("sha256").update(_stableStringify(ctx.userProfile)).digest("hex");
       ctx.governance = {
           irHash: ctx.ir.irHash,
           inputHash,

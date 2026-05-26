@@ -238,8 +238,9 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
   fastify.get("/domains", async (_request, reply) => {
     const { readFile } = await import("node:fs/promises");
     const { resolve, join } = await import("node:path");
+    const { getValidDomains } = await import("../registry.js");
     const domainsDir = resolve(process.cwd(), "domains");
-    const domainFolders = ["laptop-student-us"];
+    const domainFolders = [...getValidDomains()];
 
     const domains = await Promise.all(domainFolders.map(async (slug) => {
       try {
@@ -253,7 +254,8 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
           updated_at: new Date().toISOString(),
           config
         };
-      } catch {
+      } catch (err) {
+        fastify.log.warn({ slug, err: err.message }, '[Admin] Failed to load domain config');
         return null;
       }
     }));
@@ -347,26 +349,7 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
     const { getRepository } = await import("../db/repository.js");
     const repository = await getRepository();
     if (!repository) return reply.status(503).send({ error: "db_offline" });
-    await repository.pool.query(`
-      INSERT INTO ml_commercial.platform_integrations (slug, category, name, description, icon_emoji, config)
-      VALUES
-        ('claude',        'ai',        'Claude (Anthropic)',     'Decision explanation, narrative generation', '🧠', '{"model":"claude-sonnet-4-6","max_tokens":1024}'),
-        ('openai',        'ai',        'OpenAI',                'GPT-4o for fallback AI tasks',               '⚡', '{"model":"gpt-4o","max_tokens":1024}'),
-        ('gemini',        'ai',        'Google Gemini',         'Gemini Pro / Flash for AI tasks',            '🔷', '{"model":"gemini-2.0-flash"}'),
-        ('amazon_pa',     'ecommerce', 'Amazon PA API',         'Live prices, images, availability',          '🛒', '{"region":"us-east-1","marketplace":"www.amazon.com"}'),
-        ('sendgrid',      'email',     'SendGrid',              'Transactional emails',                       '📧', '{}'),
-        ('resend',        'email',     'Resend',                'Developer-friendly email API',               '✉️', '{}'),
-        ('slack_webhook', 'webhook',   'Slack Webhook',         'Alert notifications',                        '💬', '{}'),
-        ('reddit',        'reviews',   'Reddit API',            'Fetch laptop discussions',                   '🟠', '{"subreddits":"laptops,suggestalaptop"}'),
-        ('youtube',       'reviews',   'YouTube Data API',      'Fetch video reviews',                        '▶️', '{"max_results":5}'),
-        ('bestbuy',       'reviews',   'Best Buy API',          'Live prices and reviews',                    '🔵', '{}'),
-        ('google_search', 'reviews',   'Google Custom Search',  'Expert reviews search',                      '🔍', '{"num":5}'),
-        ('serpapi',       'reviews',   'SerpAPI',               'Shopping results',                           '🌐', '{}'),
-        ('redis',         'database',  'Redis / Upstash',       'Caching layer',                              '🔴', '{"tls":true}'),
-        ('postgres_read', 'database',  'Postgres Read Replica', 'Offload analytics queries',                  '🐘', '{}')
-      ON CONFLICT (slug) DO NOTHING
-    `);
-    const integrations = await repository.getIntegrations();
+    const integrations = await repository.seedDefaultIntegrations();
     return reply.send({ success: true, inserted: integrations.length, integrations });
   });
 
@@ -497,28 +480,44 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
       } else if (slug === "youtube") {
         const key = integration.credentials?.api_key;
         if (!key) throw new Error("No API key configured");
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=test&maxResults=1&key=${key}`);
+        const ytUrl = new URL("https://www.googleapis.com/youtube/v3/search");
+        ytUrl.searchParams.set("part", "snippet");
+        ytUrl.searchParams.set("q", "test");
+        ytUrl.searchParams.set("maxResults", "1");
+        ytUrl.searchParams.set("key", key);
+        const res = await fetch(ytUrl);
         ok = res.ok;
         message = ok ? "YouTube Data API connected." : `YouTube error: ${res.status}`;
 
       } else if (slug === "bestbuy") {
         const key = integration.credentials?.api_key;
         if (!key) throw new Error("No API key configured");
-        const res = await fetch(`https://api.bestbuy.com/v1/products((type=laptop))?format=json&pageSize=1&apiKey=${key}`);
+        const bbUrl = new URL("https://api.bestbuy.com/v1/products((type=laptop))");
+        bbUrl.searchParams.set("format", "json");
+        bbUrl.searchParams.set("pageSize", "1");
+        bbUrl.searchParams.set("apiKey", key);
+        const res = await fetch(bbUrl);
         ok = res.ok;
         message = ok ? "Best Buy API connected." : `Best Buy error: ${res.status}`;
 
       } else if (slug === "google_search") {
         const { api_key, cx } = integration.credentials;
         if (!api_key || !cx) throw new Error("api_key and cx (Search Engine ID) required");
-        const res = await fetch(`https://www.googleapis.com/customsearch/v1?key=${api_key}&cx=${cx}&q=test&num=1`);
+        const gsUrl = new URL("https://www.googleapis.com/customsearch/v1");
+        gsUrl.searchParams.set("key", api_key);
+        gsUrl.searchParams.set("cx", cx);
+        gsUrl.searchParams.set("q", "test");
+        gsUrl.searchParams.set("num", "1");
+        const res = await fetch(gsUrl);
         ok = res.ok;
         message = ok ? "Google Custom Search connected." : `Google Search error: ${res.status}`;
 
       } else if (slug === "serpapi") {
         const key = integration.credentials?.api_key;
         if (!key) throw new Error("No API key configured");
-        const res = await fetch(`https://serpapi.com/account?api_key=${key}`);
+        const saUrl = new URL("https://serpapi.com/account");
+        saUrl.searchParams.set("api_key", key);
+        const res = await fetch(saUrl);
         ok = res.ok;
         message = ok ? "SerpAPI connected." : `SerpAPI error: ${res.status}`;
 
@@ -611,6 +610,10 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
   fastify.post("/catalog/rebuild", async (request, reply) => {
     const { domainId } = request.body ?? {};
     if (!domainId) return reply.status(400).send({ error: "domainId is required" });
+    const { getValidDomains } = await import("../registry.js");
+    if (!getValidDomains().has(domainId)) {
+      return reply.status(400).send({ error: "unknown_domain", message: `Unknown domain: ${domainId}` });
+    }
 
     // Reject if a rebuild for this domain is already running
     for (const job of _catalogJobs.values()) {
@@ -642,9 +645,24 @@ export default async function adminRoutes(fastify, { DEFAULT_DOMAIN }) {
     proc.stdout.on("data", (d) => d.toString().split("\n").forEach(addLog));
     proc.stderr.on("data", (d) => d.toString().split("\n").forEach(addLog));
 
+    // Kill the process after 10 minutes to prevent runaway rebuilds
+    const REBUILD_TIMEOUT_MS = 10 * 60 * 1000;
+    const killTimer = setTimeout(() => {
+      if (job.status === "running") {
+        proc.kill("SIGTERM");
+        job.status = "error";
+        job.finishedAt = Date.now();
+        job.logs.push("[timeout] Catalog rebuild exceeded 10 minutes — process killed.");
+        fastify.log.warn({ domainId, jobId }, "[Admin] Catalog rebuild timed out");
+      }
+    }, REBUILD_TIMEOUT_MS);
+
     proc.on("close", (code) => {
-      job.status = code === 0 ? "done" : "error";
-      job.finishedAt = Date.now();
+      clearTimeout(killTimer);
+      if (job.status === "running") {
+        job.status = code === 0 ? "done" : "error";
+        job.finishedAt = Date.now();
+      }
     });
 
     return reply.status(202).send({ jobId, status: "running" });

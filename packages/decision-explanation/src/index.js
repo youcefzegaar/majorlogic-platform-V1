@@ -281,7 +281,6 @@ export class DecisionExplainer {
     // Parse structured JSON response from AI
     // Strategy 1: direct JSON.parse (handles clean responses)
     const cleanedJson = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-    console.log("[CognitiveRenderer] Raw JSON length:", cleanedJson.length);
 
     try {
       const parsed = JSON.parse(cleanedJson);
@@ -301,8 +300,8 @@ export class DecisionExplainer {
     this.logger.warn('[CognitiveRenderer] JSON.parse failed — attempting regex extraction');
     try {
       const extractField = (fieldName) => {
-        // Match "fieldName": "..." allowing escaped quotes inside the value
-        const re = new RegExp(`"${fieldName}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`);
+        const safe = fieldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(`"${safe}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`);
         const m = cleanedJson.match(re);
         return m ? m[1].replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\\\/g, '\\').trim() : null;
       };
