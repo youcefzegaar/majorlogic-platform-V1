@@ -47,7 +47,7 @@ function computeDims(traceScores = {}, priorities = {}) {
 
 // ── Step ① — User intent statement ─────────────────────────────────────
 function StepIntent({ intent }) {
-  if (!intent) return null;
+  const text = intent || "No specific goal described — engine used default parameters.";
   return (
     <div style={{
       padding: '12px 16px',
@@ -59,8 +59,8 @@ function StepIntent({ intent }) {
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent-info)', letterSpacing: '0.08em', marginBottom: 6 }}>
         ① YOU DESCRIBED
       </div>
-      <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.65 }}>
-        "{intent}"
+      <div style={{ fontSize: 13, color: intent ? 'var(--text-secondary)' : 'var(--text-muted)', fontStyle: 'italic', lineHeight: 1.65 }}>
+        "{text}"
       </div>
     </div>
   );
@@ -129,7 +129,32 @@ function StepPareto({ dims }) {
   const gains = dims.filter(d => d.delta > 4).sort((a, b) => b.delta - a.delta);
   const neutral = dims.filter(d => d.delta >= -4 && d.delta <= 4);
 
-  if (sacrifices.length === 0 && gains.length === 0) return null;
+  if (dims.length === 0) return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 8 }}>
+        ③ YOUR PARETO TRADE
+      </div>
+      <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+        Score breakdown not available for this device.
+      </div>
+    </div>
+  );
+
+  if (sacrifices.length === 0 && gains.length === 0) return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 8 }}>
+        ③ YOUR PARETO TRADE
+      </div>
+      <div style={{ fontSize: 12, color: 'var(--accent-success)', fontStyle: 'italic' }}>
+        All dimensions align closely with your priorities — minimal trade-offs detected.
+      </div>
+      {neutral.length > 0 && (
+        <div style={{ marginTop: 6, fontSize: 11, color: 'var(--text-muted)' }}>
+          Within range: {neutral.map(d => d.label).join(', ')}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div style={{ marginBottom: 16 }}>
@@ -211,10 +236,9 @@ function StepStory({ whyChosen }) {
   );
 }
 
-// ── Step ⑤ — User voices ────────────────────────────────────────────────
-function StepUserVoices({ userSignals = [] }) {
+// ── Step ⑤ — Key strengths (verified buyers or engine-assessed pros) ────
+function StepUserVoices({ userSignals = [], isEngineGenerated = false }) {
   if (userSignals.length === 0) return null;
-  const count = userSignals.length;
   const shown = userSignals.slice(0, 3);
   return (
     <div style={{
@@ -225,7 +249,9 @@ function StepUserVoices({ userSignals = [] }) {
       marginBottom: 16,
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent-success)', letterSpacing: '0.08em', marginBottom: 8 }}>
-        ⑤ VERIFIED BUYERS SAY ({count} with similar priorities)
+        {isEngineGenerated
+          ? '⑤ KEY STRENGTHS FOR YOUR PROFILE'
+          : `⑤ VERIFIED BUYERS SAY (${shown.length} with similar priorities)`}
       </div>
       {shown.map((signal, i) => (
         <div
@@ -239,9 +265,14 @@ function StepUserVoices({ userSignals = [] }) {
             borderBottom: i < shown.length - 1 ? '1px solid rgba(16,185,129,0.1)' : 'none',
           }}
         >
-          "{signal}"
+          {isEngineGenerated ? signal : `"${signal}"`}
         </div>
       ))}
+      {isEngineGenerated && (
+        <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 8, fontStyle: 'italic' }}>
+          Engine-assessed — buyer review data not yet linked.
+        </div>
+      )}
     </div>
   );
 }
@@ -486,7 +517,10 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
               <StepPhysics conflictsFound={conflictsFound} />
               <StepPareto dims={dims} />
               <StepStory whyChosen={selectedCard.whyChosen} />
-              <StepUserVoices userSignals={selectedCard.userSignals ?? []} />
+              <StepUserVoices
+                userSignals={selectedCard.userSignals ?? []}
+                isEngineGenerated={selectedCard.userSignalsSource === 'engine'}
+              />
               <StepExcluded excluded={selectedCard.excluded ?? []} />
               <StepAgency dims={dims} onBack={onBack} />
 

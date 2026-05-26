@@ -108,25 +108,32 @@ function buildStabilityDescription(score, relaxed, status, lang) {
 }
 
 
+// Converts any value to a valid slider integer [0, 100]. Guards against NaN from
+// undefined/missing priority fields — Number(undefined) = NaN which would corrupt the API payload.
+function toSlider(v, fallback = 50) {
+  const n = Number(v);
+  return isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : fallback;
+}
+
 function buildProfile({ major, lang, budgetMax, priorities, goal }) {
-  const perf = Number(priorities.performance);
+  const perf = toSlider(priorities.performance, 70);
   return {
     major,
     locale: lang,
     budgetUsd: budgetMax,
     preferences: {
       performance: perf,
-      portability: Number(priorities.portability),
-      battery: Number(priorities.battery),
+      portability: toSlider(priorities.portability),
+      battery: toSlider(priorities.battery),
       display: major === 'design' ? 85 : 50,
-      resale: priorities.resale ?? 50
+      resale: toSlider(priorities.resale, 50)
     },
     sliders: {
       performance: perf,
       virtual_machines: Math.round(perf * 0.85),
       video_4k: Math.round(perf * 0.70),
       gaming: Math.round(perf * 0.75),
-      portability: Number(priorities.portability)
+      portability: toSlider(priorities.portability)
     },
     context: {
       acceptsOpenBox: true,
@@ -381,8 +388,15 @@ export function useDecisionEngine() {
             naturalLanguageIntent: profile.productIntent.naturalLanguageIntent,
             intelligence:          card.intelligence      ?? null,
             topPros:               card.topPros           ?? [],
-            userSignals:           card.intelligence?.userSignals ?? card.userSignals ?? [],
-            decision_confidence:   card.decision_confidence ?? result.decision?.confidence ?? null,
+            userSignals: (() => {
+              const real = card.intelligence?.userSignals ?? card.userSignals ?? [];
+              if (real.length > 0) return real;
+              return (card.topPros ?? []).slice(0, 3);
+            })(),
+            userSignalsSource: (card.intelligence?.userSignals ?? card.userSignals ?? []).length > 0
+              ? 'verified'
+              : 'engine',
+            decision_confidence:   card.decision_confidence ?? result.decision?.confidence?.score ?? result.trust?.decisionConfidenceScore ?? null,
             tcoEstimate:           card.tcoEstimate ?? ownershipStrategy?.tco ?? null,
             fitStates:             card.fitStates ?? result.decision?.fitStates ?? null,
             traceScores:           card.trace?.scores ?? {},
