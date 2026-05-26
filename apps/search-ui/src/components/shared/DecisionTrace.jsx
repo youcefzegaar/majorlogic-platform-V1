@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 const RadarChart = ({ data }) => {
   const cx = 120;
   const cy = 120;
@@ -39,18 +41,24 @@ const RadarChart = ({ data }) => {
 };
 
 export default function DecisionTrace({ priorities, analysisSummary, detectedConflicts, budgetMin, budgetMax }) {
+  const { t } = useTranslation();
+
   return (
     <>
       <div className="constraint-list">
         <div className="constraint-item">
           <div className="constraint-status ok"><i className="fas fa-check"></i></div>
           <div className="constraint-info">
-            <div className="constraint-name">Budget (${budgetMin.toLocaleString()} - ${budgetMax.toLocaleString()})</div>
-            <div className="constraint-detail">{analysisSummary.devices} devices available within budget</div>
+            <div className="constraint-name">
+              {t('trace.budget_constraint', { min: budgetMin.toLocaleString(), max: budgetMax.toLocaleString() })}
+            </div>
+            <div className="constraint-detail">
+              {t('trace.devices_in_budget', { count: analysisSummary.devices })}
+            </div>
           </div>
           <div className="constraint-tension">
             <div className="tension-bar-bg"><div className="tension-bar-fill low" style={{ width: '20%' }}></div></div>
-            <div className="tension-label">Low tension</div>
+            <div className="tension-label">{t('trace.low_tension')}</div>
           </div>
         </div>
 
@@ -60,6 +68,11 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
           const icon = isHarmony ? 'fa-check-circle' : isRisk ? 'fa-info-circle' : 'fa-bolt';
           const colorClass = isHarmony ? 'ok' : isRisk ? 'info' : 'warning';
           const barColorClass = isHarmony ? 'low' : isRisk ? 'medium' : 'high';
+          const tensionLabel = isHarmony
+            ? t('trace.alignment')
+            : isRisk
+              ? t('trace.risk')
+              : t('trace.tension');
 
           return (
             <div
@@ -84,7 +97,7 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
                   <div className={`tension-bar-fill ${barColorClass}`} style={{ width: `${Math.round(insight.gravity * 100)}%` }}></div>
                 </div>
                 <div className="tension-label">
-                  {isHarmony ? 'Alignment' : isRisk ? 'Risk' : 'Tension'} ({Math.round(insight.gravity * 100)}%)
+                  {tensionLabel} ({Math.round(insight.gravity * 100)}%)
                 </div>
               </div>
             </div>
@@ -95,8 +108,8 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
           <div className="constraint-item">
             <div className="constraint-status ok"><i className="fas fa-check-double"></i></div>
             <div className="constraint-info">
-              <div className="constraint-name">Excellent Harmony</div>
-              <div className="constraint-detail">Your priorities and budget are perfectly aligned. No significant compromises required.</div>
+              <div className="constraint-name">{t('trace.harmony_title')}</div>
+              <div className="constraint-detail">{t('trace.harmony_desc')}</div>
             </div>
           </div>
         )}
@@ -105,30 +118,32 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
       <div className="analysis-grid">
         <div className="analysis-panel">
           <div className="analysis-panel-title">
-            <i className="fas fa-bullseye" style={{ color: 'var(--accent-info)', marginRight: 8 }}></i> Dimensional Profile
+            <i className="fas fa-bullseye" style={{ color: 'var(--accent-info)', marginRight: 8 }}></i>
+            {t('trace.dimensional_profile')}
           </div>
           <RadarChart data={priorities} />
         </div>
 
         <div className="analysis-panel analysis-panel-summary">
           <div className="analysis-panel-title">
-            <i className="fas fa-chart-pie" style={{ color: 'var(--accent-warning)', marginRight: 8 }}></i> Analysis Summary
+            <i className="fas fa-chart-pie" style={{ color: 'var(--accent-warning)', marginRight: 8 }}></i>
+            {t('trace.analysis_summary_title')}
           </div>
           <div className="analysis-stats-grid">
             <div className="analysis-stat-card">
               <div style={{ fontSize: 22, marginBottom: 6 }}>⚠️</div>
               <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--accent-warning)', lineHeight: 1 }}>{analysisSummary.conflicts}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>Conflicts</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>{t('trace.conflicts')}</div>
             </div>
             <div className="analysis-stat-card">
               <div style={{ fontSize: 22, marginBottom: 6 }}>💻</div>
               <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--accent-success)', lineHeight: 1 }}>{analysisSummary.devices}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>Viable Devices</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>{t('trace.viable_devices')}</div>
             </div>
             <div className="analysis-stat-card">
               <div style={{ fontSize: 22, marginBottom: 6 }}>🧭</div>
               <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--accent-info)', lineHeight: 1 }}>{analysisSummary.paths}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>Resolution Paths</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>{t('trace.resolution_paths')}</div>
             </div>
             <div className="analysis-stat-card">
               <div style={{ fontSize: 22, marginBottom: 6 }}>🎯</div>
@@ -144,7 +159,7 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
               }}>
                 {analysisSummary.confidence}%
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>Confidence</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>{t('trace.confidence')}</div>
             </div>
           </div>
         </div>

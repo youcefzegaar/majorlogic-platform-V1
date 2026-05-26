@@ -70,7 +70,15 @@
     "trend_weakening": "随新硬件逐渐减弱",
     "trend_strengthening": "在当前市场中增强",
     "trend_stable": "在当前市场中稳定",
-    "calibrated_on": "基于 {period} 市场数据校准"
+    "calibrated_on": "基于 {period} 市场数据校准",
+    "purchase_path_label": "购买路径",
+    "tier_certified": "认证",
+    "tier_verified": "已验证",
+    "tier_standard": "标准",
+    "no_certified_refurb": "未找到认证翻新商店 — 已切换至全新购买",
+    "agency_question_specific": "{dimension}在{score}/100（您的优先级：{ideal}）是否影响您的日常生活？",
+    "agency_question_generic": "这个决定真的符合您日常的实际需求吗？",
+    "trend_label": "趋势"
   },
   "ownership": {
     "title": "如何拥有它",
@@ -113,5 +121,64 @@
     "my_decisions": "我的决策",
     "saved": "已保存",
     "settings": "设置"
+  },
+  "intake": {
+    "goal_title": "您想达成什么目标？",
+    "goal_subtitle": "简要描述您的目标和详细需求",
+    "goal_placeholder": "我需要一台笔记本电脑用于大量编程和大型项目工作... 我的预算在1500到2500美元之间。",
+    "how_we_work": "我们如何工作：",
+    "affiliate_body": "当您通过我们的链接购买时，我们可能会获得佣金。这不会影响算法——设备排名完全由您的优先级和我们的决策引擎决定。",
+    "how_we_guarantee": "我们如何保证这一点 →",
+    "save_draft": "保存草稿",
+    "analyzing_conflicts": "正在分析冲突..."
+  },
+  "trace": {
+    "budget_constraint": "预算（${min} — ${max}）",
+    "devices_in_budget": "预算内 {count} 台设备",
+    "low_tension": "低张力",
+    "alignment": "对齐",
+    "risk": "风险",
+    "tension": "张力",
+    "harmony_title": "优秀的和谐度",
+    "harmony_desc": "您的优先级和预算完美对齐。无需重大妥协。",
+    "dimensional_profile": "维度概况",
+    "analysis_summary_title": "分析摘要",
+    "conflicts": "冲突",
+    "viable_devices": "可行设备",
+    "resolution_paths": "解决路径",
+    "confidence": "置信度"
+  },
+  "trust": {
+    "clean": "干净的决策",
+    "integrity_pct": "完整性 {score}%",
+    "fully_satisfied": "所有约束完全满足 — Σ(w·s)/Σ(w) = 100%",
+    "relaxed_specific": "已放宽\"{constraint}\"以找到结果 — Σ(w·s)/Σ(w) = {score}%",
+    "relaxed_generic": "一个或多个约束已放宽 — Σ(w·s)/Σ(w) = {score}%",
+    "deterministic": "确定性",
+    "constraint_relaxed": "约束已放宽"
+  },
+  "future": {
+    "final_decision": "最终决策",
+    "judgment_score": "判断分数 — {label}",
+    "achieves_priorities": "实现核心优先级",
+    "why_decision": "为什么是这个决策？",
+    "real_flaws": "真实缺陷",
+    "key_tradeoffs": "关键权衡",
+    "where_to_buy": "购买渠道",
+    "buy_now": "立即购买 — {price}",
+    "affiliate_link": "🤝 联盟链接 — 我们获得小额佣金，您无需额外付费。",
+    "direct_link": "✅ 直接链接 — 无佣金。",
+    "decision_stability": "决策稳定性",
+    "decision_evolution": "决策演变",
+    "via_seller": "通过 {seller}"
+  },
+  "zero": {
+    "too_strict": "您当前的要求对我们的目录而言过于严格。我们找不到满足您所有必要条件的设备。",
+    "suggestions_title": "优化建议",
+    "relax_prefix": "放宽"
+  },
+  "phase": {
+    "final_summary_btn": "最终摘要",
+    "back_to_cards": "返回卡片"
   }
 }

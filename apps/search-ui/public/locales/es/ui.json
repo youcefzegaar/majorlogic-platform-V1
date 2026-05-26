@@ -70,7 +70,15 @@
     "trend_weakening": "debilitándose con hardware más nuevo",
     "trend_strengthening": "fortaleciéndose en el mercado actual",
     "trend_stable": "estable en el mercado actual",
-    "calibrated_on": "Calibrado en datos del mercado de {period}"
+    "calibrated_on": "Calibrado en datos del mercado de {period}",
+    "purchase_path_label": "RUTA DE COMPRA",
+    "tier_certified": "Certificado",
+    "tier_verified": "Verificado",
+    "tier_standard": "Estándar",
+    "no_certified_refurb": "No se encontraron tiendas reacondicionadas certificadas — cambiando a compra nueva",
+    "agency_question_specific": "¿Le importa {dimension} en {score}/100 (su prioridad: {ideal}) en su día a día?",
+    "agency_question_generic": "¿Esta decisión encaja con sus necesidades reales del día a día?",
+    "trend_label": "Tendencia"
   },
   "ownership": {
     "title": "Cómo poseerlo",
@@ -113,5 +121,64 @@
     "my_decisions": "Mis decisiones",
     "saved": "Guardados",
     "settings": "Configuración"
+  },
+  "intake": {
+    "goal_title": "¿Qué intentas lograr?",
+    "goal_subtitle": "Describe brevemente tu objetivo y tus necesidades en detalle",
+    "goal_placeholder": "Necesito una laptop para programación intensiva y trabajar en proyectos grandes... Mi presupuesto está entre $1,500 y $2,500.",
+    "how_we_work": "Cómo trabajamos:",
+    "affiliate_body": "Podemos ganar una comisión cuando compras a través de nuestros enlaces. Esto no influye en el algoritmo — el ranking de dispositivos se determina únicamente por tus prioridades y nuestro motor de decisión.",
+    "how_we_guarantee": "Cómo lo garantizamos →",
+    "save_draft": "Guardar borrador",
+    "analyzing_conflicts": "Analizando conflictos..."
+  },
+  "trace": {
+    "budget_constraint": "Presupuesto (${min} — ${max})",
+    "devices_in_budget": "{count} dispositivos dentro del presupuesto",
+    "low_tension": "Baja tensión",
+    "alignment": "Alineación",
+    "risk": "Riesgo",
+    "tension": "Tensión",
+    "harmony_title": "Excelente armonía",
+    "harmony_desc": "Tus prioridades y presupuesto están perfectamente alineados. No se requieren compromisos significativos.",
+    "dimensional_profile": "Perfil dimensional",
+    "analysis_summary_title": "Resumen del análisis",
+    "conflicts": "Conflictos",
+    "viable_devices": "Dispositivos viables",
+    "resolution_paths": "Caminos de resolución",
+    "confidence": "Confianza"
+  },
+  "trust": {
+    "clean": "Decisión limpia",
+    "integrity_pct": "Integridad {score}%",
+    "fully_satisfied": "Todas las restricciones satisfechas — Σ(w·s)/Σ(w) = 100%",
+    "relaxed_specific": "\"{constraint}\" relajado para encontrar resultados — Σ(w·s)/Σ(w) = {score}%",
+    "relaxed_generic": "Una o más restricciones relajadas — Σ(w·s)/Σ(w) = {score}%",
+    "deterministic": "determinista",
+    "constraint_relaxed": "restricción relajada"
+  },
+  "future": {
+    "final_decision": "Decisión final",
+    "judgment_score": "Puntuación — {label}",
+    "achieves_priorities": "Logra las prioridades principales",
+    "why_decision": "¿Por qué esta decisión?",
+    "real_flaws": "Defectos reales",
+    "key_tradeoffs": "Concesiones clave",
+    "where_to_buy": "Dónde comprar",
+    "buy_now": "Comprar — {price}",
+    "affiliate_link": "🤝 Enlace afiliado — ganamos una pequeña comisión sin costo adicional para ti.",
+    "direct_link": "✅ Enlace directo — sin comisión.",
+    "decision_stability": "Estabilidad de la decisión",
+    "decision_evolution": "Evolución de la decisión",
+    "via_seller": "vía {seller}"
+  },
+  "zero": {
+    "too_strict": "Tus requisitos actuales son demasiado estrictos para nuestro catálogo. No encontramos un dispositivo que satisfaga todos tus criterios obligatorios.",
+    "suggestions_title": "Sugerencias de optimización",
+    "relax_prefix": "Relajar"
+  },
+  "phase": {
+    "final_summary_btn": "Resumen final",
+    "back_to_cards": "Volver a tarjetas"
   }
 }

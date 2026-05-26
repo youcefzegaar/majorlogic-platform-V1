@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import MajorSelector from './MajorSelector';
 import BudgetSelector from './BudgetSelector';
 import PreferenceSliders from './PreferenceSliders';
@@ -10,6 +11,8 @@ export default function IntakePhase({
   budgetMax, setBudgetMax,
   isAnalyzing, onAnalyze
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="phase-container active">
       <div className="intake-grid">
@@ -17,8 +20,8 @@ export default function IntakePhase({
           <div className="card-header">
             <div className="card-icon" style={{ background: 'rgba(233, 69, 96, 0.15)', color: 'var(--accent)' }}>🎯</div>
             <div>
-              <div className="card-title">What are you trying to achieve?</div>
-              <div className="card-subtitle">Describe your goal briefly and your needs in detail</div>
+              <div className="card-title">{t('intake.goal_title')}</div>
+              <div className="card-subtitle">{t('intake.goal_subtitle')}</div>
             </div>
           </div>
           <textarea
@@ -26,14 +29,15 @@ export default function IntakePhase({
             rows="3"
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
-            placeholder="I need a laptop for heavy programming and working on large projects... My budget is between $1,500 and $2,500."
+            placeholder={t('intake.goal_placeholder')}
           ></textarea>
         </div>
         <MajorSelector major={major} setMajor={setMajor} />
         <PreferenceSliders priorities={priorities} setPriorities={setPriorities} />
         <BudgetSelector budgetMin={budgetMin} setBudgetMin={setBudgetMin} budgetMax={budgetMax} setBudgetMax={setBudgetMax} />
       </div>
-      {/* Affiliate Disclosure — must appear before any recommendation is shown */}
+
+      {/* Affiliate Disclosure */}
       <div
         style={{
           display: 'flex',
@@ -50,9 +54,8 @@ export default function IntakePhase({
       >
         <span style={{ fontSize: 14, marginTop: 1, flexShrink: 0 }}>ℹ️</span>
         <span>
-          <strong style={{ color: 'var(--text-primary)' }}>How we work:</strong>{' '}
-          We may earn a commission when you purchase through our links.
-          This does not influence the algorithm — device rankings are determined solely by your priorities and our decision engine.{' '}
+          <strong style={{ color: 'var(--text-primary)' }}>{t('intake.how_we_work')}</strong>{' '}
+          {t('intake.affiliate_body')}{' '}
           <button
             style={{
               background: 'none',
@@ -65,17 +68,21 @@ export default function IntakePhase({
             }}
             onClick={() => window.open('/how-we-work', '_blank')}
           >
-            How we guarantee this →
+            {t('intake.how_we_guarantee')}
           </button>
         </span>
       </div>
 
       <div className="btn-group">
         <button className="btn btn-primary" onClick={onAnalyze} disabled={isAnalyzing}>
-          <i className="fas fa-brain"></i>{isAnalyzing ? 'Analyzing...' : 'Analyze Decision'}
+          <i className="fas fa-brain"></i>{' '}
+          {isAnalyzing ? t('buttons.analyzing') : t('buttons.analyze')}
         </button>
-        <button className="btn btn-secondary"><i className="fas fa-save"></i> Save Draft</button>
+        <button className="btn btn-secondary">
+          <i className="fas fa-save"></i> {t('intake.save_draft')}
+        </button>
       </div>
+
       {isAnalyzing && (
         <div className="thinking-state">
           <div className="thinking-dots">
@@ -83,7 +90,7 @@ export default function IntakePhase({
             <div className="thinking-dot"></div>
             <div className="thinking-dot"></div>
           </div>
-          <span style={{ color: 'var(--text-secondary)' }}>Analyzing your conflicts...</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t('intake.analyzing_conflicts')}</span>
         </div>
       )}
     </div>

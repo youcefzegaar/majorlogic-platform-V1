@@ -70,7 +70,15 @@
     "trend_weakening": "s'affaiblissant avec le nouveau matériel",
     "trend_strengthening": "se renforçant sur le marché actuel",
     "trend_stable": "stable sur le marché actuel",
-    "calibrated_on": "Calibré sur les données du marché {period}"
+    "calibrated_on": "Calibré sur les données du marché {period}",
+    "purchase_path_label": "PARCOURS D'ACHAT",
+    "tier_certified": "Certifié",
+    "tier_verified": "Vérifié",
+    "tier_standard": "Standard",
+    "no_certified_refurb": "Aucun revendeur reconditionné certifié trouvé — passage à l'achat neuf",
+    "agency_question_specific": "Est-ce que {dimension} à {score}/100 (votre priorité : {ideal}) compte au quotidien ?",
+    "agency_question_generic": "Cette décision correspond-elle vraiment à vos besoins quotidiens ?",
+    "trend_label": "Tendance"
   },
   "ownership": {
     "title": "Comment le posséder",
@@ -113,5 +121,64 @@
     "my_decisions": "Mes décisions",
     "saved": "Sauvegardés",
     "settings": "Paramètres"
+  },
+  "intake": {
+    "goal_title": "Qu'essayez-vous d'accomplir ?",
+    "goal_subtitle": "Décrivez brièvement votre objectif et vos besoins en détail",
+    "goal_placeholder": "J'ai besoin d'un ordinateur pour la programmation intensive et les grands projets... Mon budget est entre 1 500 $ et 2 500 $.",
+    "how_we_work": "Comment nous travaillons :",
+    "affiliate_body": "Nous pouvons percevoir une commission lors de vos achats via nos liens. Cela n'influence pas l'algorithme — le classement des appareils est déterminé uniquement par vos priorités et notre moteur de décision.",
+    "how_we_guarantee": "Comment nous le garantissons →",
+    "save_draft": "Sauvegarder le brouillon",
+    "analyzing_conflicts": "Analyse des conflits en cours..."
+  },
+  "trace": {
+    "budget_constraint": "Budget (${min} — ${max})",
+    "devices_in_budget": "{count} appareils dans le budget",
+    "low_tension": "Faible tension",
+    "alignment": "Alignement",
+    "risk": "Risque",
+    "tension": "Tension",
+    "harmony_title": "Excellente harmonie",
+    "harmony_desc": "Vos priorités et votre budget sont parfaitement alignés. Aucun compromis significatif requis.",
+    "dimensional_profile": "Profil dimensionnel",
+    "analysis_summary_title": "Résumé de l'analyse",
+    "conflicts": "Conflits",
+    "viable_devices": "Appareils viables",
+    "resolution_paths": "Chemins de résolution",
+    "confidence": "Confiance"
+  },
+  "trust": {
+    "clean": "Décision propre",
+    "integrity_pct": "Intégrité {score}%",
+    "fully_satisfied": "Toutes les contraintes satisfaites — Σ(w·s)/Σ(w) = 100%",
+    "relaxed_specific": "\"{constraint}\" assoupli pour trouver des résultats — Σ(w·s)/Σ(w) = {score}%",
+    "relaxed_generic": "Une ou plusieurs contraintes assouplies — Σ(w·s)/Σ(w) = {score}%",
+    "deterministic": "déterministe",
+    "constraint_relaxed": "contrainte assouplie"
+  },
+  "future": {
+    "final_decision": "Décision finale",
+    "judgment_score": "Score de jugement — {label}",
+    "achieves_priorities": "Atteint les priorités essentielles",
+    "why_decision": "Pourquoi cette décision ?",
+    "real_flaws": "Défauts réels",
+    "key_tradeoffs": "Compromis clés",
+    "where_to_buy": "Où acheter",
+    "buy_now": "Acheter — {price}",
+    "affiliate_link": "🤝 Lien affilié — nous gagnons une petite commission sans coût supplémentaire pour vous.",
+    "direct_link": "✅ Lien direct — aucune commission perçue.",
+    "decision_stability": "Stabilité de la décision",
+    "decision_evolution": "Évolution de la décision",
+    "via_seller": "via {seller}"
+  },
+  "zero": {
+    "too_strict": "Vos exigences actuelles sont trop strictes pour notre catalogue. Nous n'avons pas trouvé d'appareil satisfaisant tous vos critères obligatoires.",
+    "suggestions_title": "Suggestions d'optimisation",
+    "relax_prefix": "Assouplir"
+  },
+  "phase": {
+    "final_summary_btn": "Résumé final",
+    "back_to_cards": "Retour aux cartes"
   }
 }

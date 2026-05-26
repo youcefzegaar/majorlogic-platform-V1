@@ -1,10 +1,14 @@
+import { useTranslation } from 'react-i18next';
+
 export default function FutureProofCard({ selectedCard, timeline }) {
+  const { t } = useTranslation();
+
   return (
     <div>
       <div className="final-card-hero">
         <div className="final-card-hero-header">
           <span className={`final-card-hero-badge ${selectedCard.badgeClass}`}>{selectedCard.badge}</span>
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Final Decision</span>
+          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{t('future.final_decision')}</span>
         </div>
         <div
           className="final-card-hero-image"
@@ -67,13 +71,13 @@ export default function FutureProofCard({ selectedCard, timeline }) {
           <div className="final-judgment">
             <div className={`final-judgment-score ${selectedCard.scoreClass}`}>{selectedCard.score}%</div>
             <div className="final-judgment-info">
-              <div className="final-judgment-title">Judgment Score - {selectedCard.scoreLabel}</div>
-              <div className="final-judgment-desc">Achieves core priorities</div>
+              <div className="final-judgment-title">{t('future.judgment_score', { label: selectedCard.scoreLabel })}</div>
+              <div className="final-judgment-desc">{t('future.achieves_priorities')}</div>
             </div>
           </div>
 
           <div className="final-section">
-            <div className="final-section-title">Why This Decision?</div>
+            <div className="final-section-title">{t('future.why_decision')}</div>
             <div className="final-section-text">
               {String(selectedCard.whyChosen || '').split('\n\n').map((para, i) => (
                 <p key={i} style={{ margin: '0 0 8px 0' }}>{para}</p>
@@ -82,14 +86,14 @@ export default function FutureProofCard({ selectedCard, timeline }) {
           </div>
 
           <div className="final-section">
-            <div className="final-section-title">Real Flaws</div>
+            <div className="final-section-title">{t('future.real_flaws')}</div>
             <div className="final-section-text" style={{ color: 'var(--accent-danger)' }}>
               {selectedCard.flaws.map(f => <div key={f}>• {f}</div>)}
             </div>
           </div>
 
           <div className="final-section">
-            <div className="final-section-title">Key Trade-offs</div>
+            <div className="final-section-title">{t('future.key_tradeoffs')}</div>
             <div>
               {selectedCard.tradeOffs.gained.map(g => (
                 <div key={g} className="final-trade-off">
@@ -106,10 +110,9 @@ export default function FutureProofCard({ selectedCard, timeline }) {
             </div>
           </div>
 
-          {/* ── Where to Buy ── */}
           {selectedCard.purchaseLinks?.primary && (
             <div className="final-section">
-              <div className="final-section-title">Where to Buy</div>
+              <div className="final-section-title">{t('future.where_to_buy')}</div>
               <a
                 href={selectedCard.purchaseLinks.primary}
                 target="_blank"
@@ -117,22 +120,22 @@ export default function FutureProofCard({ selectedCard, timeline }) {
                 className="final-buy-btn"
               >
                 <i className="fas fa-shopping-cart"></i>
-                &nbsp;Buy Now — {selectedCard.price}
+                &nbsp;{t('future.buy_now', { price: selectedCard.price })}
                 {selectedCard.purchaseLinks.primarySeller && (
-                  <span className="final-buy-seller"> via {selectedCard.purchaseLinks.primarySeller}</span>
+                  <span className="final-buy-seller"> {t('future.via_seller', { seller: selectedCard.purchaseLinks.primarySeller })}</span>
                 )}
               </a>
               <div className="final-affiliate-disclosure">
                 {selectedCard.purchaseLinks.isAffiliate
-                  ? <>🤝 Affiliate link — we earn a small commission at no extra cost to you.</>
-                  : <>✅ Direct link — no commission earned.</>
+                  ? t('future.affiliate_link')
+                  : t('future.direct_link')
                 }
               </div>
             </div>
           )}
 
           <div className="final-section">
-            <div className="final-section-title">Decision Stability</div>
+            <div className="final-section-title">{t('future.decision_stability')}</div>
             <div style={{ textAlign: 'center', padding: 16 }}>
               <div className={`stability-circle ${selectedCard.stability.status}`}>
                 <div className={`stability-score ${selectedCard.stability.status}`}>{selectedCard.stability.score}%</div>
@@ -150,7 +153,7 @@ export default function FutureProofCard({ selectedCard, timeline }) {
         <div className="card-header">
           <div className="card-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-warning)' }}>📈</div>
           <div>
-            <div className="card-title">Decision Evolution</div>
+            <div className="card-title">{t('future.decision_evolution')}</div>
           </div>
         </div>
         <div className="evolution-timeline">

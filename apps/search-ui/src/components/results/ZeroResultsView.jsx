@@ -1,4 +1,8 @@
+import { useTranslation } from 'react-i18next';
+
 export default function ZeroResultsView({ noResults, onEditRequirements }) {
+  const { t } = useTranslation();
+
   return (
     <div
       className="no-results-container"
@@ -13,8 +17,7 @@ export default function ZeroResultsView({ noResults, onEditRequirements }) {
       <div style={{ fontSize: 64, marginBottom: 20 }}>🤷‍♂️</div>
       <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 12 }}>{noResults.message}</h3>
       <p style={{ color: 'var(--text-secondary)', marginBottom: 24, maxWidth: 500, margin: '0 auto 24px' }}>
-        Your current requirements are too strict for our existing catalog. We couldn't find a device
-        that satisfies all your mandatory "Gates".
+        {t('zero.too_strict')}
       </p>
       {noResults.suggestions && noResults.suggestions.length > 0 && (
         <div
@@ -38,7 +41,7 @@ export default function ZeroResultsView({ noResults, onEditRequirements }) {
               letterSpacing: 1
             }}
           >
-            Optimization Suggestions
+            {t('zero.suggestions_title')}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
             {noResults.suggestions.map(s => (
@@ -54,14 +57,14 @@ export default function ZeroResultsView({ noResults, onEditRequirements }) {
                   color: 'var(--text-primary)'
                 }}
               >
-                Relax <strong>{s.replace('_', ' ')}</strong>
+                {t('zero.relax_prefix')} <strong>{s.replace('_', ' ')}</strong>
               </span>
             ))}
           </div>
         </div>
       )}
       <button className="btn btn-secondary" onClick={onEditRequirements} style={{ marginTop: 32 }}>
-        <i className="fas fa-edit"></i> Edit Requirements
+        <i className="fas fa-edit"></i> {t('buttons.edit_requirements')}
       </button>
     </div>
   );

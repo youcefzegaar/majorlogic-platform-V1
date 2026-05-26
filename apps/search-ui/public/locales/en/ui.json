@@ -70,7 +70,15 @@
     "trend_weakening": "weakening with newer hardware",
     "trend_strengthening": "strengthening in current market",
     "trend_stable": "stable in current market",
-    "calibrated_on": "Calibrated on {period} market data"
+    "calibrated_on": "Calibrated on {period} market data",
+    "purchase_path_label": "PURCHASE PATH",
+    "tier_certified": "Certified",
+    "tier_verified": "Verified",
+    "tier_standard": "Standard",
+    "no_certified_refurb": "No certified refurbished stores found — switched to new purchase",
+    "agency_question_specific": "Does {dimension} at {score}/100 (your priority: {ideal}) matter to you daily?",
+    "agency_question_generic": "Does this decision feel right for your actual day-to-day needs?",
+    "trend_label": "Trend"
   },
   "ownership": {
     "title": "How to Own It",
@@ -113,5 +121,64 @@
     "my_decisions": "My Decisions",
     "saved": "Saved",
     "settings": "Settings"
+  },
+  "intake": {
+    "goal_title": "What are you trying to achieve?",
+    "goal_subtitle": "Describe your goal briefly and your needs in detail",
+    "goal_placeholder": "I need a laptop for heavy programming and working on large projects... My budget is between $1,500 and $2,500.",
+    "how_we_work": "How we work:",
+    "affiliate_body": "We may earn a commission when you purchase through our links. This does not influence the algorithm — device rankings are determined solely by your priorities and our decision engine.",
+    "how_we_guarantee": "How we guarantee this →",
+    "save_draft": "Save Draft",
+    "analyzing_conflicts": "Analyzing your conflicts..."
+  },
+  "trace": {
+    "budget_constraint": "Budget (${min} — ${max})",
+    "devices_in_budget": "{count} devices available within budget",
+    "low_tension": "Low tension",
+    "alignment": "Alignment",
+    "risk": "Risk",
+    "tension": "Tension",
+    "harmony_title": "Excellent Harmony",
+    "harmony_desc": "Your priorities and budget are perfectly aligned. No significant compromises required.",
+    "dimensional_profile": "Dimensional Profile",
+    "analysis_summary_title": "Analysis Summary",
+    "conflicts": "Conflicts",
+    "viable_devices": "Viable Devices",
+    "resolution_paths": "Resolution Paths",
+    "confidence": "Confidence"
+  },
+  "trust": {
+    "clean": "Clean decision",
+    "integrity_pct": "Integrity {score}%",
+    "fully_satisfied": "All constraints fully satisfied — Σ(w·s)/Σ(w) = 100%",
+    "relaxed_specific": "\"{constraint}\" relaxed to find results — Σ(w·s)/Σ(w) = {score}%",
+    "relaxed_generic": "One or more constraints relaxed — Σ(w·s)/Σ(w) = {score}%",
+    "deterministic": "deterministic",
+    "constraint_relaxed": "constraint relaxed"
+  },
+  "future": {
+    "final_decision": "Final Decision",
+    "judgment_score": "Judgment Score — {label}",
+    "achieves_priorities": "Achieves core priorities",
+    "why_decision": "Why This Decision?",
+    "real_flaws": "Real Flaws",
+    "key_tradeoffs": "Key Trade-offs",
+    "where_to_buy": "Where to Buy",
+    "buy_now": "Buy Now — {price}",
+    "affiliate_link": "🤝 Affiliate link — we earn a small commission at no extra cost to you.",
+    "direct_link": "✅ Direct link — no commission earned.",
+    "decision_stability": "Decision Stability",
+    "decision_evolution": "Decision Evolution",
+    "via_seller": "via {seller}"
+  },
+  "zero": {
+    "too_strict": "Your current requirements are too strict for our existing catalog. We couldn't find a device that satisfies all your mandatory \"Gates\".",
+    "suggestions_title": "Optimization Suggestions",
+    "relax_prefix": "Relax"
+  },
+  "phase": {
+    "final_summary_btn": "Final Summary",
+    "back_to_cards": "Back to Cards"
   }
 }

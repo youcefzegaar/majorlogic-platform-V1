@@ -70,7 +70,15 @@
     "trend_weakening": "يضعف مع الأجهزة الجديدة",
     "trend_strengthening": "يتقوى في السوق الحالي",
     "trend_stable": "مستقر في السوق الحالي",
-    "calibrated_on": "معايَر على بيانات سوق {period}"
+    "calibrated_on": "معايَر على بيانات سوق {period}",
+    "purchase_path_label": "مسار الشراء",
+    "tier_certified": "معتمد",
+    "tier_verified": "موثوق",
+    "tier_standard": "قياسي",
+    "no_certified_refurb": "لم نجد متاجر مجددة معتمدة — تم التحويل لشراء جديد",
+    "agency_question_specific": "هل يهمك {dimension} بـ {score}/100 (أولويتك: {ideal}) في حياتك اليومية؟",
+    "agency_question_generic": "هل يبدو هذا القرار مناسباً لاحتياجاتك اليومية الفعلية؟",
+    "trend_label": "الاتجاه"
   },
   "ownership": {
     "title": "كيفية الامتلاك",
@@ -113,5 +121,64 @@
     "my_decisions": "قراراتي",
     "saved": "المحفوظات",
     "settings": "الإعدادات"
+  },
+  "intake": {
+    "goal_title": "ما الذي تحاول تحقيقه؟",
+    "goal_subtitle": "صف هدفك باختصار واحتياجاتك بالتفصيل",
+    "goal_placeholder": "أحتاج لابتوب للبرمجة المكثفة والعمل على مشاريع كبيرة... ميزانيتي بين ١٥٠٠$ و٢٥٠٠$.",
+    "how_we_work": "كيف نعمل:",
+    "affiliate_body": "قد نكسب عمولة عند شرائك عبر روابطنا. هذا لا يؤثر على الخوارزمية — تصنيف الأجهزة يعتمد فقط على أولوياتك ومحرك القرار.",
+    "how_we_guarantee": "كيف نضمن ذلك ←",
+    "save_draft": "حفظ مسودة",
+    "analyzing_conflicts": "جاري تحليل التعارضات..."
+  },
+  "trace": {
+    "budget_constraint": "الميزانية ({min}$ — {max}$)",
+    "devices_in_budget": "{count} جهاز ضمن الميزانية",
+    "low_tension": "توتر منخفض",
+    "alignment": "توافق",
+    "risk": "خطر",
+    "tension": "توتر",
+    "harmony_title": "تناسق ممتاز",
+    "harmony_desc": "أولوياتك وميزانيتك متوافقة تماماً. لا تنازلات جوهرية مطلوبة.",
+    "dimensional_profile": "الملف الأبعادي",
+    "analysis_summary_title": "ملخص التحليل",
+    "conflicts": "تعارضات",
+    "viable_devices": "أجهزة مناسبة",
+    "resolution_paths": "مسارات الحل",
+    "confidence": "الثقة"
+  },
+  "trust": {
+    "clean": "قرار نظيف",
+    "integrity_pct": "نزاهة {score}%",
+    "fully_satisfied": "جميع القيود مستوفاة — Σ(w·s)/Σ(w) = 100%",
+    "relaxed_specific": "تم تخفيف \"{constraint}\" للعثور على نتائج — Σ(w·s)/Σ(w) = {score}%",
+    "relaxed_generic": "تم تخفيف قيد أو أكثر — Σ(w·s)/Σ(w) = {score}%",
+    "deterministic": "حتمي",
+    "constraint_relaxed": "قيد مخفَّف"
+  },
+  "future": {
+    "final_decision": "القرار النهائي",
+    "judgment_score": "درجة الحكم — {label}",
+    "achieves_priorities": "يحقق الأولويات الأساسية",
+    "why_decision": "لماذا هذا القرار؟",
+    "real_flaws": "العيوب الحقيقية",
+    "key_tradeoffs": "المقايضات الرئيسية",
+    "where_to_buy": "أين تشتري",
+    "buy_now": "اشتر الآن — {price}",
+    "affiliate_link": "🤝 رابط تابع — نكسب عمولة صغيرة دون تكلفة إضافية عليك.",
+    "direct_link": "✅ رابط مباشر — لا عمولة.",
+    "decision_stability": "ثبات القرار",
+    "decision_evolution": "تطور القرار",
+    "via_seller": "عبر {seller}"
+  },
+  "zero": {
+    "too_strict": "متطلباتك الحالية صارمة جداً بالنسبة لكتالوجنا. لم نجد جهازاً يستوفي جميع \"البوابات\" الإلزامية.",
+    "suggestions_title": "اقتراحات التحسين",
+    "relax_prefix": "خفِّف"
+  },
+  "phase": {
+    "final_summary_btn": "الملخص النهائي",
+    "back_to_cards": "العودة للبطاقات"
   }
 }

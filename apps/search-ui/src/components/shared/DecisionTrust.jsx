@@ -1,15 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 
-/**
- * DecisionTrust — permanent governance bar rendered on all result phases.
- *
- * integrityScore (0-100):
- *   100   → all constraints fully satisfied  → green
- *   <100  → at least one constraint relaxed  → amber + disclosure
- *
- * irHash: cryptographic fingerprint of the decision IR — proves reproducibility.
- */
 export default function DecisionTrust({ integrityScore = 100, irHash = null, relaxedConstraint = null }) {
+  const { t } = useTranslation();
   const isClean = integrityScore >= 100;
   const shortHash = irHash ? irHash.slice(0, 8) : null;
 
@@ -34,7 +27,6 @@ export default function DecisionTrust({ integrityScore = 100, irHash = null, rel
         flexWrap: 'wrap',
       }}
     >
-      {/* Status indicator */}
       <span
         style={{
           display: 'inline-flex',
@@ -46,23 +38,20 @@ export default function DecisionTrust({ integrityScore = 100, irHash = null, rel
         }}
       >
         <span style={{ fontSize: '10px' }}>{isClean ? '●' : '◐'}</span>
-        {isClean ? 'Clean decision' : `Integrity ${integrityScore}%`}
+        {isClean ? t('trust.clean') : t('trust.integrity_pct', { score: integrityScore })}
       </span>
 
-      {/* Separator */}
       <span style={{ color: 'var(--border-light)', userSelect: 'none' }}>·</span>
 
-      {/* Formula disclosure */}
       <span style={{ color: 'var(--text-muted)' }}>
         {isClean
-          ? 'All constraints fully satisfied — Σ(w·s)/Σ(w) = 100%'
+          ? t('trust.fully_satisfied')
           : relaxedConstraint
-            ? `"${relaxedConstraint}" relaxed to find results — Σ(w·s)/Σ(w) = ${integrityScore}%`
-            : `One or more constraints relaxed — Σ(w·s)/Σ(w) = ${integrityScore}%`
+            ? t('trust.relaxed_specific', { constraint: relaxedConstraint, score: integrityScore })
+            : t('trust.relaxed_generic', { score: integrityScore })
         }
       </span>
 
-      {/* Separator */}
       {shortHash && (
         <>
           <span style={{ color: 'var(--border-light)', userSelect: 'none' }}>·</span>
@@ -77,11 +66,10 @@ export default function DecisionTrust({ integrityScore = 100, irHash = null, rel
           >
             {shortHash}
           </span>
-          <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>deterministic</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>{t('trust.deterministic')}</span>
         </>
       )}
 
-      {/* Relaxed constraint warning */}
       <AnimatePresence>
         {!isClean && (
           <motion.span
@@ -99,7 +87,7 @@ export default function DecisionTrust({ integrityScore = 100, irHash = null, rel
               whiteSpace: 'nowrap',
             }}
           >
-            constraint relaxed
+            {t('trust.constraint_relaxed')}
           </motion.span>
         )}
       </AnimatePresence>

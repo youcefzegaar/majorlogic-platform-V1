@@ -49,7 +49,7 @@ const GAINS_LOSSES = {
   },
 };
 
-export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplanation, onNext, onBack }) {
+export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplanation, onChoiceMade, onNext, onBack }) {
   const { t } = useTranslation();
   // If user picked the Renewed Opportunity card, pre-land on the "renewed" path
   const isRenewedCard = selectedCard.renewedEntry === true;
@@ -429,43 +429,6 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
         </div>
       )}
 
-      {/* ── CTA Buttons (revealed after commitment) ───── */}
-      {ceremonyComplete && (
-        <div className="op-cta-section">
-          {urlMap[currentPath] && (
-            <>
-              <a href={urlMap[currentPath]} target="_blank" rel="noopener noreferrer" className="op-cta-primary">
-                <i className="fas fa-external-link-alt"></i> {ctaMap[currentPath]}
-              </a>
-              <div className="op-affiliate-disclosure">
-                {selectedCard.purchaseLinks?.isAffiliate
-                  ? <><span className="op-affiliate-badge">🤝</span> Affiliate link — we earn a small commission at no extra cost to you.</>
-                  : <><span className="op-affiliate-badge">✅</span> Direct link — no commission earned.</>
-                }
-                <span style={{ marginLeft: 12, fontSize: 11 }}>
-                  <a
-                    href="/how-we-work"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: 'var(--accent-info)', textDecoration: 'underline' }}
-                  >
-                    Search without affiliate link →
-                  </a>
-                </span>
-              </div>
-            </>
-          )}
-          <div className="op-cta-alts">
-            {Object.keys(pathLabels).filter(k => k !== currentPath).map(k => (
-              urlMap[k] && (
-                <a key={k} href={urlMap[k]} target="_blank" rel="noopener noreferrer" className="op-cta-secondary" onClick={() => setActivePath(k)}>
-                  {pathLabels[k]}
-                </a>
-              )
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* ── Price Alert ───────────────────────────────── */}
       <div className="op-alert-section">
@@ -485,7 +448,22 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
 
       {/* ── Navigation ────────────────────────────────── */}
       <div className="btn-group" style={{ marginTop: 8 }}>
-        <button className="btn btn-primary" onClick={onNext}><i className="fas fa-arrow-right"></i> Final Summary</button>
+        <button
+          className="btn btn-primary"
+          disabled={!ceremonyComplete}
+          style={{ opacity: ceremonyComplete ? 1 : 0.4 }}
+          onClick={() => {
+            if (onChoiceMade) onChoiceMade({
+              path: currentPath,
+              url: urlMap[currentPath] ?? null,
+              cta: ctaMap[currentPath],
+              isAffiliate: selectedCard.purchaseLinks?.isAffiliate ?? false,
+            });
+            onNext();
+          }}
+        >
+          <i className="fas fa-arrow-right"></i> Final Summary
+        </button>
         <button className="btn btn-secondary" onClick={onBack}><i className="fas fa-arrow-left"></i> {t('buttons.back_to_explanation')}</button>
       </div>
 

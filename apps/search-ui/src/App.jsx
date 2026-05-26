@@ -22,6 +22,7 @@ export default function App() {
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [timeline, setTimeline] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [ownershipChoice, setOwnershipChoice] = useState(null);
 
   const {
     phase, setPhase,
@@ -164,6 +165,7 @@ export default function App() {
             selectedCard={selectedCard}
             budgetMax={profile.budgetMax}
             cameFromExplanation={cameFromExplanation}
+            onChoiceMade={setOwnershipChoice}
             onNext={() => setPhase(5)}
             onBack={() => setPhase(3)}
           />
@@ -172,6 +174,7 @@ export default function App() {
         {phase === 5 && selectedCard && (
           <SummaryPhase
             selectedCard={selectedCard} timeline={timeline}
+            ownershipChoice={ownershipChoice}
             onNewDecision={() => setPhase(0)} onBackToExplanation={() => setPhase(4)}
           />
         )}

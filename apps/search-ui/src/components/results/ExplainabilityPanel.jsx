@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import DecisionTrust from '../shared/DecisionTrust';
+import { OWNERSHIP_MODE_LABELS } from '../../i18n/ownershipLabels.js';
 
 const GATE_NAMES = {
   specs_performance: 'performance',
@@ -115,7 +116,7 @@ function StepPhysics({ conflictsFound = [] }) {
             color: tension.trend === 'weakening' ? 'var(--accent-success)' : 'var(--text-muted)',
             fontStyle: 'italic',
           }}>
-            Trend: {trendLabel}
+            {t('explanation.trend_label')}: {trendLabel}
           </span>
         )}
         {tension.sample_period && (
@@ -339,8 +340,8 @@ function StepAgency({ dims, onBack }) {
       </div>
       <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.55, marginBottom: 16 }}>
         {topSacrifice
-          ? `Does ${topSacrifice.label.toLowerCase()} at ${topSacrifice.score}/100 (your priority: ${topSacrifice.userIdeal}) matter to you daily?`
-          : 'Does this decision feel right for your actual day-to-day needs?'}
+          ? t('explanation.agency_question_specific', { dimension: topSacrifice.label.toLowerCase(), score: topSacrifice.score, ideal: topSacrifice.userIdeal })
+          : t('explanation.agency_question_generic')}
       </div>
       <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
         {t('explanation.final_body')}
@@ -353,6 +354,68 @@ function StepAgency({ dims, onBack }) {
         >
           <i className="fas fa-sliders-h"></i> {t('buttons.adjust_priorities_btn')}
         </button>
+      )}
+    </div>
+  );
+}
+
+// ── Step ⑧ — Purchase path (ownership mode + store trust tier) ──────────
+function StepPurchasePath({ ownershipMode, effectiveOwnershipMode, filteredByOwnership, offerTrustData = [], locale }) {
+  const { t } = useTranslation();
+  if (!effectiveOwnershipMode) return null;
+
+  const isRtl = locale === 'ar';
+  const label = OWNERSHIP_MODE_LABELS[effectiveOwnershipMode]?.[isRtl ? 'ar' : 'en'];
+  const topOffer = offerTrustData[0];
+
+  const tierLabel = (o) => {
+    if (!o?.vendorTrustScore) return null;
+    if (o.vendorTrustScore >= 85) return t('explanation.tier_certified');
+    if (o.vendorTrustScore >= 70) return t('explanation.tier_verified');
+    return t('explanation.tier_standard');
+  };
+
+  // Show fallback message only when mode was refurbished but no certified stores were found
+  const showFallbackMsg = filteredByOwnership === false
+    && ownershipMode === 'refurbished_if_verified'
+    && effectiveOwnershipMode === 'buy_new';
+
+  return (
+    <div style={{
+      padding: '12px 16px',
+      background: 'rgba(99, 102, 241, 0.05)',
+      border: '1px solid rgba(99, 102, 241, 0.2)',
+      borderRadius: 10,
+      marginBottom: 16,
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#818cf8', letterSpacing: '0.08em', marginBottom: 6 }}>
+        {t('explanation.purchase_path_label')}
+      </div>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: tierLabel(topOffer) ? 4 : 0 }}>
+        {label}
+        {topOffer?.seller && (
+          <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>
+            {' '}— {topOffer.seller}
+            {tierLabel(topOffer) && (
+              <span style={{
+                marginLeft: 6,
+                fontSize: 10,
+                fontWeight: 700,
+                color: topOffer.vendorTrustScore >= 85 ? 'var(--accent-success)' : 'var(--text-muted)',
+                background: topOffer.vendorTrustScore >= 85 ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.06)',
+                padding: '2px 6px',
+                borderRadius: 4,
+              }}>
+                {tierLabel(topOffer)}
+              </span>
+            )}
+          </span>
+        )}
+      </div>
+      {showFallbackMsg && (
+        <div style={{ fontSize: 12, color: 'var(--accent-warning)', marginTop: 6 }}>
+          {t('explanation.no_certified_refurb')}
+        </div>
       )}
     </div>
   );
@@ -530,6 +593,13 @@ export default function ExplainabilityPanel({ selectedCard, explanationTab, setE
               />
               <StepExcluded excluded={selectedCard.excluded ?? []} />
               <StepAgency dims={dims} onBack={onBack} />
+              <StepPurchasePath
+                ownershipMode={selectedCard.ownershipMode}
+                effectiveOwnershipMode={selectedCard.effectiveOwnershipMode}
+                filteredByOwnership={selectedCard.filteredByOwnership}
+                offerTrustData={selectedCard.offerTrustData ?? []}
+                locale={selectedCard.locale}
+              />
               <BotherSection flaws={selectedCard.flaws ?? []} topPros={selectedCard.topPros ?? []} />
             </div>
           </div>
