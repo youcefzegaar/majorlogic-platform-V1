@@ -76,6 +76,10 @@
     "tier_verified": "موثوق",
     "tier_standard": "قياسي",
     "no_certified_refurb": "لم نجد متاجر مجددة معتمدة — تم التحويل لشراء جديد",
+    "mode_buy_new": "شراء جديد",
+    "mode_refurbished_if_verified": "مجدد معتمد",
+    "mode_open_box_with_guardrails": "صندوق مفتوح",
+    "mode_light_financing": "تمويل",
     "agency_question_specific": "هل يهمك {dimension} بـ {score}/100 (أولويتك: {ideal}) في حياتك اليومية؟",
     "agency_question_generic": "هل يبدو هذا القرار مناسباً لاحتياجاتك اليومية الفعلية؟",
     "trend_label": "الاتجاه"
@@ -106,7 +110,10 @@
     "title": "تحليل القرار",
     "view_paths": "عرض مسارات القرار",
     "conflicts_found": "{count, plural, =0 {لا تعارضات} one {تعارض واحد} two {تعارضان} few {# تعارضات} many {# تعارضاً} other {# تعارض}}",
-    "devices_evaluated": "{count, plural, =0 {لا أجهزة} one {جهاز واحد} two {جهازان} few {# أجهزة} many {# جهازاً} other {# جهاز}} تم تقييمه"
+    "devices_evaluated": "{count, plural, =0 {لا أجهزة} one {جهاز واحد} two {جهازان} few {# أجهزة} many {# جهازاً} other {# جهاز}} تم تقييمه",
+    "analyzing_requirements": "جارٍ تحليل متطلباتك",
+    "priorities_aligned": "الأولويات متوافقة",
+    "priorities_aligned_desc": "الأولويات متوافقة — لا مقايضات جوهرية مطلوبة."
   },
   "progress": {
     "goal": "الهدف",

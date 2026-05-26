@@ -76,6 +76,10 @@
     "tier_verified": "Verified",
     "tier_standard": "Standard",
     "no_certified_refurb": "No certified refurbished stores found — switched to new purchase",
+    "mode_buy_new": "Buy New",
+    "mode_refurbished_if_verified": "Certified Refurbished",
+    "mode_open_box_with_guardrails": "Open Box",
+    "mode_light_financing": "Financing",
     "agency_question_specific": "Does {dimension} at {score}/100 (your priority: {ideal}) matter to you daily?",
     "agency_question_generic": "Does this decision feel right for your actual day-to-day needs?",
     "trend_label": "Trend"
@@ -106,7 +110,10 @@
     "title": "Decision Analysis",
     "view_paths": "View Decision Paths",
     "conflicts_found": "{count, plural, one {# conflict detected} other {# conflicts detected}}",
-    "devices_evaluated": "{count, plural, one {# device} other {# devices}} evaluated"
+    "devices_evaluated": "{count, plural, one {# device} other {# devices}} evaluated",
+    "analyzing_requirements": "Analyzing your requirements",
+    "priorities_aligned": "priorities aligned",
+    "priorities_aligned_desc": "Priorities aligned — no significant trade-offs required."
   },
   "progress": {
     "goal": "Goal",

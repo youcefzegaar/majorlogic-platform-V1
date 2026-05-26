@@ -76,6 +76,10 @@
     "tier_verified": "सत्यापित",
     "tier_standard": "मानक",
     "no_certified_refurb": "कोई प्रमाणित नवीनीकृत स्टोर नहीं मिला — नई खरीद पर स्विच किया",
+    "mode_buy_new": "नया खरीदें",
+    "mode_refurbished_if_verified": "प्रमाणित नवीनीकृत",
+    "mode_open_box_with_guardrails": "ओपन बॉक्स",
+    "mode_light_financing": "वित्तपोषण",
     "agency_question_specific": "क्या {dimension} {score}/100 पर (आपकी प्राथमिकता: {ideal}) आपके दैनिक जीवन में मायने रखता है?",
     "agency_question_generic": "क्या यह निर्णय आपकी वास्तविक दैनिक आवश्यकताओं के लिए सही लगता है?",
     "trend_label": "रुझान"
@@ -106,7 +110,10 @@
     "title": "निर्णय विश्लेषण",
     "view_paths": "निर्णय पथ देखें",
     "conflicts_found": "{count} विरोधाभास पाए गए",
-    "devices_evaluated": "{count} डिवाइस का मूल्यांकन किया गया"
+    "devices_evaluated": "{count} डिवाइस का मूल्यांकन किया गया",
+    "analyzing_requirements": "आपकी आवश्यकताओं का विश्लेषण हो रहा है",
+    "priorities_aligned": "प्राथमिकताएं संरेखित हैं",
+    "priorities_aligned_desc": "प्राथमिकताएं संरेखित हैं — कोई महत्वपूर्ण समझौता आवश्यक नहीं।"
   },
   "progress": {
     "goal": "लक्ष्य",

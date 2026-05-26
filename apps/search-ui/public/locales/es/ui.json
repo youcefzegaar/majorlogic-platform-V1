@@ -76,6 +76,10 @@
     "tier_verified": "Verificado",
     "tier_standard": "Estándar",
     "no_certified_refurb": "No se encontraron tiendas reacondicionadas certificadas — cambiando a compra nueva",
+    "mode_buy_new": "Comprar nuevo",
+    "mode_refurbished_if_verified": "Reacondicionado certificado",
+    "mode_open_box_with_guardrails": "Caja abierta",
+    "mode_light_financing": "Financiamiento",
     "agency_question_specific": "¿Le importa {dimension} en {score}/100 (su prioridad: {ideal}) en su día a día?",
     "agency_question_generic": "¿Esta decisión encaja con sus necesidades reales del día a día?",
     "trend_label": "Tendencia"
@@ -106,7 +110,10 @@
     "title": "Análisis de decisión",
     "view_paths": "Ver rutas de decisión",
     "conflicts_found": "{count, plural, one {# conflicto detectado} other {# conflictos detectados}}",
-    "devices_evaluated": "{count, plural, one {# dispositivo} other {# dispositivos}} evaluados"
+    "devices_evaluated": "{count, plural, one {# dispositivo} other {# dispositivos}} evaluados",
+    "analyzing_requirements": "Analizando tus requisitos",
+    "priorities_aligned": "prioridades alineadas",
+    "priorities_aligned_desc": "Prioridades alineadas — sin compromisos significativos requeridos."
   },
   "progress": {
     "goal": "Objetivo",

@@ -76,6 +76,10 @@
     "tier_verified": "已验证",
     "tier_standard": "标准",
     "no_certified_refurb": "未找到认证翻新商店 — 已切换至全新购买",
+    "mode_buy_new": "购买新品",
+    "mode_refurbished_if_verified": "认证翻新",
+    "mode_open_box_with_guardrails": "开箱品",
+    "mode_light_financing": "分期付款",
     "agency_question_specific": "{dimension}在{score}/100（您的优先级：{ideal}）是否影响您的日常生活？",
     "agency_question_generic": "这个决定真的符合您日常的实际需求吗？",
     "trend_label": "趋势"
@@ -106,7 +110,10 @@
     "title": "决策分析",
     "view_paths": "查看决策路径",
     "conflicts_found": "检测到 {count} 个冲突",
-    "devices_evaluated": "已评估 {count} 台设备"
+    "devices_evaluated": "已评估 {count} 台设备",
+    "analyzing_requirements": "正在分析您的需求",
+    "priorities_aligned": "优先级已对齐",
+    "priorities_aligned_desc": "优先级已对齐 — 无需重大权衡。"
   },
   "progress": {
     "goal": "目标",

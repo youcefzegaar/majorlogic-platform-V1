@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import DecisionTrust from '../shared/DecisionTrust';
-import { OWNERSHIP_MODE_LABELS } from '../../i18n/ownershipLabels.js';
 
 const GATE_NAMES = {
   specs_performance: 'performance',
@@ -364,8 +363,7 @@ function StepPurchasePath({ ownershipMode, effectiveOwnershipMode, filteredByOwn
   const { t } = useTranslation();
   if (!effectiveOwnershipMode) return null;
 
-  const isRtl = locale === 'ar';
-  const label = OWNERSHIP_MODE_LABELS[effectiveOwnershipMode]?.[isRtl ? 'ar' : 'en'];
+  const label = t(`explanation.mode_${effectiveOwnershipMode}`) || effectiveOwnershipMode;
   const topOffer = offerTrustData[0];
 
   const tierLabel = (o) => {
@@ -398,7 +396,7 @@ function StepPurchasePath({ ownershipMode, effectiveOwnershipMode, filteredByOwn
             {' '}— {topOffer.seller}
             {tierLabel(topOffer) && (
               <span style={{
-                marginLeft: 6,
+                marginInlineStart: 6,
                 fontSize: 10,
                 fontWeight: 700,
                 color: topOffer.vendorTrustScore >= 85 ? 'var(--accent-success)' : 'var(--text-muted)',
