@@ -59,35 +59,41 @@ export class CatalogRepository {
   }
 
   async publishEntities({ domainId, entities, publishRunId = null, catalogVersion = null }) {
+    if (!entities.length) return;
     console.log(`[Repository] Publishing ${entities.length} entities to catalog...`);
-    for (const entity of entities) {
-      // console.log(`[Repository] Publishing entity: ${entity.entityId}`);
-      await this.pool.query(
-        `insert into ml_catalog.published_entities (
-          entity_id, domain_id, publish_run_id, catalog_version, entity_type, title, entity_payload, fit_states, trust, published_at
-        ) values ($1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, $10)
-        on conflict (entity_id) do update set
-          publish_run_id = excluded.publish_run_id,
-          catalog_version = excluded.catalog_version,
-          title = excluded.title,
-          entity_payload = excluded.entity_payload,
-          fit_states = excluded.fit_states,
-          trust = excluded.trust,
-          published_at = excluded.published_at`,
-        [
-          entity.entityId,
-          domainId,
-          publishRunId,
-          catalogVersion,
-          entity.entityType,
-          entity.title,
-          JSON.stringify(entity),
-          JSON.stringify(entity.fitStates),
-          JSON.stringify(entity.trust),
-          entity.publishedAt
-        ]
-      );
-    }
+
+    const ids         = entities.map(e => e.entityId);
+    const domainIds   = entities.map(() => domainId);
+    const runIds      = entities.map(() => publishRunId);
+    const versions    = entities.map(() => catalogVersion);
+    const types       = entities.map(e => e.entityType);
+    const titles      = entities.map(e => e.title);
+    const payloads    = entities.map(e => JSON.stringify(e));
+    const fitStates   = entities.map(e => JSON.stringify(e.fitStates));
+    const trusts      = entities.map(e => JSON.stringify(e.trust));
+    const publishedAt = entities.map(e => e.publishedAt);
+
+    await this.pool.query(
+      `insert into ml_catalog.published_entities (
+         entity_id, domain_id, publish_run_id, catalog_version,
+         entity_type, title, entity_payload, fit_states, trust, published_at
+       )
+       select * from unnest(
+         $1::text[], $2::text[], $3::uuid[], $4::text[],
+         $5::text[], $6::text[], $7::jsonb[], $8::jsonb[], $9::jsonb[], $10::timestamptz[]
+       ) as t(entity_id, domain_id, publish_run_id, catalog_version,
+              entity_type, title, entity_payload, fit_states, trust, published_at)
+       on conflict (entity_id) do update set
+         publish_run_id  = excluded.publish_run_id,
+         catalog_version = excluded.catalog_version,
+         title           = excluded.title,
+         entity_payload  = excluded.entity_payload,
+         fit_states      = excluded.fit_states,
+         trust           = excluded.trust,
+         published_at    = excluded.published_at`,
+      [ids, domainIds, runIds, versions, types, titles, payloads, fitStates, trusts, publishedAt]
+    );
+
     console.log("[Repository] All entities published successfully.");
   }
 

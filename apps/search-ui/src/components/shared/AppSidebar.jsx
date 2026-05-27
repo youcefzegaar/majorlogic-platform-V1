@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LANGUAGES } from '../../i18n/languages.js';
 
-export default function AppSidebar({ phase, onNewDecision, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme, sidebarOpen, onClose }) {
+export default function AppSidebar({ phase, onNewDecision, onMyDecisions, onSettings, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme, sidebarOpen, onClose }) {
   const { t } = useTranslation();
   const currentLang = SUPPORTED_LANGUAGES.find(l => l.code === lang) ?? SUPPORTED_LANGUAGES[0];
 
@@ -15,9 +15,9 @@ export default function AppSidebar({ phase, onNewDecision, lang, setLang, langMe
       </div>
       <nav>
         <div className={`nav-item ${phase === 0 ? 'active' : ''}`} onClick={onNewDecision}><i className="fas fa-plus-circle"></i><span>{t('nav.new_decision')}</span></div>
-        <div className="nav-item"><i className="fas fa-history"></i><span>{t('nav.my_decisions')}</span></div>
-        <div className="nav-item"><i className="fas fa-bookmark"></i><span>{t('nav.saved')}</span></div>
-        <div className="nav-item"><i className="fas fa-cog"></i><span>{t('nav.settings')}</span></div>
+        <div className="nav-item" style={{ cursor: 'pointer' }} onClick={onMyDecisions}><i className="fas fa-history"></i><span>{t('nav.my_decisions')}</span></div>
+        <div className="nav-item" style={{ cursor: 'pointer', opacity: 0.4 }}><i className="fas fa-bookmark"></i><span>{t('nav.saved')}</span></div>
+        <div className="nav-item" style={{ cursor: 'pointer' }} onClick={onSettings}><i className="fas fa-cog"></i><span>{t('nav.settings')}</span></div>
       </nav>
       <div className="sidebar-footer">
         <div className="sidebar-tools">

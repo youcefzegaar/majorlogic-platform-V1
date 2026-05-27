@@ -462,7 +462,13 @@ export class DecisionExplainer {
       } : null,
 
       // What the student said they value most
-      userPriorities
+      userPriorities,
+
+      // Intake life-scenario answers — ground the narrative in real daily context
+      dailyHoursAwayFromCharger: context.dailyHoursAwayFromCharger ?? null,
+      carriesDaily:              context.carriesDaily              ?? null,
+      usageScenarios:            context.usageScenarios            ?? [],
+      primaryUseCase:            context.primaryUseCase            ?? null
     };
 
     // ── Dynamic writing rules derived from actual data ───────────────────
@@ -489,6 +495,29 @@ export class DecisionExplainer {
     const intentRule = naturalLanguageIntent
       ? `9. USER INTENT: The student said: "${naturalLanguageIntent}". Connect strengths directly to their words.`
       : '';
+
+    const mobilityRule = context.carriesDaily
+      ? `10. DAILY MOBILITY: The student confirmed they carry this laptop every day. Weight and portability are real daily constraints — not abstract preferences. Reference this in the narrative.`
+      : '';
+
+    const batteryLifeRule = (() => {
+      const h = context.dailyHoursAwayFromCharger;
+      if (!h) return '';
+      if (h >= 7) return `10b. BATTERY REALITY: The student is away from a charger for ${h}+ hours daily. Battery life is non-negotiable for them — make this explicit in the story.`;
+      if (h >= 4) return `10b. BATTERY CONTEXT: The student needs ${h}+ hours away from a charger. Battery matters but is not the single top constraint.`;
+      return '';
+    })();
+
+    const workloadRule = (() => {
+      const scenarios = context.usageScenarios || [];
+      const parts = [];
+      if (scenarios.includes('vms'))    parts.push('virtual machines (RAM below 16 GB is a hard exclusion)');
+      if (scenarios.includes('design')) parts.push('heavy design software (Adobe suite — GPU and display matter)');
+      if (scenarios.includes('gaming')) parts.push('gaming (discrete GPU required)');
+      return parts.length
+        ? `10c. WORKLOAD: The student runs ${parts.join(' and ')}. Ground claims in these specific workload needs.`
+        : '';
+    })();
 
     // Anchor sentence hint: the strongest concrete score for the opening
     const anchor = topStrengths[0]
@@ -542,6 +571,9 @@ ${compromiseRule}
 
 ${budgetRule}
 ${intentRule}
+${mobilityRule}
+${batteryLifeRule}
+${workloadRule}
 
 RESPONSE FORMAT — return ONLY this JSON object, no extra text:
 {

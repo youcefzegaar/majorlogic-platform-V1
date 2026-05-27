@@ -134,8 +134,13 @@ export function toSlider(v, fallback = 50) {
   return isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : fallback;
 }
 
-function buildProfile({ major, lang, budgetMax, priorities, goal }) {
+function buildProfile({ major, lang, budgetMax, priorities, goal, intakeAnswers = {} }) {
   const perf = toSlider(priorities.performance, 70);
+  const scenarios = intakeAnswers.usageScenarios || [];
+  const hasVms    = scenarios.includes('vms');
+  const hasDesign = scenarios.includes('design');
+  const hasGaming = scenarios.includes('gaming');
+
   return {
     major,
     locale: lang,
@@ -144,14 +149,14 @@ function buildProfile({ major, lang, budgetMax, priorities, goal }) {
       performance: perf,
       portability: toSlider(priorities.portability),
       battery: toSlider(priorities.battery),
-      display: major === 'design' ? 85 : 50,
+      display: (major === 'design' || hasDesign) ? 85 : 50,
       resale: toSlider(priorities.resale, 50)
     },
     sliders: {
       performance: perf,
-      virtual_machines: Math.round(perf * 0.85),
-      video_4k: Math.round(perf * 0.70),
-      gaming: Math.round(perf * 0.75),
+      virtual_machines: hasVms    ? 80 : Math.round(perf * 0.85),
+      video_4k:         hasDesign ? 75 : Math.round(perf * 0.70),
+      gaming:           hasGaming ? 80 : Math.round(perf * 0.75),
       portability: toSlider(priorities.portability)
     },
     context: {
@@ -166,7 +171,12 @@ function buildProfile({ major, lang, budgetMax, priorities, goal }) {
       naturalLanguageIntent: goal || (lang === 'ar'
         ? 'أحتاج لابتوب للبرمجة والاستخدام اليومي.'
         : 'I need a laptop for programming and daily use.')
-    }
+    },
+    // Intake life-scenario answers — passed through to AI narrative engine
+    dailyHoursAwayFromCharger: intakeAnswers.hoursAwayFromCharger ?? null,
+    carriesDaily:              intakeAnswers.carriesDaily          ?? null,
+    usageScenarios:            scenarios,
+    primaryUseCase:            intakeAnswers.primaryUseCase        ?? null
   };
 }
 
@@ -187,11 +197,11 @@ export function useDecisionEngine() {
     integrityScore: 1.0
   });
 
-  const runDecision = async ({ major, lang, budgetMax, priorities, goal }) => {
+  const runDecision = async ({ major, lang, budgetMax, priorities, goal, intakeAnswers }) => {
     setIsAnalyzing(true);
     setError(null);
     try {
-      const profile = buildProfile({ major, lang, budgetMax, priorities, goal });
+      const profile = buildProfile({ major, lang, budgetMax, priorities, goal, intakeAnswers });
       const localConflicts = detectConflicts(profile, lang);
       // Direct Railway call — Vercel proxy is unreliable for POST requests
       const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';

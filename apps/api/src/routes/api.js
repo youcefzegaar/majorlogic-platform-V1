@@ -20,7 +20,11 @@ export default async function apiRoutes(fastify, { isProd }) {
           preferences: { type: "object", additionalProperties: true },
           sliders: { type: "object", additionalProperties: true },
           context: { type: "object", additionalProperties: true },
-          productIntent: { type: "object", additionalProperties: true }
+          productIntent: { type: "object", additionalProperties: true },
+          dailyHoursAwayFromCharger: { type: ["number", "null"] },
+          carriesDaily:              { type: ["boolean", "null"] },
+          usageScenarios:            { type: "array", items: { type: "string" } },
+          primaryUseCase:            { type: ["string", "null"] }
         },
         required: ["major", "budgetUsd"]
       }
