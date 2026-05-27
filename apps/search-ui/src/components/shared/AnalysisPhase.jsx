@@ -6,7 +6,8 @@ export default function AnalysisPhase({
   priorities, analysisSummary, detectedConflicts, decisionMetadata,
   budgetMin, budgetMax, onViewCards, onAdjustPriorities
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === 'ar';
   const conflictCount = detectedConflicts.filter(c => c.type !== 'harmony').length;
   const hasConflicts = conflictCount > 0;
 
@@ -33,10 +34,10 @@ export default function AnalysisPhase({
             <div className="card-subtitle">
               {analysisSummary.devices > 0
                 ? t('analysis.devices_evaluated', { count: analysisSummary.devices })
-                : 'Analyzing your requirements'}
+                : t('analysis.analyzing_requirements')}
               {hasConflicts
                 ? ` · ${t('analysis.conflicts_found', { count: conflictCount })}`
-                : ' · priorities aligned'}
+                : ` · ${t('analysis.priorities_aligned')}`}
             </div>
           </div>
         </div>
@@ -67,7 +68,7 @@ export default function AnalysisPhase({
               {conflict.description}
               {conflict.gravity != null && (
                 <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.7 }}>
-                  (tension {Math.round(conflict.gravity * 100)}%)
+                  ({t('trace.tension').toLowerCase()} {Math.round(conflict.gravity * 100)}%)
                 </span>
               )}
             </div>
@@ -84,7 +85,7 @@ export default function AnalysisPhase({
           >
             <i className="fas fa-check-circle" style={{ color: 'var(--accent-success)' }}></i>
             <div className="conflict-alert-text">
-              <strong>Priorities aligned</strong> — no significant trade-offs required.
+              {t('analysis.priorities_aligned_desc')}
             </div>
           </div>
         )}
