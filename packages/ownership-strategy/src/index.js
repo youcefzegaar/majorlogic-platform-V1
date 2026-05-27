@@ -12,30 +12,60 @@
  * مبدأ: هذه الطبقة تأتي بعد القرار — لا تغيّر الترتيب أبداً.
  */
 
-/**
- * يحسب التكلفة الكلية للملكية (Total Cost of Ownership).
- *
- * @param {object} params
- * @param {number} params.purchasePrice  — سعر الشراء
- * @param {number} params.resaleScore    — تصنيف إعادة البيع (0-100)
- * @param {number} [params.ownershipYears] — سنوات الامتلاك المتوقعة
- * @param {number} [params.depreciationFactor] — معامل الهبوط الخاص بالدومين
- * @returns {{ tco, estimatedResaleValue, netCost, costPerYear }}
- */
-function computeLifecycleCost({ purchasePrice, resaleScore, ownershipYears = 4, depreciationFactor = 0.65 }) {
-  const safePrice = purchasePrice || 0;
-  const depreciationRate = 1 - (resaleScore / 100) * depreciationFactor;
-  const estimatedResaleValue = Math.round(safePrice * (1 - depreciationRate) * 100) / 100;
-  const netCost = safePrice - estimatedResaleValue;
-  const costPerYear = Math.round((netCost / ownershipYears) * 100) / 100;
+// Calibrated on Swappa/eBay 2024 data: Mac retains 40-50% after 4yr (~19%/yr),
+// non-Mac retains 22-38% (~27%/yr). resaleScore adjusts within each tier.
+function getDepreciationRate(isMac, resaleScore) {
+  const base = isMac ? 0.19 : 0.27;
+  const adj = ((resaleScore - 75) / 100) * -0.10;
+  return Math.max(0.12, Math.min(0.42, base + adj));
+}
+
+function classifyUsageIntensity(profile) {
+  const perf  = profile?.priorities?.performance ?? 50;
+  const major = profile?.major ?? '';
+  const MAJOR_BOOST = { cs: 12, engineering: 12, ai: 12, design: 7 };
+  const adjusted = perf + (MAJOR_BOOST[major] ?? 0);
+  if (adjusted >= 70) return 'heavy';
+  if (adjusted >= 42) return 'medium';
+  return 'light';
+}
+
+const MAINTENANCE_RATES = { light: 0.020, medium: 0.035, heavy: 0.052 };
+
+function computeLifecycleCost({
+  purchasePrice,
+  resaleScore,
+  ownershipYears   = 4,
+  laptopCategory   = 'non_mac',
+  usageIntensity   = 'medium',
+}) {
+  const price  = purchasePrice || 0;
+  const isMac  = laptopCategory === 'mac';
+  const rate   = getDepreciationRate(isMac, resaleScore ?? 55);
+
+  const estimatedResaleValue = Math.round(price * Math.pow(1 - rate, ownershipYears));
+
+  // maintenanceCost is separated from costPerYear to stay consistent with
+  // OwnershipPhase which computes renewed/open_box without maintenance.
+  const maintenanceCost = Math.round(
+    price * (MAINTENANCE_RATES[usageIntensity] ?? 0.035) * ownershipYears
+  );
+
+  const netCost     = price - estimatedResaleValue;
+  const costPerYear = Math.round(netCost / ownershipYears);
 
   return {
-    purchasePrice: safePrice,
+    purchasePrice:            price,
     ownershipYears,
+    laptopCategory,
+    usageIntensity,
     estimatedResaleValue,
+    maintenanceCost,
     netCost,
+    totalCostWithMaintenance: netCost + maintenanceCost,
     costPerYear,
-    tco: netCost
+    tco:                      netCost + maintenanceCost,
+    annualDepreciationPct:    Math.round(rate * 100),
   };
 }
 
@@ -63,11 +93,17 @@ export function buildOwnershipStrategy({ profile, catalog, decision, domainPack 
       };
     }
 
+    const usageIntensity = classifyUsageIntensity(profile);
+    const laptopCategory = entity?.specs?.laptopCategory ?? 'non_mac';
+    const priceUsd       = card.priceUsd ?? entity?.market?.bestOffer?.priceUsd ?? 0;
+    const resaleScore    = card.resaleScore ?? entity?.economicSignals?.resaleScore ?? 55;
+
     const lifecycle = computeLifecycleCost({
-      purchasePrice: card.priceUsd ?? entity?.market?.bestOffer?.priceUsd ?? 0,
-      resaleScore: card.resaleScore ?? entity?.economicSignals?.resaleScore ?? 50,
+      purchasePrice: priceUsd,
+      resaleScore,
       ownershipYears,
-      depreciationFactor: domainPack.economicConfig?.depreciationFactor ?? 0.65
+      laptopCategory,
+      usageIntensity,
     });
 
     const domainRecommendation = domainPack.recommendOwnership

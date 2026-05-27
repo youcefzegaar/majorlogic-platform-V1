@@ -270,6 +270,12 @@ export function summarizeExclusions(exclusionReasons) {
   return `No eligible device remained after applying these constraints: ${uniqueReasons.join(", ")}.`;
 }
 
+// Only data-justified split: Mac depreciates ~19%/yr, all others ~27%.
+// Differences between gaming/ultrabook/workstation/standard (<3%) are covered by resaleScore.
+export function classifyLaptopCategory(brand) {
+  return brand === 'apple' ? 'mac' : 'non_mac';
+}
+
 export function rankCandidates(entries, tieBreakersOrder) {
   const tieBreakers = tieBreakersOrder ?? [];
 

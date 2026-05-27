@@ -1,13 +1,15 @@
 // publishEntity
 import { normalizeId } from "../../packages/shared-kernel/src/index.js";
 import { produceReviewIntelligence } from "../../packages/catalog-review-intelligence/src/index.js";
-import { detectBrand, estimateResaleScore, resolveSellerTier, buildProductImageDataUri, resolveFitContext } from "./normalizers.js";
+import { detectBrand, estimateResaleScore, resolveSellerTier, buildProductImageDataUri, resolveFitContext, classifyLaptopCategory } from "./normalizers.js";
 import { computeVendorTrustScore } from "../../packages/commercial-routing/src/vendorTrust.js";
 
-function calculateTCO(entity) {
-  const price = entity.market?.bestOffer?.priceUsd ?? 1000;
-  const resale = price * ((entity.specs?.resale ?? 30) / 100);
-  const maintenance = 150; // 4-year estimate
+function calculateTCO(price, isMac, resaleScore = 55) {
+  const base = isMac ? 0.19 : 0.27;
+  const adj  = ((resaleScore - 75) / 100) * -0.10;
+  const rate = Math.max(0.12, Math.min(0.42, base + adj));
+  const resale      = Math.round(price * Math.pow(1 - rate, 4));
+  const maintenance = Math.round(price * 0.035 * 4);
   return Math.round(price + maintenance - resale);
 }
 
@@ -27,6 +29,7 @@ export function publishEntity(observation, { fitContexts, resolvedSpecs = null }
     trust: observation.trust
   });
   const brand = detectBrand(observation.itemName);
+  const laptopCategory = classifyLaptopCategory(brand);
 
   return {
     entityId,
@@ -36,7 +39,7 @@ export function publishEntity(observation, { fitContexts, resolvedSpecs = null }
     variantName: observation.variantName,
     brand,
     segmentSignals: observation.majorSignals,
-    specs: specs,
+    specs: { ...specs, laptopCategory },
     market: {
       bestOffer,
       offers,
@@ -61,7 +64,7 @@ export function publishEntity(observation, { fitContexts, resolvedSpecs = null }
     },
     economicSignals: {
       resaleScore: resaleScore,
-      tcoEstimate: calculateTCO({ market: { bestOffer }, specs })
+      tcoEstimate: calculateTCO(bestOffer?.priceUsd ?? 1000, brand === 'apple', resaleScore)
     },
     media: {
       experience: {
