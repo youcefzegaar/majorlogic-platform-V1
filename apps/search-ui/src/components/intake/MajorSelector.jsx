@@ -1,20 +1,23 @@
+import { useTranslation } from 'react-i18next';
+
 const SPECS = [
-  { id: 'cs', icon: '💻', label: 'CS / IT' },
-  { id: 'engineering', icon: '⚙️', label: 'Engineering' },
-  { id: 'design', icon: '🎨', label: 'Design' },
-  { id: 'medical', icon: '🧬', label: 'Medical' },
-  { id: 'general', icon: '📚', label: 'General' },
-  { id: 'ai', icon: '🤖', label: 'AI' }
+  { id: 'cs', icon: '💻' },
+  { id: 'engineering', icon: '⚙️' },
+  { id: 'design', icon: '🎨' },
+  { id: 'medical', icon: '🧬' },
+  { id: 'general', icon: '📚' },
+  { id: 'ai', icon: '🤖' }
 ];
 
 export default function MajorSelector({ major, setMajor }) {
+  const { t } = useTranslation();
   return (
     <div className="intake-card">
       <div className="card-header">
         <div className="card-icon" style={{ background: 'rgba(14, 165, 233, 0.15)', color: 'var(--accent-info)' }}>💻</div>
         <div>
-          <div className="card-title">Your Field</div>
-          <div className="card-subtitle">Choose your primary work area</div>
+          <div className="card-title">{t('intake.field_title')}</div>
+          <div className="card-subtitle">{t('intake.field_subtitle')}</div>
         </div>
       </div>
       <div className="specialization-grid">
@@ -25,7 +28,7 @@ export default function MajorSelector({ major, setMajor }) {
             onClick={() => setMajor(spec.id)}
           >
             <div style={{ fontSize: '32px', marginBottom: '8px' }}>{spec.icon}</div>
-            {spec.label}
+            {t(`intake.field_${spec.id}`)}
           </div>
         ))}
       </div>

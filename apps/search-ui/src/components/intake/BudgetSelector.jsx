@@ -1,11 +1,14 @@
+import { useTranslation } from 'react-i18next';
+
 export default function BudgetSelector({ budgetMin, setBudgetMin, budgetMax, setBudgetMax }) {
+  const { t } = useTranslation();
   return (
     <div className="intake-card full-width">
       <div className="card-header">
         <div className="card-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-success)' }}>💰</div>
         <div>
-          <div className="card-title">Budget</div>
-          <div className="card-subtitle">Set your available budget range</div>
+          <div className="card-title">{t('intake.budget_title')}</div>
+          <div className="card-subtitle">{t('intake.budget_subtitle')}</div>
         </div>
       </div>
       <div className="budget-container">
@@ -41,9 +44,9 @@ export default function BudgetSelector({ budgetMin, setBudgetMin, budgetMax, set
           </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, fontSize: 13, color: 'var(--text-muted)' }}>
-          <span>Min: $500</span>
-          <span>Selected: ${budgetMin.toLocaleString()} - ${budgetMax.toLocaleString()}</span>
-          <span>Max: $5,000</span>
+          <span>{t('intake.budget_min_label')}</span>
+          <span>{t('intake.budget_selected', { min: budgetMin.toLocaleString(), max: budgetMax.toLocaleString() })}</span>
+          <span>{t('intake.budget_max_label')}</span>
         </div>
       </div>
     </div>

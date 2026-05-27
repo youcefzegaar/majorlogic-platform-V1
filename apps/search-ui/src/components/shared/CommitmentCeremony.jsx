@@ -14,11 +14,11 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
   const traceScores = selectedCard?.traceScores ?? {};
   const priorities  = selectedCard?.priorities  ?? {};
   const DIMS = [
-    { scoreKey: 'performance_score', priorityKey: 'performance', label: 'Performance' },
-    { scoreKey: 'display_score',     priorityKey: 'display',      label: 'Display'      },
-    { scoreKey: 'portability_score', priorityKey: 'portability',  label: 'Portability'  },
-    { scoreKey: 'battery_score',     priorityKey: 'battery',      label: 'Battery'      },
-    { scoreKey: 'value_score',       priorityKey: 'resale',       label: 'Value'        },
+    { scoreKey: 'performance_score', priorityKey: 'performance' },
+    { scoreKey: 'display_score',     priorityKey: 'display'     },
+    { scoreKey: 'portability_score', priorityKey: 'portability' },
+    { scoreKey: 'battery_score',     priorityKey: 'battery'     },
+    { scoreKey: 'value_score',       priorityKey: 'resale'      },
   ];
   const topSacrifice = DIMS
     .map(d => {
@@ -30,6 +30,9 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
     .filter(Boolean)
     .sort((a, b) => a.delta - b.delta)
     .find(d => d.delta < -4);
+  const sacrificeLabel = topSacrifice
+    ? t(`intake.priority_${topSacrifice.priorityKey}`, { defaultValue: topSacrifice.priorityKey })
+    : null;
 
   const allChecked = checked.sacrifice && checked.integrity && checked.flaw;
 
@@ -83,7 +86,7 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
           fontWeight: 600,
         }}
       >
-        ✓ Decision acknowledged — this is your choice.
+        {t('ownership.confirmed')}
       </motion.div>
     );
   }
@@ -97,7 +100,7 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
         letterSpacing: '0.07em',
         marginBottom: 12,
       }}>
-        BEFORE YOU BUY — CONFIRM YOU UNDERSTAND
+        {t('ownership.before_buy')}
       </div>
 
       <div style={rowStyle(checked.sacrifice)} onClick={() => toggle('sacrifice')}>
@@ -106,8 +109,7 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
         </div>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
           {topSacrifice
-            ? <>I accept that <strong style={{ color: 'var(--text-primary)' }}>{topSacrifice.label}</strong> scores{' '}
-                <strong style={{ color: 'var(--accent-warning)' }}>{topSacrifice.score}/100</strong> (my priority was {topSacrifice.ideal}).</>
+            ? <>{t('ownership.accept_sacrifice_pre')} <strong style={{ color: 'var(--text-primary)' }}>{sacrificeLabel}</strong> {t('ownership.accept_sacrifice_mid', { score: topSacrifice.score, ideal: topSacrifice.ideal })}</>
             : <>{t('ownership.commitment_check1')}</>
           }
         </div>
@@ -119,7 +121,7 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
         </div>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
           {integrityScore < 100 && relaxedConstraint
-            ? <>I understand that <strong style={{ color: 'var(--accent-warning)' }}>"{relaxedConstraint}"</strong> was relaxed to find this result — integrity score: {integrityScore}%.</>
+            ? <>{t('ownership.accept_relaxed_pre')} <strong style={{ color: 'var(--accent-warning)' }}>"{relaxedConstraint}"</strong> {t('ownership.accept_relaxed_suf', { score: integrityScore })}</>
             : <>{t('ownership.commitment_check2')}</>
           }
         </div>
@@ -131,7 +133,7 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
         </div>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
           {primaryFlaw
-            ? <>I've read the known issue: <strong style={{ color: 'var(--text-primary)' }}>"{primaryFlaw}"</strong></>
+            ? <>{t('ownership.read_known_issue_pre')} <strong style={{ color: 'var(--text-primary)' }}>"{primaryFlaw}"</strong></>
             : <>{t('ownership.commitment_check3')}</>
           }
         </div>
@@ -154,7 +156,7 @@ export default function CommitmentCeremony({ selectedCard, onReady }) {
 
       {!allChecked && (
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, textAlign: 'center' }}>
-          Check all three to proceed
+          {t('ownership.check_all_three')}
         </div>
       )}
     </div>

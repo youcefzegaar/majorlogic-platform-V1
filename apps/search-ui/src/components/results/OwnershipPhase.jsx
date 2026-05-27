@@ -9,45 +9,36 @@ const MODE_TO_PATH = {
   light_financing:          'installments',
 };
 
-function buildWhyText({ mode, priceUsd, budgetMax, renewedPrice, openBoxPrice, monthly12, costPerYear }) {
+function buildWhyText(t, { mode, priceUsd, budgetMax, renewedPrice, openBoxPrice, monthly12, costPerYear }) {
   const budget = budgetMax || priceUsd;
   const priceRatio   = Math.round((priceUsd / budget) * 100);
   const comfortPct   = 100 - priceRatio;
   const renewedSavings  = priceUsd - renewedPrice;
   const openBoxSavings  = priceUsd - openBoxPrice;
   const overage         = priceUsd - budget;
-  const yearlyNote      = costPerYear ? ` Effective net cost: $${costPerYear}/year after resale.` : '';
 
   switch (mode) {
     case 'refurbished_if_verified':
-      return `The price $${priceUsd.toLocaleString()} is ${priceRatio}% of your budget. The certified renewed version at $${renewedPrice.toLocaleString()} delivers the same performance and saves $${renewedSavings.toLocaleString()} — giving you more financial breathing room.`;
+      return t('ownership.why_renewed', { price: `$${priceUsd.toLocaleString()}`, priceRatio, renewed: `$${renewedPrice.toLocaleString()}`, savings: `$${renewedSavings.toLocaleString()}` });
     case 'open_box_with_guardrails':
-      return `An open box unit is available at ~$${openBoxPrice.toLocaleString()}, saving $${openBoxSavings.toLocaleString()} with minimal compromise on condition. A solid middle ground.`;
+      return t('ownership.why_open_box', { price: `$${openBoxPrice.toLocaleString()}`, savings: `$${openBoxSavings.toLocaleString()}` });
     case 'light_financing':
-      return `The price $${priceUsd.toLocaleString()} exceeds your budget by $${overage.toLocaleString()}. Installments let you get it now for just $${monthly12.toLocaleString()}/month — no large upfront payment needed.`;
+      return t('ownership.why_financing', { price: `$${priceUsd.toLocaleString()}`, overage: `$${overage.toLocaleString()}`, monthly: `$${monthly12.toLocaleString()}` });
     default:
-      return `The price fits comfortably within your budget with ${comfortPct}% to spare. Buying new guarantees the highest resale value and full manufacturer warranty.${yearlyNote}`;
+      return costPerYear
+        ? t('ownership.why_new_with_cost', { comfort: comfortPct, cost: `$${costPerYear}` })
+        : t('ownership.why_new', { comfort: comfortPct });
   }
 }
 
-const GAINS_LOSSES = {
-  new: {
-    gains: ['Full manufacturer warranty', 'Pristine condition', 'Highest resale value'],
-    losses: ['Highest upfront cost', 'Fastest depreciation in year 1'],
-  },
-  renewed: {
-    gains: ['Significant savings', 'Tested & certified by manufacturer', 'Often includes limited warranty'],
-    losses: ['Limited stock availability', 'No original packaging', 'No configuration choice'],
-  },
-  open_box: {
-    gains: ['Moderate savings', 'Specs usually fully intact', 'Immediate availability'],
-    losses: ['No original packaging', 'Return policy varies', 'Condition may vary'],
-  },
-  installments: {
-    gains: ['Zero upfront payment', 'Preserves cash flow', 'Get it right now'],
-    losses: ['Interest may apply', 'Credit check required', 'Total cost is higher'],
-  },
-};
+function buildGainsLosses(t) {
+  return {
+    new:          { gains: [t('ownership.new_gain1'), t('ownership.new_gain2'), t('ownership.new_gain3')], losses: [t('ownership.new_loss1'), t('ownership.new_loss2')] },
+    renewed:      { gains: [t('ownership.renewed_gain1'), t('ownership.renewed_gain2'), t('ownership.renewed_gain3')], losses: [t('ownership.renewed_loss1'), t('ownership.renewed_loss2'), t('ownership.renewed_loss3')] },
+    open_box:     { gains: [t('ownership.open_box_gain1'), t('ownership.open_box_gain2'), t('ownership.open_box_gain3')], losses: [t('ownership.open_box_loss1'), t('ownership.open_box_loss2'), t('ownership.open_box_loss3')] },
+    installments: { gains: [t('ownership.installments_gain1'), t('ownership.installments_gain2'), t('ownership.installments_gain3')], losses: [t('ownership.installments_loss1'), t('ownership.installments_loss2'), t('ownership.installments_loss3')] },
+  };
+}
 
 export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplanation, onChoiceMade, onNext, onBack }) {
   const { t } = useTranslation();
@@ -132,66 +123,67 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
   ));
   // ── End Pricing Engine ──────────────────────────────────────────────────
 
-  const whyText = buildWhyText({
+  const whyText = buildWhyText(t, {
     mode: rec.mode, priceUsd, budgetMax,
     renewedPrice, openBoxPrice, monthly12,
     costPerYear: costPerYearNew,
   });
 
+  const GAINS_LOSSES = buildGainsLosses(t);
   const gl = GAINS_LOSSES[currentPath] || GAINS_LOSSES.new;
 
   // Bar chart — normalize against highest total cost
   const barMax = Math.max(priceUsd, total24, 1);
   const bars = [
-    { key: 'new',          icon: '🆕', label: 'Buy New',             value: priceUsd,    display: `$${priceUsd.toLocaleString()}`,    saving: null },
-    { key: 'renewed',      icon: '🔄', label: 'Certified Renewed',   value: renewedPrice, display: `$${renewedPrice.toLocaleString()}`, saving: `↓ ${Math.round(renewedDiscount * 100)}%` },
-    { key: 'open_box',     icon: '📦', label: 'Open Box',            value: openBoxPrice, display: `$${openBoxPrice.toLocaleString()}`, saving: `↓ ${Math.round(openBoxDiscount * 100)}%` },
-    { key: 'installments', icon: '💳', label: 'Installments (24mo)', value: total24,     display: `$${total24.toLocaleString()}`,      saving: `↑ +$${interest12.toLocaleString()}` },
+    { key: 'new',          icon: '🆕', label: t('ownership.bar_buy_new'),          value: priceUsd,    display: `$${priceUsd.toLocaleString()}`,    saving: null },
+    { key: 'renewed',      icon: '🔄', label: t('ownership.bar_certified_renewed'), value: renewedPrice, display: `$${renewedPrice.toLocaleString()}`, saving: `↓ ${Math.round(renewedDiscount * 100)}%` },
+    { key: 'open_box',     icon: '📦', label: t('ownership.bar_open_box'),          value: openBoxPrice, display: `$${openBoxPrice.toLocaleString()}`, saving: `↓ ${Math.round(openBoxDiscount * 100)}%` },
+    { key: 'installments', icon: '💳', label: t('ownership.bar_installments'),      value: total24,     display: `$${total24.toLocaleString()}`,      saving: `↑ +$${interest12.toLocaleString()}` },
   ];
 
   // Comparison table rows
   const tableRows = [
     {
-      label: 'Price',
+      key: 'price', label: t('ownership.row_price'),
       new: `$${priceUsd.toLocaleString()}`,
       renewed: `$${renewedPrice.toLocaleString()}`,
       open_box: `$${openBoxPrice.toLocaleString()}`,
-      installments: `$${monthly12}/mo`,
+      installments: `$${monthly12}${t('ownership.mo_suffix')}`,
     },
     {
-      label: 'Cost / Year',
+      key: 'cost_year', label: t('ownership.row_cost_year'),
       new: `$${costPerYearNew.toLocaleString()}`,
       renewed: `$${costPerYearRenewed.toLocaleString()}`,
       open_box: `$${costPerYearOpenBox.toLocaleString()}`,
       installments: `$${costPerYearFinancing.toLocaleString()}`,
     },
     {
-      label: 'You Save',
+      key: 'you_save', label: t('ownership.row_you_save'),
       new: '—',
       renewed: `$${(priceUsd - renewedPrice).toLocaleString()}`,
       open_box: `$${(priceUsd - openBoxPrice).toLocaleString()}`,
-      installments: `−$${interest12.toLocaleString()} interest`,
+      installments: `−$${interest12.toLocaleString()} ${t('ownership.interest_label')}`,
     },
     {
-      label: 'Resale Est.',
+      key: 'resale_est', label: t('ownership.row_resale_est'),
       new: `~$${resaleVal.toLocaleString()}`,
       renewed: `~$${renewedResaleVal.toLocaleString()}`,
       open_box: `~$${openBoxResaleVal.toLocaleString()}`,
       installments: `~$${resaleVal.toLocaleString()}`,
     },
     {
-      label: 'Break-Even',
+      key: 'break_even', label: t('ownership.row_break_even'),
       new: '—',
-      renewed: breakEvenYears ? `${breakEvenYears} yr` : '< 1 yr',
+      renewed: breakEvenYears ? t('ownership.yr_suffix', { n: breakEvenYears }) : t('ownership.less_than_1yr'),
       open_box: '—',
       installments: '—',
     },
     {
-      label: 'Warranty',
-      new: 'Full',
-      renewed: 'Limited',
-      open_box: 'Limited',
-      installments: 'Full',
+      key: 'warranty', label: t('ownership.row_warranty'),
+      new: t('ownership.warranty_full'),
+      renewed: t('ownership.warranty_limited'),
+      open_box: t('ownership.warranty_limited'),
+      installments: t('ownership.warranty_full'),
     },
   ];
 
@@ -211,10 +203,10 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
     installments: `https://www.amazon.com/s?k=${enc}&tag=${tag}`,
   };
   const ctaMap = {
-    new:          `Buy New — $${priceUsd.toLocaleString()}`,
-    renewed:      `Buy Certified Renewed — $${renewedPrice.toLocaleString()}`,
-    open_box:     `Find Open Box — ~$${openBoxPrice.toLocaleString()}`,
-    installments: `Check Financing — $${monthly12}/month`,
+    new:          t('ownership.cta_buy_new',      { price: `$${priceUsd.toLocaleString()}` }),
+    renewed:      t('ownership.cta_buy_renewed',  { price: `$${renewedPrice.toLocaleString()}` }),
+    open_box:     t('ownership.cta_open_box',     { price: `$${openBoxPrice.toLocaleString()}` }),
+    installments: t('ownership.cta_installments', { price: `$${monthly12}` }),
   };
 
   const handleAlert = async () => {
@@ -229,10 +221,10 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
       });
       if (!res.ok) throw new Error(`${res.status}`);
       setAlertSaved(true);
-    } catch { setAlertError('Could not save. Please try again.'); }
+    } catch { setAlertError(t('ownership.alert_error')); }
   };
 
-  const pathLabels = { new: `🆕 $${priceUsd.toLocaleString()}`, renewed: `🔄 $${renewedPrice.toLocaleString()}`, open_box: `📦 $${openBoxPrice.toLocaleString()}`, installments: `💳 $${monthly12}/mo` };
+  const pathLabels = { new: `🆕 $${priceUsd.toLocaleString()}`, renewed: `🔄 $${renewedPrice.toLocaleString()}`, open_box: `📦 $${openBoxPrice.toLocaleString()}`, installments: `💳 $${monthly12}${t('ownership.mo_suffix')}` };
 
   return (
     <div className="phase-container active">
@@ -251,10 +243,9 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
         <div className="op-renewed-entry-notice">
           <span className="op-renewed-entry-icon">♻️</span>
           <div>
-            <strong>You chose the Renewed Opportunity</strong>
+            <strong>{t('ownership.renewed_entry_title')}</strong>
             <div>
-              This device retails at <strong>${priceUsd.toLocaleString()}</strong> — above your budget — but its certified-renewed version at <strong>${renewedPrice.toLocaleString()}</strong> fits.
-              The analysis below uses the retail price as the baseline so every number is accurate.
+              {t('ownership.renewed_entry_intro', { retail: `$${priceUsd.toLocaleString()}`, renewed: `$${renewedPrice.toLocaleString()}` })}
             </div>
           </div>
         </div>
@@ -269,7 +260,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
         </div>
         <div className="op-confidence-badge" title="Estimate confidence based on market data richness, lifecycle availability, and device tier predictability">
           <div className="op-confidence-value">{confidenceScore}%</div>
-          <div className="op-confidence-label">confidence</div>
+          <div className="op-confidence-label">{t('ownership.confidence_label')}</div>
         </div>
       </div>
 
@@ -285,17 +276,17 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
         const grossPerDay  = (activePrice / (ownerYears * 365)).toFixed(2);
         const netPerDay    = (activeCostPerYear / 365).toFixed(2);
         const frames = [
-          { label: 'Purchase price',         value: `$${activePrice.toLocaleString()}`,       note: 'the anchor' },
-          { label: `Per year (${ownerYears} yr use)`, value: `$${grossPerYear.toLocaleString()}/yr`, note: 'normalized' },
-          { label: 'Per day (gross)',         value: `$${grossPerDay}/day`,                  note: 'if used daily' },
-          { label: 'Per day (net)',           value: `$${netPerDay}/day`,                    note: `after ~$${activeResale.toLocaleString()} resale` },
+          { label: t('ownership.frame_purchase_price'),              value: `$${activePrice.toLocaleString()}`,       note: t('ownership.frame_anchor') },
+          { label: t('ownership.frame_per_year', { years: ownerYears }), value: `$${grossPerYear.toLocaleString()}/yr`, note: t('ownership.frame_normalized') },
+          { label: t('ownership.frame_per_day_gross'),               value: `$${grossPerDay}/day`,                  note: t('ownership.frame_if_daily') },
+          { label: t('ownership.frame_per_day_net'),                 value: `$${netPerDay}/day`,                    note: t('ownership.frame_after_resale', { resale: `$${activeResale.toLocaleString()}` }) },
         ];
         return (
           <div className="op-section">
             <div className="op-section-title">
-              What this actually costs you
+              {t('ownership.what_costs_title')}
               <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 8 }}>
-                — if used daily for {ownerYears} years, based on what you told us
+                {t('ownership.what_costs_subtitle', { years: ownerYears })}
               </span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
@@ -327,7 +318,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
 
       {/* ── Comparison Table ──────────────────────────── */}
       <div className="op-section">
-        <div className="op-section-title">Compare All Options</div>
+        <div className="op-section-title">{t('ownership.compare_title')}</div>
         <div className="op-table-wrap">
           <table className="op-table">
             <thead>
@@ -335,7 +326,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
                 <th></th>
                 {['new','renewed','open_box','installments'].map(k => (
                   <th key={k} className={k === recPath ? 'op-th-rec' : ''}>
-                    {k === recPath && <div className="op-rec-chip">⭐ Recommended</div>}
+                    {k === recPath && <div className="op-rec-chip">{t('ownership.rec_chip')}</div>}
                     {bars.find(b => b.key === k)?.icon} {bars.find(b => b.key === k)?.label}
                   </th>
                 ))}
@@ -343,13 +334,13 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
             </thead>
             <tbody>
               {tableRows.map(row => (
-                <tr key={row.label}>
+                <tr key={row.key}>
                   <td className="op-row-label">{row.label}</td>
                   {['new','renewed','open_box','installments'].map(k => {
                     const isRec = k === recPath;
-                    const isSavingsGreen = row.label === 'You Save' && (k === 'renewed' || k === 'open_box');
-                    const isSavingsRed   = row.label === 'You Save' && k === 'installments';
-                    const isResaleGreen  = row.label === 'Resale Est.' && k !== 'installments';
+                    const isSavingsGreen = row.key === 'you_save' && (k === 'renewed' || k === 'open_box');
+                    const isSavingsRed   = row.key === 'you_save' && k === 'installments';
+                    const isResaleGreen  = row.key === 'resale_est' && k !== 'installments';
                     return (
                       <td key={k} className={[
                         'op-td',
@@ -370,7 +361,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
 
       {/* ── Cost Bar Chart ────────────────────────────── */}
       <div className="op-section">
-        <div className="op-section-title">Cost Comparison</div>
+        <div className="op-section-title">{t('ownership.cost_chart_title')}</div>
         <div className="op-bars">
           {bars.map(b => (
             <div key={b.key} className={`op-bar-row ${b.key === recPath ? 'op-bar-rec' : ''}`} onClick={() => setActivePath(b.key)}>
@@ -387,7 +378,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
       {/* ── Gains / Losses ────────────────────────────── */}
       <div className="op-section">
         <div className="op-section-title">
-          {pathLabels[currentPath]} — What You Gain &amp; Lose
+          {pathLabels[currentPath]} — {t('ownership.gain_lose_title')}
           <div className="op-path-tabs">
             {Object.keys(pathLabels).map(k => (
               <button key={k} className={`op-path-tab ${currentPath === k ? 'active' : ''}`} onClick={() => setActivePath(k)}>
@@ -398,11 +389,11 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
         </div>
         <div className="op-gl-grid">
           <div className="op-gl-col op-gl-gains">
-            <div className="op-gl-col-title">✓ What You Gain</div>
+            <div className="op-gl-col-title">{t('ownership.gain_col')}</div>
             {gl.gains.map(g => <div key={g} className="op-gl-item">{g}</div>)}
           </div>
           <div className="op-gl-col op-gl-losses">
-            <div className="op-gl-col-title">✗ What You Lose</div>
+            <div className="op-gl-col-title">{t('ownership.loss_col')}</div>
             {gl.losses.map(l => <div key={l} className="op-gl-item">{l}</div>)}
           </div>
         </div>
@@ -422,7 +413,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
                 style={{ fontSize: 12, padding: '6px 16px', opacity: 0.7 }}
                 onClick={() => setCeremonyComplete(true)}
               >
-                Skip to purchase →
+                {t('buttons.skip_to_purchase')}
               </button>
             </div>
           )}
@@ -432,16 +423,16 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
 
       {/* ── Price Alert ───────────────────────────────── */}
       <div className="op-alert-section">
-        <div className="op-alert-title"><i className="fas fa-bell"></i> Alert me when the price drops</div>
+        <div className="op-alert-title"><i className="fas fa-bell"></i> {t('ownership.alert_title')}</div>
         {alertSaved ? (
-          <div className="op-alert-success">✓ We'll notify you when the price drops.</div>
+          <div className="op-alert-success">{t('ownership.alert_success')}</div>
         ) : (
           <>
             <div className="op-alert-row">
-              <input type="email" className="form-input" placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAlert()} />
+              <input type="email" className="form-input" placeholder={t('ownership.alert_email_placeholder')} value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAlert()} />
               <button className="btn btn-primary" style={{ padding: '12px 20px' }} onClick={handleAlert}><i className="fas fa-bell"></i></button>
             </div>
-            {alertError && <div className="op-alert-error">{alertError}</div>}
+            {alertError && <div className="op-alert-error">{t('ownership.alert_error')}</div>}
           </>
         )}
       </div>
@@ -462,7 +453,7 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
             onNext();
           }}
         >
-          <i className="fas fa-arrow-right"></i> Final Summary
+          <i className="fas fa-arrow-right"></i> {t('ownership.final_summary_btn')}
         </button>
         <button className="btn btn-secondary" onClick={onBack}><i className="fas fa-arrow-left"></i> {t('buttons.back_to_explanation')}</button>
       </div>
