@@ -153,7 +153,11 @@
     "conflicts": "تعارضات",
     "viable_devices": "أجهزة مناسبة",
     "resolution_paths": "مسارات الحل",
-    "confidence": "الثقة"
+    "confidence": "الثقة",
+    "dim_performance": "الأداء",
+    "dim_battery": "البطارية",
+    "dim_portability": "المحمولية",
+    "dim_build": "البناء"
   },
   "trust": {
     "clean": "قرار نظيف",

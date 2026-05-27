@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 const RadarChart = ({ data }) => {
+  const { t } = useTranslation();
   const cx = 120;
   const cy = 120;
   const r = 80;
@@ -25,10 +26,10 @@ const RadarChart = ({ data }) => {
       <line x1={cx} y1={cy - r} x2={cx} y2={cy + r} stroke="var(--border)" strokeWidth="1" />
       <line x1={cx - r} y1={cy} x2={cx + r} y2={cy} stroke="var(--border)" strokeWidth="1" />
 
-      <text x={cx} y={cy - r - 10} textAnchor="middle" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Performance</text>
-      <text x={cx + r + 10} y={cy + 4} textAnchor="start" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Battery</text>
-      <text x={cx} y={cy + r + 20} textAnchor="middle" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Portability</text>
-      <text x={cx - r - 10} y={cy + 4} textAnchor="end" fill="var(--text-secondary)" fontSize="12" fontWeight="600">Build</text>
+      <text x={cx} y={cy - r - 10} textAnchor="middle" fill="var(--text-secondary)" fontSize="12" fontWeight="600">{t('trace.dim_performance')}</text>
+      <text x={cx + r + 10} y={cy + 4} textAnchor="start" fill="var(--text-secondary)" fontSize="12" fontWeight="600">{t('trace.dim_battery')}</text>
+      <text x={cx} y={cy + r + 20} textAnchor="middle" fill="var(--text-secondary)" fontSize="12" fontWeight="600">{t('trace.dim_portability')}</text>
+      <text x={cx - r - 10} y={cy + 4} textAnchor="end" fill="var(--text-secondary)" fontSize="12" fontWeight="600">{t('trace.dim_build')}</text>
 
       <polygon points={points} fill="rgba(233, 69, 96, 0.2)" stroke="var(--accent)" strokeWidth="2" style={{ transition: 'all 0.4s ease-out' }} />
 

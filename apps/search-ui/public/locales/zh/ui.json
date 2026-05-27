@@ -153,7 +153,11 @@
     "conflicts": "冲突",
     "viable_devices": "可行设备",
     "resolution_paths": "解决路径",
-    "confidence": "置信度"
+    "confidence": "置信度",
+    "dim_performance": "性能",
+    "dim_battery": "电池",
+    "dim_portability": "便携性",
+    "dim_build": "做工"
   },
   "trust": {
     "clean": "干净的决策",

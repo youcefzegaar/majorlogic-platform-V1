@@ -153,7 +153,11 @@
     "conflicts": "Conflictos",
     "viable_devices": "Dispositivos viables",
     "resolution_paths": "Caminos de resolución",
-    "confidence": "Confianza"
+    "confidence": "Confianza",
+    "dim_performance": "Rendimiento",
+    "dim_battery": "Batería",
+    "dim_portability": "Portabilidad",
+    "dim_build": "Construcción"
   },
   "trust": {
     "clean": "Decisión limpia",

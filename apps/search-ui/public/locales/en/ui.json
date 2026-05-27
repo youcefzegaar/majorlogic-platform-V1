@@ -153,7 +153,11 @@
     "conflicts": "Conflicts",
     "viable_devices": "Viable Devices",
     "resolution_paths": "Resolution Paths",
-    "confidence": "Confidence"
+    "confidence": "Confidence",
+    "dim_performance": "Performance",
+    "dim_battery": "Battery",
+    "dim_portability": "Portability",
+    "dim_build": "Build"
   },
   "trust": {
     "clean": "Clean decision",

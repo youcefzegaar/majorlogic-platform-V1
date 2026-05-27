@@ -480,9 +480,10 @@ export function useDecisionEngine() {
       return true;
     } catch (err) {
       const isNetworkError = err instanceof TypeError;
+      const isAr = lang === 'ar';
       setError(isNetworkError
-        ? 'Could not connect to the server. Check your internet connection.'
-        : (err?.message || 'The analysis could not be completed. Please try again.'));
+        ? (isAr ? 'تعذّر الاتصال بالخادم. تحقق من اتصالك بالإنترنت.' : 'Could not connect to the server. Check your internet connection.')
+        : (err?.message || (isAr ? 'تعذّر إتمام التحليل. يرجى المحاولة مجدداً.' : 'The analysis could not be completed. Please try again.')));
       return false;
     } finally {
       setIsAnalyzing(false);

@@ -153,7 +153,11 @@
     "conflicts": "विरोधाभास",
     "viable_devices": "व्यावहारिक डिवाइस",
     "resolution_paths": "समाधान पथ",
-    "confidence": "विश्वास"
+    "confidence": "विश्वास",
+    "dim_performance": "प्रदर्शन",
+    "dim_battery": "बैटरी",
+    "dim_portability": "पोर्टेबिलिटी",
+    "dim_build": "निर्माण"
   },
   "trust": {
     "clean": "साफ निर्णय",
