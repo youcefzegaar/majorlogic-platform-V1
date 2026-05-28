@@ -1,414 +1,4731 @@
 [
   {
-    "sourceId": "lenovo-p1-official",
-    "sourceType": "manufacturer",
-    "sourceName": "Lenovo",
-    "sourceUrl": "https://example.com/lenovo/thinkpad-p1-gen-6",
-    "itemName": "ThinkPad P1 Gen 6",
-    "variantName": "Core i7 / 32GB / 1TB / RTX 4060",
-    "majorSignals": ["engineering", "cs", "design"],
+    "sourceId": "notebookcheck-dell-15-d15260-review-arrow-lake-h-stude",
+    "sourceType": "review_site",
+    "sourceName": "NotebookCheck",
+    "sourceUrl": "https://www.notebookcheck.net/Dell-15-D15260-Review-Arrow-Lake-H-student-and-daily-productivity-laptop-that-does-just-enough.1301160.0.html",
+    "itemName": "Dell 15 D15260 Review: Arrow Lake-H student and daily productivity laptop that does just enough",
+    "variantName": "Intel Core Ultra 5 225H offers enough power for a typical work or scho / 16 GB / 512 GB SSD",
+    "majorSignals": [
+      "general",
+      "engineering",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:09.238Z",
+      "acquisitionMethod": "parser",
+      "inferredFields": [
+        "performance_score",
+        "thermals_score",
+        "display_score"
+      ],
+      "realFields": [
+        "ramGb",
+        "storageGb",
+        "gpuClass",
+        "battery_score",
+        "portability_score",
+        "topCons"
+      ]
+    },
     "rawSpecs": {
-      "ram": "32 GB DDR5",
-      "storage": "1 TB SSD",
-      "gpu": "RTX 4060",
-      "performance_score": "92",
-      "display_score": "84",
-      "battery_score": "63",
-      "portability_score": "54",
-      "thermals_score": "82"
-    },
-    "reviewEvidence": {
-      "topCons": ["heavy_for_daily_carry", "battery_below_expectation"],
-      "reviewRiskScore": 0.25,
-      "reviewCoverage": 18
-    },
-    "trustEvidence": {
-      "sourceConfidence": 0.92,
-      "freshnessDays": 4
-    },
-    "offers": [
-      { "seller": "Lenovo", "priceUsd": 1799, "condition": "new", "affiliate": true },
-      { "seller": "B&H", "priceUsd": 1769, "condition": "new", "affiliate": false }
-    ]
-  },
-  {
-    "sourceId": "asus-g14-retail",
-    "sourceType": "retailer",
-    "sourceName": "Best Buy",
-    "sourceUrl": "https://example.com/asus/zephyrus-g14",
-    "itemName": "ASUS Zephyrus G14",
-    "variantName": "Ryzen 9 / 32GB / 1TB / RTX 4070",
-    "majorSignals": ["engineering", "design", "general"],
-    "rawSpecs": {
-      "ram": "32 GB LPDDR5X",
-      "storage": "1 TB SSD",
-      "gpu": "RTX 4070",
-      "performance_score": "95",
-      "display_score": "90",
-      "battery_score": "71",
-      "portability_score": "78",
-      "thermals_score": "72"
-    },
-    "reviewEvidence": {
-      "topCons": ["loud_under_load", "limited_ports"],
-      "reviewRiskScore": 0.21,
-      "reviewCoverage": 22
-    },
-    "trustEvidence": {
-      "sourceConfidence": 0.93,
-      "freshnessDays": 7
-    },
-    "offers": [
-      { "seller": "Best Buy", "priceUsd": 1849, "condition": "new", "affiliate": true }
-    ]
-  },
-  {
-    "sourceId": "apple-air-official",
-    "sourceType": "manufacturer",
-    "sourceName": "Apple",
-    "sourceUrl": "https://example.com/apple/macbook-air-15-m3",
-    "itemName": "MacBook Air 15",
-    "variantName": "M3 / 16GB / 512GB",
-    "majorSignals": ["general", "medical", "design"],
-    "rawSpecs": {
-      "ram": "16 GB unified memory",
+      "ram": "16 GB",
       "storage": "512 GB SSD",
-      "gpu": "integrated",
-      "performance_score": "82",
-      "display_score": "88",
-      "battery_score": "94",
-      "portability_score": "91",
-      "thermals_score": "86"
+      "gpu": "Discrete GPU",
+      "performance_score": "76",
+      "display_score": "76",
+      "battery_score": "70",
+      "portability_score": "77",
+      "thermals_score": "61"
     },
     "reviewEvidence": {
-      "topCons": ["limited_ports", "upgradeability_is_zero"],
-      "reviewRiskScore": 0.17,
-      "reviewCoverage": 30
-    },
-    "trustEvidence": {
-      "sourceConfidence": 0.95,
-      "freshnessDays": 3
-    },
-    "offers": [
-      { "seller": "Apple", "priceUsd": 1399, "condition": "new", "affiliate": false }
-    ]
-  },
-  {
-    "sourceId": "dell-inspiron-retail",
-    "sourceType": "retailer",
-    "sourceName": "Dell",
-    "sourceUrl": "https://example.com/dell/inspiron-14",
-    "itemName": "Dell Inspiron 14",
-    "variantName": "Core 5 / 16GB / 512GB",
-    "majorSignals": ["general", "medical", "cs"],
-    "rawSpecs": {
-      "ram": "16 GB DDR5",
-      "storage": "512 GB SSD",
-      "gpu": "integrated",
-      "performance_score": "71",
-      "display_score": "68",
-      "battery_score": "76",
-      "portability_score": "79",
-      "thermals_score": "70"
-    },
-    "reviewEvidence": {
-      "topCons": ["mediocre_display_accuracy", "plastic_feel"],
-      "reviewRiskScore": 0.28,
-      "reviewCoverage": 11
-    },
-    "trustEvidence": {
-      "sourceConfidence": 0.84,
-      "freshnessDays": 9
-    },
-    "offers": [
-      { "seller": "Dell", "priceUsd": 799, "condition": "new", "affiliate": true },
-      { "seller": "Micro Center", "priceUsd": 749, "condition": "open_box", "affiliate": false }
-    ]
-  },
-  {
-    "sourceId": "lenovo-t14-official",
-    "sourceType": "manufacturer",
-    "sourceName": "Lenovo",
-    "sourceUrl": "https://example.com/lenovo/thinkpad-t14-gen-4",
-    "itemName": "Lenovo ThinkPad T14 Gen 4",
-    "variantName": "Ryzen 7 / 16GB / 512GB",
-    "majorSignals": ["cs", "general", "medical"],
-    "rawSpecs": {
-      "ram": "16 GB DDR5",
-      "storage": "512 GB SSD",
-      "gpu": "integrated",
-      "performance_score": "78",
-      "display_score": "74",
-      "battery_score": "83",
-      "portability_score": "80",
-      "thermals_score": "81"
-    },
-    "reviewEvidence": {
-      "topCons": ["display_is_just_ok", "speakers_are_average"],
-      "reviewRiskScore": 0.14,
-      "reviewCoverage": 16
-    },
-    "trustEvidence": {
-      "sourceConfidence": 0.90,
-      "freshnessDays": 5
-    },
-    "offers": [
-      { "seller": "Lenovo", "priceUsd": 1099, "condition": "new", "affiliate": false },
-      { "seller": "Certified Outlet", "priceUsd": 899, "condition": "refurbished", "affiliate": false }
-    ]
-  },
-  {
-    "sourceId": "acer-nitro-retail",
-    "sourceType": "retailer",
-    "sourceName": "Acer",
-    "sourceUrl": "https://example.com/acer/nitro-v-15",
-    "itemName": "Acer Nitro V 15",
-    "variantName": "Core i7 / 16GB / 1TB / RTX 4050",
-    "majorSignals": ["engineering", "cs", "general"],
-    "rawSpecs": {
-      "ram": "16 GB DDR5",
-      "storage": "1 TB SSD",
-      "gpu": "RTX 4050",
-      "performance_score": "84",
-      "display_score": "69",
-      "battery_score": "52",
-      "portability_score": "42",
-      "thermals_score": "75"
-    },
-    "reviewEvidence": {
-      "topCons": ["battery_drops_fast", "fan_noise_is_obvious"],
-      "reviewRiskScore": 0.31,
-      "reviewCoverage": 24
+      "topCons": [
+        "performance_issues"
+      ],
+      "rawCons": [
+        "Lots of chassis flex",
+        "Wi-Fi can be unreliable at times",
+        "HDMI-out limited to 1080p 60 Hz",
+        "Poor colors and high response times",
+        "CPU throttling",
+        "Only one DDR5 stick"
+      ],
+      "reviewRiskScore": 0.12,
+      "reviewCoverage": 1
     },
     "trustEvidence": {
       "sourceConfidence": 0.88,
-      "freshnessDays": 6
+      "freshnessDays": 0
     },
     "offers": [
-      { "seller": "Acer", "priceUsd": 899, "condition": "new", "affiliate": true },
-      { "seller": "Newegg", "priceUsd": 849, "condition": "new", "affiliate": false }
+      {
+        "seller": "NotebookCheck (at review)",
+        "priceUsd": 750,
+        "condition": "new",
+        "affiliate": false
+      }
     ]
   },
   {
-    "sourceId": "lenovo-loq-retail",
-    "sourceType": "retailer",
-    "sourceName": "Lenovo",
-    "sourceUrl": "https://example.com/lenovo/loq-15-gen-9",
-    "itemName": "Lenovo LOQ 15 Gen 9",
-    "variantName": "Ryzen 7 / 24GB / 1TB / RTX 4060",
-    "majorSignals": ["engineering", "cs", "design"],
+    "sourceId": "notebookcheck-razer-blade-16-review-intel-core-ultra-d",
+    "sourceType": "review_site",
+    "sourceName": "NotebookCheck",
+    "sourceUrl": "https://www.notebookcheck.net/Razer-Blade-16-review-Intel-Core-Ultra-delivers-faster-frame-rates.1303661.0.html",
+    "itemName": "Razer Blade 16 review: Intel Core Ultra delivers faster frame rates",
+    "variantName": "Intel Core Ultra delivers faster frame rates / 32 GB / 2048 GB SSD",
+    "majorSignals": [
+      "general",
+      "engineering",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:14.292Z",
+      "acquisitionMethod": "parser",
+      "inferredFields": [
+        "performance_score",
+        "thermals_score",
+        "display_score"
+      ],
+      "realFields": [
+        "ramGb",
+        "storageGb",
+        "gpuClass",
+        "battery_score",
+        "portability_score",
+        "topCons"
+      ]
+    },
     "rawSpecs": {
-      "ram": "24 GB DDR5",
-      "storage": "1 TB SSD",
-      "gpu": "RTX 4060",
+      "ram": "32 GB",
+      "storage": "2048 GB SSD",
+      "gpu": "Discrete GPU",
       "performance_score": "88",
-      "display_score": "77",
-      "battery_score": "58",
-      "portability_score": "46",
-      "thermals_score": "80"
+      "display_score": "76",
+      "battery_score": "80",
+      "portability_score": "67",
+      "thermals_score": "61"
     },
     "reviewEvidence": {
-      "topCons": ["bulky_chassis", "charger_is_large"],
-      "reviewRiskScore": 0.22,
-      "reviewCoverage": 19
+      "topCons": [
+        "display_quality",
+        "performance_issues"
+      ],
+      "rawCons": [
+        "slightly slower raw CPU performance than Ryzen AI 9 HX 370",
+        "no privacy shutter or webcam improvements",
+        "still no touchscreen or fingerprint reader",
+        "limited Turbo Boost sustainability",
+        "no 4K display options"
+      ],
+      "reviewRiskScore": 0.12,
+      "reviewCoverage": 1
     },
     "trustEvidence": {
-      "sourceConfidence": 0.91,
-      "freshnessDays": 4
+      "sourceConfidence": 0.88,
+      "freshnessDays": 0
+    },
+    "offers": []
+  },
+  {
+    "sourceId": "notebookcheck-a-new-repairability-champion-lenovo-thin",
+    "sourceType": "review_site",
+    "sourceName": "NotebookCheck",
+    "sourceUrl": "https://www.notebookcheck.net/A-new-repairability-champion-Lenovo-ThinkPad-T14-Gen-7-laptop-review.1296761.0.html",
+    "itemName": "A new repairability champion: Lenovo ThinkPad T14 Gen 7 laptop review",
+    "variantName": "Intel Core Ultra 5 325Intel Graphics 4 Xe3 Panther Lake iGPU / 16 GB / 512 GB SSD",
+    "majorSignals": [
+      "general",
+      "engineering",
+      "design",
+      "cs",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:18.980Z",
+      "acquisitionMethod": "parser",
+      "inferredFields": [
+        "performance_score",
+        "thermals_score",
+        "display_score"
+      ],
+      "realFields": [
+        "ramGb",
+        "storageGb",
+        "gpuClass",
+        "battery_score",
+        "portability_score",
+        "topCons"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Discrete GPU",
+      "performance_score": "76",
+      "display_score": "76",
+      "battery_score": "96",
+      "portability_score": "85",
+      "thermals_score": "61"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "display_quality",
+        "performance_issues"
+      ],
+      "rawCons": [
+        "performance stagnates",
+        "basic screen with bad color gamut",
+        "SSD throttles under load",
+        "more expensive"
+      ],
+      "reviewRiskScore": 0.12,
+      "reviewCoverage": 1
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.88,
+      "freshnessDays": 0
     },
     "offers": [
-      { "seller": "Lenovo", "priceUsd": 1199, "condition": "new", "affiliate": true },
-      { "seller": "B&H", "priceUsd": 1149, "condition": "new", "affiliate": false }
+      {
+        "seller": "NotebookCheck (at review)",
+        "priceUsd": 879.99,
+        "condition": "new",
+        "affiliate": false
+      }
     ]
   },
   {
-    "sourceId": "asus-proart-retail",
-    "sourceType": "retailer",
-    "sourceName": "ASUS",
-    "sourceUrl": "https://example.com/asus/proart-p16",
-    "itemName": "ASUS ProArt P16",
-    "variantName": "Ryzen AI 9 / 32GB / 1TB / RTX 4060",
-    "majorSignals": ["design", "engineering", "cs"],
+    "sourceId": "notebookcheck-geekom-a9-max-mini-pc-review-the-new-ryz",
+    "sourceType": "review_site",
+    "sourceName": "NotebookCheck",
+    "sourceUrl": "https://www.notebookcheck.net/Geekom-A9-Max-mini-PC-review-The-new-Ryzen-AI-chip-falls-short-of-its-potential.1304174.0.html",
+    "itemName": "Geekom A9 Max mini PC review: The new Ryzen AI chip falls short of its potential",
+    "variantName": "AMD Ryzen AI 9 HX 470 with a compact / 32 GB / 2048 GB SSD",
+    "majorSignals": [
+      "general",
+      "engineering",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:24.097Z",
+      "acquisitionMethod": "parser",
+      "inferredFields": [
+        "performance_score",
+        "thermals_score",
+        "display_score"
+      ],
+      "realFields": [
+        "ramGb",
+        "storageGb",
+        "gpuClass",
+        "battery_score",
+        "portability_score",
+        "topCons"
+      ]
+    },
     "rawSpecs": {
-      "ram": "32 GB LPDDR5X",
-      "storage": "1 TB SSD",
-      "gpu": "RTX 4060",
-      "performance_score": "90",
-      "display_score": "96",
-      "battery_score": "69",
-      "portability_score": "72",
-      "thermals_score": "76"
+      "ram": "32 GB",
+      "storage": "2048 GB SSD",
+      "gpu": "Discrete GPU",
+      "performance_score": "88",
+      "display_score": "76",
+      "battery_score": "65",
+      "portability_score": "85",
+      "thermals_score": "61"
     },
     "reviewEvidence": {
-      "topCons": ["price_is_aggressive", "ram_not_upgradeable"],
-      "reviewRiskScore": 0.18,
-      "reviewCoverage": 14
+      "topCons": [
+        "limited_ports"
+      ],
+      "rawCons": [
+        "only one SO-DIMM module (single channel)",
+        "weak iGPU due to the RAM configuration",
+        "limited BIOS options",
+        "no OCuLink or USB4-v2 interface",
+        "no manually customizable fan control",
+        "high DPC latencies"
+      ],
+      "reviewRiskScore": 0.12,
+      "reviewCoverage": 1
     },
     "trustEvidence": {
-      "sourceConfidence": 0.92,
-      "freshnessDays": 5
+      "sourceConfidence": 0.88,
+      "freshnessDays": 0
     },
     "offers": [
-      { "seller": "ASUS", "priceUsd": 1899, "condition": "new", "affiliate": true },
-      { "seller": "B&H", "priceUsd": 1849, "condition": "new", "affiliate": false }
+      {
+        "seller": "NotebookCheck (at review)",
+        "priceUsd": 549,
+        "condition": "new",
+        "affiliate": false
+      }
     ]
   },
   {
-    "sourceId": "hp-omnibook-retail",
+    "sourceId": "rainforest-B0GRVFY42Q",
     "sourceType": "retailer",
-    "sourceName": "HP",
-    "sourceUrl": "https://example.com/hp/omnibook-x",
-    "itemName": "HP OmniBook X",
-    "variantName": "Snapdragon X Elite / 16GB / 1TB",
-    "majorSignals": ["general", "medical", "cs"],
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Processor-Lightweight-Microsoft-Students/dp/B0GRVFY42Q/ref=sr_1_5?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-5",
+    "itemName": "HP 15.6\" FHD Laptop 2026 Edition with Copilot AI, 16GB RAM, 256GB SSD, Intel Processor, Long Battery Life, Lightweight 3.64 lbs, Microsoft 365, Windows 11 for Students & Office",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
     "rawSpecs": {
-      "ram": "16 GB LPDDR5X",
-      "storage": "1 TB SSD",
-      "gpu": "integrated",
-      "performance_score": "79",
-      "display_score": "81",
-      "battery_score": "92",
-      "portability_score": "93",
-      "thermals_score": "88"
-    },
-    "reviewEvidence": {
-      "topCons": ["arm_compatibility_warning", "port_selection_is_limited"],
-      "reviewRiskScore": 0.24,
-      "reviewCoverage": 17
-    },
-    "trustEvidence": {
-      "sourceConfidence": 0.89,
-      "freshnessDays": 4
-    },
-    "offers": [
-      { "seller": "HP", "priceUsd": 1149, "condition": "new", "affiliate": true },
-      { "seller": "Best Buy", "priceUsd": 1099, "condition": "new", "affiliate": false }
-    ]
-  },
-  {
-    "sourceId": "acer-swift-retail",
-    "sourceType": "retailer",
-    "sourceName": "Acer",
-    "sourceUrl": "https://example.com/acer/swift-go-14",
-    "itemName": "Acer Swift Go 14",
-    "variantName": "Core Ultra 7 / 16GB / 1TB",
-    "majorSignals": ["general", "medical", "cs"],
-    "rawSpecs": {
-      "ram": "16 GB LPDDR5X",
-      "storage": "1 TB SSD",
-      "gpu": "integrated",
-      "performance_score": "77",
-      "display_score": "80",
-      "battery_score": "84",
-      "portability_score": "88",
+      "ram": "16 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
       "thermals_score": "74"
     },
     "reviewEvidence": {
-      "topCons": ["speakers_are_thin", "fan_curve_needs_tuning"],
-      "reviewRiskScore": 0.16,
-      "reviewCoverage": 13
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 231
     },
     "trustEvidence": {
-      "sourceConfidence": 0.87,
-      "freshnessDays": 8
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
     },
     "offers": [
-      { "seller": "Acer", "priceUsd": 999, "condition": "new", "affiliate": true },
-      { "seller": "Amazon", "priceUsd": 949, "condition": "new", "affiliate": false }
+      {
+        "seller": "Amazon",
+        "priceUsd": 499.97,
+        "condition": "new",
+        "affiliate": true
+      }
     ]
   },
   {
-    "sourceId": "apple-pro-official",
-    "sourceType": "manufacturer",
-    "sourceName": "Apple",
-    "sourceUrl": "https://example.com/apple/macbook-pro-14-m4-pro",
-    "itemName": "MacBook Pro 14",
-    "variantName": "M4 Pro / 24GB / 1TB",
-    "majorSignals": ["cs", "design", "general"],
-    "rawSpecs": {
-      "ram": "24 GB unified memory",
-      "storage": "1 TB SSD",
-      "gpu": "integrated",
-      "performance_score": "94",
-      "display_score": "95",
-      "battery_score": "90",
-      "portability_score": "86",
-      "thermals_score": "88"
-    },
-    "reviewEvidence": {
-      "topCons": ["ports_still_need_dongles_for_some_workflows", "upgradeability_is_zero"],
-      "reviewRiskScore": 0.15,
-      "reviewCoverage": 21
-    },
-    "trustEvidence": {
-      "sourceConfidence": 0.96,
-      "freshnessDays": 2
-    },
-    "offers": [
-      { "seller": "Apple", "priceUsd": 1999, "condition": "new", "affiliate": false }
-    ]
-  },
-  {
-    "sourceId": "msi-pulse-retail",
+    "sourceId": "rainforest-B0G5P8JP2Z",
     "sourceType": "retailer",
-    "sourceName": "MSI",
-    "sourceUrl": "https://example.com/msi/pulse-16-ai",
-    "itemName": "MSI Pulse 16 AI",
-    "variantName": "Core Ultra 9 / 32GB / 1TB / RTX 4070",
-    "majorSignals": ["engineering", "design"],
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Flagship-Student-Business-Lavender/dp/B0G5P8JP2Z/ref=sr_1_6?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-6",
+    "itemName": "HP Flagship 14\" HD Student&Business Laptop with AI Copilot, 13th Gen Intel 4-Core, 4GB RAM, 1.12TB Storage (128GB UFS + 1TB Docking Station), 1 Year Office 365, Wi-Fi 6, Win 11 S, Lavender Purple",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
     "rawSpecs": {
-      "ram": "32 GB DDR5",
-      "storage": "1 TB SSD",
-      "gpu": "RTX 4070",
-      "performance_score": "93",
+      "ram": "4 GB",
+      "storage": "1147 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "60",
       "display_score": "82",
-      "battery_score": "55",
-      "portability_score": "40",
-      "thermals_score": "79"
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
     },
     "reviewEvidence": {
-      "topCons": ["heavy_power_brick", "battery_is_short_off_charger"],
-      "reviewRiskScore": 0.27,
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 308
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 309,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0DZQCTH92",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Touchscreen-Display-Graphics-fc0099nr/dp/B0DZQCTH92/ref=sr_1_9?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-9",
+    "itemName": "HP 15.6 inch Laptop, HD Touchscreen Display, AMD Ryzen 3 7320U, 8 GB RAM, 128 GB SSD, AMD Radeon Graphics, Windows 11 Home in S Mode, Natural Silver, 15- fc0099nr",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "128 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 1453
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 399,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GSTPGQQX",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Essential-Computer-Storage-Processor/dp/B0GSTPGQQX/ref=sr_1_13?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-13",
+    "itemName": "HP Essential Laptop Computer for Home and Student with Office 365, 2026 Edition, 128GB Storage- Intel Processor - LED Display, 500GB External HDD, Portable Design, Copilot AI, Win 11 Home S",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "128 GB",
+      "storage": "128 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 109
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 319.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GWQPVVF3",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Pavilion-Computer-Lifetime-Charging/dp/B0GWQPVVF3/ref=sr_1_16?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-16",
+    "itemName": "HP Pavilion 15.6 Laptop Computer for Daily Work & Student Home Study, Lifetime Office 365, Intel N100, 8GB RAM, 256GB SSD, Fast Charging, Long Battery Life, Windows 11 Home",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 153
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 429.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FJ7LTNRP",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-14-Laptop-2025-MarxsolAccessory/dp/B0FJ7LTNRP/ref=sr_1_18?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-18",
+    "itemName": "HP 14\" Laptop 2025 Business Student Slim Computer, Lifetime MS Office, Copilot AI, Quad-Core Intel CPU, 16GB RAM, 628GB Storage (128GB UFS+500GB Ext), MarxsolAccessory, Wi-Fi 6, Win 11 Pro, Silver",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "628 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 429
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 369,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0CZL2SLCJ",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Stream-BrightView-N4120-Graphics/dp/B0CZL2SLCJ/ref=sr_1_19?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-19",
+    "itemName": "HP Stream 14\" HD BrightView Laptop, Intel Celeron N4120, 16GB RAM, 288GB Storage (128GB EMMC + 160GB Docking Station Set), Intel UHD Graphics, 720p Webcam, Wi-Fi, 1 Year Office 365, Win 11 S, Gold",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "288 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "build_quality",
+        "keyboard_issues",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 1693
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 359,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GR6BVYS5",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2026-MacBook-13-inch-Laptop/dp/B0GR6BVYS5/ref=sr_1_24?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-24",
+    "itemName": "Apple 2026 MacBook Neo 13-inch Laptop with A18 Pro chip: Built for AI and Apple Intelligence, Liquid Retina Display, 8GB Unified Memory, 256GB SSD Storage, 1080p FaceTime HD Camera; Citrus",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 475
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 589.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B09R6FNNS1",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Dell-DC15250-15-6-inch-Display-Processor-Graphics/dp/B09R6FNNS1/ref=sr_1_25?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-25",
+    "itemName": "Dell 15 Laptop DC15250-15.6-inch FHD 120Hz Display, Intel Core 3 Processor 100U, 8GB DDR4 RAM, 512GB SSD, Intel UHD Graphics, Windows 11 Home, Onsite Service - Carbon Black",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "60",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.15,
+      "reviewCoverage": 591
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 379.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GSGC3RQD",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Ultrabook-Microsoft-Quad-Cores-Lightweight/dp/B0GSGC3RQD/ref=sr_1_26?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-26",
+    "itemName": "HP 2026 Ultrabook Laptop for Students & Home, Microsoft Office 365 with Copliot AI, 8GB RAM, 256GB SSD + 128GB eMMC Storage, Quad-Cores Intel Processor, Windows 11, Lightweight, Long battery life",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 210
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 399.98,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GJCF6SLP",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-Student-Microsoft-Ultra-Light-Essential/dp/B0GJCF6SLP/ref=sr_1_28?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-28",
+    "itemName": "Lenovo 2026 Student Laptop with Microsoft 365, 8GB RAM, 128GB Storage + 500GB Ext HDD, Intel Dual Core, WiFi, Ultra-Light, Long Battery Life, Windows 11 S, Essential IdeaPad for Home & School",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "128 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 42
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 339.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0G2XBVSB2",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-Computer-Business-Student-Processor/dp/B0G2XBVSB2/ref=sr_1_29?dib=eyJ2IjoiMSJ9.0uJuP-3Z_vRTTRprJJEpdIOt2UDs89mVDz1Zb5691csdwyC0LUhg-bNHb_n3-nBCgScHNL7sQxPdlUriKB-tkB6Qtm5ysX85zZQNEGYZZkZkbtH7-dHg6WGUk0qWyogkW1VK3GSxgg7h2wAeQW3KuXEA6j44rI4GQvmRrjnn3f-LvIw_CvbEYOBo5jWYY5a1MwMSifkezbc5_vne_6BvZNj1FNgOLhyrF-uqiGtbeW_gopnBzMTI23hExTRvugpocwb0A8xTDZ6AhbK_HMDHKs9MhYb7JmRZ1yodPQQq5Ks.tpWqDeNIc2uEZ_B9yWEiiWif8iMn35RFZQnNflSkW-c&dib_tag=se&keywords=student+laptop&qid=1779937302&s=pc&sr=1-29",
+    "itemName": "Lenovo 2026 Laptop Computer for Business & Student, Intel Dual Core N4500 Processor, Copilot AI, 15.6\" FHD, 8GB DDR4 RAM, 256GB PCIe SSD, WiFi 6, Type-C, HDMI, Long Battery Life, Windows 11 Home",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "Unknown",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 277
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 369.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0CWJB9ZC6",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/ASUS-Vivobook-Laptop-Windows-E1504FA-AS54/dp/B0CWJB9ZC6/ref=sr_1_5?dib=eyJ2IjoiMSJ9.JM2DyuVcRX9poGC1Jx-UgPQTEWMrJ7IYt_zIrCGIE310Qsg0a_qYHciq5Bnk3FA4Utzo7YYD4tvZgm9vrAr5QWqj-xw6mT_kTzrUF6GvVt2RY8Nl339cqu0RnGFR0vBGB1AJ17ROUGifZJuK_AvWUWW-upsV9s6HlvpOozAdMGTIPGGMdAxDaL4lvnrGJ_xYVieKwSpAf6Wnhur5ExLsmCEiiWCcidVlEopDGRZtU2BDxXXXfW6ete00vqoogdkHR7pIQqKffAW2UNn1ohj9p6x0Cxd2CiQdzTpdvSUXX4A.S4wU1hCQStMUX4o1VwVm28smXW3wuMqQNzjs94WxCPg&dib_tag=se&keywords=thin+light+laptop&qid=1779937308&s=pc&sr=1-5",
+    "itemName": "ASUS Vivobook Go 15.6” Slim Laptop, AMD Ryzen 5 7520U, 8GB, 512GB, Windows 11 Home, Cool Silver, Military Grade Durability, Fast Charging, Webcam Shield, E1504FA-AS54",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "Unknown",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.15,
+      "reviewCoverage": 593
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 423.15,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0BS4BP8FB",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Aspire-A315-24P-R7VH-Quad-Core-Graphics-Windows/dp/B0BS4BP8FB/ref=sr_1_10?dib=eyJ2IjoiMSJ9.JM2DyuVcRX9poGC1Jx-UgPQTEWMrJ7IYt_zIrCGIE310Qsg0a_qYHciq5Bnk3FA4Utzo7YYD4tvZgm9vrAr5QWqj-xw6mT_kTzrUF6GvVt2RY8Nl339cqu0RnGFR0vBGB1AJ17ROUGifZJuK_AvWUWW-upsV9s6HlvpOozAdMGTIPGGMdAxDaL4lvnrGJ_xYVieKwSpAf6Wnhur5ExLsmCEiiWCcidVlEopDGRZtU2BDxXXXfW6ete00vqoogdkHR7pIQqKffAW2UNn1ohj9p6x0Cxd2CiQdzTpdvSUXX4A.S4wU1hCQStMUX4o1VwVm28smXW3wuMqQNzjs94WxCPg&dib_tag=se&keywords=thin+light+laptop&qid=1779937308&s=pc&sr=1-10",
+    "itemName": "acer Aspire 3 A315-24P-R7VH Slim Laptop | 15.6\" Full HD | AMD Ryzen 3 7320U Quad-Core | AMD Radeon Graphics | 8GB LPDDR5 | 128GB NVMe SSD | Wi-Fi 6 | Windows 11 Home",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "128 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "thermal_throttling",
+        "fan_noise",
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "poor_speakers",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 4629
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 345.22,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GFCPZ446",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-14-inch-AI-Copilot-Processor-Storage/dp/B0GFCPZ446/ref=sr_1_11?dib=eyJ2IjoiMSJ9.JM2DyuVcRX9poGC1Jx-UgPQTEWMrJ7IYt_zIrCGIE310Qsg0a_qYHciq5Bnk3FA4Utzo7YYD4tvZgm9vrAr5QWqj-xw6mT_kTzrUF6GvVt2RY8Nl339cqu0RnGFR0vBGB1AJ17ROUGifZJuK_AvWUWW-upsV9s6HlvpOozAdMGTIPGGMdAxDaL4lvnrGJ_xYVieKwSpAf6Wnhur5ExLsmCEiiWCcidVlEopDGRZtU2BDxXXXfW6ete00vqoogdkHR7pIQqKffAW2UNn1ohj9p6x0Cxd2CiQdzTpdvSUXX4A.S4wU1hCQStMUX4o1VwVm28smXW3wuMqQNzjs94WxCPg&dib_tag=se&keywords=thin+light+laptop&qid=1779937308&s=pc&sr=1-11",
+    "itemName": "HP 14-inch Ultra Light Laptop W/1 Year Office 365&AI-Copilot, Intel Processor N150, 16GB RAM, 416GB Storage (128GB UFS + 288GB Docking Set), HD Camera, Long Battery Life, Wi-Fi 6, Win 11s, Green",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "416 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 371
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 359,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0DTVQN7KM",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/ASUS-Vivobook-Processor-Durability-E1504FA-AB34/dp/B0DTVQN7KM/ref=sr_1_13?dib=eyJ2IjoiMSJ9.JM2DyuVcRX9poGC1Jx-UgPQTEWMrJ7IYt_zIrCGIE310Qsg0a_qYHciq5Bnk3FA4Utzo7YYD4tvZgm9vrAr5QWqj-xw6mT_kTzrUF6GvVt2RY8Nl339cqu0RnGFR0vBGB1AJ17ROUGifZJuK_AvWUWW-upsV9s6HlvpOozAdMGTIPGGMdAxDaL4lvnrGJ_xYVieKwSpAf6Wnhur5ExLsmCEiiWCcidVlEopDGRZtU2BDxXXXfW6ete00vqoogdkHR7pIQqKffAW2UNn1ohj9p6x0Cxd2CiQdzTpdvSUXX4A.S4wU1hCQStMUX4o1VwVm28smXW3wuMqQNzjs94WxCPg&dib_tag=se&keywords=thin+light+laptop&qid=1779937308&s=pc&sr=1-13",
+    "itemName": "ASUS Vivobook Go 15.6” FHD Slim Laptop, AMD Ryzen 3 7320U Quad Core Processor, 8GB DDR5 RAM, 256GB SSD, Windows 11 Home, Fast Charging, Webcam Shield, Military Grade Durability, Black, E1504FA-AB34",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "thermal_throttling",
+        "battery_life",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "poor_speakers"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 965
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 409.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0F7S913CQ",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/LG-15-inch-Lightweight-Processor-Obsidian/dp/B0F7S913CQ/ref=sr_1_20?dib=eyJ2IjoiMSJ9.JM2DyuVcRX9poGC1Jx-UgPQTEWMrJ7IYt_zIrCGIE310Qsg0a_qYHciq5Bnk3FA4Utzo7YYD4tvZgm9vrAr5QWqj-xw6mT_kTzrUF6GvVt2RY8Nl339cqu0RnGFR0vBGB1AJ17ROUGifZJuK_AvWUWW-upsV9s6HlvpOozAdMGTIPGGMdAxDaL4lvnrGJ_xYVieKwSpAf6Wnhur5ExLsmCEiiWCcidVlEopDGRZtU2BDxXXXfW6ete00vqoogdkHR7pIQqKffAW2UNn1ohj9p6x0Cxd2CiQdzTpdvSUXX4A.S4wU1hCQStMUX4o1VwVm28smXW3wuMqQNzjs94WxCPg&dib_tag=se&keywords=thin+light+laptop&qid=1779937308&s=pc&sr=1-20",
+    "itemName": "LG gram 15-inch, Copilot+, Thin and Lightweight Laptop, Windows 11 Home, Powered by AMD Ryzen AI 7 350 Processor, 16GB RAM, 1TB SSD, Obsidian Black",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 6
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1199.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B086KKKT15",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Acer-Octa-Core-Graphics-Fingerprint-SF314-42-R9YN/dp/B086KKKT15/ref=sr_1_25?dib=eyJ2IjoiMSJ9.JM2DyuVcRX9poGC1Jx-UgPQTEWMrJ7IYt_zIrCGIE310Qsg0a_qYHciq5Bnk3FA4Utzo7YYD4tvZgm9vrAr5QWqj-xw6mT_kTzrUF6GvVt2RY8Nl339cqu0RnGFR0vBGB1AJ17ROUGifZJuK_AvWUWW-upsV9s6HlvpOozAdMGTIPGGMdAxDaL4lvnrGJ_xYVieKwSpAf6Wnhur5ExLsmCEiiWCcidVlEopDGRZtU2BDxXXXfW6ete00vqoogdkHR7pIQqKffAW2UNn1ohj9p6x0Cxd2CiQdzTpdvSUXX4A.S4wU1hCQStMUX4o1VwVm28smXW3wuMqQNzjs94WxCPg&dib_tag=se&keywords=thin+light+laptop&qid=1779937308&s=pc&sr=1-25",
+    "itemName": "Acer Swift 3 Thin & Light Laptop, 14\" Full HD IPS, AMD Ryzen 7 4700U Octa-Core with Radeon Graphics, 8GB LPDDR4, 512GB NVMe SSD, Wi-Fi 6, Backlit KB, Fingerprint Reader, Alexa Built-in",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "60",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "thermal_throttling",
+        "fan_noise",
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "build_quality",
+        "keyboard_issues",
+        "poor_speakers",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 3792
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 639.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B08YD1JLJF",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Acer-Display-Octa-Core-Processor-SF314-43-R2YY/dp/B08YD1JLJF/ref=sr_1_27?dib=eyJ2IjoiMSJ9.JM2DyuVcRX9poGC1Jx-UgPQTEWMrJ7IYt_zIrCGIE310Qsg0a_qYHciq5Bnk3FA4Utzo7YYD4tvZgm9vrAr5QWqj-xw6mT_kTzrUF6GvVt2RY8Nl339cqu0RnGFR0vBGB1AJ17ROUGifZJuK_AvWUWW-upsV9s6HlvpOozAdMGTIPGGMdAxDaL4lvnrGJ_xYVieKwSpAf6Wnhur5ExLsmCEiiWCcidVlEopDGRZtU2BDxXXXfW6ete00vqoogdkHR7pIQqKffAW2UNn1ohj9p6x0Cxd2CiQdzTpdvSUXX4A.S4wU1hCQStMUX4o1VwVm28smXW3wuMqQNzjs94WxCPg&dib_tag=se&keywords=thin+light+laptop&qid=1779937308&s=pc&sr=1-27",
+    "itemName": "Acer Swift 3 Thin & Light Laptop | 14\" Full HD IPS 100% sRGB Display | AMD Ryzen 7 5700U Octa-Core Processor | 8GB LPDDR4X | 512GB NVMe SSD | WiFi 6 | Backlit KB | FPR | Amazon Alexa | SF314-43-R2YY",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "60",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.15,
+      "reviewCoverage": 769
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 578.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0F6KJJ1KW",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/LG-Book-15-Lightweight-Backlight/dp/B0F6KJJ1KW/ref=sr_1_30?dib=eyJ2IjoiMSJ9.JM2DyuVcRX9poGC1Jx-UgPQTEWMrJ7IYt_zIrCGIE310Qsg0a_qYHciq5Bnk3FA4Utzo7YYD4tvZgm9vrAr5QWqj-xw6mT_kTzrUF6GvVt2RY8Nl339cqu0RnGFR0vBGB1AJ17ROUGifZJuK_AvWUWW-upsV9s6HlvpOozAdMGTIPGGMdAxDaL4lvnrGJ_xYVieKwSpAf6Wnhur5ExLsmCEiiWCcidVlEopDGRZtU2BDxXXXfW6ete00vqoogdkHR7pIQqKffAW2UNn1ohj9p6x0Cxd2CiQdzTpdvSUXX4A.S4wU1hCQStMUX4o1VwVm28smXW3wuMqQNzjs94WxCPg&dib_tag=se&keywords=thin+light+laptop&qid=1779937308&s=pc&sr=1-30",
+    "itemName": "LG gram Book 15 Thin Lightweight Laptop Computer, 16GB RAM, 512GB SSD, AI Copilot in Windows 11 Pro, Intel i5-1334U(10 Cores up to 4.6 GHz), FHD IPS Display, with 5 ave 6 in 1 kit",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 1
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 629.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0D1YQJKY2",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-V15-Business-i5-13420H-i7-1355U/dp/B0D1YQJKY2/ref=sr_1_3?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-3",
+    "itemName": "Lenovo V15 Gen 4 Business Laptop, 15.6\" FHD Display, Intel Core i5-13420H (Beat i7-1355U), HDMI, RJ45, Webcam, Numeric Keypad, Wi-Fi, Windows 11 Pro, Black (16GB RAM | 512GB SSD)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 163
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 645,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GQLH5XVF",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-V15-Business-i7-1065G7-Ethernet/dp/B0GQLH5XVF/ref=sr_1_4?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-4",
+    "itemName": "Lenovo V15 Business Laptop 2026 Edition, AMD Ryzen 3 7000-Series(Beat i7-1065G7), 15.6\" FHD Display, 16GB DDR5 RAM, 512GB NVMe SSD, Wi-Fi 6, Ethernet RJ-45, Dolby Audio, Windows 11 Pro",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
       "reviewCoverage": 15
     },
     "trustEvidence": {
-      "sourceConfidence": 0.89,
-      "freshnessDays": 6
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
     },
     "offers": [
-      { "seller": "MSI", "priceUsd": 1599, "condition": "new", "affiliate": true },
-      { "seller": "Micro Center", "priceUsd": 1549, "condition": "new", "affiliate": false }
+      {
+        "seller": "Amazon",
+        "priceUsd": 479.99,
+        "condition": "new",
+        "affiliate": true
+      }
     ]
   },
   {
-    "sourceId": "surface-laptop-retail",
+    "sourceId": "rainforest-B0GZWRGX56",
     "sourceType": "retailer",
-    "sourceName": "Microsoft",
-    "sourceUrl": "https://example.com/microsoft/surface-laptop-7",
-    "itemName": "Surface Laptop 7",
-    "variantName": "Snapdragon X Plus / 16GB / 512GB",
-    "majorSignals": ["general", "medical"],
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/ASUS-Vivobook-Business-Computer-Processor/dp/B0GZWRGX56/ref=sr_1_5?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-5",
+    "itemName": "ASUS Vivobook 14 Laptop, 14\" FHD Business & Student Laptop Computer, Intel Core i3-1315U Processor, 16GB RAM 512GB SSD, Windows 11 Laptop with PLUSERA 8-in-1 Hub Included, Quiet Blue",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
     "rawSpecs": {
-      "ram": "16 GB LPDDR5X",
+      "ram": "16 GB",
       "storage": "512 GB SSD",
-      "gpu": "integrated",
-      "performance_score": "76",
-      "display_score": "86",
-      "battery_score": "91",
-      "portability_score": "92",
-      "thermals_score": "90"
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
     },
     "reviewEvidence": {
-      "topCons": ["arm_compatibility_warning", "few_ports_for_desk_use"],
-      "reviewRiskScore": 0.22,
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 0
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 639.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GXDH3ZND",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Flagship-Business-Bluetooth-Accessories/dp/B0GXDH3ZND/ref=sr_1_6?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-6",
+    "itemName": "HP Flagship Business Laptop, 15.6\" FHD IPS Display, AMD Ryzen 7 7730U, 20GB RAM, 512GB PCle SSD, Windows 11 Pro, Copilot AI, WiFi 6, Bluetooth, Numeric Keyboard, with Patented Accessories, Black",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "20 GB",
+      "storage": "Unknown",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 10
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 639.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0D3JCPJGY",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-V15-Business-Display-Numeric/dp/B0D3JCPJGY/ref=sr_1_8?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-8",
+    "itemName": "Lenovo V-Series V15 Business Laptop, 15.6\" FHD Display, AMD Ryzen 7 7730U, 24GB RAM, 1TB SSD, Numeric Keypad, HDMI, RJ45, Webcam, Wi-Fi, Windows 11 Pro, Black",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "24 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 86
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 749,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GWYXKCWR",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-16-Business-Multitasker-i7-13620H/dp/B0GWYXKCWR/ref=sr_1_9?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-9",
+    "itemName": "Lenovo 16\" Premium Laptop for Power Business Multitasker • 2026 Edition • Intel Core i7-13620H (Beat Core 7 150U) • 16GB DDR5 • 512GB SSD • Windows 11",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
       "reviewCoverage": 12
     },
     "trustEvidence": {
-      "sourceConfidence": 0.88,
-      "freshnessDays": 4
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
     },
     "offers": [
-      { "seller": "Microsoft", "priceUsd": 1299, "condition": "new", "affiliate": false }
+      {
+        "seller": "Amazon",
+        "priceUsd": 849.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GSYZ86GS",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/EvoSpan-Computer-Pentium-Lightweight-Business/dp/B0GSYZ86GS/ref=sr_1_10?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-10",
+    "itemName": "15.6\" Laptop Computer, 12GB RAM 256GB SSD, Pentium Gold 6500Y (Up to 3.4GHz), FHD Display, USB-C, HDMI, Lightweight Student & Business Laptop",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "12 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 0
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 349.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0G8K5H16P",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Dell-Laptop-DC16251-16-0-inch-Touchscreen-Processor/dp/B0G8K5H16P/ref=sr_1_13?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-13",
+    "itemName": "Dell 16 Laptop DC16251-16.0-inch 16:10 2K Touchscreen Display, Intel Core 7 150U Processor, 16GB DDR5 RAM, 1TB SSD, Intel Graphics, Windows 11 Home, 1 Year Basic Onsite Service, Cloud Blue",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 29
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 725,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GS97JNMP",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-Premium-Business-i7-13620H-Microsoft/dp/B0GS97JNMP/ref=sr_1_14?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-14",
+    "itemName": "Lenovo 2026 Premium Business Laptop, Intel Core i7-13620H (10-Core), 16GB DDR5, 512GB SSD, 15\" WUXGA Copilot AI PC, Microsoft 365, WiFi 6, Windows 11 Home – Powerhouse for Work, Study & Creativity",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 16
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 699.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0D3JLHQ8K",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-V15-Business-Display-Numeric/dp/B0D3JLHQ8K/ref=sr_1_15?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-15",
+    "itemName": "Lenovo V-Series V15 Business Laptop, 15.6\" FHD Display, AMD Ryzen 7 7730U, 40GB RAM, 1TB SSD, Numeric Keypad, HDMI, RJ45, Webcam, Wi-Fi, Windows 11 Pro, Black",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "40 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "85",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 424
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 877,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FTQT4B28",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-IdeaPad-Business-Touchscreen-Microsoft/dp/B0FTQT4B28/ref=sr_1_18?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-18",
+    "itemName": "Lenovo IdeaPad Business Laptop, 15.6\" FHD Touchscreen Display, Intel 13th 10-Core i5 CPU (Up to 4.6 GHz), 16GB RAM, 1TB SSD, Copilot AI Ready, Wi-Fi 6, Windows 11 Pro with Microsoft Office, WOWPC USB",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 52
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 635.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GX66CNNJ",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-Premium-i7-13620H-i7-1355U-Copilot/dp/B0GX66CNNJ/ref=sr_1_19?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-19",
+    "itemName": "Lenovo 2026 Premium Laptop, Intel Core i7-13620H (Beat i7-1355U), 16GB DDR5, 1TB SSD, 15\" FHD+ Copilot AI PC, Windows 11 – for Power Business Multitasker",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 0
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 799.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GVXJV99Q",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Dell-Touchscreen-i5-1334U-i7-1250U-Anti-Glare/dp/B0GVXJV99Q/ref=sr_1_20?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-20",
+    "itemName": "Dell 15 Touchscreen Laptop, Intel 10-Core i5-1334U (Beat i7-1250U) 15.6\" FHD IPS Anti-Glare Display Business Laptop, 20GB RAM & 512GB SSD, Lifetime Windows 11 Pro with AI Copilot",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "20 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 27
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 580,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FMHJ8HPR",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Touchscreen-Processor-Earphones-Moonlight/dp/B0FMHJ8HPR/ref=sr_1_21?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-21",
+    "itemName": "HP 14\" Laptop for Business & Students, 256GB SSD, Microsoft Office 365 Included, Windows 11, Copilot Key, AMD Athlon 7120U, SageNova Docking Station, Moonlight Blue",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "256 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 30
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 359.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0DTBPC46X",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-IdeaPad-Slim-Qualcomm%C2%AE-Snapdragon%C2%AE/dp/B0DTBPC46X/ref=sr_1_23?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-23",
+    "itemName": "Lenovo IdeaPad Slim 3X - 2025 - Everyday AI Laptop - Copilot+ PC - 15.3\" WUXGA Display - 16 GB Memory - 512 GB Storage - Snapdragon® X - Luna Grey",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 151
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 518.33,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FT3NRVL6",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/acer-Display-Graphics-Windows-AG15-42P-R9FW/dp/B0FT3NRVL6/ref=sr_1_26?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-26",
+    "itemName": "acer Aspire Go 15 AI Ready Laptop | 15.6\" FHD (1920 x 1080) IPS Display | AMD Ryzen 7 7730U | AMD Radeon Graphics | 16GB DDR4 | 512GB PCIe Gen4 SSD | Wi-Fi 6 | Windows 11 Home | AG15-42P-R9FW",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "Unknown",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 37
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 549.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FLNTBHTQ",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/ASUS-ExpertBook-Business-Processor-PM3406CKA-XS76/dp/B0FLNTBHTQ/ref=sr_1_27?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-27",
+    "itemName": "ASUS ExpertBook PM3 14” Business Laptop, AMD Ryzen AI7 350 Processor, 32GB RAM, 1TB SSD, WiFi 7, Windows 11 Pro, Misty Grey, PM3406CKA-XS76",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "32 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "85",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 8
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1229.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0D6GQ4ZMQ",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-V15-Business-Display-Numeric/dp/B0D6GQ4ZMQ/ref=sr_1_28?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-28",
+    "itemName": "Lenovo V-Series V15 Business Laptop, 15.6\" FHD Display, AMD Ryzen 7 7730U, 16GB RAM, 512GB SSD, Numeric Keypad, HDMI, RJ45, Webcam, Wi-Fi, Windows 11 Pro, Black",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 56
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 629,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FZD9CLRL",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-Ideapad-Touchscreen-Business-Outperforms/dp/B0FZD9CLRL/ref=sr_1_29?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-29",
+    "itemName": "Lenovo New 15.6\" FHD Business Laptop(2026-2027 Premium Edition), Powerful AMD Ryzen 3 7320U(Beats i7-1065G7) CPU, 16GB DDR5, 256GB PCIe, 14.5-Hour Battery Life, Windows 11 Pro with MS 365 for Web",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "Unknown",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 0
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 469.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0CWN27G3V",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/HP-Business-Microsoft-Lifetime-Touchscreen/dp/B0CWN27G3V/ref=sr_1_30?dib=eyJ2IjoiMSJ9.fPJyzKeyz-hWX0C4qLbsXaDrLWjMacYrufcnaigFKAI65OeoFmb2cO6q-gNOa0A9bNHA5BvqWq46geiRlzEXJDB4uPfz0FRCOeK1CUJt4rH0pBSJwxw52NGcpbmHjhWaaM3qScvVpXprtb2rbIrkOiz15dJ2TpmaX-3TDRycyqSouGH8CKYvzJ7xIqbJcjWT5Db_n6PRZLYuzChUqDB8bcfqgKAhZSAs6xGJDNLUcTHwrik8cyKq1_fX8KurKJ0e_J5OJk_wqq6-XRqMqjslYINF_5sUriIJw9G2-sJ-_2E.MFswDdnzEbFB5A8GxmYc_8-Zc6tMh7j3gf81dQkE8JU&dib_tag=se&keywords=business+laptop&qid=1779937316&s=pc&sr=1-30",
+    "itemName": "HP 15.6\" Business Laptop, Free Microsoft Office 2024 Lifetime License, Copilot AI Chat, HD Touchscreen Display, Intel 6-Core i3-1215U 4.4 GHz, 16GB RAM, 1TB SSD, Long Battery Life, Windows 11 Pro",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "thermal_throttling",
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 1000
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 592,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GR1JTFP8",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2026-MacBook-13-inch-Laptop/dp/B0GR1JTFP8/ref=sr_1_1?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-1",
+    "itemName": "Apple 2026 MacBook Air 13-inch Laptop with M5 chip: Built for AI, 13.6-inch Liquid Retina Display, 16GB Unified Memory, 512GB SSD, 12MP Center Stage Camera, Touch ID, Wi-Fi 7; Midnight",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 407
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 899.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GR1493ZV",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2026-MacBook-13-inch-Laptop/dp/B0GR1493ZV/ref=sr_1_2?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-2",
+    "itemName": "Apple 2026 MacBook Air 13-inch Laptop with M5 chip: Built for AI, 13.6-inch Liquid Retina Display, 16GB Unified Memory, 512GB SSD, 12MP Center Stage Camera, Touch ID, Wi-Fi 7; Sky Blue",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 407
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 899.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GR114BV7",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2026-MacBook-15-inch-Laptop/dp/B0GR114BV7/ref=sr_1_3?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-3",
+    "itemName": "Apple 2026 MacBook Air 15-inch Laptop with M5 chip: Built for AI, 15.3-inch Liquid Retina Display, 16GB Unified Memory, 512GB SSD, 12MP Center Stage Camera, Touch ID, Wi-Fi 7; Midnight",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 188
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1099,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GR1DVSQP",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2026-MacBook-15-inch-Laptop/dp/B0GR1DVSQP/ref=sr_1_4?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-4",
+    "itemName": "Apple 2026 MacBook Air 15-inch Laptop with M5 chip: Built for AI, 15.3-inch Liquid Retina Display, 16GB Unified Memory, 512GB SSD, 12MP Center Stage Camera, Touch ID, Wi-Fi 7; Sky Blue",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 188
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1099.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GR11MSHY",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2026-MacBook-13-inch-Laptop/dp/B0GR11MSHY/ref=sr_1_5?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-5",
+    "itemName": "Apple 2026 MacBook Air 13-inch Laptop with M5 chip: Built for AI, 13.6-inch Liquid Retina Display, 24GB Unified Memory, 1TB SSD, 12MP Center Stage Camera, Touch ID, Wi-Fi 7; Sky Blue",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "24 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 70
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1299.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GR1BJ72L",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2026-MacBook-15-inch-Laptop/dp/B0GR1BJ72L/ref=sr_1_6?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-6",
+    "itemName": "Apple 2026 MacBook Air 15-inch Laptop with M5 chip: Built for AI, 15.3-inch Liquid Retina Display, 16GB Unified Memory, 1TB SSD, 12MP Center Stage Camera, Touch ID, Wi-Fi 7; Midnight",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "75",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 35
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1299.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GR6KJ72L",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2026-MacBook-13-inch-Laptop/dp/B0GR6KJ72L/ref=sr_1_7?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-7",
+    "itemName": "2026 MacBook Neo 13-inch Laptop with A18 Pro chip: Built for AI and Apple Intelligence, Liquid Retina Display, 8GB Unified Memory, 256GB SSD Storage, 1080p FaceTime HD Camera; Blush",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 475
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 589.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B08PNQTYV2",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/MacBook-Apple-Memory-256GB-Space/dp/B08PNQTYV2/ref=sr_1_8?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-8",
+    "itemName": "Apple MacBook Air Late 2020 with Apple M1 Chip (13.3 inch, 8GB RAM, 256GB SSD) Space Gray (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "thermal_throttling",
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "poor_speakers",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 2347
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 395,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B09WQ36NF1",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-128GB-Space-Renewed/dp/B09WQ36NF1/ref=sr_1_9?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-9",
+    "itemName": "Late 2020 Apple MacBook Air with Apple M1 Chip (13.3 inch, 8GB RAM, 128GB SSD) Space Gray (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "128 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "thermal_throttling",
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 1512
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 389,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FD3DPV7V",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-13-inch-Storage-Renewed/dp/B0FD3DPV7V/ref=sr_1_10?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-10",
+    "itemName": "2025 Apple MacBook Air with Apple M4 Chip (13-inch, 16GB RAM, 256GB SSD Storage) Silver (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 92
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 829,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B08FDZ44YX",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-13-inch-512GB-Storage/dp/B08FDZ44YX/ref=sr_1_11?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-11",
+    "itemName": "Apple Early 2020 MacBook Air with 1.1 GHz Intel Core i5, 13-inch, 8GB RAM, 512GB SSD, Space Gray (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "60",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 266
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 339.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0CX24BNQC",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-2024-MacBook-13-inch-Laptop/dp/B0CX24BNQC/ref=sr_1_14?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-14",
+    "itemName": "2024 MacBook Air 13-inch Laptop with M3 chip: Built for Apple Intelligence, 13.6-inch Liquid Retina Display, 16GB Unified Memory, 512GB SSD Storage, Backlit Keyboard, Touch ID; Starlight",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "thermal_throttling",
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 1884
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1299,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0B3CGXWN4",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/2022-Apple-MacBook-Laptop-chip/dp/B0B3CGXWN4/ref=sr_1_15?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-15",
+    "itemName": "2022 MacBook Air Laptop with M2 chip: Built for Apple Intelligence, 13.6-inch Liquid Retina Display, 8GB RAM, 512GB SSD Storage, Backlit Keyboard, 1080p FaceTime HD Camera; Space Gray",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "60",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "poor_speakers",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 1600
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 937.72,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GMYNWS2C",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-Keyboard-Notebook-Computer/dp/B0GMYNWS2C/ref=sr_1_16?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-16",
+    "itemName": "Apple MacBook Air 13-Inch Laptop Space Gray | M1 Chip 8GB Memory 256GB SSD | Retina Display, Backlit Keyboard, Touch ID, Long Battery Life Notebook Computer",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 8
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 697.37,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0F55N88FQ",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-15-inch-Unified-Storage/dp/B0F55N88FQ/ref=sr_1_17?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-17",
+    "itemName": "Apple 2025 MacBook Air with Apple M4 chip, 15-inch, 16GB Unified Memory, 256GB SSD Storage, Sky Blue (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 84
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 869,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0BLYG2JBR",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-13-inch-Storage-Renewed/dp/B0BLYG2JBR/ref=sr_1_18?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-18",
+    "itemName": "Apple 2022 MacBook Air with Apple M2 Chip, 13-inch, 8GB RAM, 256GB SSD Storage - Space Gray (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "battery_life",
+        "heavy_build",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "poor_speakers",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 1057
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 598,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B08BNMNL5J",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-Air-MWTL2LL-13-inch/dp/B08BNMNL5J/ref=sr_1_19?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-19",
+    "itemName": "Apple Early 2020 MacBook Air with 1.1GHz Intel Core i3, 13-inch, 8GB RAM, 256GB SSD Storage, Gold (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [
+        "battery_life",
+        "display_quality",
+        "performance_issues",
+        "keyboard_issues",
+        "limited_ports"
+      ],
+      "reviewRiskScore": 0.45,
+      "reviewCoverage": 2160
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.82,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 319,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0CC4QCS9T",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-15-3-inch-Storage-Midnight/dp/B0CC4QCS9T/ref=sr_1_21?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-21",
+    "itemName": "2023 Apple MacBook Air with Apple M2 Chip with 8-Core CPU/10-Core GPU (15-inch, 8GB RAM, 256GB SSD Storage) (QWERTY English) Midnight (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 317
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 699,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0D93FWYW3",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-13-3-inch-128GB-Storage/dp/B0D93FWYW3/ref=sr_1_22?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-22",
+    "itemName": "Apple MacBook Air 2020 13.3-inch (Apple M1 Chip, 8GB RAM, 128GB SSD Storage) - Space Gray (Renewed Premium)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "design",
+      "cs"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "8 GB",
+      "storage": "128 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "55",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 174
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 427.07,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GTMYGHTX",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-13-inch-Laptop-chip/dp/B0GTMYGHTX/ref=sr_1_23?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-23",
+    "itemName": "Apple MacBook Air 13-inch Laptop with M5 chip: 13.6-inch Liquid Retina Display, 32GB Unified Memory, 512GB SSD; Midnight",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "32 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "80",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 0
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1499,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0D7QRCLT9",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Apple-MacBook-13-inch-Storage-English/dp/B0D7QRCLT9/ref=sr_1_24?dib=eyJ2IjoiMSJ9.YeU3G8niAgIoUALlYUhrCdJm612ox4bfDPIoXfBdh59Ir2iZtp0j6p3N77oz07MKklEIgpLdXFhPdJanO53khtQbJkXtSE2_nUaXop_2BX_8fv-PiPkmvoEiLyAAyTCdjudpFGangh2JWXbfF6PdwW2gVqZZ4jkXx_GqHXp1kMyh-Olx-rTRwuT8Y9gc-bAhgV5AcNJxmqkSDfG_hXUnJrkWT6NHUq4oEGOvpLLTg0xC0DMJaWo4L36WLlYGWRUBu_im3OrMAaQAmO_FobMI-ykubdEsMVsZT1cuJKZckbU.uGZ83rcu1IhxO2d794WNdxA2Y5KZWZvpphexSlHsU3U&dib_tag=se&keywords=MacBook+Air&qid=1779937336&s=pc&sr=1-24",
+    "itemName": "Apple 2024 MacBook Air with Apple M3 chip, 13-inch, 16GB RAM, 512GB SSD Storage Space Gray (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "design"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 71
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 849,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FV59N43H",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Thinkpad-E16-Gen-Fingerprint-Thunderbolt/dp/B0FV59N43H/ref=sr_1_3?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-3",
+    "itemName": "Lenovo ThinkPad E16 Gen 2 Business Laptop 16.0\" IPS FHD+ Display (AMD Ryzen 7 250 (>Ryzen 7 7735U), 16GB DDR5, 512GB PCIe SSD, Copilot, Backlit Keyboard, Fingerprint , Wi-Fi 6, 1080p Webcam, Win11Pro)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "Unknown",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 9
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 909.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0F36WQS6N",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-ThinkPad-L14-1920x1080-Professional/dp/B0F36WQS6N/ref=sr_1_4?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-4",
+    "itemName": "Lenovo ThinkPad L14 Ryzen 5 PRO 7530U 6-Core 256GB SSD 16GB RAM FHD (1920x1080) IPS Non Touch Windows 11 Professional (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 39
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 443.22,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0G4F5WYQ7",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/ThinkPad-E16-Business-Fingerprint-Thunderbolt/dp/B0G4F5WYQ7/ref=sr_1_5?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-5",
+    "itemName": "Lenovo ThinkPad E16 Gen 3 AI Business Laptop 16\" IPS FHD+ Display (AMD Ryzen 5 230 (> Ryzen 5 7535U), 16GB DDR5, 512GB SSD, Fingerprint, Backlit, Thunderbolt 4, 5MP RGB Webcam, Win11Pro) w/Copilot",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 1
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 879.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FTGHZQR6",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-Business-2026-2027-i7-1065G7-14-5-Hour/dp/B0FTGHZQR6/ref=sr_1_6?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-6",
+    "itemName": "Lenovo 2026 New V15 Business and Student Laptop, Ryzen 3 7320U(Outperforms Intel i7-1065G7), 16GB RAM, 512GB SSD, 15.6\" FHD, Ultra Quiet Design, Long Battery Life, Wi-Fi 6, Bluetooth 5, Windows 11 Pro",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 1
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 499.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0DZF24YVJ",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-T14-Gen-Touchscreen-Thunderbolt/dp/B0DZF24YVJ/ref=sr_1_9?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-9",
+    "itemName": "Lenovo Thinkpad T14 Gen 2 14\" Touchscreen Laptop, i5 1145G7 2.6Ghz, 16GB DDR4, 256GB NVMe SSD, 1080p Full HD, Thunderbolt 4, HDMI, Webcam, Windows 11 Pro - Black (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 20
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 329,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GXF1FWJV",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-ThinkPad-L14-Laptop-Touchscreen/dp/B0GXF1FWJV/ref=sr_1_10?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-10",
+    "itemName": "Lenovo ThinkPad L14 Laptop, Touchscreen i7 ThinkPad Laptop Windows 11, Intel Core i7-10610, 16GB RAM, 256GB SSD, 14\" FHD (1920x1080), RJ-45, HDMI (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 2
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 304,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GQ4X7Q6F",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-ThinkPad-E16-Touchscreen-Fingerprint/dp/B0GQ4X7Q6F/ref=sr_1_11?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-11",
+    "itemName": "Lenovo ThinkPad E16 Gen 2 Business Laptop, 16\" FHD+ Touchscreen, AMD Ryzen 7 7735U, 32GB DDR5 RAM, 1TB SSD, HDMI, Type-C, Fingerprint, Backlit KB, Wi-Fi 6, Windows 11 Pro, Bundle w/ 7-in-1 USB-C Hub",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "32 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "85",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 7
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1329.95,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GJFRMSW4",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-ThinkPad-L16-Business-Fingerprint/dp/B0GJFRMSW4/ref=sr_1_13?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-13",
+    "itemName": "Lenovo ThinkPad L16 Gen 2 Business AI Laptop, 16\" FHD+, Intel Core Ultra 7 255U, 32GB DDR5, 1TB SSD, HDMI, Fingerprint, Backlit, Wi-Fi 6E, Long Battery Life, Windows 11 Pro, 7-in-1 USB-C Hub Bundle",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "32 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "85",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 4
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1399,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GLJZK3P3",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-ThinkPad-T16-Gen-Fingerprint/dp/B0GLJZK3P3/ref=sr_1_16?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-16",
+    "itemName": "Lenovo ThinkPad T16 Gen 4 AI Business Laptop 16” FHD+ Display, Intel Ultra 7 255U (Beats i7-1355U), 32GB DDR5 RAM, 1TB SSD, 5MB Webcam, Fingerprint, Backlit KB, WiFi 6E + BT, RJ-45, HDMI, Win 11 Pro",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "32 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "85",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 2
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1799.95,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GNLXPCMT",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-Computer-14-Dual-Core-Bluetooth/dp/B0GNLXPCMT/ref=sr_1_18?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-18",
+    "itemName": "Lenovo Laptop Computer for Home and Office with Office 365, 14\" HD Display, 20GB RAM, 256GB SSD, Intel Dual-Core, WiFi6, Bluetooth 5.2, USB-C, Portable Desgin, Long Battery, Windows 11 Home",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "20 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 500
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 499.97,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B01N4C1TH4",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/ThinkPad-E16-Business-Anti-Glare-Fingerprint/dp/B01N4C1TH4/ref=sr_1_19?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-19",
+    "itemName": "Lenovo ThinkPad L16 Business Enterprise AI PC Laptop, 16\" FHD+, Intel 12-Core Ultra 5 225U (> Ultra 7 155U), 2x Thunderbolt 4, IST Computer Customized 16GB/32GB/64GB RAM, 512GB/1TB/2TB SSD, Win 11 Pro",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "64 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "85",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 44
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 799.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FJZYS213",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-ThinkPad-L15-1920x1080-Professional/dp/B0FJZYS213/ref=sr_1_23?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-23",
+    "itemName": "Lenovo ThinkPad L15 (Latest Model) Ryzen 5 PRO 5650U 6-Core 256GB SSD 16GB RAM FHD (1920x1080) IPS Non Touch Windows 11 Professional, Black (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "256 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "70",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 21
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 356.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FDW38FK6",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-1920x1080-Core-i5-1145G7-Processor/dp/B0FDW38FK6/ref=sr_1_24?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-24",
+    "itemName": "Lenovo Thinkpad T14s Gen2 Laptop, 14in FHD (1920x1080) Windows 11 Pro Lenovo Laptop, Core i5-1145G7, 512GB SSD, 16GB RAM, Fingerprint Reader, HDMI (Renewed)",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 9
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 354.1,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0F62NPBML",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-E16-Gen-Thunderbolt-Vent-Hear/dp/B0F62NPBML/ref=sr_1_26?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-26",
+    "itemName": "Lenovo ThinkPad E16 Gen 1 Business Laptop Computer, 16GB RAM, 512GB PCIe SSD, 13th Gen Intel 10-Core i5-1335U, 16\" FHD+, WiFi 6, Thunderbolt 4, Windows 11 Pro",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "Unknown",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 276
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 859.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0FDGJFN1N",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-E16-Gen-Fingerprint-Vent-Hear/dp/B0FDGJFN1N/ref=sr_1_27?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-27",
+    "itemName": "Lenovo ThinkPad E16 Gen 2 Business Laptop Computer, AMD 8-Core Ryzen 7 7735HS, 16GB DDR5, 512GB PCIe SSD, 16\" FHD+, WiFi 6, Windows 11 Professional",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "Unknown",
+      "gpu": "Integrated",
+      "performance_score": "65",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.25,
+      "reviewCoverage": 102
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.7,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1149.99,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0H1HT61KG",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-ThinkPad-E16-Enterprise-Fingerprint/dp/B0H1HT61KG/ref=sr_1_28?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-28",
+    "itemName": "Lenovo ThinkPad E16 Laptop Computer, AI-Ready for Enterprise Business Work, Intel Ultra 7 255H (32GB DDR5 & 1TB SSD), Fingerprint Reader, Long Battery Life Fast Charging, Windows 11 Pro, Crabon Black",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "32 GB",
+      "storage": "1024 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "85",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 83
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1619,
+        "condition": "new",
+        "affiliate": true
+      }
+    ]
+  },
+  {
+    "sourceId": "rainforest-B0GJV6B4SM",
+    "sourceType": "retailer",
+    "sourceName": "Amazon",
+    "sourceUrl": "https://www.amazon.com/Lenovo-2025-ThinkPad-Co-Pilot-Laptop/dp/B0GJV6B4SM/ref=sr_1_30?dib=eyJ2IjoiMSJ9.vPdSeJxU6jrgImsYet7h_CCzBNUDhSxF50kWJdPwI3gWt8Nd8S18SqocTR9UZ4PosneOlDSX5Ftw6WWofdLPNLWotCNWfuCz5lweZuQwhATWigRYpwzQzQroZ-uB7chD8r95AN3NRzDO227PFbJAh2XDx8xzT3nlRNiL85ViNDa-gdoU99DPn1cR9crt8px6T0-ixs815J_jUWjxGFsrcDPhk3tfqcyLzmVI9kC-o065K7oMMyqizvcm9KLX6wtEwtZLqq4uvTdkO-3EJeMtLFD6GGrlEvGeQU0N9O4DEiE.b1KkC3jKs_RtiZIGZrDsX8DNLqKFEyCAOb11KwiikKc&dib_tag=se&keywords=ThinkPad+laptop&qid=1779937344&s=pc&sr=1-30",
+    "itemName": "Lenovo 2025 ThinkPad T14 Gen 6 Co-Pilot+ Laptop - AMD Ryzen AI 5 PRO 340, 14” WUXGA 1920x1200 400 Nits Display, 16GB Ram, 512GB SSD, 5MP RGB Cam, FP Reader, Backlit KYB, Windows 11 Pro - 21QJ00CQUS",
+    "variantName": "Standard",
+    "majorSignals": [
+      "general",
+      "cs",
+      "engineering",
+      "business"
+    ],
+    "_meta": {
+      "retrievedAt": "2026-05-28T03:01:41.791Z",
+      "acquisitionMethod": "api",
+      "inferredFields": [
+        "performance_score",
+        "display_score",
+        "battery_score",
+        "portability_score",
+        "thermals_score"
+      ],
+      "realFields": [
+        "priceUsd",
+        "reviewRating",
+        "reviewCount"
+      ]
+    },
+    "rawSpecs": {
+      "ram": "16 GB",
+      "storage": "512 GB SSD",
+      "gpu": "Integrated",
+      "performance_score": "70",
+      "display_score": "82",
+      "battery_score": "68",
+      "portability_score": "65",
+      "thermals_score": "74"
+    },
+    "reviewEvidence": {
+      "topCons": [],
+      "reviewRiskScore": 0.4,
+      "reviewCoverage": 1
+    },
+    "trustEvidence": {
+      "sourceConfidence": 0.55,
+      "freshnessDays": 0
+    },
+    "offers": [
+      {
+        "seller": "Amazon",
+        "priceUsd": 1027.99,
+        "condition": "new",
+        "affiliate": true
+      }
     ]
   }
 ]

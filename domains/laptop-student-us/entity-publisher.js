@@ -19,9 +19,16 @@ export function publishEntity(observation, { fitContexts, resolvedSpecs = null }
   const offers = [...observation.offers]
     .map(offer => {
       const { score, platform } = computeVendorTrustScore(offer);
-      return { ...offer, vendorTrustScore: score, platform };
+      const tier = resolveSellerTier({ ...offer, platform });
+      return { ...offer, vendorTrustScore: score, platform, sellerTier: tier };
     })
-    .sort((left, right) => left.priceUsd - right.priceUsd);
+    .sort((a, b) => {
+      // Primary: prefer trusted sellers (Tier 1-2 before 3-4)
+      const tierDiff = a.sellerTier - b.sellerTier;
+      if (tierDiff !== 0) return tierDiff;
+      // Secondary: lowest price within same trust tier
+      return a.priceUsd - b.priceUsd;
+    });
   const bestOffer = offers[0];
   const resaleScore = estimateResaleScore({
     itemName: observation.itemName,
@@ -38,6 +45,7 @@ export function publishEntity(observation, { fitContexts, resolvedSpecs = null }
     itemName: observation.itemName,
     variantName: observation.variantName,
     brand,
+    topCons: observation.reviewSummary?.topCons ?? [],
     segmentSignals: observation.majorSignals,
     specs: { ...specs, laptopCategory },
     market: {

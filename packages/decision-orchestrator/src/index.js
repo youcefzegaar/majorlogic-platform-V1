@@ -300,6 +300,9 @@ export class DecisionOrchestrator {
 
       if (candidates.length === 0) continue;
 
+      // Apply review risk penalty before ranking — devices with real cons score lower.
+      candidates = this._applyReviewPenalty(candidates, entityLookup);
+
       const picked = this._pickCandidate(candidates, slot, entityLookup);
       if (!picked) continue;
 
@@ -320,6 +323,36 @@ export class DecisionOrchestrator {
     }
 
     return cards;
+  }
+
+  // Penalizes devices with real cons from reviews — prevents recommending known bad devices.
+  // Penalty is capped at 15 points so budget-friendly devices with minor cons remain viable.
+  _applyReviewPenalty(candidates, entityLookup) {
+    const CRITICAL = new Set(["thermal_throttling", "performance_issues"]);
+    const MAJOR    = new Set(["battery_life", "fan_noise", "build_quality"]);
+    // MINOR cons: heavy_build, display_quality, keyboard_issues, poor_speakers, limited_ports
+
+    return candidates.map(c => {
+      const entity = entityLookup.get(c.entityId) || {};
+      const cons   = entity.topCons || [];
+      if (cons.length === 0) return c;
+
+      let penalty = 0;
+      for (const con of cons) {
+        if (CRITICAL.has(con)) penalty += 5;
+        else if (MAJOR.has(con)) penalty += 3;
+        else penalty += 1;
+      }
+
+      const cappedPenalty = Math.min(penalty, 15);
+      if (cappedPenalty > 0) {
+        this.logger.log(
+          `[ReviewPenalty] ${c.entityId}: -${cappedPenalty} pts (cons: ${cons.join(", ")})`
+        );
+      }
+
+      return { ...c, score: Math.max(0, c.score - cappedPenalty) };
+    });
   }
 
   _pickCandidate(candidates, slot, entityLookup) {

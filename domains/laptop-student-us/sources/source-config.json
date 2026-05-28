@@ -1,0 +1,49 @@
+{
+  "_comment": "Source Intelligence Router — declares the preferred acquisition method and TTL for each source.",
+  "sources": {
+    "bestbuy": {
+      "method": "api",
+      "ttl_hours": 6,
+      "enabled": true,
+      "description": "Best Buy Product API — structured data, free tier, no signing required"
+    },
+    "amazon_pa": {
+      "method": "browser",
+      "ttl_hours": 24,
+      "enabled": false,
+      "disabled_reason": "PA-API v5 AWS Signature v4 signing not yet implemented",
+      "description": "Amazon Product Advertising API — requires browser fallback until signing is ready",
+      "task": "Go to amazon.com/s?k=student+laptops and collect the first 50 laptop listings. For each: extract full product name, RAM, storage, GPU, price in USD, and product URL."
+    },
+    "reddit": {
+      "method": "api",
+      "ttl_hours": 168,
+      "enabled": true,
+      "description": "Reddit OAuth API — review signals and community sentiment, enrichment only"
+    },
+    "notebookcheck": {
+      "method": "parser",
+      "ttl_hours": 720,
+      "enabled": true,
+      "description": "NotebookCheck.net — real battery tests, benchmarks, weight. Parser: scripts/notebookcheck-parser.js"
+    },
+    "newegg": {
+      "method": "parser",
+      "ttl_hours": 12,
+      "enabled": true,
+      "description": "Newegg — prices + user ratings via Playwright"
+    },
+    "techspecs": {
+      "method": "api",
+      "ttl_hours": 720,
+      "enabled": true,
+      "description": "TechSpecs API — real hardware specs (weight, display, battery, RAM, CPU, GPU). Free tier at techspecs.io. Env vars: TECHSPECS_API_KEY + TECHSPECS_API_ID"
+    },
+    "rainforest": {
+      "method": "api",
+      "ttl_hours": 24,
+      "enabled": true,
+      "description": "Rainforest API — Amazon prices + ratings via env var RAINFOREST_API_KEY"
+    }
+  }
+}

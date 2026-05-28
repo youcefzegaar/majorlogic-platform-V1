@@ -78,6 +78,11 @@ export function normalizeAcquiredObservation(rawObservation) {
     specs,
     reviewSummary,
     trust,
-    offers:       sourceRecord.offers ?? []
+    offers: (sourceRecord.offers ?? []).map(offer => ({
+      ...offer,
+      // Attach product URL if not already present — needed for affiliate links & click-through
+      productUrl: offer.productUrl ?? sourceRecord.sourceUrl ?? null,
+      sourceType: offer.sourceType ?? sourceRecord.sourceType ?? "unknown"
+    }))
   };
 }
