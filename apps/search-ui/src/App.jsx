@@ -95,7 +95,7 @@ export default function App() {
       <main className="main-content">
         <div className="mobile-header">
           <button className="hamburger-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
-            <i className="fas fa-bars"></i>
+            <Icon name="bars" />
           </button>
           <div className="mobile-logo">
             <div className="logo-icon">🧠</div>

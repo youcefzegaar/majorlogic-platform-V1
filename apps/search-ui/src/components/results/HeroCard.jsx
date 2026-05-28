@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import Icon from '../shared/Icon';
 
 function resolveIdentityStatement(card) {
   const fs = card.fitStates;
@@ -148,7 +149,7 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
             className="card-action-btn select"
             onClick={(e) => { e.stopPropagation(); onConfirm(type); }}
           >
-            <i className="fas fa-check-circle"></i> {t('buttons.choose_this')}
+            <Icon name="check-circle" /> {t('buttons.choose_this')}
           </button>
           <button
             className="card-action-btn details"

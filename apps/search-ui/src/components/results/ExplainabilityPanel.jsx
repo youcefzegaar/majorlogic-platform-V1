@@ -351,7 +351,7 @@ function StepAgency({ dims, onBack }) {
           style={{ fontSize: 12, padding: '6px 14px' }}
           onClick={onBack}
         >
-          <i className="fas fa-sliders-h"></i> {t('buttons.adjust_priorities_btn')}
+          <Icon name="sliders-h" /> {t('buttons.adjust_priorities_btn')}
         </button>
       )}
     </div>

@@ -48,7 +48,7 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
     <>
       <div className="constraint-list">
         <div className="constraint-item">
-          <div className="constraint-status ok"><i className="fas fa-check"></i></div>
+          <div className="constraint-status ok"><Icon name="check" /></div>
           <div className="constraint-info">
             <div className="constraint-name">
               {t('trace.budget_constraint', { min: budgetMin.toLocaleString(), max: budgetMax.toLocaleString() })}
@@ -107,7 +107,7 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
 
         {detectedConflicts.length === 0 && (
           <div className="constraint-item">
-            <div className="constraint-status ok"><i className="fas fa-check-double"></i></div>
+            <div className="constraint-status ok"><Icon name="check-double" /></div>
             <div className="constraint-info">
               <div className="constraint-name">{t('trace.harmony_title')}</div>
               <div className="constraint-detail">{t('trace.harmony_desc')}</div>
@@ -119,7 +119,7 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
       <div className="analysis-grid">
         <div className="analysis-panel">
           <div className="analysis-panel-title">
-            <i className="fas fa-bullseye" style={{ color: 'var(--accent-info)', marginRight: 8 }}></i>
+            <Icon name="bullseye" style={{ color: 'var(--accent-info)', marginRight: 8 }} />
             {t('trace.dimensional_profile')}
           </div>
           <RadarChart data={priorities} />
@@ -127,7 +127,7 @@ export default function DecisionTrace({ priorities, analysisSummary, detectedCon
 
         <div className="analysis-panel analysis-panel-summary">
           <div className="analysis-panel-title">
-            <i className="fas fa-chart-pie" style={{ color: 'var(--accent-warning)', marginRight: 8 }}></i>
+            <Icon name="chart-pie" style={{ color: 'var(--accent-warning)', marginRight: 8 }} />
             {t('trace.analysis_summary_title')}
           </div>
           <div className="analysis-stats-grid">

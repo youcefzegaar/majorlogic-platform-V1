@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import FutureProofCard from './FutureProofCard';
+import Icon from '../shared/Icon';
 
 function DecisionCertificate({ selectedCard }) {
   const { t } = useTranslation();
@@ -280,10 +281,10 @@ export default function SummaryPhase({ selectedCard, timeline, ownershipChoice, 
 
       <div className="btn-group" style={{ marginTop: 24 }}>
         <button className="btn btn-primary" onClick={onNewDecision}>
-          <i className="fas fa-plus"></i> {t('buttons.new_decision')}
+          <Icon name="plus" /> {t('buttons.new_decision')}
         </button>
         <button className="btn btn-secondary" onClick={onBackToExplanation}>
-          <i className="fas fa-arrow-left"></i> {t('buttons.back_to_ownership')}
+          <Icon name="arrow-left" /> {t('buttons.back_to_ownership')}
         </button>
       </div>
     </div>

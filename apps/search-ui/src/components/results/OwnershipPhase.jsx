@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CommitmentCeremony from '../shared/CommitmentCeremony';
+import Icon from '../shared/Icon';
 
 const MODE_TO_PATH = {
   buy_new:                  'new',
@@ -423,14 +424,14 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
 
       {/* ── Price Alert ───────────────────────────────── */}
       <div className="op-alert-section">
-        <div className="op-alert-title"><i className="fas fa-bell"></i> {t('ownership.alert_title')}</div>
+        <div className="op-alert-title"><Icon name="bell" /> {t('ownership.alert_title')}</div>
         {alertSaved ? (
           <div className="op-alert-success">{t('ownership.alert_success')}</div>
         ) : (
           <>
             <div className="op-alert-row">
               <input type="email" className="form-input" placeholder={t('ownership.alert_email_placeholder')} value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAlert()} />
-              <button className="btn btn-primary" style={{ padding: '12px 20px' }} onClick={handleAlert}><i className="fas fa-bell"></i></button>
+              <button className="btn btn-primary" style={{ padding: '12px 20px' }} onClick={handleAlert}><Icon name="bell" /></button>
             </div>
             {alertError && <div className="op-alert-error">{t('ownership.alert_error')}</div>}
           </>
@@ -453,9 +454,9 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
             onNext();
           }}
         >
-          <i className="fas fa-arrow-right"></i> {t('ownership.final_summary_btn')}
+          <Icon name="arrow-right" /> {t('ownership.final_summary_btn')}
         </button>
-        <button className="btn btn-secondary" onClick={onBack}><i className="fas fa-arrow-left"></i> {t('buttons.back_to_explanation')}</button>
+        <button className="btn btn-secondary" onClick={onBack}><Icon name="arrow-left" /> {t('buttons.back_to_explanation')}</button>
       </div>
 
     </div>

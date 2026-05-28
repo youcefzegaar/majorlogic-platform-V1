@@ -64,7 +64,7 @@ export default function ZeroResultsView({ noResults, onEditRequirements }) {
         </div>
       )}
       <button className="btn btn-secondary" onClick={onEditRequirements} style={{ marginTop: 32 }}>
-        <i className="fas fa-edit"></i> {t('buttons.edit_requirements')}
+        <Icon name="edit" /> {t('buttons.edit_requirements')}
       </button>
     </div>
   );

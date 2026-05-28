@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import HeroCard from './HeroCard';
 import ZeroResultsView from './ZeroResultsView';
+import Icon from '../shared/Icon';
 
 export default function CardsPhase({
   cards, noResults, decisionMetadata, analysisSummary,
@@ -48,7 +49,7 @@ export default function CardsPhase({
         <div className="cards-main">
           {decisionMetadata.relaxedConstraint === 'within_budget' && (
             <div className="recovery-warning" style={{ background: 'rgba(245, 158, 11, 0.1)', color: 'var(--accent-warning)', border: '1px solid var(--accent-warning)', padding: '16px 20px', borderRadius: 12, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16, fontSize: '14px' }}>
-              <i className="fas fa-exclamation-triangle" style={{ fontSize: '20px' }}></i>
+              <Icon name="exclamation-triangle" style={{ fontSize: '20px' }} />
               <div>
                 <strong style={{ display: 'block', marginBottom: 4 }}>{t('cards.budget_relaxed_title')}</strong>
                 {t('cards.budget_relaxed_body')}
@@ -118,7 +119,7 @@ export default function CardsPhase({
 
         <div className="cards-sidebar">
           <div className="sidebar-panel">
-            <div className="sidebar-panel-title"><i className="fas fa-sliders-h"></i> {t('cards.adjust_priorities')}</div>
+            <div className="sidebar-panel-title"><Icon name="sliders-h" /> {t('cards.adjust_priorities')}</div>
             {Object.entries(priorities).map(([key, val]) => (
               <div key={key} className="sidebar-slider-item">
                 <div className="sidebar-slider-label">
@@ -131,7 +132,7 @@ export default function CardsPhase({
           </div>
 
           <div className="sidebar-panel">
-            <div className="sidebar-panel-title"><i className="fas fa-wallet"></i> {t('cards.budget_range')}</div>
+            <div className="sidebar-panel-title"><Icon name="wallet" /> {t('cards.budget_range')}</div>
             <div className="sidebar-budget" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <div style={{ position: 'relative', flex: 1 }}>
@@ -149,10 +150,10 @@ export default function CardsPhase({
 
           <div className="sidebar-panel">
             <button className="sidebar-action-btn primary" onClick={onUpdateResults} disabled={isAnalyzing} style={{ marginBottom: 8 }}>
-              <i className="fas fa-sync-alt"></i> {isAnalyzing ? t('buttons.updating') : t('buttons.update_results')}
+              <Icon name="sync-alt" /> {isAnalyzing ? t('buttons.updating') : t('buttons.update_results')}
             </button>
             <button className="sidebar-action-btn secondary" onClick={onResetPriorities}>
-              <i className="fas fa-undo"></i> {t('buttons.reset')}
+              <Icon name="undo" /> {t('buttons.reset')}
             </button>
           </div>
 

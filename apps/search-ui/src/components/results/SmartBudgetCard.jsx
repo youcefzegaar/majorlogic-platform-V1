@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Icon from '../shared/Icon';
 
 export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSelectedPurchase }) {
   const [email, setEmail] = useState('');
@@ -55,7 +56,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
     <div>
       <div className="purchase-section">
         <div className="purchase-section-title">
-          <i className="fas fa-shopping-cart"></i> Purchase Links
+          <Icon name="shopping-cart" /> Purchase Links
         </div>
 
         {offers.length > 0 ? offers.map(offer => (
@@ -67,7 +68,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
             <input type="radio" className="purchase-option-radio" checked={selectedPurchase === offer.key} readOnly />
             <div className="purchase-option-info">
               <div className="purchase-option-name">
-                <i className="fas fa-store"></i> {offer.label}
+                <Icon name="store" /> {offer.label}
               </div>
               <div className="purchase-option-price">{offer.price}</div>
             </div>
@@ -84,7 +85,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
         {offers.length > 0 && (
           <>
             <div style={{ marginTop: 16, padding: 14, background: 'rgba(100,116,139,0.08)', borderRadius: 10, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              <i className="fas fa-info-circle" style={{ color: 'var(--accent-warning)', marginRight: 4 }}></i>
+              <Icon name="info-circle" style={{ color: 'var(--accent-warning)', marginRight: 4 }} />
               <strong>Prices shown are estimates</strong> captured at catalog time and may differ from the current store price.
               Always verify on the retailer's site before purchasing.
               {' '}Some links earn us a small commission — this <strong>never</strong> affects our rankings.
@@ -96,7 +97,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
               disabled={!selected?.url}
               style={{ marginTop: 16 }}
             >
-              <i className="fas fa-external-link-alt"></i>
+              <Icon name="external-link-alt" />
               {selected ? `Check current price on ${selected.label}` : 'No link available'}
             </button>
           </>
@@ -105,7 +106,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
 
       <div className="purchase-section" style={{ marginTop: 16 }}>
         <div className="purchase-section-title">
-          <i className="fas fa-bell"></i> Price & Availability Alerts
+          <Icon name="bell" /> Price & Availability Alerts
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
@@ -143,7 +144,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
                   style={{ flex: 1 }}
                 />
                 <button className="btn btn-primary" style={{ padding: '12px 20px' }} onClick={handleSaveAlert}>
-                  <i className="fas fa-bell"></i>
+                  <Icon name="bell" />
                 </button>
               </div>
               {alertError && (

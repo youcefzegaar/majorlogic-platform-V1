@@ -1,4 +1,14 @@
 :root {
+    /* Semantic Aura tokens — visual-laws.md §2 */
+    --aura-performance: #fb7185;
+    --aura-mobility:    #56b6f2;
+    --aura-balanced:    #a78bfa;
+    --aura-value:       #f5b454;
+
+    /* Fonts */
+    --font-body: 'Outfit', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
     --primary: #1a1a2e;
     --primary-light: #16213e;
     --secondary: #0f3460;
@@ -42,7 +52,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--primary);
     color: var(--text-primary);
     min-height: 100vh;

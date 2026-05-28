@@ -10,14 +10,16 @@ export default function AppSidebar({ phase, onNewDecision, lang, setLang, langMe
       <div className="sidebar-header">
         <div className="logo"><div className="logo-icon">🧠</div><span>MajorLogic</span></div>
         <button className="sidebar-close-btn" onClick={onClose} aria-label="Close menu">
-          <i className="fas fa-times"></i>
+          <Icon name="times" />
         </button>
       </div>
       <nav>
-        <div className={`nav-item ${phase === 0 ? 'active' : ''}`} onClick={onNewDecision}><i className="fas fa-plus-circle"></i><span>{t('nav.new_decision')}</span></div>
-        <div className="nav-item"><i className="fas fa-history"></i><span>{t('nav.my_decisions')}</span></div>
-        <div className="nav-item"><i className="fas fa-bookmark"></i><span>{t('nav.saved')}</span></div>
-        <div className="nav-item"><i className="fas fa-cog"></i><span>{t('nav.settings')}</span></div>
+        <div className={`nav-item ${phase === 0 ? 'active' : ''}`} onClick={onNewDecision}><Icon name="plus-circle" /><span>{t('nav.new_decision')}</span></div>
+        {/* WIRED IN M3 — requires user accounts */}
+        <div className="nav-item"><Icon name="history" /><span>{t('nav.my_decisions')}</span></div>
+        <div className="nav-item"><Icon name="bookmark" /><span>{t('nav.saved')}</span></div>
+        {/* WIRED IN M10 — requires settings page */}
+        <div className="nav-item"><Icon name="cog" /><span>{t('nav.settings')}</span></div>
       </nav>
       <div className="sidebar-footer">
         <div className="sidebar-tools">
@@ -42,7 +44,7 @@ export default function AppSidebar({ phase, onNewDecision, lang, setLang, langMe
             )}
           </div>
           <button className="tool-btn" onClick={toggleTheme} style={{ flex: 1 }}>
-            <i className={theme === 'dark' ? "fas fa-sun" : "fas fa-moon"}></i>
+            <Icon name={theme === 'dark'  ? 'sun' : 'moon'} />
             <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
           </button>
         </div>

@@ -83,7 +83,7 @@ export default function AnalysisPhase({
               background: 'rgba(16, 185, 129, 0.06)',
             }}
           >
-            <i className="fas fa-check-circle" style={{ color: 'var(--accent-success)' }}></i>
+            <Icon name="check-circle" style={{ color: 'var(--accent-success)' }} />
             <div className="conflict-alert-text">
               {t('analysis.priorities_aligned_desc')}
             </div>
@@ -109,10 +109,10 @@ export default function AnalysisPhase({
 
       <div className="btn-group">
         <button className="btn btn-primary" onClick={onViewCards}>
-          <i className="fas fa-magic"></i> {t('analysis.view_paths')}
+          <Icon name="magic" /> {t('analysis.view_paths')}
         </button>
         <button className="btn btn-secondary" onClick={onAdjustPriorities}>
-          <i className="fas fa-arrow-left"></i> {t('cards.adjust_priorities')}
+          <Icon name="arrow-left" /> {t('cards.adjust_priorities')}
         </button>
       </div>
     </div>

@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import MajorSelector from './MajorSelector';
 import BudgetSelector from './BudgetSelector';
 import PreferenceSliders from './PreferenceSliders';
+import Icon from '../shared/Icon';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 export default function IntakePhase({
   goal, setGoal,
@@ -12,6 +14,8 @@ export default function IntakePhase({
   isAnalyzing, onAnalyze
 }) {
   const { t } = useTranslation();
+  const [, setDraft] = useLocalStorage('ml_draft_v1', null);
+  const saveDraft = () => setDraft({ goal, major, priorities, budgetMin, budgetMax });
 
   return (
     <div className="phase-container active">
@@ -75,11 +79,11 @@ export default function IntakePhase({
 
       <div className="btn-group">
         <button className="btn btn-primary" onClick={onAnalyze} disabled={isAnalyzing}>
-          <i className="fas fa-brain"></i>{' '}
+          <Icon name="brain" />{' '}
           {isAnalyzing ? t('buttons.analyzing') : t('buttons.analyze')}
         </button>
-        <button className="btn btn-secondary">
-          <i className="fas fa-save"></i> {t('intake.save_draft')}
+        <button className="btn btn-secondary" onClick={saveDraft}>
+          <Icon name="save" /> {t('intake.save_draft')}
         </button>
       </div>
 

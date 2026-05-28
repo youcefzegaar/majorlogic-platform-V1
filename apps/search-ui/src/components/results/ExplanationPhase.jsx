@@ -14,11 +14,11 @@ export default function ExplanationPhase({ selectedCard, explanationTab, setExpl
       />
       <div className="btn-group" style={{ display: 'flex', gap: 12, justifyContent: 'flex-start', marginTop: 20 }}>
         <button className="btn btn-primary" onClick={onFinalSummary}>
-          <i className="fas fa-arrow-right" style={{ marginRight: 8 }}></i>
+          <Icon name="arrow-right" style={{ marginRight: 8 }} />
           {t('phase.final_summary_btn')}
         </button>
         <button className="btn btn-secondary" onClick={onBackToCards}>
-          <i className="fas fa-arrow-left" style={{ marginRight: 8 }}></i>
+          <Icon name="arrow-left" style={{ marginRight: 8 }} />
           {t('phase.back_to_cards')}
         </button>
       </div>

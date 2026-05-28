@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Icon from '../shared/Icon';
 
 const MODE_CONFIG = {
   buy_new:                 { path: 'new',          label: 'Buy New' },
@@ -218,7 +219,7 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
 
       {/* ── Price disclaimer ─────────────────────────────── */}
       <div style={{ marginTop: 12, padding: '8px 12px', background: 'rgba(100,116,139,0.08)', borderRadius: 8, fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
-        <i className="fas fa-info-circle" style={{ color: 'var(--accent-warning)', marginRight: 4 }}></i>
+        <Icon name="info-circle" style={{ color: 'var(--accent-warning)', marginRight: 4 }} />
         Prices are estimates from catalog data and may vary. Verify the current price on the retailer's site before purchasing.
       </div>
 
@@ -230,14 +231,14 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
           rel="noopener noreferrer"
           className="ownership-cta-btn"
         >
-          <i className="fas fa-external-link-alt"></i> {currentPath.cta}
+          <Icon name="external-link-alt" /> {currentPath.cta}
         </a>
       )}
 
       {/* ── Price Alert ──────────────────────────────────── */}
       <div className="ownership-alert">
         <div className="ownership-alert-title">
-          <i className="fas fa-bell"></i> Alert me when the price drops
+          <Icon name="bell" /> Alert me when the price drops
         </div>
         {alertSaved ? (
           <div className="ownership-alert-success">
@@ -255,7 +256,7 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
                 onKeyDown={e => e.key === 'Enter' && handleSaveAlert()}
               />
               <button className="btn btn-primary" onClick={handleSaveAlert} style={{ padding: '12px 20px' }}>
-                <i className="fas fa-bell"></i>
+                <Icon name="bell" />
               </button>
             </div>
             {alertError && <div className="ownership-alert-error">{alertError}</div>}

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import Icon from '../shared/Icon';
 
 export default function FutureProofCard({ selectedCard, timeline, ownershipChoice }) {
   const { t } = useTranslation();
@@ -103,13 +104,13 @@ export default function FutureProofCard({ selectedCard, timeline, ownershipChoic
             <div>
               {selectedCard.tradeOffs.gained.map(g => (
                 <div key={g} className="final-trade-off">
-                  <i className="fas fa-arrow-up trade-off-positive"></i>
+                  <Icon name="arrow-up" />
                   <span>{g}</span>
                 </div>
               ))}
               {selectedCard.tradeOffs.lost.map(l => (
                 <div key={l} className="final-trade-off">
-                  <i className="fas fa-arrow-down trade-off-negative"></i>
+                  <Icon name="arrow-down" />
                   <span>{l}</span>
                 </div>
               ))}
@@ -125,7 +126,7 @@ export default function FutureProofCard({ selectedCard, timeline, ownershipChoic
                 rel="noopener noreferrer"
                 className="final-buy-btn"
               >
-                <i className="fas fa-shopping-cart"></i>
+                <Icon name="shopping-cart" />
                 &nbsp;{buyCta}
                 {buyFallbackSeller && (
                   <span className="final-buy-seller"> {t('future.via_seller', { seller: buyFallbackSeller })}</span>
