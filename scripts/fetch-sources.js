@@ -65,7 +65,6 @@ function inferMajorSignals(name = "", specs = {}) {
 async function fetchBestBuy(credentials, domainId) {
   const apiKey = credentials?.api_key;
   if (!apiKey) throw new Error("BestBuy: api_key missing");
-  const retrievedAt = new Date().toISOString();
 
   const query = domainId === "laptop-student-us"
     ? "(type=laptop)&(active=true)&(salePrice<2000)&(salePrice>300)"
@@ -79,32 +78,15 @@ async function fetchBestBuy(credentials, domainId) {
     "displaySize", "weight", "url"
   ].join(",");
 
-  const PAGE_SIZE = 100;
-  const MAX_PAGES = 10; // cap at 1,000 products to avoid runaway billing
-  const buildUrl = (page) =>
-    `https://api.bestbuy.com/v1/products(${query})?format=json&pageSize=${PAGE_SIZE}&page=${page}&sort=customerReviewCount.dsc&apiKey=${apiKey}&show=${fields}`;
+  const url = `https://api.bestbuy.com/v1/products(${query})?format=json&pageSize=50&sort=customerReviewCount.dsc&apiKey=${apiKey}&show=${fields}`;
 
   console.log("[BestBuy] Fetching laptops from Best Buy API…");
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`BestBuy API error: ${res.status} ${await res.text()}`);
+  const data = await res.json();
 
-  const products = [];
-  let page = 1;
-  let totalPages = 1;
-
-  while (page <= Math.min(totalPages, MAX_PAGES)) {
-    const res = await fetch(buildUrl(page));
-    if (!res.ok) throw new Error(`BestBuy API error: ${res.status} ${await res.text()}`);
-    const data = await res.json();
-
-    totalPages = data.totalPages ?? 1;
-    const batch = data.products ?? [];
-    products.push(...batch);
-    console.log(`[BestBuy] Page ${page}/${Math.min(totalPages, MAX_PAGES)} — ${batch.length} products`);
-
-    if (batch.length < PAGE_SIZE) break; // last page returned fewer items
-    page++;
-  }
-
-  console.log(`[BestBuy] Got ${products.length} products total`);
+  const products = data.products || [];
+  console.log(`[BestBuy] Got ${products.length} products`);
 
   return products.map(p => {
     const ramGb = parseInt((p.ram || "0").replace(/\D/g, "")) || 0;
@@ -126,12 +108,6 @@ async function fetchBestBuy(credentials, domainId) {
       itemName: p.name || "Unknown Laptop",
       variantName: [p.processorBrand, p.processorModel, p.ram, p.hardDriveSize].filter(Boolean).join(" / ") || "Standard",
       majorSignals: inferMajorSignals(p.name, { ramGb, storageGb, hasDiscreteGpu }),
-      _meta: {
-        retrievedAt,
-        acquisitionMethod: "api",
-        inferredFields: ["performance", "display", "battery", "thermals"],
-        realFields: ["ramGb", "storageGb", "gpuClass", "priceUsd", "reviewCoverage"]
-      },
       rawSpecs: {
         ram: p.ram || `${ramGb} GB`,
         storage: p.hardDriveSize || `${storageGb} GB SSD`,
@@ -219,11 +195,16 @@ async function fetchRedditReviews(credentials, productNames) {
 // ── Amazon PA-API Fetcher ─────────────────────────────────────────────────────
 // Requires: access_key, secret_key, partner_tag, region (default: us-east-1)
 
-async function fetchAmazonPA(_credentials) {
-  // AWS Signature v4 signing for PA-API v5 is not yet implemented.
-  // Activate this integration only after implementing signing:
-  //   https://webservices.amazon.com/paapi5/documentation/
-  throw new Error("Amazon PA-API v5 signing not implemented — remove from active integrations until ready");
+async function fetchAmazonPA(credentials) {
+  const { access_key, secret_key, partner_tag } = credentials;
+  if (!access_key || !secret_key || !partner_tag)
+    throw new Error("Amazon PA-API: access_key, secret_key, partner_tag required");
+
+  // Amazon PA-API v5 requires AWS Signature v4 — complex signing, mark as TODO
+  // Full implementation: https://webservices.amazon.com/paapi5/documentation/
+  console.log("[Amazon PA-API] ⚠️  PA-API v5 signing not yet implemented.");
+  console.log("[Amazon PA-API] Skipping — add PA-API signing to unlock this source.");
+  return [];
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -237,19 +218,6 @@ async function run() {
   }
 
   const sourcesPath = path.resolve(`domains/${domainId}/sources/market-sources.json`);
-
-  // ── Source Intelligence Router ────────────────────────────────────────────
-  // Reads source-config.json to decide which acquisition method is allowed per source.
-  // A source disabled in config stays off even if credentials exist in DB.
-  let sourceConfig = { sources: {} };
-  try {
-    const configPath = path.resolve(`domains/${domainId}/sources/source-config.json`);
-    sourceConfig = JSON.parse(await fs.promises.readFile(configPath, "utf8"));
-  } catch {
-    console.log("[fetch-sources] No source-config.json — all sources enabled by default");
-  }
-  const isSourceEnabled = (slug) => sourceConfig.sources[slug]?.enabled !== false;
-  const sourceMethod = (slug) => sourceConfig.sources[slug]?.method ?? "api";
 
   if (!process.env.DATABASE_URL) {
     console.log("[fetch-sources] No DATABASE_URL — skipping live fetch, using existing sources.");
@@ -279,9 +247,7 @@ async function run() {
     let anyFetched = false;
 
     // ── BestBuy ───────────────────────────────────────────────────────────────
-    if (active.bestbuy && isSourceEnabled("bestbuy")) {
-      const method = sourceMethod("bestbuy");
-      console.log(`[BestBuy] method=${method}`);
+    if (active.bestbuy) {
       try {
         const creds = await getFullCreds("bestbuy");
         const records = await fetchBestBuy(creds, domainId);
@@ -294,9 +260,7 @@ async function run() {
     }
 
     // ── Amazon PA-API ─────────────────────────────────────────────────────────
-    if (active.amazon_pa && isSourceEnabled("amazon_pa")) {
-      const method = sourceMethod("amazon_pa");
-      console.log(`[Amazon PA] method=${method}`);
+    if (active.amazon_pa) {
       try {
         const creds = await getFullCreds("amazon_pa");
         const records = await fetchAmazonPA(creds);
@@ -325,14 +289,7 @@ async function run() {
 
         for (const source of sources) {
           const key = source.itemName.toLowerCase();
-          // Match if at least 2 meaningful words (>3 chars) from the review key appear in the product name.
-        // Prevents "Apple MacBook Air" from stealing reviews meant for "Apple MacBook Pro".
-        const review = Object.entries(reviewMap).find(([k]) => {
-          const keyWords = k.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-          if (!keyWords.length) return false;
-          const matchCount = keyWords.filter(w => key.includes(w)).length;
-          return matchCount >= Math.min(2, keyWords.length);
-        })?.[1];
+          const review = Object.entries(reviewMap).find(([k]) => key.includes(k.split(" ")[0]))?.[1];
           if (review) {
             source.reviewEvidence.topCons = review.cons;
             source.reviewEvidence.reviewCoverage = review.mentions;

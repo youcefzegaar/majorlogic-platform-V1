@@ -406,13 +406,7 @@ export class DecisionOrchestrator {
         // User-stated priorities so AI can connect strengths to what they care about
         userPreferences: userProfile?.preferences                         ?? null,
         // The student's own words about what they need — gold for personalisation
-        naturalLanguageIntent: userProfile?.productIntent?.naturalLanguageIntent ?? null,
-
-        // Intake life-scenario answers — enrich AI narrative with user's concrete context
-        dailyHoursAwayFromCharger: userProfile?.dailyHoursAwayFromCharger ?? null,
-        carriesDaily:              userProfile?.carriesDaily              ?? null,
-        usageScenarios:            userProfile?.usageScenarios            ?? [],
-        primaryUseCase:            userProfile?.primaryUseCase            ?? null
+        naturalLanguageIntent: userProfile?.productIntent?.naturalLanguageIntent ?? null
       };
       narrativeResult = await this.explainer.explain(
         kernelResult.trace,

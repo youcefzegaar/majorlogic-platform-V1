@@ -15,26 +15,15 @@ export async function resolvePublishedCatalog({
   preferDatabase = true,
   generatedFilePath
 }) {
-  // Lazy DB fetch — runs at most once regardless of the resolution path taken.
-  let _dbCache = null;
-  const fromDb = async () => {
-    if (_dbCache) return _dbCache;
-    const [entities, run] = await Promise.all([
-      repository.getPublishedEntities({ domainId }),
-      repository.getLatestPublishRun({ domainId })
-    ]);
-    _dbCache = { entities, run };
-    return _dbCache;
-  };
-
   if (preferDatabase && repository) {
-    const { entities, run } = await fromDb();
-    if (entities.length) {
+    const activePublishRun = await repository.getLatestPublishRun({ domainId });
+    const databaseEntities = await repository.getPublishedEntities({ domainId });
+    if (databaseEntities.length) {
       return {
         source: "database",
-        entities,
-        catalogVersion: run?.catalog_version ?? null,
-        publishRunId: run?.publish_run_id ?? null
+        entities: databaseEntities,
+        catalogVersion: activePublishRun?.catalog_version ?? null,
+        publishRunId: activePublishRun?.publish_run_id ?? null
       };
     }
   }
@@ -49,15 +38,15 @@ export async function resolvePublishedCatalog({
     };
   }
 
-  // Fallback: try DB even when preferDatabase=false (e.g. file missing after a failed build).
   if (repository) {
-    const { entities, run } = await fromDb(); // uses cached result — no extra round-trip
-    if (entities.length) {
+    const activePublishRun = await repository.getLatestPublishRun({ domainId });
+    const databaseEntities = await repository.getPublishedEntities({ domainId });
+    if (databaseEntities.length) {
       return {
         source: "database",
-        entities,
-        catalogVersion: run?.catalog_version ?? null,
-        publishRunId: run?.publish_run_id ?? null
+        entities: databaseEntities,
+        catalogVersion: activePublishRun?.catalog_version ?? null,
+        publishRunId: activePublishRun?.publish_run_id ?? null
       };
     }
   }

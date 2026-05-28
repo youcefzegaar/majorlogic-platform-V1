@@ -8,8 +8,6 @@ import { useDecisionEngine } from './hooks/useDecisionEngine';
 import { useDecisionStore } from './stores/decisionStore';
 
 import AppSidebar from './components/shared/AppSidebar';
-import SettingsModal from './components/shared/SettingsModal';
-import MyDecisionsModal from './components/shared/MyDecisionsModal';
 import ProgressBar from './components/shared/ProgressBar';
 import IntakePhase from './components/intake/IntakePhase';
 import AnalysisPhase from './components/shared/AnalysisPhase';
@@ -24,10 +22,7 @@ export default function App() {
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [timeline, setTimeline] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [myDecisionsOpen, setMyDecisionsOpen] = useState(false);
   const [ownershipChoice, setOwnershipChoice] = useState(null);
-  const [intakeAnswers, setIntakeAnswers] = useState({});
 
   const {
     phase, setPhase,
@@ -58,7 +53,7 @@ export default function App() {
   const closeSidebar = () => setSidebarOpen(false);
 
   const handleAnalyze = async () => {
-    const success = await engine.runDecision({ ...profile, lang, intakeAnswers });
+    const success = await engine.runDecision({ ...profile, lang });
     if (success) {
       setTimeline([{ date: new Date().toLocaleTimeString(), title: 'Initial Decision', desc: `Budget $${profile.budgetMax}` }]);
       setTimeout(() => setPhase(1), 200);
@@ -67,7 +62,7 @@ export default function App() {
 
   const applySidebarChanges = async () => {
     setTimeline(prev => [...prev, { date: new Date().toLocaleTimeString(), title: 'Priority Adjustment', desc: 'Updated sliders to refine results.' }]);
-    await engine.runDecision({ ...profile, lang, intakeAnswers });
+    await engine.runDecision({ ...profile, lang });
   };
 
   const confirmCard = (type) => {
@@ -82,25 +77,6 @@ export default function App() {
     setPhase(4);
   };
 
-  const handleFlip = async ({ priorityDelta }) => {
-    const updatedPriorities = { ...profile.priorities };
-    if (priorityDelta.portability) {
-      updatedPriorities.portability = Math.min(100, (updatedPriorities.portability ?? 50) + priorityDelta.portability);
-    }
-    if (priorityDelta.battery) {
-      updatedPriorities.battery = Math.min(100, (updatedPriorities.battery ?? 50) + priorityDelta.battery);
-    }
-    if (priorityDelta.budgetMax) {
-      profile.setBudgetMax(Math.max(300, profile.budgetMax + priorityDelta.budgetMax));
-    }
-    if (priorityDelta.portability || priorityDelta.battery) {
-      profile.setPriorities(updatedPriorities);
-    }
-    const newBudget = priorityDelta.budgetMax ? Math.max(300, profile.budgetMax + priorityDelta.budgetMax) : profile.budgetMax;
-    await engine.runDecision({ ...profile, priorities: updatedPriorities, budgetMax: newBudget, lang, intakeAnswers });
-    setPhase(2);
-  };
-
   const selectedCard = engine.cards[selectedCardType];
 
   return (
@@ -108,30 +84,11 @@ export default function App() {
       <AppSidebar
         phase={phase}
         onNewDecision={() => { setPhase(0); closeSidebar(); }}
-        onMyDecisions={() => { setMyDecisionsOpen(true); closeSidebar(); }}
-        onSettings={() => { setSettingsOpen(true); closeSidebar(); }}
         lang={lang} setLang={setLang}
         langMenuOpen={langMenuOpen} setLangMenuOpen={setLangMenuOpen}
         theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         sidebarOpen={sidebarOpen} onClose={closeSidebar}
       />
-
-      {settingsOpen && (
-        <SettingsModal
-          lang={lang} setLang={setLang}
-          theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          onClose={() => setSettingsOpen(false)}
-        />
-      )}
-
-      {myDecisionsOpen && (
-        <MyDecisionsModal
-          cards={engine.cards}
-          selectedCardType={selectedCardType}
-          onClose={() => setMyDecisionsOpen(false)}
-          onNewDecision={() => { setPhase(0); setMyDecisionsOpen(false); }}
-        />
-      )}
 
       {sidebarOpen && <div className="sidebar-overlay" onClick={closeSidebar} />}
 
@@ -165,7 +122,6 @@ export default function App() {
             budgetMin={profile.budgetMin} setBudgetMin={profile.setBudgetMin}
             budgetMax={profile.budgetMax} setBudgetMax={profile.setBudgetMax}
             isAnalyzing={engine.isAnalyzing} onAnalyze={handleAnalyze}
-            onAnswersChange={setIntakeAnswers}
           />
         )}
 
@@ -177,7 +133,6 @@ export default function App() {
             decisionMetadata={engine.decisionMetadata}
             budgetMin={profile.budgetMin} budgetMax={profile.budgetMax}
             onViewCards={() => setPhase(2)} onAdjustPriorities={() => setPhase(0)}
-            intakeAnswers={intakeAnswers}
           />
         )}
 
@@ -200,9 +155,8 @@ export default function App() {
         {phase === 3 && selectedCard && (
           <ExplanationPhase
             selectedCard={selectedCard}
-            candidateCount={engine.analysisSummary.devices}
+            explanationTab={explanationTab} setExplanationTab={setExplanationTab}
             onFinalSummary={confirmFromExplanation} onBackToCards={() => setPhase(2)}
-            onFlip={handleFlip}
           />
         )}
 
