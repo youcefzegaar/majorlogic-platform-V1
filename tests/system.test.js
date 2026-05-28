@@ -80,7 +80,7 @@ const highResaleGeneralProfile = {
 const noResultProfile = {
   id: "test_engineering_low_budget",
   major: "engineering",
-  budgetUsd: 700,
+  budgetUsd: 200, // M-pre: lowered from 700 — catalog now has $369+ devices that satisfied $700, defeating the "no result" intent
   preferences: {
     portability: 50,
     battery: 40,

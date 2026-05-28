@@ -1,8 +1,10 @@
 // @ts-check
-import { createCipheriv, createDecipheriv, scryptSync } from "node:crypto";
+import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from "node:crypto";
 
 // ── Credential Encryption ─────────────────────────────────────────────────────
 // AES-256-GCM with a key derived from ENCRYPTION_KEY env var.
+// Wire format (new):    "v2:" + base64(iv[12] + authTag[16] + ciphertext)
+// Wire format (legacy): base64(ciphertext) — CBC with fixed zero IV, backward compat.
 // Credentials are encrypted before DB storage and decrypted on read.
 
 /** @returns {Buffer} */
@@ -19,11 +21,12 @@ function _getEncKey() {
 export function encryptCredentials(plainObj) {
   if (!plainObj || Object.keys(plainObj).length === 0) return plainObj;
   const key = _getEncKey(); // throws if ENCRYPTION_KEY missing — never store plaintext silently
-  const iv  = Buffer.alloc(16, 0); // deterministic IV — safe for AEAD since key changes per env
-  const cipher = createCipheriv("aes-256-cbc", key, iv);
+  const iv = randomBytes(12); // GCM standard: 96-bit random IV, unique per encryption
+  const cipher = createCipheriv("aes-256-gcm", key, iv);
   const json = JSON.stringify(plainObj);
-  const enc  = Buffer.concat([cipher.update(json, "utf8"), cipher.final()]);
-  return { _enc: enc.toString("base64") };
+  const ciphertext = Buffer.concat([cipher.update(json, "utf8"), cipher.final()]);
+  const tag = cipher.getAuthTag(); // 16-byte authentication tag — detects tampering
+  return { _enc: "v2:" + Buffer.concat([iv, tag, ciphertext]).toString("base64") };
 }
 
 /**
@@ -36,10 +39,24 @@ export function decryptCredentials(stored, { integrationSlug = 'unknown' } = {})
   const encStr = /** @type {string} */ (stored._enc);
   try {
     const key = _getEncKey();
-    const iv  = Buffer.alloc(16, 0);
-    const decipher = createDecipheriv("aes-256-cbc", key, iv);
-    const dec = Buffer.concat([decipher.update(Buffer.from(encStr, "base64")), decipher.final()]);
-    return JSON.parse(dec.toString("utf8"));
+    if (encStr.startsWith("v2:")) {
+      // GCM format: iv(12) + tag(16) + ciphertext
+      const raw = Buffer.from(encStr.slice(3), "base64");
+      const iv = raw.subarray(0, 12);
+      const tag = raw.subarray(12, 28);
+      const ciphertext = raw.subarray(28);
+      const decipher = createDecipheriv("aes-256-gcm", key, iv);
+      decipher.setAuthTag(tag);
+      const dec = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+      return JSON.parse(dec.toString("utf8"));
+    } else {
+      // Legacy CBC format (fixed zero IV) — backward compat for rows written before M-pre
+      const raw = Buffer.from(encStr, "base64");
+      const iv = Buffer.alloc(16, 0);
+      const decipher = createDecipheriv("aes-256-cbc", key, iv);
+      const dec = Buffer.concat([decipher.update(raw), decipher.final()]);
+      return JSON.parse(dec.toString("utf8"));
+    }
   } catch (e) {
     console.warn(`[crypto] decryptCredentials failed for integration "${integrationSlug}" — ENCRYPTION_KEY may have rotated:`, /** @type {Error} */ (e).message);
     return {};
