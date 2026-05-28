@@ -195,7 +195,10 @@
     "devices_evaluated": "{count, plural, one {# appareil} other {# appareils}} évalué{count, plural, one {} other {s}}",
     "analyzing_requirements": "Analyse de vos besoins en cours",
     "priorities_aligned": "priorités alignées",
-    "priorities_aligned_desc": "Priorités alignées — aucun compromis majeur requis."
+    "priorities_aligned_desc": "Priorités alignées — aucun compromis majeur requis.",
+    "metric_devices": "Appareils analysés",
+    "metric_confidence": "Confiance",
+    "metric_integrity": "Qualité de correspondance"
   },
   "progress": {
     "goal": "Objectif",
@@ -301,13 +304,13 @@
   "advisor": {
     "opening_clean": "Parmi {{count}} appareils dans votre budget, celui-ci est le plus proche de vos besoins.",
     "opening_relaxed": "Notre catalogue ne contient pas d'appareil répondant exactement à tous vos critères. Le plus proche — avec un ajustement sur {{constraint}} — est celui-ci.",
-    "opening_after_relax": "Parmi {{count}} appareils analysés, voici ce que nous avons trouvé.",
+    "opening_after_relax": "Meilleur disponible parmi {count} appareils (contrainte assouplie).",
     "you_said": "Vous nous avez dit :",
     "quote_open": "« ",
     "quote_close": " »",
     "why_hard": "Pourquoi cette décision est difficile par nature :",
-    "story_fallback": "Cet appareil offre des performances à {{perf}}/100 avec une autonomie à {{battery}}/100.",
-    "story_fallback_generic": "Cet appareil équilibre au mieux vos priorités selon notre analyse.",
+    "story_fallback": "Cet appareil obtient {perf}/100 en performance et {battery}/100 en autonomie.",
+    "story_fallback_generic": "Cet appareil a été sélectionné comme la meilleure correspondance.",
     "battery_low": "Ne tiendra pas une journée complète loin d'une prise.",
     "battery_mid": "Suffisant pour la plupart de la journée de cours.",
     "battery_high": "Tient confortablement toute la journée.",
@@ -341,7 +344,8 @@
     "filter_battery": "Vous avez besoin de {{hours}}+ heures loin d'une prise",
     "filter_vms": "Vous utilisez des logiciels lourds — nous éliminons les appareils insuffisants",
     "filter_budget": "Votre budget : ${{budget}} — {{count}} appareils dans la fourchette",
-    "filter_selecting": "Sélection du meilleur parmi {{count}}..."
+    "filter_selecting": "Sélection du meilleur parmi {{count}}...",
+    "vs_your_priority": "vs votre priorité"
   },
   "flip": {
     "title": "Ce n'est pas adapté — dites-nous pourquoi",
