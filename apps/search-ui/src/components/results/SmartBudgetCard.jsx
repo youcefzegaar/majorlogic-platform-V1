@@ -85,8 +85,9 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
           <>
             <div style={{ marginTop: 16, padding: 14, background: 'rgba(100,116,139,0.08)', borderRadius: 10, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
               <i className="fas fa-info-circle" style={{ color: 'var(--accent-warning)', marginRight: 4 }}></i>
-              <strong>Affiliate Disclosure:</strong> Some links earn us a small commission.
-              This <strong>never</strong> affects our rankings — they are based solely on specs and fit.
+              <strong>Prices shown are estimates</strong> captured at catalog time and may differ from the current store price.
+              Always verify on the retailer's site before purchasing.
+              {' '}Some links earn us a small commission — this <strong>never</strong> affects our rankings.
             </div>
 
             <button
@@ -96,7 +97,7 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
               style={{ marginTop: 16 }}
             >
               <i className="fas fa-external-link-alt"></i>
-              {selected ? `Buy from ${selected.label} — ${selected.price}` : 'No link available'}
+              {selected ? `Check current price on ${selected.label}` : 'No link available'}
             </button>
           </>
         )}

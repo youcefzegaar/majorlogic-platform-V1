@@ -81,7 +81,7 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
       pros: ['Pristine condition', 'Full warranty', 'Latest firmware'],
       cons: ['Highest upfront cost'],
       url: primaryUrl,
-      cta: `Buy New — $${priceUsd.toLocaleString()}`
+      cta: `Check current price`
     },
     {
       key: 'renewed',
@@ -214,6 +214,12 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
             </div>
           </button>
         ))}
+      </div>
+
+      {/* ── Price disclaimer ─────────────────────────────── */}
+      <div style={{ marginTop: 12, padding: '8px 12px', background: 'rgba(100,116,139,0.08)', borderRadius: 8, fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+        <i className="fas fa-info-circle" style={{ color: 'var(--accent-warning)', marginRight: 4 }}></i>
+        Prices are estimates from catalog data and may vary. Verify the current price on the retailer's site before purchasing.
       </div>
 
       {/* ── Action Button ────────────────────────────────── */}
