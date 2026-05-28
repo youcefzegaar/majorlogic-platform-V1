@@ -195,10 +195,7 @@
     "devices_evaluated": "已评估 {count} 台设备",
     "analyzing_requirements": "正在分析您的需求",
     "priorities_aligned": "优先级已对齐",
-    "priorities_aligned_desc": "优先级已对齐 — 无需重大权衡。",
-    "metric_devices": "已分析设备",
-    "metric_confidence": "置信度",
-    "metric_integrity": "匹配质量"
+    "priorities_aligned_desc": "优先级已对齐 — 无需重大权衡。"
   },
   "progress": {
     "goal": "目标",
@@ -304,13 +301,13 @@
   "advisor": {
     "opening_clean": "在您预算范围内的{{count}}款设备中，这款最符合您的需求。",
     "opening_relaxed": "我们的目录中没有完全满足您所有要求的设备。最接近的——在{{constraint}}上做了一个调整——就是这款。",
-    "opening_after_relax": "在{count}台设备中最优（放宽了一项条件）。",
+    "opening_after_relax": "在分析的{{count}}款设备中，这是我们找到的结果。",
     "you_said": "您告诉我们：",
     "quote_open": "「",
     "quote_close": "」",
     "why_hard": "为什么这个决定本质上很困难：",
-    "story_fallback": "该设备性能得分{perf}/100，续航得分{battery}/100。",
-    "story_fallback_generic": "该设备被选为最佳匹配。",
+    "story_fallback": "这款设备性能得分{{perf}}/100，续航得分{{battery}}/100。",
+    "story_fallback_generic": "这款设备根据我们的分析最好地平衡了您的优先级。",
     "battery_low": "离开插座一整天可能不够用。",
     "battery_mid": "足以应付大部分学习时光。",
     "battery_high": "轻松撑过一整天。",
@@ -344,8 +341,7 @@
     "filter_battery": "您需要远离插座{{hours}}+小时",
     "filter_vms": "您运行重型软件——排除性能不足的设备",
     "filter_budget": "您的预算：${{budget}}——{{count}}款设备在范围内",
-    "filter_selecting": "从{{count}}款中选择最佳...",
-    "vs_your_priority": "相对于您的优先级"
+    "filter_selecting": "从{{count}}款中选择最佳..."
   },
   "flip": {
     "title": "不合适——告诉我们原因",

@@ -195,10 +195,7 @@
     "devices_evaluated": "{count, plural, one {# dispositivo} other {# dispositivos}} evaluados",
     "analyzing_requirements": "Analizando tus requisitos",
     "priorities_aligned": "prioridades alineadas",
-    "priorities_aligned_desc": "Prioridades alineadas — sin compromisos significativos requeridos.",
-    "metric_devices": "Dispositivos analizados",
-    "metric_confidence": "Confianza",
-    "metric_integrity": "Calidad de coincidencia"
+    "priorities_aligned_desc": "Prioridades alineadas — sin compromisos significativos requeridos."
   },
   "progress": {
     "goal": "Objetivo",
@@ -304,13 +301,13 @@
   "advisor": {
     "opening_clean": "Entre {{count}} dispositivos en tu presupuesto, este es el más cercano a lo que necesitas.",
     "opening_relaxed": "Nuestro catálogo no tiene un dispositivo que cumpla todos tus requisitos exactamente. El más cercano — con un ajuste en {{constraint}} — es este.",
-    "opening_after_relax": "El mejor disponible entre {count} dispositivos (un criterio relajado).",
+    "opening_after_relax": "Entre {{count}} dispositivos analizados, esto es lo que encontramos.",
     "you_said": "Nos dijiste:",
     "quote_open": "«",
     "quote_close": "»",
     "why_hard": "Por qué esta decisión es difícil por naturaleza:",
-    "story_fallback": "Este dispositivo obtiene {perf}/100 en rendimiento y {battery}/100 en batería.",
-    "story_fallback_generic": "Este dispositivo fue seleccionado como la mejor coincidencia.",
+    "story_fallback": "Este dispositivo ofrece rendimiento en {{perf}}/100 con batería en {{battery}}/100.",
+    "story_fallback_generic": "Este dispositivo equilibra mejor tus prioridades según nuestro análisis.",
     "battery_low": "No durará un día completo lejos del enchufe.",
     "battery_mid": "Suficiente para la mayor parte del día de estudio.",
     "battery_high": "Dura cómodamente todo el día.",
@@ -344,8 +341,7 @@
     "filter_battery": "Necesitas {{hours}}+ horas lejos del enchufe",
     "filter_vms": "Usas software pesado — eliminamos dispositivos insuficientes",
     "filter_budget": "Tu presupuesto: ${{budget}} — {{count}} dispositivos en rango",
-    "filter_selecting": "Seleccionando el mejor entre {{count}}...",
-    "vs_your_priority": "vs tu prioridad"
+    "filter_selecting": "Seleccionando el mejor entre {{count}}..."
   },
   "flip": {
     "title": "Esto no me encaja — dinos por qué",

@@ -195,10 +195,7 @@
     "devices_evaluated": "{count, plural, =0 {لا أجهزة} one {جهاز واحد} two {جهازان} few {# أجهزة} many {# جهازاً} other {# جهاز}} تم تقييمه",
     "analyzing_requirements": "جارٍ تحليل متطلباتك",
     "priorities_aligned": "الأولويات متوافقة",
-    "priorities_aligned_desc": "الأولويات متوافقة — لا مقايضات جوهرية مطلوبة.",
-    "metric_devices": "أجهزة مُحللة",
-    "metric_confidence": "مستوى الثقة",
-    "metric_integrity": "جودة التطابق"
+    "priorities_aligned_desc": "الأولويات متوافقة — لا مقايضات جوهرية مطلوبة."
   },
   "progress": {
     "goal": "الهدف",
@@ -304,13 +301,13 @@
   "advisor": {
     "opening_clean": "من بين {{count}} جهاز في ميزانيتك، هذا الأقرب لما تحتاجه.",
     "opening_relaxed": "كاتالوجنا لا يحتوي جهازاً يفي بكل شروطك تماماً. الأقرب — مع تعديل واحد في {{constraint}} — هو هذا.",
-    "opening_after_relax": "الأفضل من بين {count} جهاز (مع تخفيف شرط واحد).",
+    "opening_after_relax": "من بين {{count}} جهاز فحصناه، إليك ما وجدناه.",
     "you_said": "أنت قلت لنا:",
     "quote_open": "«",
     "quote_close": "»",
     "why_hard": "لماذا هذا القرار صعب بطبيعته:",
-    "story_fallback": "هذا الجهاز يسجل {perf}/100 في الأداء و{battery}/100 في البطارية — الأقرب لأولوياتك.",
-    "story_fallback_generic": "تم اختيار هذا الجهاز كأفضل تطابق للأولويات التي حددتها.",
+    "story_fallback": "يوفر هذا الجهاز أداءً عند {{perf}}/100 مع بطارية عند {{battery}}/100 — أقرب نقطة توازن في ميزانيتك.",
+    "story_fallback_generic": "يوازن هذا الجهاز بين أولوياتك بناءً على تحليلنا.",
     "battery_low": "لن تكفي يوماً كاملاً بعيداً عن المقبس.",
     "battery_mid": "كافية لمعظم اليوم الدراسي.",
     "battery_high": "تدوم اليوم بارتياح.",
@@ -344,8 +341,7 @@
     "filter_battery": "تحتاج {{hours}}+ ساعات بعيداً عن المقبس — نُقصي ما لا يكفي لذلك",
     "filter_vms": "تشغّل برامج ثقيلة — نُقصي ما لا يكفي لها",
     "filter_budget": "ميزانيتك: {{budget}}$ — {{count}} جهاز في النطاق",
-    "filter_selecting": "نختار الأفضل من بين {{count}}...",
-    "vs_your_priority": "مقابل أولويتك"
+    "filter_selecting": "نختار الأفضل من بين {{count}}..."
   },
   "flip": {
     "title": "هذا لا يناسبني — أخبرني لماذا",

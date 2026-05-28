@@ -195,10 +195,7 @@
     "devices_evaluated": "{count, plural, one {# device} other {# devices}} evaluated",
     "analyzing_requirements": "Analyzing your requirements",
     "priorities_aligned": "priorities aligned",
-    "priorities_aligned_desc": "Priorities aligned — no significant trade-offs required.",
-    "metric_devices": "Devices Analyzed",
-    "metric_confidence": "Confidence",
-    "metric_integrity": "Match Quality"
+    "priorities_aligned_desc": "Priorities aligned — no significant trade-offs required."
   },
   "progress": {
     "goal": "Goal",
@@ -304,13 +301,13 @@
   "advisor": {
     "opening_clean": "From {{count}} devices in your budget, this is the closest to what you need.",
     "opening_relaxed": "Our catalog didn't have a device that met all your requirements exactly. The closest match — with one adjustment to {{constraint}} — is this.",
-    "opening_after_relax": "Best available from {count} devices (one constraint relaxed).",
+    "opening_after_relax": "From {{count}} devices analyzed, here's what we found.",
     "you_said": "You told us:",
     "quote_open": "“",
     "quote_close": "”",
     "why_hard": "Why this decision is inherently difficult:",
-    "story_fallback": "This device scores {perf}/100 on performance and {battery}/100 on battery — the closest match to your priorities.",
-    "story_fallback_generic": "This device was selected as the best match for your stated priorities.",
+    "story_fallback": "This device delivers performance at {{perf}}/100 with battery at {{battery}}/100 — the closest balance point in your budget.",
+    "story_fallback_generic": "This device best balances your priorities based on our analysis.",
     "battery_low": "Won't last a full day away from an outlet.",
     "battery_mid": "Sufficient for most of the study day.",
     "battery_high": "Comfortably lasts through the day.",
@@ -344,8 +341,7 @@
     "filter_battery": "You need {{hours}}+ hours away from an outlet — we're eliminating devices that fall short",
     "filter_vms": "You run heavy software — we're eliminating devices without enough power",
     "filter_budget": "Your budget: ${{budget}} — {{count}} devices in range",
-    "filter_selecting": "Selecting the best from {{count}}...",
-    "vs_your_priority": "vs your priority"
+    "filter_selecting": "Selecting the best from {{count}}..."
   },
   "flip": {
     "title": "This doesn't fit — tell us why",

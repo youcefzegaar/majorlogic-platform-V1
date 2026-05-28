@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import MajorSelector from './MajorSelector';
 import BudgetSelector from './BudgetSelector';
+import PreferenceSliders from './PreferenceSliders';
 
 const SESSION_KEY = 'mlp_intake_answers';
 
@@ -63,32 +64,6 @@ export default function IntakePhase({
   useEffect(() => {
     try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(answers)); } catch {}
     onAnswersChange?.(answers);
-
-    // Auto-derive priorities from answers — removes duplication with sliders
-    const batteryPriority =
-      answers.hoursAwayFromCharger === 9 ? 85 :
-      answers.hoursAwayFromCharger === 6 ? 62 :
-      answers.hoursAwayFromCharger === 4 ? 35 : 55;
-
-    const portabilityPriority =
-      answers.carriesDaily === true  ? 80 :
-      answers.carriesDaily === false ? 30 : 50;
-
-    const scenarios = answers.usageScenarios || [];
-    const perfBase =
-      answers.primaryUseCase === 'coding'  ? 80 :
-      answers.primaryUseCase === 'design'  ? 75 :
-      answers.primaryUseCase === 'study'   ? 55 :
-      answers.primaryUseCase === 'general' ? 50 : 65;
-    const perfBoost = scenarios.some(s => ['vms','design','gaming'].includes(s)) ? 15 : 0;
-    const performancePriority = Math.min(100, perfBase + perfBoost);
-
-    setPriorities?.(prev => ({
-      ...prev,
-      battery:     batteryPriority,
-      portability: portabilityPriority,
-      performance: performancePriority,
-    }));
   }, [answers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const update = (key, val) => setAnswers(prev => ({ ...prev, [key]: val }));
@@ -200,6 +175,7 @@ export default function IntakePhase({
         </div>
 
         <MajorSelector major={major} setMajor={setMajor} />
+        <PreferenceSliders priorities={priorities} setPriorities={setPriorities} />
         <BudgetSelector budgetMin={budgetMin} setBudgetMin={setBudgetMin} budgetMax={budgetMax} setBudgetMax={setBudgetMax} />
       </div>
 
