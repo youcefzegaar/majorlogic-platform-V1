@@ -50,5 +50,11 @@ export const laptopStudentUsDomainPack = {
       openBox:    'ebay',
       financing:  'amazon',
     },
+    trustThresholds: {
+      buy_new:                  { minTrust: 75, conditions: ['new'] },
+      refurbished_if_verified:  { minTrust: 85, conditions: ['refurbished', 'new'] },
+      open_box_with_guardrails: { minTrust: 65, conditions: ['open_box', 'new'] },
+      light_financing:          { minTrust: 65, conditions: ['new', 'open_box', 'refurbished'] },
+    },
   },
 };

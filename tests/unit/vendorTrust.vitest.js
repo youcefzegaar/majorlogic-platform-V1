@@ -161,6 +161,18 @@ describe('filterOffersByOwnershipMethod', () => {
     expect(filtered.every(o => o.condition === 'new')).toBe(true);
   });
 
+  it('custom trustThresholds override defaults: applied flag reflects whether thresholds were enforced', () => {
+    const offers = [{ seller: 'Swappa', condition: 'new', priceUsd: 800, vendorTrustScore: 78 }];
+    // Default buy_new: minTrust=75 → Swappa(78) passes → applied=true
+    const { filtered: withDefaults, applied: defaultApplied } = filterOffersByOwnershipMethod(offers, 'buy_new');
+    expect(withDefaults).toHaveLength(1);
+    expect(defaultApplied).toBe(true);
+    // Custom thresholds: minTrust=85 → Swappa(78) fails filter → applied=false (fallback active)
+    const strict = { buy_new: { minTrust: 85, conditions: ['new'] } };
+    const { applied: customApplied } = filterOffersByOwnershipMethod(offers, 'buy_new', strict);
+    expect(customApplied).toBe(false);
+  });
+
   it('unknown ownershipMode → applied: false, returns all offers unchanged', () => {
     const { filtered, applied, effectiveMode } =
       filterOffersByOwnershipMethod(OFFERS, 'nonexistent_mode');
