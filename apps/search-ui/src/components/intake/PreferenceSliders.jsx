@@ -19,7 +19,7 @@ export default function PreferenceSliders({ priorities, setPriorities }) {
         </div>
       </div>
       <div className="priority-list">
-        {Object.entries(priorities).map(([key, val]) => (
+        {Object.entries(priorities ?? {}).map(([key, val]) => (
           <div key={key} className="priority-item">
             <div className="priority-icon" style={{ background: 'rgba(233, 69, 96, 0.15)', color: 'var(--accent)' }}>
               {ICONS[key] || '⚙️'}

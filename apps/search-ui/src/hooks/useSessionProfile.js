@@ -9,7 +9,13 @@ const DEFAULT_PROFILE = {
 };
 
 export function useSessionProfile() {
-  const [profile, setProfile] = useLocalStorage('ml_session_v1', DEFAULT_PROFILE);
+  const [rawProfile, setProfile] = useLocalStorage('ml_session_v1', DEFAULT_PROFILE);
+  // Merge stored data with DEFAULT_PROFILE to handle old/missing fields (e.g. after a revert)
+  const profile = {
+    ...DEFAULT_PROFILE,
+    ...rawProfile,
+    priorities: { ...DEFAULT_PROFILE.priorities, ...(rawProfile?.priorities ?? {}) }
+  };
 
   const setGoal = (goal) => setProfile(prev => ({ ...prev, goal }));
   const setMajor = (major) => setProfile(prev => ({ ...prev, major }));
