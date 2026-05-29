@@ -40,7 +40,7 @@ async function requireUser(request, reply) {
   return { user, repo };
 }
 
-export default async function userDecisionsRoutes(fastify, _opts) {
+export default async function userDecisionsRoutes(fastify) {
 
   // ── POST /user/decisions ─────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { sendError, unavailable } from "../../utils/errors.js";
 
-export default async function settingsRoutes(fastify, _options) {
+export default async function settingsRoutes(fastify) {
 
   // ── Affiliate Settings ────────────────────────────────────────────────────
 

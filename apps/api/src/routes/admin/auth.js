@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { createHmac } from "node:crypto";
 import { renderLoginHtml } from "../../views/login.js";
 
-export default async function authRoutes(fastify, _options) {
+export default async function authRoutes(fastify) {
 
   // ── Auth (SSR — runs before React loads) ─────────────────────────────────
 

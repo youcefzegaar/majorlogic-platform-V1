@@ -100,7 +100,7 @@ export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
   });
 }
 
-export async function sendRegretCheckEmail({ email, metadata = {}, decisionRunId = null }) {
+export async function sendRegretCheckEmail({ email, decisionRunId = null }) {
   const siteUrl = process.env.FRONTEND_URL ?? "https://majorlogic.tech";
   const feedbackUrl = decisionRunId
     ? `${siteUrl}?regret_check=1&ref=${decisionRunId}`

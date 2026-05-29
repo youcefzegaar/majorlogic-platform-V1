@@ -1,6 +1,6 @@
 import { sendError, unavailable, badRequest, notFound, serverError } from "../../utils/errors.js";
 
-export default async function integrationsRoutes(fastify, _options) {
+export default async function integrationsRoutes(fastify) {
 
   // ── Integrations (Secrets Manager) ───────────────────────────────────────
 

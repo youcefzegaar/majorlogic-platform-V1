@@ -1,6 +1,6 @@
 import { sendError, unavailable } from "../../utils/errors.js";
 
-export default async function ownershipRoutes(fastify, _options) {
+export default async function ownershipRoutes(fastify) {
 
   // ── Domain Ownership Config ───────────────────────────────────────────────
 

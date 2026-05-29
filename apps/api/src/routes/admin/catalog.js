@@ -17,9 +17,9 @@ function _purgeStaleCatalogJobs() {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-import { sendError, unavailable, badRequest, notFound, conflict } from "../../utils/errors.js";
+import { sendError, badRequest, notFound, conflict } from "../../utils/errors.js";
 
-export default async function catalogRoutes(fastify, _options) {
+export default async function catalogRoutes(fastify) {
 
   // ── Catalog Rebuild ───────────────────────────────────────────────────────
 

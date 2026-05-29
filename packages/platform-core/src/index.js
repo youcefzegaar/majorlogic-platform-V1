@@ -1,3 +1,5 @@
+import { randomInt } from "node:crypto";
+import { setImmediate } from "node:timers";
 import { PublishedCatalog } from "../../published-catalog/src/index.js";
 import { DecisionOrchestrator } from "../../decision-orchestrator/src/index.js";
 import { buildOwnershipStrategy } from "../../ownership-strategy/src/index.js";
@@ -131,7 +133,7 @@ export async function executeUniversalPipeline({
     }
 
     // G.5: Determinism probe — 5% sampling, fire-and-forget, never blocks user
-    if (decision.decisionRunId && Math.random() < 0.05) {
+    if (decision.decisionRunId && randomInt(0, 100) < 5) {
       setImmediate(async () => {
         try {
           const topCard = decision.cards?.[0] ?? null;
