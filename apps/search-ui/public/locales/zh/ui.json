@@ -299,7 +299,11 @@
     "direct_link": "✅ 直接链接 — 无佣金。",
     "decision_stability": "决策稳定性",
     "decision_evolution": "决策演变",
-    "via_seller": "通过 {seller}"
+    "via_seller": "通过 {seller}",
+    "share_decision": "分享此决策",
+    "share_copy_link": "复制链接",
+    "share_copied": "已复制！",
+    "share_error": "出错 — 请重试"
   },
   "zero": {
     "too_strict": "您当前的要求对我们的目录而言过于严格。我们找不到满足您所有必要条件的设备。",

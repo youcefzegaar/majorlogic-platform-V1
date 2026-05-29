@@ -1,8 +1,48 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Icon from '../shared/Icon';
+import { trackClick } from '../../lib/commerce';
 
 export default function FutureProofCard({ selectedCard, timeline, ownershipChoice }) {
   const { t } = useTranslation();
+  const [shareState, setShareState] = useState('idle'); // 'idle' | 'copying' | 'copied' | 'error'
+
+  const handleShare = async () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
+    setShareState('copying');
+    try {
+      const decisionId = selectedCard.savedDecisionId;
+      let shareUrl;
+
+      if (decisionId) {
+        const res = await fetch(`${API_URL}/user/decisions/${decisionId}/share`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (!res.ok) throw new Error('share_failed');
+        const data = await res.json();
+        shareUrl = data.shareUrl;
+      } else {
+        // Guest fallback: share the current page URL
+        shareUrl = window.location.href;
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+      setShareState('copied');
+      setTimeout(() => setShareState('idle'), 3000);
+    } catch {
+      setShareState('error');
+      setTimeout(() => setShareState('idle'), 3000);
+    }
+  };
+
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    `My AI-matched laptop: ${selectedCard.name} — ${selectedCard.score}% match 🎯 via @MajorLogicAI`
+  )}`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+    `My AI-matched laptop: ${selectedCard.name} — check MajorLogic for yours`
+  )}`;
 
   // Resolve purchase link from ownership choice (set in OwnershipPhase) or fall back to primary link
   const buyUrl = ownershipChoice?.url || selectedCard.purchaseLinks?.primary;
@@ -125,6 +165,7 @@ export default function FutureProofCard({ selectedCard, timeline, ownershipChoic
                 target="_blank"
                 rel="noopener noreferrer"
                 className="final-buy-btn"
+                onClick={() => trackClick({ entityId: selectedCard.entityId, decisionRunId: selectedCard.decisionRunId, clickType: 'buy_now_clicked' })}
               >
                 <Icon name="shopping-cart" />
                 &nbsp;{buyCta}
@@ -140,6 +181,41 @@ export default function FutureProofCard({ selectedCard, timeline, ownershipChoic
               </div>
             </div>
           )}
+
+          <div className="final-section">
+            <div className="final-section-title">{t('future.share_decision')}</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              <button
+                className="btn btn-secondary"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+                onClick={handleShare}
+                disabled={shareState === 'copying'}
+              >
+                <Icon name={shareState === 'copied' ? 'check' : 'copy'} />
+                {shareState === 'copied' ? t('future.share_copied') : shareState === 'error' ? t('future.share_error') : t('future.share_copy_link')}
+              </button>
+              <a
+                href={twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, textDecoration: 'none' }}
+              >
+                <Icon name="share-alt" />
+                X / Twitter
+              </a>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, textDecoration: 'none' }}
+              >
+                <Icon name="comment" />
+                WhatsApp
+              </a>
+            </div>
+          </div>
 
           <div className="final-section">
             <div className="final-section-title">{t('future.decision_stability')}</div>

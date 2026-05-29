@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Icon from '../shared/Icon';
+import { trackClick } from '../../lib/commerce';
 
 export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSelectedPurchase }) {
   const [email, setEmail] = useState('');
@@ -27,7 +28,9 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
   const selected = offers.find(o => o.key === selectedPurchase) || offers[0];
 
   const handleBuy = () => {
-    if (selected?.url) window.open(selected.url, '_blank', 'noopener,noreferrer');
+    if (!selected?.url) return;
+    trackClick({ entityId: selectedCard.entityId, decisionRunId: selectedCard.decisionRunId, clickType: 'buy_now_clicked' });
+    window.open(selected.url, '_blank', 'noopener,noreferrer');
   };
 
   const handleSaveAlert = async () => {

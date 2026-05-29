@@ -178,4 +178,42 @@ export class UsersRepository {
     );
     return result.rowCount > 0;
   }
+
+  // ─────────────────────────────────────────────
+  // Shared Links
+  // ─────────────────────────────────────────────
+
+  async createSharedLink({ token, decisionId = null, userId, irHash = null, snapshot, title, domain = "laptop-student-us", expiresAt }) {
+    const result = await this.pool.query(
+      `INSERT INTO ml_users.shared_links
+         (token, decision_id, user_id, ir_hash, snapshot, title, domain, expires_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id, token, decision_id, user_id, ir_hash, title, domain, revoked, created_at, expires_at`,
+      [token, decisionId || null, userId, irHash || null, JSON.stringify(snapshot), title, domain, expiresAt]
+    );
+    return result.rows[0] || null;
+  }
+
+  async getSharedLinkByToken(token) {
+    const result = await this.pool.query(
+      `SELECT id, token, decision_id, user_id, ir_hash, snapshot, title, domain, revoked, created_at, expires_at
+       FROM ml_users.shared_links
+       WHERE token = $1
+         AND NOT revoked
+         AND expires_at > NOW()
+       LIMIT 1`,
+      [token]
+    );
+    return result.rows[0] || null;
+  }
+
+  async revokeSharedLink(decisionId, userId) {
+    const result = await this.pool.query(
+      `UPDATE ml_users.shared_links
+       SET revoked = TRUE
+       WHERE decision_id = $1 AND user_id = $2`,
+      [decisionId, userId]
+    );
+    return result.rowCount > 0;
+  }
 }

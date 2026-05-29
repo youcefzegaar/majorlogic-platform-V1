@@ -299,7 +299,11 @@
     "direct_link": "✅ رابط مباشر — لا عمولة.",
     "decision_stability": "ثبات القرار",
     "decision_evolution": "تطور القرار",
-    "via_seller": "عبر {seller}"
+    "via_seller": "عبر {seller}",
+    "share_decision": "مشاركة هذا القرار",
+    "share_copy_link": "نسخ الرابط",
+    "share_copied": "تم النسخ!",
+    "share_error": "خطأ — حاول مجددًا"
   },
   "zero": {
     "too_strict": "متطلباتك الحالية صارمة جداً بالنسبة لكتالوجنا. لم نجد جهازاً يستوفي جميع \"البوابات\" الإلزامية.",

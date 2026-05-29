@@ -167,4 +167,50 @@ export default async function userDecisionsRoutes(fastify, _opts) {
     }
     return reply.status(204).send();
   });
+
+  // ── POST /user/decisions/:id/share ──────────────────────────────────────────
+
+  fastify.post("/user/decisions/:id/share", async (request, reply) => {
+    const auth = await requireUser(request, reply);
+    if (!auth) return;
+    const { user, repo } = auth;
+
+    const decision = await repo.getDecision(request.params.id, user.id);
+    if (!decision) {
+      return reply.status(404).send({ error: "not_found", message: "Decision not found." });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+    const link = await repo.createSharedLink({
+      token,
+      decisionId: decision.id,
+      userId:     user.id,
+      irHash:     decision.ir_hash || null,
+      snapshot:   decision.decision_snapshot || {},
+      title:      decision.title,
+      domain:     decision.domain,
+      expiresAt,
+    });
+
+    const BASE_URL = process.env.BASE_URL || "https://majorlogic.ai";
+    return reply.status(201).send({ shareUrl: `${BASE_URL}/share/${link.token}`, expiresAt: link.expires_at });
+  });
+
+  // ── DELETE /user/decisions/:id/share ────────────────────────────────────────
+
+  fastify.delete("/user/decisions/:id/share", async (request, reply) => {
+    const auth = await requireUser(request, reply);
+    if (!auth) return;
+    const { user, repo } = auth;
+
+    const decision = await repo.getDecision(request.params.id, user.id);
+    if (!decision) {
+      return reply.status(404).send({ error: "not_found", message: "Decision not found." });
+    }
+
+    await repo.revokeSharedLink(decision.id, user.id);
+    return reply.status(204).send();
+  });
 }

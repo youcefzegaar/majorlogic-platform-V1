@@ -3,6 +3,7 @@ import fs from "node:fs";
 import { renderSearchPage, renderResultsPage } from "../views/templates.js";
 import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure } from "../views/legal.js";
 import { renderSeoPage } from "../views/seo-page.js";
+import { getUsersRepository } from "../db/repository.js";
 
 // Cache the generated catalog in memory to avoid repeated file reads
 let _catalogCache = null;
@@ -154,6 +155,29 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
     }
   });
 
+  // ── Shared Decision Links ─────────────────────────────────────────────────
+
+  fastify.get("/share/:token", async (request, reply) => {
+    const { token } = request.params;
+
+    // Reject tokens that don't look like 64-char hex
+    if (!/^[0-9a-f]{64}$/.test(token)) {
+      return reply.status(404).type("text/html").send(renderSharedLinkNotFound());
+    }
+
+    const repo = await getUsersRepository();
+    if (!repo) {
+      return reply.status(503).type("text/html").send("<html><body>Service unavailable</body></html>");
+    }
+
+    const link = await repo.getSharedLinkByToken(token);
+    if (!link) {
+      return reply.status(404).type("text/html").send(renderSharedLinkNotFound());
+    }
+
+    reply.type("text/html; charset=utf-8").send(renderSharedDecisionPage(link));
+  });
+
   // ── SEO Landing Pages ─────────────────────────────────────────────────────
 
   const SEO_PAGES_DIR = path.join(root, "domains/laptop-student-us/generated/seo-pages");
@@ -225,4 +249,86 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
     if (!pageData) return reply.redirect(`/laptops/${major}`, 302);
     reply.type("text/html; charset=utf-8").send(renderSeoPage(pageData));
   });
+}
+
+// ── Shared link page renderers ────────────────────────────────────────────────
+
+function escapeHtmlStr(text) {
+  if (!text) return "";
+  return String(text)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function renderSharedLinkNotFound() {
+  return `<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"/>
+  <title>Link Not Found — MajorLogic</title>
+  <meta name="robots" content="noindex"/>
+  <style>body{font-family:system-ui,sans-serif;background:#0d0d1a;color:#e0e0e0;max-width:600px;margin:0 auto;padding:48px 20px;text-align:center;}
+  h1{color:#fff;} a{color:#7C3AED;}</style>
+</head><body>
+  <h1>🔗 Link Not Found</h1>
+  <p>This shared decision link has expired, been revoked, or doesn't exist.</p>
+  <a href="/search">← Get your own personalized recommendation</a>
+</body></html>`;
+}
+
+function renderSharedDecisionPage(link) {
+  const title    = escapeHtmlStr(link.title);
+  const domain   = escapeHtmlStr(link.domain);
+  const irHash   = link.ir_hash ? escapeHtmlStr(link.ir_hash.slice(0, 12)) : null;
+  const snap     = link.snapshot || {};
+  const topName  = escapeHtmlStr(snap.name || snap.topChoice || "");
+  const topScore = snap.score != null ? Number(snap.score) : null;
+  const whyText  = escapeHtmlStr(snap.whyChosen || snap.summary || "");
+  const expires  = new Date(link.expires_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+  const scoreHtml = topScore != null
+    ? `<div style="font-size:48px;font-weight:800;color:#7C3AED;line-height:1;">${topScore}%</div>
+       <div style="font-size:13px;color:#9ca3af;margin-top:4px;">Match Score</div>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"/>
+  <title>${title} — Shared Decision · MajorLogic</title>
+  <meta name="robots" content="noindex"/>
+  <meta name="description" content="View a shared laptop decision from MajorLogic AI."/>
+  <style>
+    *{box-sizing:border-box;}
+    body{font-family:system-ui,sans-serif;background:#0d0d1a;color:#e0e0e0;max-width:680px;margin:0 auto;padding:32px 20px;}
+    h1{color:#fff;font-size:22px;margin:0 0 4px;}
+    .card{background:#111827;border:1px solid #1f2937;border-radius:14px;padding:24px;margin-top:16px;}
+    .badge{display:inline-block;background:rgba(124,58,237,.15);color:#a78bfa;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:12px;}
+    .why{font-size:14px;color:#d1d5db;line-height:1.7;margin-top:12px;}
+    .meta{font-size:11px;color:#6b7280;margin-top:16px;border-top:1px solid #1f2937;padding-top:12px;}
+    .cta{display:inline-block;margin-top:24px;background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;}
+    a{color:#7C3AED;}
+  </style>
+</head><body>
+  <a href="/search" style="font-size:13px;color:#9ca3af;">← MajorLogic</a>
+  <div style="margin-top:20px;">
+    <div class="badge">📎 Shared Decision</div>
+    <h1>${title}</h1>
+    <p style="color:#9ca3af;font-size:13px;margin:4px 0 0;">Domain: ${domain}</p>
+  </div>
+
+  <div class="card">
+    ${topName ? `<div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:8px;">${topName}</div>` : ""}
+    ${scoreHtml}
+    ${whyText ? `<div class="why">${whyText}</div>` : ""}
+    <div class="meta">
+      ${irHash ? `<span>Decision integrity hash: <code>${irHash}…</code></span> · ` : ""}
+      Link expires ${expires}
+    </div>
+  </div>
+
+  <a class="cta" href="/search">🎯 Get your own recommendation</a>
+  <p style="margin-top:16px;font-size:12px;color:#6b7280;">
+    This is a read-only snapshot. Rankings are algorithm-generated; affiliate links never affect rankings.
+    <a href="/disclosure">How we stay honest →</a>
+  </p>
+</body></html>`;
 }

@@ -299,7 +299,11 @@
     "direct_link": "✅ Direct link — no commission earned.",
     "decision_stability": "Decision Stability",
     "decision_evolution": "Decision Evolution",
-    "via_seller": "via {seller}"
+    "via_seller": "via {seller}",
+    "share_decision": "Share This Decision",
+    "share_copy_link": "Copy Link",
+    "share_copied": "Copied!",
+    "share_error": "Error — try again"
   },
   "zero": {
     "too_strict": "Your current requirements are too strict for our existing catalog. We couldn't find a device that satisfies all your mandatory \"Gates\".",

@@ -299,7 +299,11 @@
     "direct_link": "✅ Lien direct — aucune commission perçue.",
     "decision_stability": "Stabilité de la décision",
     "decision_evolution": "Évolution de la décision",
-    "via_seller": "via {seller}"
+    "via_seller": "via {seller}",
+    "share_decision": "Partager cette décision",
+    "share_copy_link": "Copier le lien",
+    "share_copied": "Copié !",
+    "share_error": "Erreur — réessayez"
   },
   "zero": {
     "too_strict": "Vos exigences actuelles sont trop strictes pour notre catalogue. Nous n'avons pas trouvé d'appareil satisfaisant tous vos critères obligatoires.",

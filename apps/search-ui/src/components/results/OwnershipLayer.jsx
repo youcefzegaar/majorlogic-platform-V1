@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Icon from '../shared/Icon';
+import { buildGoUrl, trackClick } from '../../lib/commerce';
 
 const MODE_CONFIG = {
   buy_new:                 { path: 'new',          label: 'Buy New' },
@@ -65,12 +66,11 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
     costPerYear: lifecycle?.costPerYear ?? null,
   });
 
-  const primaryUrl = selectedCard.purchaseLinks?.primary || selectedCard.purchaseLinks?.affiliate;
-  const nameEncoded = encodeURIComponent(name);
-  const AFFILIATE_TAG = 'majorlogic-20';
-  const amazonRenewedUrl = `https://www.amazon.com/s?k=${nameEncoded}+renewed&rh=p_n_condition-type%3A2224371011&tag=${AFFILIATE_TAG}`;
-  const ebayOpenBoxUrl = `https://www.ebay.com/sch/i.html?_nkw=${nameEncoded}&LH_ItemCondition=2500`;
-  const financingUrl = `https://www.amazon.com/s?k=${nameEncoded}&tag=${AFFILIATE_TAG}`;
+  const entityId = selectedCard.entityId;
+  const primaryUrl = buildGoUrl(entityId);
+  const amazonRenewedUrl = buildGoUrl(entityId, { seller: 'amazon_renewed' });
+  const ebayOpenBoxUrl   = buildGoUrl(entityId, { seller: 'ebay' });
+  const financingUrl     = buildGoUrl(entityId, { seller: 'amazon' });
 
   const paths = [
     {
@@ -230,6 +230,7 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
           target="_blank"
           rel="noopener noreferrer"
           className="ownership-cta-btn"
+          onClick={() => trackClick({ entityId, decisionRunId: selectedCard.decisionRunId, clickType: 'buy_now_clicked' })}
         >
           <Icon name="external-link-alt" /> {currentPath.cta}
         </a>

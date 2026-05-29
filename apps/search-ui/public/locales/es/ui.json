@@ -299,7 +299,11 @@
     "direct_link": "✅ Enlace directo — sin comisión.",
     "decision_stability": "Estabilidad de la decisión",
     "decision_evolution": "Evolución de la decisión",
-    "via_seller": "vía {seller}"
+    "via_seller": "vía {seller}",
+    "share_decision": "Compartir esta decisión",
+    "share_copy_link": "Copiar enlace",
+    "share_copied": "¡Copiado!",
+    "share_error": "Error — inténtalo de nuevo"
   },
   "zero": {
     "too_strict": "Tus requisitos actuales son demasiado estrictos para nuestro catálogo. No encontramos un dispositivo que satisfaga todos tus criterios obligatorios.",
