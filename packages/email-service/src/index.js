@@ -100,6 +100,49 @@ export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
   });
 }
 
+export async function sendRegretCheckEmail({ email, metadata = {}, decisionRunId = null }) {
+  const siteUrl = process.env.FRONTEND_URL ?? "https://majorlogic.tech";
+  const feedbackUrl = decisionRunId
+    ? `${siteUrl}?regret_check=1&ref=${decisionRunId}`
+    : `${siteUrl}?regret_check=1`;
+
+  return send({
+    to: email,
+    subject: "How's your laptop working out? (30-day check-in)",
+    html: `
+      <!DOCTYPE html>
+      <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+      <body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1a1a2e;">
+        <div style="margin-bottom:24px;">
+          <strong style="font-size:20px;">🧭 MajorLogic</strong>
+        </div>
+        <h2>One month in — still the right call?</h2>
+        <p>It's been about 30 days. We want to know if our recommendation held up in real use — not to make you feel good, but to learn and improve.</p>
+        <p>Two honest questions:</p>
+        <ol style="line-height:2;">
+          <li>Is the laptop still meeting your expectations?</li>
+          <li>Did any flaw surprise you that we didn't warn you about?</li>
+        </ol>
+        <p style="margin-top:24px;">
+          <a href="${feedbackUrl}&answer=happy" style="background:#16a34a;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:8px;">
+            ✅ Still happy
+          </a>
+          <a href="${feedbackUrl}&answer=surprised" style="background:#d97706;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:8px;">
+            😐 A flaw surprised me
+          </a>
+          <a href="${feedbackUrl}&answer=regret" style="background:#dc2626;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:700;">
+            ❌ I regret it
+          </a>
+        </p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">
+          Your honest answer helps us improve — nothing to sell you here.
+          <a href="#">Unsubscribe</a>
+        </p>
+      </body></html>
+    `
+  });
+}
+
 export async function sendNurtureEmail({ email, sequenceDay, metadata = {} }) {
   const segment = metadata.segment ?? "your major";
   const siteUrl = process.env.FRONTEND_URL ?? "https://majorlogic.tech";

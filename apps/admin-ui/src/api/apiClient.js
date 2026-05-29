@@ -71,4 +71,5 @@ export const adminService = {
   saveOwnershipConfig: (domainSlug, data) => apiClient.put(`/domains/${domainSlug}/ownership-config`, data).then(r => r.data),
   getOwnershipPresets: () => apiClient.get('/ownership-presets').then(r => r.data),
   getFeedback: (params) => apiClient.get('/feedback', { params }),
+  getReport: () => apiClient.get('/report'),
 };

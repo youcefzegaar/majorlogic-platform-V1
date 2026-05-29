@@ -41,26 +41,26 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: فحص /api/v1/health
+      - name: فحص /readiness (deep DB check)
         id: health
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             --max-time 15 \
-            "${{ secrets.API_URL }}/api/v1/health" || echo "000")
+            "${{ secrets.API_URL }}/readiness" || echo "000")
           echo "status=$STATUS" >> $GITHUB_OUTPUT
           echo "فحص الحالة: $STATUS"
 
       - name: إرسال تنبيه إذا كانت المنصة متوقفة
         if: steps.health.outputs.status != '200'
         run: |
-          MESSAGE="🔴 *MajorLogic — المنصة متوقفة!*
+          MESSAGE="🔴 *MajorLogic — المنصة لا تستجيب*
 
           ⏰ الوقت: $(date -u '+%Y-%m-%d %H:%M UTC')
           📊 كود الاستجابة: \`${{ steps.health.outputs.status }}\`
 
-          ⚡ الخطوة التالية:
-          1. افتح Railway dashboard
-          2. اضغط Restart على الـ API service
+          🔄 *Railway auto-restart مُفعَّل* (ON\_FAILURE × 5 retries).
+          إذا استمر الفشل بعد دقائق → تحقق من Railway dashboard للاطلاع على سجل الإعادات.
+          تدخل يدوي مطلوب فقط إذا تكررت الإعادات أو بقيت المنصة متوقفة.
 
           🔗 [Railway Dashboard](https://railway.app/dashboard)"
 

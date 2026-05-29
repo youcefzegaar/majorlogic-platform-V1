@@ -39,14 +39,15 @@ export class GrowthRepository {
     }
   }
 
-  async saveGrowthLead({ domainId, email, leadType, metadata = {}, optedIn = false }) {
+  async saveGrowthLead({ domainId, email, leadType, metadata = {}, optedIn = false, decisionRunId = null }) {
     const result = await this.pool.query(
-      `INSERT INTO ml_growth.leads (domain_id, email, lead_type, metadata, opted_in)
-       VALUES ($1, $2, $3, $4::jsonb, $5)
+      `INSERT INTO ml_growth.leads (domain_id, email, lead_type, metadata, opted_in, decision_run_id)
+       VALUES ($1, $2, $3, $4::jsonb, $5, $6)
        ON CONFLICT (email, domain_id, lead_type) DO UPDATE
-         SET metadata = EXCLUDED.metadata, opted_in = EXCLUDED.opted_in
+         SET metadata = EXCLUDED.metadata, opted_in = EXCLUDED.opted_in,
+             decision_run_id = COALESCE(EXCLUDED.decision_run_id, ml_growth.leads.decision_run_id)
        RETURNING id, created_at, xmax`,
-      [domainId, email.toLowerCase().trim(), leadType, JSON.stringify(metadata), optedIn]
+      [domainId, email.toLowerCase().trim(), leadType, JSON.stringify(metadata), optedIn, decisionRunId ?? null]
     );
     const row = result.rows[0];
     // xmax=0 means it was a fresh INSERT (not an update)
@@ -163,7 +164,7 @@ export class GrowthRepository {
   // ── Nurture email helpers ─────────────────────────────────────────────────────
 
   async getLeadsForNurtureDay(sequenceDay) {
-    const windowMap = { 1: [0, 2], 3: [2, 4], 7: [6, 9] };
+    const windowMap = { 1: [0, 2], 3: [2, 4], 7: [6, 9], 30: [28, 33] };
     if (!windowMap[sequenceDay]) throw new Error(`Invalid sequenceDay: ${sequenceDay}`);
     const [minDays, maxDays] = windowMap[sequenceDay];
     const result = await this.pool.query(
@@ -188,6 +189,61 @@ export class GrowthRepository {
        VALUES ($1, $2, $3)
        ON CONFLICT (lead_id, sequence_day) DO NOTHING`,
       [leadId, email, sequenceDay]
+    );
+  }
+
+  // ── Integrity certificates ────────────────────────────────────────────────────
+
+  async saveCertificate({ decisionRunId, overallPassed, integrityScore, guardsMap }) {
+    await this.pool.query(
+      `INSERT INTO ml_governance.integrity_certificates
+         (decision_run_id, overall_passed, integrity_score, guards_json)
+       VALUES ($1, $2, $3, $4::jsonb)`,
+      [decisionRunId, overallPassed, integrityScore, JSON.stringify(guardsMap)]
+    );
+  }
+
+  async getCertificateStats({ sinceDays = 7 } = {}) {
+    const result = await this.pool.query(
+      `SELECT
+         COUNT(*)::int AS certificate_count,
+         ROUND(AVG(integrity_score), 1)::float AS avg_integrity_score,
+         COUNT(*) FILTER (WHERE overall_passed = true)::int AS passed_count,
+         ROUND(
+           AVG(ABS(
+             (guards_json->'money-separation'->'evidence'->>'spearmanCorrelation')::float
+           )) * 100, 1
+         )::float AS avg_spearman_pct,
+         ROUND(
+           (1 - AVG(ABS(
+             (guards_json->'money-separation'->'evidence'->>'spearmanCorrelation')::float
+           ))) * 100, 1
+         )::float AS money_blindness_score
+       FROM ml_governance.integrity_certificates
+       WHERE evaluated_at >= NOW() - ($1 * INTERVAL '1 day')`,
+      [sinceDays]
+    );
+    return result.rows[0] ?? {
+      certificate_count: 0,
+      avg_integrity_score: null,
+      passed_count: 0,
+      avg_spearman_pct: null,
+      money_blindness_score: null,
+    };
+  }
+
+  async saveDeterminismProbe({ domainId, decisionRunId, irHash, topCardEntityId, topCardScore }) {
+    await this.pool.query(
+      `INSERT INTO ml_governance.guardrail_events
+         (id, domain_id, layer_name, event_type, details)
+       VALUES ($1, $2, $3, $4, $5::jsonb)`,
+      [
+        randomUUID(),
+        domainId,
+        'decision_governance',
+        'determinism_probe',
+        JSON.stringify({ decisionRunId, irHash, topCardEntityId, topCardScore, sampledAt: new Date().toISOString() }),
+      ]
     );
   }
 }

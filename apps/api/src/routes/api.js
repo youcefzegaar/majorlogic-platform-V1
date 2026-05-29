@@ -65,7 +65,7 @@ export default async function apiRoutes(fastify, { isProd }) {
   fastify.post("/api/v1/:domain/growth/lead", async (request, reply) => {
     const { domain } = request.params;
     if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
-    const { email, leadType, optedIn = false, trackingData = {} } = request.body;
+    const { email, leadType, optedIn = false, trackingData = {}, decisionRunId: leadDecisionRunId = null } = request.body;
     const VALID_LEAD_TYPES = ["save_results", "price_alert", "interstitial_gate"];
 
     if (!email || !leadType) {
@@ -94,7 +94,7 @@ export default async function apiRoutes(fastify, { isProd }) {
         } catch { /* non-fatal */ }
       }
 
-      const lead = await repository.saveGrowthLead({ domainId: domain, email, leadType, metadata: enrichedMetadata, optedIn });
+      const lead = await repository.saveGrowthLead({ domainId: domain, email, leadType, metadata: enrichedMetadata, optedIn, decisionRunId: leadDecisionRunId });
       sendWelcomeEmail({ email, leadType, metadata: enrichedMetadata })
         .catch(err => request.log.error({ err }, "[Email] Failed to send welcome email"));
 

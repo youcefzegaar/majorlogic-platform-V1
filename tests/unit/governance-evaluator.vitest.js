@@ -1,0 +1,92 @@
+import { describe, it, expect } from 'vitest';
+import { runAll } from '../../packages/governance-evaluator/src/index.js';
+
+// Helper: build a minimal valid decision
+function makeDecision({ heroHasCost = true, heroHasTradeoff = true, cards = null } = {}) {
+  const hero = {
+    cardType: 'hero',
+    entityId: 'laptop-a',
+    score: 85,
+    irHash: 'abc123',
+    bestOffer: { priceUsd: 800, isAffiliate: false },
+    traceScores: { performance_score: 80, portability_score: 70 },
+    explanation: {
+      cost: heroHasCost ? { text: 'Heavy at 2.1kg' } : null,
+      tradeoff: heroHasTradeoff ? { text: 'You traded portability for performance' } : null,
+    },
+  };
+  return {
+    decisionRunId: 'test-run-id',
+    cards: cards ?? [
+      hero,
+      { cardType: 'alternative', entityId: 'laptop-b', score: 78, bestOffer: { priceUsd: 700, isAffiliate: false }, traceScores: {}, explanation: { cost: null, tradeoff: null } },
+      { cardType: 'alternative', entityId: 'laptop-c', score: 72, bestOffer: { priceUsd: 650, isAffiliate: false }, traceScores: {}, explanation: { cost: null, tradeoff: null } },
+    ],
+  };
+}
+
+describe('governance-evaluator', () => {
+  it('all guards pass on a valid decision', () => {
+    const decision = makeDecision();
+    const cert = runAll(decision, null, { governance: { ok: true, violations: [], warnings: [] } });
+
+    expect(cert.overallPassed).toBe(true);
+    expect(cert.integrityScore).toBe(100);
+    expect(cert.guards.every(g => g.passed)).toBe(true);
+    expect(cert.decisionRunId).toBe('test-run-id');
+    expect(typeof cert.evaluatedAt).toBe('string');
+  });
+
+  it('sacrifice guard fails when hero has no tradeoff (permanent M1 guarantee)', () => {
+    const decision = makeDecision({ heroHasTradeoff: false });
+    const cert = runAll(decision, null, { governance: { ok: true, violations: [], warnings: [] } });
+
+    const sacrificeGuard = cert.guards.find(g => g.id === 'sacrifice');
+    expect(sacrificeGuard.passed).toBe(false);
+    expect(sacrificeGuard.evidence.tradeoffPresent).toBe(false);
+    expect(cert.overallPassed).toBe(false);
+    expect(cert.integrityScore).toBeLessThan(100);
+  });
+
+  it('money-separation guard fails when affiliate cards are ranked higher than non-affiliate', () => {
+    // Affiliate cards at ranks 1 and 2, non-affiliate at rank 3 → positive correlation
+    const cards = [
+      { cardType: 'hero', entityId: 'a', score: 90, bestOffer: { isAffiliate: true }, traceScores: {}, explanation: { cost: {}, tradeoff: {} } },
+      { cardType: 'alt', entityId: 'b', score: 80, bestOffer: { isAffiliate: true }, traceScores: {}, explanation: { cost: null, tradeoff: null } },
+      { cardType: 'alt', entityId: 'c', score: 60, bestOffer: { isAffiliate: false }, traceScores: {}, explanation: { cost: null, tradeoff: null } },
+    ];
+    const decision = makeDecision({ cards });
+    const cert = runAll(decision, null, { governance: { ok: true, violations: [], warnings: [] } });
+
+    const moneyGuard = cert.guards.find(g => g.id === 'money-separation');
+    expect(moneyGuard.passed).toBe(false);
+    expect(moneyGuard.evidence.affiliateCardCount).toBe(2);
+    expect(moneyGuard.evidence.spearmanCorrelation).toBeGreaterThan(0.3);
+  });
+
+  it('governance-drift guard fails when governance violations exist', () => {
+    const decision = makeDecision();
+    const cert = runAll(decision, null, {
+      governance: { ok: false, violations: ['Platform drift: missing domainId'], warnings: [] }
+    });
+
+    const driftGuard = cert.guards.find(g => g.id === 'governance-drift');
+    expect(driftGuard.passed).toBe(false);
+    expect(driftGuard.evidence.violations).toHaveLength(1);
+  });
+
+  it('integrityScore is computed correctly from severity weights', () => {
+    // If only the 'high' guard fails (sacrifice = critical=40, money-sep = critical=40, drift = high=20)
+    // total = 100, earned when drift fails = 80 → score = 80%
+    const decision = makeDecision();
+    const cert = runAll(decision, null, {
+      governance: { ok: false, violations: ['drift'], warnings: [] } // high guard fails
+    });
+
+    // critical guards pass (score 80) out of total 100 → 80%
+    expect(cert.integrityScore).toBe(80);
+    expect(cert.guardsMap).toHaveProperty('governance-drift');
+    expect(cert.guardsMap).toHaveProperty('sacrifice');
+    expect(cert.guardsMap).toHaveProperty('money-separation');
+  });
+});

@@ -11,16 +11,20 @@ import {
 import { adminService } from '../../api/apiClient';
 
 const CommercialIntegrity = () => {
-  const { data: dashboardData, isLoading, refetch } = useQuery({
-    queryKey: ['dashboard-overview'],
-    queryFn: adminService.getOverview,
+  const { data: reportData, isLoading, refetch } = useQuery({
+    queryKey: ['integrity-report'],
+    queryFn: adminService.getReport,
+    staleTime: 5 * 60 * 1000,
   });
 
-  const rawIntegrity = dashboardData?.avgIntegrity ?? dashboardData?.integrityScore ?? null;
-  const integrityScore = rawIntegrity != null
-    ? (rawIntegrity <= 1 ? Math.round(rawIntegrity * 100) : Math.round(rawIntegrity))
+  const report = reportData?.report ?? null;
+  const integrityScore = report?.moneyBlindness?.score ?? null;
+  const provisional = report?.moneyBlindness?.provisional ?? true;
+  const spearmanCorr = report?.moneyBlindness?.avgSpearmanPct != null
+    ? report.moneyBlindness.avgSpearmanPct.toFixed(1)
     : null;
-  const driftScore = dashboardData?.commercialDrift ?? dashboardData?.driftScore ?? null;
+  const certCount = report?.moneyBlindness?.certificatesAnalyzed ?? 0;
+  const driftScore = spearmanCorr != null ? spearmanCorr : null;
 
   return (
     <div className="page-content">
@@ -45,7 +49,9 @@ const CommercialIntegrity = () => {
             </span>
           </div>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', marginBottom: '20px' }}>
-            Measures how strictly the engine follows performance logic over affiliate commission potential.
+            {integrityScore != null
+              ? `Based on ${certCount} integrity certificate${certCount !== 1 ? 's' : ''} (last 7 days). Rank–affiliate Spearman correlation: ${spearmanCorr ?? '—'}%.${provisional ? ' Provisional — low sample.' : ''}`
+              : 'Run decisions to generate integrity certificates.'}
           </p>
           <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{ width: `${integrityScore ?? 0}%`, height: '100%', background: 'var(--success)' }}></div>

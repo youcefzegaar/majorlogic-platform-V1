@@ -77,12 +77,12 @@ export function buildGoUrl(entityId, { seller = '', domain = 'laptop-student-us'
 /**
  * Capture a growth lead (email for price alerts, waitlist, etc.)
  */
-export async function captureGrowthLead({ email, leadType, trackingData, domain = 'laptop-student-us', baseUrl } = {}) {
+export async function captureGrowthLead({ email, leadType, trackingData, decisionRunId = null, domain = 'laptop-student-us', baseUrl } = {}) {
   const url = `${baseUrl ?? getPlatformBaseUrl()}/api/v1/${domain}/growth/lead`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, leadType, trackingData }),
+    body: JSON.stringify({ email, leadType, trackingData, decisionRunId }),
   });
   if (!res.ok) throw new Error(`Lead capture failed: ${res.status}`);
   return res.json();

@@ -8,9 +8,9 @@
  * يتحقق من جدول nurture_emails لتفادي الإرسال المكرر
  */
 
-import { sendNurtureEmail } from "../../../../packages/email-service/src/index.js";
+import { sendNurtureEmail, sendRegretCheckEmail } from "../../../../packages/email-service/src/index.js";
 
-const SEQUENCE_DAYS = [3, 7];
+const SEQUENCE_DAYS = [3, 7, 30];
 
 export async function runEmailNurture(repository) {
   const results = { processed: 0, sent: 0, errors: 0 };
@@ -28,7 +28,8 @@ export async function runEmailNurture(repository) {
       results.processed++;
       const { id: leadId, email, metadata = {} } = lead;
       try {
-        await sendNurtureEmail({ email, sequenceDay: day, metadata });
+        const sendFn = day === 30 ? sendRegretCheckEmail : sendNurtureEmail;
+        await sendFn({ email, sequenceDay: day, metadata, decisionRunId: lead.decision_run_id ?? null });
         await repository.recordNurtureEmail({ leadId, email, sequenceDay: day });
         results.sent++;
         console.log(`[EmailNurture] Day ${day} sent → ${email}`);

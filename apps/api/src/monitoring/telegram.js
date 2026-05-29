@@ -88,6 +88,53 @@ export function alertStartup(port) {
 }
 
 /**
+ * Send the daily integrity + operations + regret report.
+ * No debounce — this is a scheduled once-daily send.
+ */
+export async function sendDailyReport(report) {
+  const token  = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const ts = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
+  const provisional = (label) => `${label} ⚠️ _[provisional — عيّنة صغيرة]_`;
+
+  const integrityLine = report.moneyBlindness.score != null
+    ? `• فصل المال: ${report.moneyBlindness.score}%${report.moneyBlindness.provisional ? ' ⚠️' : ' ✅'}`
+    : '• فصل المال: لا بيانات بعد';
+
+  const sacrificeLine = report.decisions.overallPassedRate != null
+    ? `• الضحية مرئية: ${report.decisions.overallPassedRate}%${report.decisions.overallPassedRate === 100 ? ' ✅' : ' ⚠️'}`
+    : '• الضحية مرئية: لا بيانات بعد';
+
+  const feedbackLine = report.feedback.avgScore7d != null
+    ? `• متوسط الرضا: ${report.feedback.avgScore7d.toFixed(1)}/5 (${report.feedback.count7d} تقييم)${report.feedback.provisional ? '\n  ' + provisional('') : ''}`
+    : '• لا تقييمات بعد';
+
+  const message = `📊 *MajorLogic — Daily Integrity Report*
+⏰ ${ts}
+
+🛡️ *النزاهة*
+• القرارات (7 أيام): ${report.decisions.total}
+${integrityLine}
+${sacrificeLine}
+
+⚙️ *العمليات*
+• Uptime: ${Math.floor(report.operations.uptime / 3600)}h | RAM: ${report.operations.memoryMb}MB
+
+💬 *الرضا*
+${feedbackLine}`;
+
+  try {
+    await fetch(`${TELEGRAM_API}/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "Markdown" }),
+    });
+  } catch { /* Silently ignore — reporting must never crash the app */ }
+}
+
+/**
  * Escape Telegram Markdown special characters.
  */
 function escapeMarkdown(text) {

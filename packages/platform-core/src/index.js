@@ -78,6 +78,21 @@ export async function executeUniversalPipeline({
   const trust = auditDecision({ catalog, decision, domainPack });
   const growth = buildGrowthArtifacts({ profile, decision, domainPack });
 
+  // G.6: Integrity certificate — runs after commercial routes so bestOffer.isAffiliate is populated
+  let integrityCertificate = null;
+  try {
+    const { runAll } = await import("../../governance-evaluator/src/index.js");
+    integrityCertificate = runAll(decision, null, { governance });
+    if (repository && integrityCertificate.decisionRunId) {
+      await repository.saveCertificate({
+        decisionRunId: integrityCertificate.decisionRunId,
+        overallPassed: integrityCertificate.overallPassed,
+        integrityScore: integrityCertificate.integrityScore,
+        guardsMap: integrityCertificate.guardsMap,
+      });
+    }
+  } catch { /* governance evaluation must never block a decision */ }
+
   // 4. Industrial Persistence
   if (repository) {
     // A. Main decision run ledger
@@ -109,6 +124,22 @@ export async function executeUniversalPipeline({
         recoveredCount: decision.candidateCount
       });
     }
+
+    // G.5: Determinism probe — 5% sampling, fire-and-forget, never blocks user
+    if (decision.decisionRunId && Math.random() < 0.05) {
+      setImmediate(async () => {
+        try {
+          const topCard = decision.cards?.[0] ?? null;
+          await repository.saveDeterminismProbe({
+            domainId: ruleset.domainId,
+            decisionRunId: decision.decisionRunId,
+            irHash: topCard?.irHash ?? null,
+            topCardEntityId: topCard?.entityId ?? null,
+            topCardScore: topCard?.score ?? null,
+          });
+        } catch { /* non-fatal — never interrupt user decision */ }
+      });
+    }
   }
 
   return {
@@ -119,6 +150,7 @@ export async function executeUniversalPipeline({
     commercialRoutes,
     ownership,
     trust,
-    growth
+    growth,
+    integrityCertificate,
   };
 }

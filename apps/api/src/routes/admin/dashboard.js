@@ -136,6 +136,57 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
     return reply.send({ success: true, events: rows, total });
   });
 
+  fastify.get("/report", async (_request, reply) => {
+    const { getRepository } = await import("../../db/repository.js");
+    const repository = await getRepository();
+    if (!repository) return sendError(reply, unavailable("Database is not available", "db_offline"));
+
+    const [overview, certStats, feedbackStats] = await Promise.all([
+      repository.getAdminOverview({ domainId: DEFAULT_DOMAIN }),
+      repository.getCertificateStats({ sinceDays: 7 }).catch(() => null),
+      repository.pool.query(`
+        SELECT
+          COUNT(*)::int AS count_7d,
+          ROUND(AVG(score), 2)::float AS avg_score_7d
+        FROM ml_telemetry.user_feedback
+        WHERE received_at >= NOW() - INTERVAL '7 days'
+      `).catch(() => ({ rows: [{}] })),
+    ]);
+
+    const fb = feedbackStats?.rows?.[0] ?? {};
+
+    return reply.send({
+      success: true,
+      report: {
+        generatedAt: new Date().toISOString(),
+        domainId: DEFAULT_DOMAIN,
+        decisions: {
+          total: overview.counts?.decision_runs ?? 0,
+          avgIntegrityScore: certStats?.avg_integrity_score ?? null,
+          overallPassedRate: certStats && certStats.certificate_count > 0
+            ? Math.round((certStats.passed_count / certStats.certificate_count) * 100)
+            : null,
+        },
+        moneyBlindness: {
+          score: certStats?.money_blindness_score ?? null,
+          avgSpearmanPct: certStats?.avg_spearman_pct ?? null,
+          certificatesAnalyzed: certStats?.certificate_count ?? 0,
+          provisional: (certStats?.certificate_count ?? 0) < 30,
+        },
+        feedback: {
+          count7d: fb.count_7d ?? 0,
+          avgScore7d: fb.avg_score_7d ?? null,
+          provisional: (fb.count_7d ?? 0) < 10,
+        },
+        operations: {
+          uptime: process.uptime(),
+          memoryMb: Math.round(process.memoryUsage().rss / 1024 / 1024),
+          node: process.version,
+        },
+      },
+    });
+  });
+
   fastify.get("/feedback", async (request, reply) => {
     const { limit = 50, offset = 0 } = request.query;
     const { getRepository } = await import("../../db/repository.js");
