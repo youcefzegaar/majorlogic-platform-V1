@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { runDecision as apiRunDecision } from '../../../../packages/api-client/src/index.js';
 
 // Ported from domains/laptop-student-us/insights.js — pure profile logic, no imports needed.
 function detectConflicts(profile, lang) {
@@ -194,16 +195,7 @@ export function useDecisionEngine() {
     try {
       const profile = buildProfile({ major, lang, budgetMax, priorities, goal });
       const localConflicts = detectConflicts(profile, lang);
-      // Direct Railway call — Vercel proxy is unreliable for POST requests
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
-      const response = await fetch(`${apiUrl}/api/v1/laptop-student-us/decision/run`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile)
-      });
-
-      if (!response.ok) throw new Error('API Error');
-      const result = await response.json();
+      const result = await apiRunDecision(profile);
       if (result.error) throw new Error(result.message);
 
       const newCards = {};

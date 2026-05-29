@@ -192,15 +192,9 @@ function FollowUpSection({ decisionRunId }) {
   const allAnswered = satisfaction !== null && regret !== null;
 
   return (
-    <div style={{
-      padding: '20px 24px',
-      background: 'var(--surface-elevated)',
-      border: '1px solid var(--border)',
-      borderRadius: 12,
-      marginTop: 24,
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+    <div className="surface-card" style={{ marginTop: 24 }}>
+      <div className="row-between" style={{ marginBottom: 4 }}>
+        <div className="text-label">
           {t('summary.followup_section')}
         </div>
         <button

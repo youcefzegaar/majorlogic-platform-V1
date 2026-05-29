@@ -3315,6 +3315,38 @@ body {
 [dir="rtl"] .recovery-warning { flex-direction: row-reverse; }
 [dir="rtl"] .renewed-opp-section-header { flex-direction: row-reverse; }
 
+/* ── M6 Token Utility Classes ──────────────────────────────────────── */
+/* Replace ad-hoc inline styles in components — single source of truth  */
+
+/* Surface cards */
+.surface-card       { background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+.surface-card-sm    { background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+.surface-card-flat  { background: var(--surface-elevated); border-radius: 8px; padding: 12px 14px; }
+
+/* Feedback / status banners */
+.banner-success  { padding: 10px 14px; background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); border-radius: 10px; }
+.banner-warning  { padding: 10px 14px; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; }
+.banner-danger   { padding: 10px 14px; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; }
+.banner-info     { padding: 10px 14px; background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.2); border-radius: 10px; }
+
+/* Typography utilities */
+.text-label     { font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.08em; }
+.text-heading   { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.text-body      { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.text-caption   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.text-mono      { font-family: monospace; font-size: 12px; }
+
+/* Layout helpers */
+.row-between    { display: flex; justify-content: space-between; align-items: center; }
+.row-start      { display: flex; align-items: center; gap: 8px; }
+.col-gap-8      { display: flex; flex-direction: column; gap: 8px; }
+.col-gap-16     { display: flex; flex-direction: column; gap: 16px; }
+
+/* Score / badge tokens */
+.score-high   { color: var(--accent-success); font-weight: 700; }
+.score-mid    { color: var(--accent-warning); font-weight: 700; }
+.score-low    { color: var(--accent-danger);  font-weight: 700; }
+
 /* ── A11y — WCAG 2.2 AA ────────────────────────────────────────────── */
 
 /* Skip to main content link */

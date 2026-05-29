@@ -1,33 +1,12 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
-
 /**
- * Route a purchase through the /go/ gateway (affiliate-logged, SSRF-safe).
- * seller: 'amazon_renewed' | 'ebay' | 'amazon' | '' (primary offer)
+ * Commerce utilities — thin wrappers over @majorlogic/api-client.
+ * All purchase/telemetry logic is defined once in the shared package.
  */
-export function buildGoUrl(entityId, { seller = '', domain = 'laptop-student-us' } = {}) {
-  const base = `${API_URL}/go/${domain}/${encodeURIComponent(entityId)}`;
-  return seller ? `${base}?seller=${encodeURIComponent(seller)}` : base;
-}
+import { buildGoUrl as _buildGoUrl, trackClick as _trackClick } from '../../../../packages/api-client/src/index.js';
 
-/**
- * Fire-and-forget telemetry on buy/link clicks.
- * Never blocks navigation — errors are silently swallowed.
- */
-export function trackClick({ entityId, decisionRunId = null, clickType = 'buy_now_clicked', domain = 'laptop-student-us' }) {
-  if (!entityId) return;
-  fetch(`${API_URL}/api/v1/${domain}/telemetry/click`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ entityId, decisionRunId, clickType }),
-  }).catch(() => {});
-}
+export { buildGoUrl, trackClick } from '../../../../packages/api-client/src/index.js';
 
-/**
- * Open a buy link via the /go/ gateway and log the click.
- */
 export function openBuyLink({ entityId, seller = '', domain = 'laptop-student-us', decisionRunId = null, clickType = 'buy_now_clicked' }) {
-  trackClick({ entityId, decisionRunId, clickType, domain });
-  const url = buildGoUrl(entityId, { seller, domain });
-  window.open(url, '_blank', 'noopener,noreferrer');
+  _trackClick({ entityId, decisionRunId, clickType, domain });
+  window.open(_buildGoUrl(entityId, { seller, domain }), '_blank', 'noopener,noreferrer');
 }

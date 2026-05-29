@@ -1,4 +1,6 @@
 import axios from 'axios';
+// Platform API methods (shared with search-ui) — defined once, used by both apps
+export { runDecision, submitFeedback, trackClick, buildGoUrl, captureGrowthLead } from '../../../../packages/api-client/src/index.js';
 
 // security: read the csrf_token cookie set by the server on GET /admin/* requests.
 // The cookie is httpOnly:false so JavaScript can read it here and echo it back
