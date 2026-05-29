@@ -1,98 +1,150 @@
-# 🧭 MajorLogic Platform V1
+# MajorLogic Platform V1
 
-MajorLogic is a fully autonomous, algorithm-driven recommendation platform designed to help students find the best laptops for their specific college majors and budgets.
-
-It is much more than a recommendation tool; it is a **complete programmatic growth and affiliate ecosystem** built defensively to maintain absolute trust, maximize organic traffic via SEO, and seamlessly integrate ethical affiliate conversions.
+MajorLogic is an algorithm-driven decision platform that helps students find the best laptops for their college major and budget. Every recommendation is transparent, commercially neutral, and verifiably reproducible.
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
-The platform is engineered with modern modularity, allowing the underlying "Decision Engine" to be agnostic of the domain (it could recommend laptops today, and cameras tomorrow).
+The platform is built as a domain-agnostic monorepo — the decision engine understands laptops today and can be extended to any product category.
 
-### 1. 🧠 The Decision Engine (`packages/decision-engine`)
-The core intellectual property of MajorLogic. It takes user preferences (major, budget) and runs them through a sophisticated scoring matrix (a.k.a the `domain-pack`). It applies "Knockout Rules" (e.g., if rendering required = true, drop all laptops with no dGPU) and then outputs calculated scores matching the user's needs.
+### Decision Engine (`packages/decision-engine` + `packages/platform-core`)
 
-### 2. 🌍 Programmatic SEO Engine
-Built to passively capture thousands of organic Google searches.
-- **Pipeline:** When the catalog is re-built, `scripts/generate-seo-pages.js` automatically produces 25 highly-optimized JSON pages mapping 5 majors to 5 budget tiers.
-- **SEO Benefits:** Automatically injects `Schema.org` (Product Offer & FAQ), meta tags, and generates the `sitemap.xml` so Google can immediately crawl updated price lists without hitting a database.
-- **Url Paths:** `/laptops/computer-science`, `/laptops/engineering/under-1500`, etc.
+Core intellectual property. Takes user preferences (major, budget, priorities) through a declarative scoring pipeline:
+1. **Governance check** — enforces constitutional constraints (sacrifice vector, money-blind scoring)
+2. **Orchestrator + Kernel** — scores candidates, applies knockout rules
+3. **Post-decision layers** — ownership strategy, commercial routing, trust audit, growth artifacts
+4. **Integrity certificate** — four synchronous guards (governance-drift, catalog-truth, sacrifice, money-separation) produce a per-decision certificate stored in `ml_governance.integrity_certificates`
 
-### 3. 💸 Ethical Affiliate & Gateway
-All outbound "Buy Now" links route through a highly-controlled redirect (`/go/:domain/:entityId`).
-- This server-side gateway dynamically queries the Supabase database to attach the most up-to-date affiliate tags (e.g., `tag=majorlogic-20`).
-- No hardcoded affiliate links exist in the frontend UI, ensuring zero maintenance when tags change.
+Schema version: **2** (`schemaVersion: 2` in every pipeline response).
 
-### 4. 🧲 Growth & Viral Loop
-The platform thrives on built-in user acquisition models without paid ads.
-- **Interstitial Gates:** Offers users a "5-Step Inspection Checklist" via email *right before* they redirect to Amazon, increasing lead capture.
-- **Save Results & Price Drops:** Uses `@email-service` to alert users when a laptop drops into their budget.
-- **Shareable Viral Loop:** Results pages dynamically generate `OpenGraph` tags and provide 1-click sharing to Twitter & WhatsApp. Telemetry tracks the `viral coefficient` seamlessly.
+### User Accounts & Saved Decisions (M3)
+
+- Registration, login, sessions via `POST /auth/register`, `POST /auth/login`, `DELETE /auth/logout`
+- Session cookies (httpOnly, Secure, SameSite=Strict) + CSRF token
+- Saved decisions: `POST /user/decisions` — full snapshot, reloadable. Max 20 per user.
+- My Decisions overlay in the UI lists and loads past choices.
+- `schemaVersion: 2` snapshots include integrity certificate, cards, ownership strategies.
+
+### User Settings (M10)
+
+- `PUT /auth/account` — change display name and/or password (requires current password for password change)
+- Rate-limited endpoint; password hashed with bcrypt (cost 12)
+- Settings modal accessible from the sidebar
+
+### Ethical Affiliate Gateway
+
+All "Buy Now" links route through `/go/:domain/:entityId`. The server attaches affiliate tags at redirect time — no hardcoded affiliate links in the frontend. Purchase intent is tracked via `ml_telemetry.click_events`.
+
+### Growth Loop
+
+- Email capture via interstitial before Amazon redirect
+- Price-drop alerts (email) when a watched device enters budget
+- Day-3, Day-7, Day-30 nurture sequence; Day-30 is a regret check tied to `decisionRunId`
+- Viral sharing with OpenGraph + 1-click Twitter/WhatsApp share
+
+### Catalog Freshness (M13)
+
+- Every decision response includes `catalogFreshness.{publishedAt, ageHours, isStale, slaHours}`
+- UI shows a stale-data warning banner when catalog age exceeds SLA (default 24h, configurable via `CATALOG_FRESHNESS_SLA_HOURS`)
+- `/admin/report` and the daily Telegram report both include catalog freshness status
+- Price-monitor alerts via Telegram before sending price emails when catalog is stale
+
+### Integrity & Reporting (M-gov + M-report)
+
+- Daily Telegram report (08:00 UTC): integrity score, money-blindness %, sacrifice pass rate, catalog freshness, satisfaction average
+- Real-time alert when any integrity guard fails in production
+- Health-check cron (every 30 min): escalates to 🚨 on repeated failures, references Railway auto-restart
+
+### Legal Pages
+
+`/privacy`, `/terms` — served server-side, satisfy FTC disclosure + GDPR.
 
 ---
 
-## 🚀 Pre-Launch & Deployment Guide
+## Deployment
 
-The codebase is Production-Ready. To launch it on a public server (like **Render**, **Railway**, or **Vercel**), follow these steps:
+### Environment Variables
 
-### 1. Environment Configuration
-Create an `.env` file in the root based on `.env.example`:
 ```ini
-# Supabase PostgreSQL
-SUPABASE_URL=YOUR_SUPABASE_URL
-SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-DB_HOST=aws-0-us-west-1.pooler.supabase.com
-DB_PORT=6543
-DB_USER=postgres.username
-DB_PASSWORD=YOUR_DB_SECRET
-DB_NAME=postgres
-
-# Admin Dashboard Security
+DATABASE_URL=postgres://...          # PostgreSQL (Railway / Supabase)
+ENCRYPTION_KEY=32-byte-hex           # For credential encryption at rest
 ADMIN_USER=admin
-ADMIN_PASSWORD=strongpassword123
-ADMIN_EXPORT_SECRET=majorlogic-admin
+ADMIN_PASSWORD=strongpassword
+SESSION_SECRET=random-64-char-string
+VITE_API_URL=https://your-api.railway.app
 
-# SMTP Emal Integration (Resend or SendGrid)
+# Email (Resend / SendGrid)
 SMTP_HOST=smtp.resend.com
 SMTP_PORT=465
 SMTP_USER=resend
-SMTP_PASS=re_xxxx...
+SMTP_PASS=re_xxxx
 EMAIL_FROM=MajorLogic <hello@majorlogic.ai>
+
+# Telegram alerts
+TELEGRAM_BOT_TOKEN=...
+TELEGRAM_CHAT_ID=...
+
+# Optional
+CATALOG_FRESHNESS_SLA_HOURS=24      # Stale-data SLA (default 24h)
+ENABLED_DOMAINS=laptop-student-us
 ```
 
-### 2. Database Bootstrap
-Run the initialization scripts exactly once to create your remote tables for Analytics, Affiliates, and Catalog storage:
-```bash
-node scripts/bootstrap-supabase.js
-```
+### Database
 
-### 3. Pipeline Ingestion (Data Build)
-MajorLogic calculates data offline to ensure 0ms latency for users. To build the initial catalog:
+Migrations auto-run on startup from `database/migrations/` (append-only, numbered). No manual bootstrap needed after the initial deploy.
+
+### Catalog Pipeline
+
 ```bash
 node scripts/catalog-build.js --domain=laptop-student-us
 ```
-*Note: Set up a Cron Job to execute this command every 12 to 24 hours to automatically update prices and rebuild the SEO pages.*
 
-### 4. Run the Server
-Start the Fastify application:
+Set a cron to run every 12–24 hours. The `/readiness` endpoint (used by Railway healthcheck) checks `SELECT 1` against the DB — Railway auto-restarts (ON_FAILURE × 5) if it fails.
+
+### Running
+
 ```bash
-npm run start:api
+npm run start:api    # Fastify API on PORT (default 3010)
+npm run dev:ui       # Vite dev server for search-ui
 ```
-The platform will now be live on Port `3010` (or `process.env.PORT`).
 
 ---
 
-## 🛡️ Security & Compliance
-- **/admin** dashboard is protected by HTTP Basic Authentication.
-- All forms use **Idempotent** Postgres transactions to prevent duplication or DB scraping.
-- Includes mandatory **Legal Pages** (`/privacy`, `/terms`, `/disclosure`) satisfying FTC disclosure requirements and GDPR compliance.
+## Testing
 
-### Directory Structure
-- `apps/api/` — The Fastify web server, route definitions, and SSR templates.
-- `domains/laptop-student-us/` — Rulesets, metrics definitions, and raw laptop data.
-- `packages/` — Modular components (Decision Engine, Postgres persistence, NodeMailer).
-- `scripts/` — CI/CD pipelines, SEO generation, database bootstrapping.
-- `tests/` — Regression testing ensuring "Hero" outputs remain accurate.
+```bash
+npm run test             # vitest — 213 unit tests
+npm run test:node        # system.test — full pipeline integration
+npm run test:regression  # regression suite — constitutional card rules
+```
 
-*MajorLogic: Built for intelligence, designed for growth.*
+All three suites must pass before any merge.
+
+---
+
+## Directory Structure
+
+```
+apps/
+  api/              Fastify server, routes, jobs, monitoring
+  search-ui/        React frontend (Vite)
+  admin-ui/         Admin dashboard (React)
+packages/
+  platform-core/    Universal pipeline orchestrator
+  decision-engine/  Scoring kernel
+  governance-evaluator/ Four integrity guards + certificate
+  postgres-persistence/ All DB repositories + catalog-loader
+  email-service/    Transactional + nurture emails
+  ...
+domains/
+  laptop-student-us/   Domain pack, rulesets, generated catalog
+database/
+  migrations/       Append-only SQL migrations (0001–0035)
+tests/
+  unit/             Vitest unit tests
+  integration/      Node integration (system.test.mjs)
+  regression/       Constitutional regression suite
+```
+
+*MajorLogic: Built for epistemic honesty, designed for trust.*
