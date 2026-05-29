@@ -70,7 +70,7 @@ export default function IntakePhase({
               padding: 0,
               textDecoration: 'underline',
             }}
-            onClick={() => window.open('/how-we-work', '_blank')}
+            onClick={() => window.open('/disclosure', '_blank')}
           >
             {t('intake.how_we_guarantee')}
           </button>

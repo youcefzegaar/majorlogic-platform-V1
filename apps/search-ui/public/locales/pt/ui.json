@@ -277,7 +277,14 @@
     "relaxed_specific": "\"{constraint}\" relaxado para encontrar resultados — Σ(w·s)/Σ(w) = {score}%",
     "relaxed_generic": "Uma ou mais restrições relaxadas — Σ(w·s)/Σ(w) = {score}%",
     "deterministic": "determinístico",
-    "constraint_relaxed": "restrição relaxada"
+    "constraint_relaxed": "restrição relaxada",
+    "ranking_title": "Por que confiar neste ranking?",
+    "step_laptop_ranking": "Ranking de laptops (sem influência financeira)",
+    "step_laptop_desc": "Pontuado por especificações, avaliações e suas prioridades — status de afiliado nunca é considerado.",
+    "step_store_ranking": "Ranking de lojas (preço primeiro)",
+    "step_store_desc": "Menor preço primeiro, depois confiança do vendedor. Afiliado é apenas o critério #6 de desempate.",
+    "ir_hash_label": "Decisão selada",
+    "view_mechanism": "Ver o mecanismo completo →"
   },
   "future": {
     "final_decision": "Decisão final",

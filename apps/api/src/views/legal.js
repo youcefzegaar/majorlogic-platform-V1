@@ -74,15 +74,46 @@ export function renderTermsOfUse() {
 export function renderDisclosure() {
   const content = `
     <h2>FTC Affiliate Disclosure</h2>
-    <p>At MajorLogic, transparency and trust are our fundamental principles. To keep this platform free for students, we participate in affiliate marketing programs.</p>
+    <p>To keep this platform free for students, MajorLogic participates in affiliate marketing programs, including the Amazon Services LLC Associates Program. When you click a link and make a purchase, we may earn a small commission at no extra cost to you.</p>
 
-    <h2>How Our Affiliate Links Work</h2>
-    <p>When you click on links to various merchants on this site and make a purchase, this can result in this site earning a commission. Affiliate programs include, but are not limited to, the Amazon Services LLC Associates Program.</p>
+    <h2>How we stay honest: the two-rankings system</h2>
+    <p>We operate two completely separate rankings, and they never mix:</p>
 
-    <h2>Our Promise to You: Unbiased Algorithms</h2>
-    <p>Our underlying Decision Engine computes scores based on hundreds of technical specifications (CPU, RAM, Thermal performance, etc.). <strong>Commissions do not influence our rankings.</strong> An item's rank is mathematically determined by its fitness for your specific college major and budget. We often recommend products with zero commission if they are the best fit for your needs.</p>
-    
-    <p>If you have any questions about how our affiliate system works, please feel free to reach out.</p>
+    <div style="background:#1a1a2e;border-left:4px solid #7C3AED;padding:20px 24px;border-radius:8px;margin:20px 0;font-family:'Courier New',monospace;font-size:13px;line-height:1.8;color:#d1d5db;">
+      Step 1 — LAPTOP RANKING (money-blind)<br/>
+      &nbsp;&nbsp;Input: your major, budget, priorities<br/>
+      &nbsp;&nbsp;Scoring: technical specs, review signals, sacrifice vector<br/>
+      &nbsp;&nbsp;Commercial fields: <span style="color:#f87171;">NEVER SEEN</span> by the engine<br/>
+      &nbsp;&nbsp;Output: ranked laptops + irHash (tamper-proof fingerprint)<br/>
+      <br/>
+      ↓ decision frozen here — irHash seals the ranking<br/>
+      <br/>
+      Step 2 — STORE RANKING (price-first, trust-second)<br/>
+      &nbsp;&nbsp;Input: ranked laptops from Step 1 (unchanged)<br/>
+      &nbsp;&nbsp;Ranking: lowest price first, then vendor trust score<br/>
+      &nbsp;&nbsp;Affiliate: tiebreaker #6 — only breaks ties between equal offers<br/>
+      &nbsp;&nbsp;Output: purchase links attached <em>after</em> ranking is final
+    </div>
+
+    <h2>What this means in plain English</h2>
+    <ul style="color:#9ca3af;padding-left:20px;">
+      <li style="margin-bottom:10px;"><strong style="color:#e0e0e0;">Which laptop</strong> we recommend is decided entirely by how well it fits your stated priorities. Affiliate status plays zero role.</li>
+      <li style="margin-bottom:10px;"><strong style="color:#e0e0e0;">Which store</strong> links to: we rank by price first, then vendor trust. An affiliate relationship only breaks ties between otherwise identical offers.</li>
+      <li style="margin-bottom:10px;"><strong style="color:#e0e0e0;">Non-affiliate items win regularly.</strong> If the best-priced, most-trusted seller has no affiliate relationship with us, that link appears first.</li>
+      <li style="margin-bottom:10px;"><strong style="color:#e0e0e0;">Determinism as proof.</strong> The irHash fingerprint in every decision lets you verify that the same inputs always produce the same ranking — commercial status is irrelevant to the computation.</li>
+    </ul>
+
+    <h2>What "Platform trust" tiers mean</h2>
+    <p>Cards may show a "Platform trust" label (high / standard / basic). These are <em>our internal vendor trust scores</em> — computed from seller history, condition certification, and price fairness. They are not external certifications or endorsements from Amazon, eBay, or any retailer.</p>
+
+    <h2>Precise language we commit to</h2>
+    <p>We will not say "money doesn't affect ranking" as a blanket claim — because for store selection, price and affiliate status are tiebreakers. What we can say precisely, and stand behind:</p>
+    <blockquote style="border-left:3px solid #7C3AED;padding:12px 16px;margin:16px 0;color:#d1d5db;font-style:italic;">
+      "Which laptop we recommend is determined solely by your priorities and our decision engine. Affiliate relationships never influence which device ranks first."
+    </blockquote>
+
+    <h2>FTC compliance</h2>
+    <p>In accordance with the FTC's guidelines on endorsements and testimonials (16 C.F.R. §255), we disclose this material connection on every page where affiliate links appear.</p>
   `;
-  return renderLegalPage("Affiliate Disclosure", content);
+  return renderLegalPage("How We Stay Honest — Affiliate Disclosure", content);
 }

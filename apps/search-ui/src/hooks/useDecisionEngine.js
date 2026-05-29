@@ -474,7 +474,8 @@ export function useDecisionEngine() {
       const rawIntegrity = result.decision?.integrityScore ?? 1.0;
       setDecisionMetadata({
         relaxedConstraint: result.decision?.relaxedConstraint || null,
-        integrityScore: rawIntegrity <= 1.0 ? Math.round(rawIntegrity * 100) : Math.round(rawIntegrity)
+        integrityScore: rawIntegrity <= 1.0 ? Math.round(rawIntegrity * 100) : Math.round(rawIntegrity),
+        irHash: result.decision?.governance?.irHash ?? null,
       });
       setDetectedConflicts(localConflicts);
 

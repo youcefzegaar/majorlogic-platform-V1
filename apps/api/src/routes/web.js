@@ -59,6 +59,9 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
   fastify.get("/disclosure", async (_request, reply) => {
     reply.type("text/html; charset=utf-8").send(renderDisclosure());
   });
+  fastify.get("/how-we-work", async (_request, reply) => {
+    reply.redirect("/disclosure", 301);
+  });
 
   // ── SSR Web Routes ────────────────────────────────────────────────────────
 

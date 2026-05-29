@@ -277,7 +277,14 @@
     "relaxed_specific": "\"{constraint}\" assoupli pour trouver des résultats — Σ(w·s)/Σ(w) = {score}%",
     "relaxed_generic": "Une ou plusieurs contraintes assouplies — Σ(w·s)/Σ(w) = {score}%",
     "deterministic": "déterministe",
-    "constraint_relaxed": "contrainte assouplie"
+    "constraint_relaxed": "contrainte assouplie",
+    "ranking_title": "Pourquoi faire confiance à ce classement?",
+    "step_laptop_ranking": "Classement des laptops (aveugle aux commissions)",
+    "step_laptop_desc": "Noté sur les spécifications, les avis et vos priorités — le statut d'affiliation n'est jamais pris en compte.",
+    "step_store_ranking": "Classement des boutiques (prix en premier)",
+    "step_store_desc": "Prix le plus bas d'abord, puis confiance du vendeur. L'affiliation ne départage qu'en cas d'égalité (#6).",
+    "ir_hash_label": "Décision scellée",
+    "view_mechanism": "Voir le mécanisme complet →"
   },
   "future": {
     "final_decision": "Décision finale",

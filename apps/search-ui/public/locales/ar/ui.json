@@ -277,7 +277,14 @@
     "relaxed_specific": "تم تخفيف \"{constraint}\" للعثور على نتائج — Σ(w·s)/Σ(w) = {score}%",
     "relaxed_generic": "تم تخفيف قيد أو أكثر — Σ(w·s)/Σ(w) = {score}%",
     "deterministic": "حتمي",
-    "constraint_relaxed": "قيد مخفَّف"
+    "constraint_relaxed": "قيد مخفَّف",
+    "ranking_title": "لماذا تثق في هذا الترتيب؟",
+    "step_laptop_ranking": "ترتيب الحاسوب (مُعمَّى مالياً)",
+    "step_laptop_desc": "يُقيَّم بناءً على المواصفات والمراجعات وأولوياتك فقط — لا يُطّلع على حالة الأفلييت.",
+    "step_store_ranking": "ترتيب المتجر (السعر أولاً)",
+    "step_store_desc": "أدنى سعر أولاً، ثم مستوى ثقة البائع. الأفلييت عامل كسر التعادل #6 فقط.",
+    "ir_hash_label": "القرار مُختَّم",
+    "view_mechanism": "اطّلع على الآلية الكاملة ←"
   },
   "future": {
     "final_decision": "القرار النهائي",

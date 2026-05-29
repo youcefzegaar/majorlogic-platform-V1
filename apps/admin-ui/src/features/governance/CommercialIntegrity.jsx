@@ -16,8 +16,11 @@ const CommercialIntegrity = () => {
     queryFn: adminService.getOverview,
   });
 
-  const driftScore = 8.4; // Sample data for drift
-  const integrityScore = 98.2;
+  const rawIntegrity = dashboardData?.avgIntegrity ?? dashboardData?.integrityScore ?? null;
+  const integrityScore = rawIntegrity != null
+    ? (rawIntegrity <= 1 ? Math.round(rawIntegrity * 100) : Math.round(rawIntegrity))
+    : null;
+  const driftScore = dashboardData?.commercialDrift ?? dashboardData?.driftScore ?? null;
 
   return (
     <div className="page-content">
@@ -37,13 +40,15 @@ const CommercialIntegrity = () => {
             <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <ShieldCheck size={20} color="var(--success)" /> Neutrality Index
             </h3>
-            <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>{integrityScore}%</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>
+              {isLoading ? '…' : integrityScore != null ? `${integrityScore}%` : 'N/A'}
+            </span>
           </div>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', marginBottom: '20px' }}>
             Measures how strictly the engine follows performance logic over affiliate commission potential.
           </p>
           <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-            <div style={{ width: `${integrityScore}%`, height: '100%', background: 'var(--success)' }}></div>
+            <div style={{ width: `${integrityScore ?? 0}%`, height: '100%', background: 'var(--success)' }}></div>
           </div>
         </div>
 
@@ -52,13 +57,15 @@ const CommercialIntegrity = () => {
             <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <TrendingDown size={20} color="var(--warning)" /> Commercial Drift
             </h3>
-            <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>{driftScore}%</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>
+              {isLoading ? '…' : driftScore != null ? `${driftScore}%` : 'N/A'}
+            </span>
           </div>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', marginBottom: '20px' }}>
             Current correlation between product ranking and affiliate commission levels. Lower is better.
           </p>
           <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-            <div style={{ width: `${driftScore}%`, height: '100%', background: 'var(--warning)' }}></div>
+            <div style={{ width: `${driftScore ?? 0}%`, height: '100%', background: 'var(--warning)' }}></div>
           </div>
         </div>
       </div>

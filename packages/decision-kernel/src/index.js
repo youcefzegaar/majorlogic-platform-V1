@@ -2,6 +2,13 @@ import { createHash } from "node:crypto";
 
 /**
  * Decision Kernel (DDVM) — Universal Execution Runtime
+ *
+ * MONEY-BLINDNESS GUARANTEE (M9 gate):
+ * This module receives only entity specs and user preferences.
+ * Fields that never appear here: priceUsd, affiliate, isAffiliate,
+ * commissionRate, buyRoute, seller, vendorTrustScore, platform.
+ * Commercial routing runs in commercial-routing/src/index.js, which
+ * executes AFTER this kernel finalises and seals the irHash.
  */
 
 function getDeepValue(obj, path) {

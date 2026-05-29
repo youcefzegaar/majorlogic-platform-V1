@@ -4,6 +4,7 @@ import HeroCard from './HeroCard';
 import ZeroResultsView from './ZeroResultsView';
 import Icon from '../shared/Icon';
 import ConfidenceRing from '../shared/ConfidenceRing';
+import TrustPanel from './TrustPanel';
 
 export default function CardsPhase({
   cards, noResults, decisionMetadata, analysisSummary,
@@ -37,6 +38,8 @@ export default function CardsPhase({
           <span className="confidence-badge__pct">{analysisSummary.confidence}%</span>
         </div>
       </div>
+
+      <TrustPanel irHash={decisionMetadata.irHash ?? null} />
 
       <div className="cards-layout">
         <div className="cards-main">

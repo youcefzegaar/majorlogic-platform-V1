@@ -277,7 +277,14 @@
     "relaxed_specific": "परिणाम खोजने के लिए \"{constraint}\" में ढील दी — Σ(w·s)/Σ(w) = {score}%",
     "relaxed_generic": "एक या अधिक बाधाओं में ढील — Σ(w·s)/Σ(w) = {score}%",
     "deterministic": "निर्धारक",
-    "constraint_relaxed": "बाधा शिथिल"
+    "constraint_relaxed": "बाधा शिथिल",
+    "ranking_title": "इस रैंकिंग पर भरोसा क्यों करें?",
+    "step_laptop_ranking": "लैपटॉप रैंकिंग (पैसे से अंधा)",
+    "step_laptop_desc": "केवल विशेषताओं, समीक्षाओं और आपकी प्राथमिकताओं पर स्कोर — एफिलिएट स्थिति कभी नहीं देखी जाती।",
+    "step_store_ranking": "स्टोर रैंकिंग (पहले कीमत)",
+    "step_store_desc": "पहले सबसे कम कीमत, फिर विक्रेता विश्वास। एफिलिएट केवल #6 टाई-ब्रेकर है।",
+    "ir_hash_label": "निर्णय सील",
+    "view_mechanism": "पूरी प्रणाली देखें →"
   },
   "future": {
     "final_decision": "अंतिम निर्णय",

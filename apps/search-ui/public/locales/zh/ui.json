@@ -277,7 +277,14 @@
     "relaxed_specific": "已放宽\"{constraint}\"以找到结果 — Σ(w·s)/Σ(w) = {score}%",
     "relaxed_generic": "一个或多个约束已放宽 — Σ(w·s)/Σ(w) = {score}%",
     "deterministic": "确定性",
-    "constraint_relaxed": "约束已放宽"
+    "constraint_relaxed": "约束已放宽",
+    "ranking_title": "为什么信任此排名？",
+    "step_laptop_ranking": "笔记本排名（对佣金盲目）",
+    "step_laptop_desc": "仅根据规格、评测和您的优先级评分——从不考虑联盟营销状态。",
+    "step_store_ranking": "商店排名（价格优先）",
+    "step_store_desc": "最低价格优先，然后是卖家信任度。联盟营销仅作为第6个平局决胜因素。",
+    "ir_hash_label": "决策已封印",
+    "view_mechanism": "查看完整机制 →"
   },
   "future": {
     "final_decision": "最终决策",
