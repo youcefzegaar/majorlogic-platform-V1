@@ -309,5 +309,21 @@
   "phase": {
     "final_summary_btn": "Résumé final",
     "back_to_cards": "Retour aux cartes"
+  },
+  "auth": {
+    "login_title": "Se connecter",
+    "register_title": "Créer un compte",
+    "email_label": "E-mail",
+    "password_label": "Mot de passe",
+    "display_name_label": "Nom d'affichage",
+    "submit_login": "Se connecter",
+    "submit_register": "Créer un compte",
+    "switch_to_register": "Pas encore inscrit ? Créer un compte",
+    "switch_to_login": "Déjà un compte ? Se connecter",
+    "close": "Fermer",
+    "save_decision": "Enregistrer la décision",
+    "saving": "Enregistrement...",
+    "saved_ok": "Enregistré",
+    "sign_in_to_save": "Connectez-vous pour enregistrer"
   }
 }

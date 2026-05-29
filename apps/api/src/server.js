@@ -21,6 +21,7 @@ import { validateEnv } from "./config/validate-env.js";
 import adminRoutes from "./routes/admin/index.js";
 import apiRoutes from "./routes/api.js";
 import webRoutes from "./routes/web.js";
+import userRoutes from "./routes/user/index.js";
 import { csrfPlugin } from "./middleware/csrf.js";
 import healthPlugin from "./plugins/health.js";
 
@@ -181,6 +182,7 @@ fastify.register(healthPlugin);
 fastify.register(adminRoutes, { prefix: "/admin", DEFAULT_DOMAIN });
 fastify.register(apiRoutes,   { isProd });
 fastify.register(webRoutes,   { root, port, FRONTEND_URL, DEFAULT_DOMAIN, defaultProfile });
+fastify.register(userRoutes,  { isProd });
 
 // ── Graceful Shutdown ─────────────────────────────────────────────────────────
 const shutdown = async (signal) => {

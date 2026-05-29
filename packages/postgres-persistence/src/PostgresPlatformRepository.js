@@ -5,6 +5,7 @@ import { DecisionRepository } from "./repositories/decision.js";
 import { TelemetryRepository } from "./repositories/telemetry.js";
 import { GrowthRepository } from "./repositories/growth.js";
 import { CommercialRepository } from "./repositories/commercial.js";
+import { UsersRepository } from "./repositories/users.js";
 
 export class PostgresPlatformRepository {
   constructor(pool) {
@@ -16,6 +17,7 @@ export class PostgresPlatformRepository {
     this._telemetry  = new TelemetryRepository(pool);
     this._growth     = new GrowthRepository(pool);
     this._commercial = new CommercialRepository(pool);
+    this._users      = new UsersRepository(pool);
   }
 
   async query(text, params) {
@@ -98,4 +100,20 @@ export class PostgresPlatformRepository {
   seedDefaultIntegrations(...args)        { return this._commercial.seedDefaultIntegrations(...args); }
   logAuditEvent(...args)                  { return this._commercial.logAuditEvent(...args); }
   getAuditLog(...args)                    { return this._commercial.getAuditLog(...args); }
+
+  // ── users ─────────────────────────────────────────────────────────────────────
+  createUser(...args)                     { return this._users.createUser(...args); }
+  getUserByEmail(...args)                 { return this._users.getUserByEmail(...args); }
+  getUserById(...args)                    { return this._users.getUserById(...args); }
+  createUserSession(...args)              { return this._users.createUserSession(...args); }
+  getUserBySessionToken(...args)          { return this._users.getUserBySessionToken(...args); }
+  deleteUserSession(...args)              { return this._users.deleteUserSession(...args); }
+  deleteExpiredSessions(...args)          { return this._users.deleteExpiredSessions(...args); }
+  saveUserDecision(...args)               { return this._users.saveDecision(...args); }
+  listUserDecisions(...args)              { return this._users.listDecisions(...args); }
+  getUserDecision(...args)                { return this._users.getDecision(...args); }
+  deleteUserDecision(...args)             { return this._users.deleteDecision(...args); }
+  upsertPriceAlert(...args)               { return this._users.upsertPriceAlert(...args); }
+  listPriceAlerts(...args)                { return this._users.listPriceAlerts(...args); }
+  deletePriceAlert(...args)               { return this._users.deletePriceAlert(...args); }
 }

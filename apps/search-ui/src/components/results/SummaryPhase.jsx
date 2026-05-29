@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import FutureProofCard from './FutureProofCard';
 import Icon from '../shared/Icon';
+import { useAuthStore } from '../../stores/authStore';
+
+const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
+
+function getCsrfToken() {
+  const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : '';
+}
 
 function DecisionCertificate({ selectedCard }) {
   const { t } = useTranslation();
@@ -267,7 +275,77 @@ function FollowUpSection({ decisionRunId }) {
   );
 }
 
-export default function SummaryPhase({ selectedCard, timeline, ownershipChoice, onNewDecision, onBackToExplanation }) {
+function SaveDecisionButton({ selectedCard, profile }) {
+  const { t } = useTranslation();
+  const { user, setShowAuthModal, setAuthModalMode } = useAuthStore();
+  const [saveState, setSaveState] = useState('idle'); // idle | saving | saved | error
+
+  const handleSave = async () => {
+    if (!user) {
+      setAuthModalMode('login');
+      setShowAuthModal(true);
+      return;
+    }
+    setSaveState('saving');
+    const csrf = getCsrfToken();
+    try {
+      const res = await fetch(`${apiUrl}/user/decisions`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrf,
+        },
+        body: JSON.stringify({
+          domain: 'laptop-student-us',
+          irHash: selectedCard?.irHash,
+          title: selectedCard?.name,
+          profileSnapshot: profile,
+          decisionSnapshot: selectedCard,
+        }),
+      });
+      if (res.ok) {
+        setSaveState('saved');
+        setTimeout(() => setSaveState('idle'), 3000);
+      } else {
+        setSaveState('error');
+        setTimeout(() => setSaveState('idle'), 3000);
+      }
+    } catch {
+      setSaveState('error');
+      setTimeout(() => setSaveState('idle'), 3000);
+    }
+  };
+
+  const label =
+    saveState === 'saving'
+      ? t('auth.saving')
+      : saveState === 'saved'
+      ? t('auth.saved_ok')
+      : saveState === 'error'
+      ? 'Error — retry?'
+      : user
+      ? t('auth.save_decision')
+      : t('auth.sign_in_to_save');
+
+  return (
+    <button
+      className="btn btn-secondary"
+      onClick={handleSave}
+      disabled={saveState === 'saving' || saveState === 'saved'}
+      style={{
+        opacity: saveState === 'saving' ? 0.6 : 1,
+        color: saveState === 'saved' ? 'var(--accent-success)' : undefined,
+        borderColor: saveState === 'saved' ? 'var(--accent-success)' : undefined,
+      }}
+    >
+      <Icon name={saveState === 'saved' ? 'check' : 'bookmark'} />
+      {' '}{label}
+    </button>
+  );
+}
+
+export default function SummaryPhase({ selectedCard, timeline, ownershipChoice, onNewDecision, onBackToExplanation, profile }) {
   const { t } = useTranslation();
   return (
     <div className="phase-container active">
@@ -286,6 +364,7 @@ export default function SummaryPhase({ selectedCard, timeline, ownershipChoice, 
         <button className="btn btn-secondary" onClick={onBackToExplanation}>
           <Icon name="arrow-left" /> {t('buttons.back_to_ownership')}
         </button>
+        <SaveDecisionButton selectedCard={selectedCard} profile={profile} />
       </div>
     </div>
   );

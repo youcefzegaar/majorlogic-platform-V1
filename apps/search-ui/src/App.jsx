@@ -6,6 +6,7 @@ import { getDir } from './i18n/languages.js';
 import { useSessionProfile } from './hooks/useSessionProfile';
 import { useDecisionEngine } from './hooks/useDecisionEngine';
 import { useDecisionStore } from './stores/decisionStore';
+import { useAuthStore } from './stores/authStore';
 
 import AppSidebar from './components/shared/AppSidebar';
 import ProgressBar from './components/shared/ProgressBar';
@@ -15,6 +16,8 @@ import CardsPhase from './components/results/CardsPhase';
 import ExplanationPhase from './components/results/ExplanationPhase';
 import SummaryPhase from './components/results/SummaryPhase';
 import OwnershipPhase from './components/results/OwnershipPhase';
+import AuthModal from './components/auth/AuthModal';
+import MyDecisions from './components/account/MyDecisions';
 
 export default function App() {
   const [theme, setTheme] = useState('dark');
@@ -23,6 +26,7 @@ export default function App() {
   const [timeline, setTimeline] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [ownershipChoice, setOwnershipChoice] = useState(null);
+  const [showMyDecisions, setShowMyDecisions] = useState(false);
 
   const {
     phase, setPhase,
@@ -31,8 +35,12 @@ export default function App() {
     cameFromExplanation, setCameFromExplanation,
   } = useDecisionStore();
 
+  const { checkSession } = useAuthStore();
+
   const profile = useSessionProfile();
   const engine = useDecisionEngine();
+
+  useEffect(() => { checkSession(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
 
@@ -84,6 +92,7 @@ export default function App() {
       <AppSidebar
         phase={phase}
         onNewDecision={() => { setPhase(0); closeSidebar(); }}
+        onMyDecisions={() => setShowMyDecisions(true)}
         lang={lang} setLang={setLang}
         langMenuOpen={langMenuOpen} setLangMenuOpen={setLangMenuOpen}
         theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -175,10 +184,25 @@ export default function App() {
           <SummaryPhase
             selectedCard={selectedCard} timeline={timeline}
             ownershipChoice={ownershipChoice}
+            profile={profile}
             onNewDecision={() => setPhase(0)} onBackToExplanation={() => setPhase(4)}
           />
         )}
       </main>
+
+      {/* M3: Auth modal — always rendered, controlled by store */}
+      <AuthModal />
+
+      {/* M3: My Decisions overlay */}
+      {showMyDecisions && (
+        <MyDecisions
+          onLoad={(decision) => {
+            // Future: restore decision state from saved snapshot
+            console.info('Load decision', decision);
+          }}
+          onClose={() => setShowMyDecisions(false)}
+        />
+      )}
     </div>
   );
 }

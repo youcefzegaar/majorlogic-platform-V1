@@ -309,5 +309,21 @@
   "phase": {
     "final_summary_btn": "最终摘要",
     "back_to_cards": "返回卡片"
+  },
+  "auth": {
+    "login_title": "登录",
+    "register_title": "创建账户",
+    "email_label": "电子邮件",
+    "password_label": "密码",
+    "display_name_label": "显示名称",
+    "submit_login": "登录",
+    "submit_register": "创建账户",
+    "switch_to_register": "没有账户？注册",
+    "switch_to_login": "已有账户？登录",
+    "close": "关闭",
+    "save_decision": "保存决策",
+    "saving": "保存中...",
+    "saved_ok": "已保存",
+    "sign_in_to_save": "登录以保存"
   }
 }

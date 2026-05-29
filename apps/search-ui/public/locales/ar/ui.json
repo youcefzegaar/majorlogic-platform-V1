@@ -309,5 +309,21 @@
   "phase": {
     "final_summary_btn": "الملخص النهائي",
     "back_to_cards": "العودة للبطاقات"
+  },
+  "auth": {
+    "login_title": "تسجيل الدخول",
+    "register_title": "إنشاء حساب",
+    "email_label": "البريد الإلكتروني",
+    "password_label": "كلمة المرور",
+    "display_name_label": "الاسم المعروض",
+    "submit_login": "تسجيل الدخول",
+    "submit_register": "إنشاء حساب",
+    "switch_to_register": "ليس لديك حساب؟ سجّل الآن",
+    "switch_to_login": "لديك حساب بالفعل؟ سجّل دخولك",
+    "close": "إغلاق",
+    "save_decision": "حفظ القرار",
+    "saving": "جارٍ الحفظ...",
+    "saved_ok": "تم الحفظ",
+    "sign_in_to_save": "سجّل دخولك للحفظ"
   }
 }

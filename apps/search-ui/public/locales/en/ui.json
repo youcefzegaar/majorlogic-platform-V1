@@ -277,7 +277,14 @@
     "relaxed_specific": "\"{constraint}\" relaxed to find results — Σ(w·s)/Σ(w) = {score}%",
     "relaxed_generic": "One or more constraints relaxed — Σ(w·s)/Σ(w) = {score}%",
     "deterministic": "deterministic",
-    "constraint_relaxed": "constraint relaxed"
+    "constraint_relaxed": "constraint relaxed",
+    "ranking_title": "Why trust this ranking?",
+    "step_laptop_ranking": "Laptop ranking (money-blind)",
+    "step_laptop_desc": "Scored on specs, reviews, and your priorities only — affiliate status never seen.",
+    "step_store_ranking": "Store ranking (price-first)",
+    "step_store_desc": "Lowest price first, then vendor trust. Affiliate is tiebreaker #6 only.",
+    "ir_hash_label": "Decision sealed",
+    "view_mechanism": "See the full mechanism →"
   },
   "future": {
     "final_decision": "Final Decision",
@@ -302,5 +309,21 @@
   "phase": {
     "final_summary_btn": "Final Summary",
     "back_to_cards": "Back to Cards"
+  },
+  "auth": {
+    "login_title": "Sign In",
+    "register_title": "Create Account",
+    "email_label": "Email",
+    "password_label": "Password",
+    "display_name_label": "Display Name",
+    "submit_login": "Sign In",
+    "submit_register": "Create Account",
+    "switch_to_register": "Don't have an account? Register",
+    "switch_to_login": "Already have an account? Sign in",
+    "close": "Close",
+    "save_decision": "Save Decision",
+    "saving": "Saving...",
+    "saved_ok": "Saved",
+    "sign_in_to_save": "Sign in to save"
   }
 }

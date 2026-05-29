@@ -309,5 +309,21 @@
   "phase": {
     "final_summary_btn": "अंतिम सारांश",
     "back_to_cards": "कार्ड पर वापस"
+  },
+  "auth": {
+    "login_title": "साइन इन करें",
+    "register_title": "खाता बनाएं",
+    "email_label": "ईमेल",
+    "password_label": "पासवर्ड",
+    "display_name_label": "प्रदर्शन नाम",
+    "submit_login": "साइन इन करें",
+    "submit_register": "खाता बनाएं",
+    "switch_to_register": "खाता नहीं है? रजिस्टर करें",
+    "switch_to_login": "पहले से खाता है? साइन इन करें",
+    "close": "बंद करें",
+    "save_decision": "निर्णय सहेजें",
+    "saving": "सहेजा जा रहा है...",
+    "saved_ok": "सहेजा गया",
+    "sign_in_to_save": "सहेजने के लिए साइन इन करें"
   }
 }

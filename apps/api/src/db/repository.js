@@ -140,3 +140,31 @@ export async function loadJsonAsync(relativePath) {
   const raw = await fs.promises.readFile(path.join(root, relativePath), "utf8");
   return JSON.parse(raw);
 }
+
+// ─────────────────────────────────────────────
+// User Account Helper — convenience wrapper so route handlers
+// don't need to call getRepository() twice.
+// All methods mirror UsersRepository (via PostgresPlatformRepository).
+// ─────────────────────────────────────────────
+
+export async function getUsersRepository() {
+  const repo = await getRepository();
+  if (!repo) return null;
+
+  return {
+    createUser:             (...args) => repo.createUser(...args),
+    getUserByEmail:         (...args) => repo.getUserByEmail(...args),
+    getUserById:            (...args) => repo.getUserById(...args),
+    createUserSession:      (...args) => repo.createUserSession(...args),
+    getUserBySessionToken:  (...args) => repo.getUserBySessionToken(...args),
+    deleteUserSession:      (...args) => repo.deleteUserSession(...args),
+    deleteExpiredSessions:  (...args) => repo.deleteExpiredSessions(...args),
+    saveDecision:           (...args) => repo.saveUserDecision(...args),
+    listDecisions:          (...args) => repo.listUserDecisions(...args),
+    getDecision:            (...args) => repo.getUserDecision(...args),
+    deleteDecision:         (...args) => repo.deleteUserDecision(...args),
+    upsertPriceAlert:       (...args) => repo.upsertPriceAlert(...args),
+    listPriceAlerts:        (...args) => repo.listPriceAlerts(...args),
+    deletePriceAlert:       (...args) => repo.deletePriceAlert(...args),
+  };
+}
