@@ -7,15 +7,11 @@ export default defineConfig({
     // Phase-level code splitting — each lazy-loaded phase becomes its own chunk
     rollupOptions: {
       output: {
-        manualChunks: {
-          // React ecosystem
-          vendor: ['react', 'react-dom'],
-          // State management
-          state: ['zustand'],
-          // i18n (large, rarely changes)
-          i18n: ['react-i18next', 'i18next'],
-          // Admin/heavy components loaded lazily
-          charts: ['recharts'],
+        manualChunks(id) {
+          if (id.includes('react-dom') || id.includes('node_modules/react/')) return 'vendor';
+          if (id.includes('zustand')) return 'state';
+          if (id.includes('react-i18next') || id.includes('i18next')) return 'i18n';
+          if (id.includes('recharts')) return 'charts';
         },
       },
     },
