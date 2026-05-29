@@ -153,13 +153,25 @@ export class DecisionRepository {
       [domainId]
     );
 
+    // Account telemetry (M3 tables — best-effort, may not exist in all envs)
+    let accountCounts = { registered_users: 0, saved_decisions: 0, active_price_alerts: 0 };
+    try {
+      const accountResult = await this.pool.query(
+        `SELECT
+           (SELECT count(*)::int FROM ml_users.users) AS registered_users,
+           (SELECT count(*)::int FROM ml_users.saved_decisions) AS saved_decisions,
+           (SELECT count(*)::int FROM ml_users.price_alerts WHERE active = TRUE) AS active_price_alerts`
+      );
+      if (accountResult.rows[0]) accountCounts = accountResult.rows[0];
+    } catch { /* ml_users schema may not exist in older envs — degrade gracefully */ }
+
     const counts = Object.fromEntries(
       countsResult.rows.map((row) => [row.metric, row.row_count])
     );
 
     return {
       domainId,
-      counts,
+      counts: { ...counts, ...accountCounts },
       avgIntegrity: (integrityResult.rows[0]?.avg_integrity ?? 100) / 100,
       latestIngestionRun: latestIngestionResult.rows[0] ?? null,
       latestPublishRun: latestPublishResult.rows[0] ?? null,

@@ -44,3 +44,42 @@ This keeps the platform easy to demo while making the production path explicit.
 ## Why this matters
 
 This is the first real backbone step toward Supabase/Postgres without locking the platform to the current laptop niche.
+
+---
+
+## M3 — User Accounts (schemaVersion: 2)
+
+Added in migrations 0030–0032 (schema `ml_users`):
+
+| Migration | What it adds |
+|-----------|-------------|
+| `0030_user_accounts.sql` | `ml_users.{users, user_sessions, saved_decisions, price_alerts}` |
+| `0031_shared_links.sql` | `ml_users.shared_links` (expiring share tokens, no PII) |
+| `0032_feedback_user_id.sql` | `user_id` column on `ml_telemetry.user_feedback` |
+
+### Run order for a fresh database
+
+```bash
+# 1. Bootstrap core schema (runs all migrations in order)
+node scripts/bootstrap-supabase.js
+
+# 2. Verify connection
+node scripts/check-supabase-connection.js
+```
+
+### Key design decisions
+
+- **Sessions** use `randomBytes(32).toString('hex')` in the cookie; only the SHA-256 hash is stored in DB.
+- **Passwords** use bcrypt (cost 10). The login always runs bcrypt.compare even when the user is not found (timing-safe).
+- **User errors** return the same generic message for "user not found" and "wrong password" (no enumeration).
+- **Shared links** contain only non-PII snapshot data; the token is a random 32-byte hex string (no user info in token).
+- **Credential encryption** uses AES-256-GCM with a per-record random IV (M-pre upgrade from CBC).
+
+### Environment variables required for accounts
+
+```
+DATABASE_URL=postgresql://...        # Supabase connection string
+BASE_URL=https://majorlogic.ai       # Used to construct share link URLs
+COOKIE_SECRET=<48-char hex>          # Signs the session cookie
+ENCRYPTION_KEY=<32-char hex>         # Encrypts third-party credentials at rest
+```

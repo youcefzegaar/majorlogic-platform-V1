@@ -1,13 +1,16 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  Activity, 
-  BrainCircuit, 
-  ShieldCheck, 
-  GitMerge, 
-  ArrowUpRight, 
-  RefreshCw, 
-  Plus 
+import {
+  Activity,
+  BrainCircuit,
+  ShieldCheck,
+  GitMerge,
+  ArrowUpRight,
+  RefreshCw,
+  Plus,
+  Users,
+  Bookmark,
+  Bell,
 } from 'lucide-react';
 import { adminService } from '../../api/apiClient';
 import { useAppStore } from '../../stores/appStore';
@@ -19,7 +22,8 @@ const DashboardHome = () => {
     queryFn: adminService.getOverview,
   });
 
-  const metrics = dashboardData?.data?.overview || { total: 0, avgConfidence: 0, avgIntegrity: 0, recoveries: 0 };
+  const counts = dashboardData?.data?.counts || {};
+  const avgIntegrity = dashboardData?.data?.avgIntegrity ?? null;
   const domains = dashboardData?.data?.domains || [];
   const interventions = dashboardData?.data?.latestInterventions || [];
 
@@ -40,30 +44,57 @@ const DashboardHome = () => {
         </div>
       </div>
 
-      <div className="grid-4" style={{ marginBottom: '32px' }}>
-        <MetricCard 
-          title="Total Decisions" 
-          value={metrics.total_decisions || 0} 
+      <div className="grid-4" style={{ marginBottom: '24px' }}>
+        <MetricCard
+          title="Total Decisions"
+          value={counts.decision_runs ?? 0}
           icon={<Activity size={20} color="var(--accent-primary)" />}
           trend="Tracking live"
         />
-        <MetricCard 
-          title="Avg. Confidence" 
-          value={`${metrics.avg_confidence || 0}%`} 
-          icon={<BrainCircuit size={20} color="var(--warning)" />}
-          subtitle="System certainty level"
-        />
-        <MetricCard 
-          title="Avg. Integrity Score" 
-          value={`${metrics.avg_integrity || 0}%`} 
+        <MetricCard
+          title="Avg. Integrity Score"
+          value={avgIntegrity != null ? `${Math.round(avgIntegrity * 100)}%` : '—'}
           icon={<ShieldCheck size={20} color="var(--success)" />}
           subtitle="Constraint adherence"
         />
-        <MetricCard 
-          title="Recoveries (Relaxed)" 
-          value={metrics.total_recoveries || 0} 
+        <MetricCard
+          title="Source Observations"
+          value={counts.source_observations ?? 0}
+          icon={<BrainCircuit size={20} color="var(--warning)" />}
+          subtitle="Raw ingested records"
+        />
+        <MetricCard
+          title="Published Entities"
+          value={counts.published_entities ?? 0}
           icon={<GitMerge size={20} color="var(--accent-secondary)" />}
-          subtitle="Zero-result evasions"
+          subtitle="Active catalog size"
+        />
+      </div>
+
+      <div className="grid-4" style={{ marginBottom: '32px' }}>
+        <MetricCard
+          title="Registered Users"
+          value={counts.registered_users ?? 0}
+          icon={<Users size={20} color="var(--accent-primary)" />}
+          subtitle="M3 account holders"
+        />
+        <MetricCard
+          title="Saved Decisions"
+          value={counts.saved_decisions ?? 0}
+          icon={<Bookmark size={20} color="var(--success)" />}
+          subtitle="User-saved recommendations"
+        />
+        <MetricCard
+          title="Active Price Alerts"
+          value={counts.active_price_alerts ?? 0}
+          icon={<Bell size={20} color="var(--warning)" />}
+          subtitle="Watching for price drops"
+        />
+        <MetricCard
+          title="User Feedback"
+          value={counts.user_feedback ?? 0}
+          icon={<Activity size={20} color="var(--accent-secondary)" />}
+          subtitle="Satisfaction signals"
         />
       </div>
 
