@@ -48,6 +48,20 @@ export async function executeUniversalPipeline({
   // 2. Decision Core (Orchestrator + Kernel)
   const decision = await orchestrator.run(ruleset, publishedEntities, profile);
 
+  // Post-process: attach structured explanation per card (M1)
+  if (decision.cards?.length > 0) {
+    const locale = profile.locale ?? 'en';
+    decision.cards.forEach((card, idx) => {
+      const runnerUp = decision.cards.find((c, i) => i !== idx) ?? null;
+      card.explanation = orchestrator.explainer.buildExplanation(
+        card.trace ?? {},
+        profile,
+        runnerUp ? { title: runnerUp.title, score: runnerUp.score } : null,
+        locale
+      );
+    });
+  }
+
   const catalog = new PublishedCatalog({
     entities: publishedEntities,
     domainPack: domainPack || { meta: { domainId: ruleset.domainId } }
@@ -98,6 +112,7 @@ export async function executeUniversalPipeline({
   }
 
   return {
+    schemaVersion: 2,
     domain: { domainId: ruleset.domainId },
     governance,
     decision,

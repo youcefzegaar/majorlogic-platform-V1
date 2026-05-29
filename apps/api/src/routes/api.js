@@ -134,6 +134,50 @@ export default async function apiRoutes(fastify, { isProd }) {
     }
   });
 
+  fastify.post("/api/v1/:domain/decision/simulate", {
+    schema: {
+      body: {
+        type: "object",
+        properties: {
+          major: { type: "string" },
+          locale: { type: "string" },
+          budgetUsd: { type: "number", minimum: 100, maximum: 20000 },
+          preferences: { type: "object", additionalProperties: true },
+          sliders: { type: "object", additionalProperties: true },
+          context: { type: "object", additionalProperties: true },
+          productIntent: { type: "object", additionalProperties: true }
+        },
+        required: ["major", "budgetUsd"]
+      }
+    }
+  }, async (request, reply) => {
+    const { domain } = request.params;
+    if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
+    try {
+      const { getDomainController } = await import("../registry.js");
+      const controller = getDomainController(domain);
+      const result = await controller.runPipeline(request.body);
+      return reply.send({
+        schemaVersion: result.schemaVersion ?? 2,
+        cards: result.decision?.cards?.map(c => ({
+          entityId: c.entityId,
+          cardType: c.cardType,
+          title: c.title,
+          score: c.score,
+          priceUsd: c.priceUsd,
+          explanation: c.explanation ?? null,
+        })) ?? [],
+        status: result.decision?.status ?? 'ok',
+      });
+    } catch (err) {
+      request.log.error({ err, domain }, "Simulate failed");
+      return reply.status(500).send({
+        error: "simulate_failed",
+        message: isProd ? "Internal Server Error" : err.message
+      });
+    }
+  });
+
   // CSV Export (HMAC token only — no static secret)
   fastify.get("/api/v1/:domain/growth/leads/export", {
     config: {
