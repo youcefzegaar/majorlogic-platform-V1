@@ -82,7 +82,11 @@ export async function executeUniversalPipeline({
   let integrityCertificate = null;
   try {
     const { runAll } = await import("../../governance-evaluator/src/index.js");
-    integrityCertificate = runAll(decision, null, { governance });
+    const evalCtx = {
+      governance,
+      catalogTruth: { total: publishedEntities.length },
+    };
+    integrityCertificate = runAll(decision, null, evalCtx);
     if (repository && integrityCertificate.decisionRunId) {
       await repository.saveCertificate({
         decisionRunId: integrityCertificate.decisionRunId,

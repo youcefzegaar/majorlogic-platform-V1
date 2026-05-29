@@ -25,10 +25,16 @@ function makeDecision({ heroHasCost = true, heroHasTradeoff = true, cards = null
   };
 }
 
+// Valid ctx for tests that don't target a specific guard
+const validCtx = {
+  governance: { ok: true, violations: [], warnings: [] },
+  catalogTruth: { total: 5 },
+};
+
 describe('governance-evaluator', () => {
   it('all guards pass on a valid decision', () => {
     const decision = makeDecision();
-    const cert = runAll(decision, null, { governance: { ok: true, violations: [], warnings: [] } });
+    const cert = runAll(decision, null, validCtx);
 
     expect(cert.overallPassed).toBe(true);
     expect(cert.integrityScore).toBe(100);
@@ -39,7 +45,7 @@ describe('governance-evaluator', () => {
 
   it('sacrifice guard fails when hero has no tradeoff (permanent M1 guarantee)', () => {
     const decision = makeDecision({ heroHasTradeoff: false });
-    const cert = runAll(decision, null, { governance: { ok: true, violations: [], warnings: [] } });
+    const cert = runAll(decision, null, validCtx);
 
     const sacrificeGuard = cert.guards.find(g => g.id === 'sacrifice');
     expect(sacrificeGuard.passed).toBe(false);
@@ -56,7 +62,7 @@ describe('governance-evaluator', () => {
       { cardType: 'alt', entityId: 'c', score: 60, bestOffer: { isAffiliate: false }, traceScores: {}, explanation: { cost: null, tradeoff: null } },
     ];
     const decision = makeDecision({ cards });
-    const cert = runAll(decision, null, { governance: { ok: true, violations: [], warnings: [] } });
+    const cert = runAll(decision, null, validCtx);
 
     const moneyGuard = cert.guards.find(g => g.id === 'money-separation');
     expect(moneyGuard.passed).toBe(false);
@@ -67,7 +73,8 @@ describe('governance-evaluator', () => {
   it('governance-drift guard fails when governance violations exist', () => {
     const decision = makeDecision();
     const cert = runAll(decision, null, {
-      governance: { ok: false, violations: ['Platform drift: missing domainId'], warnings: [] }
+      ...validCtx,
+      governance: { ok: false, violations: ['Platform drift: missing domainId'], warnings: [] },
     });
 
     const driftGuard = cert.guards.find(g => g.id === 'governance-drift');
@@ -75,17 +82,32 @@ describe('governance-evaluator', () => {
     expect(driftGuard.evidence.violations).toHaveLength(1);
   });
 
-  it('integrityScore is computed correctly from severity weights', () => {
-    // If only the 'high' guard fails (sacrifice = critical=40, money-sep = critical=40, drift = high=20)
-    // total = 100, earned when drift fails = 80 → score = 80%
+  it('catalog-truth guard fails when fewer than 3 entities are published', () => {
     const decision = makeDecision();
     const cert = runAll(decision, null, {
-      governance: { ok: false, violations: ['drift'], warnings: [] } // high guard fails
+      ...validCtx,
+      catalogTruth: { total: 1 },
     });
 
-    // critical guards pass (score 80) out of total 100 → 80%
-    expect(cert.integrityScore).toBe(80);
+    const catalogGuard = cert.guards.find(g => g.id === 'catalog-truth');
+    expect(catalogGuard.passed).toBe(false);
+    expect(catalogGuard.evidence.publishedEntityCount).toBe(1);
+    expect(cert.overallPassed).toBe(false);
+  });
+
+  it('integrityScore is computed correctly from severity weights', () => {
+    // Guards: sacrifice=critical(40), money-sep=critical(40), drift=high(20), catalog-truth=high(20)
+    // total = 120. When only drift fails: earned = 40+40+20 = 100 → score = 83%
+    const decision = makeDecision();
+    const cert = runAll(decision, null, {
+      ...validCtx,
+      governance: { ok: false, violations: ['drift'], warnings: [] }, // high guard fails
+    });
+
+    // critical + catalog-truth guards pass (score 100) out of total 120 → 83%
+    expect(cert.integrityScore).toBe(83);
     expect(cert.guardsMap).toHaveProperty('governance-drift');
+    expect(cert.guardsMap).toHaveProperty('catalog-truth');
     expect(cert.guardsMap).toHaveProperty('sacrifice');
     expect(cert.guardsMap).toHaveProperty('money-separation');
   });

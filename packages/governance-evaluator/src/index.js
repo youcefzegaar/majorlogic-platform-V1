@@ -4,13 +4,15 @@
  * Contract: { id, severity, evaluate(decision, trace, ctx) → { id, severity, passed, evidence } }
  * runAll(decision, trace, ctx) → IntegrityCertificate
  *
- * Three synchronous guards (fast, non-blocking):
+ * Four synchronous guards (fast, non-blocking):
  *   1. governance-drift  — wraps enforceGovernance result from ctx
- *   2. sacrifice         — hero card must have cost + tradeoff (permanent M1 guarantee)
- *   3. money-separation  — Spearman rank–affiliate correlation + no commercial fields in scoring
+ *   2. catalog-truth     — catalog must have ≥ 3 published entities (ctx.catalogTruth.total)
+ *   3. sacrifice         — hero card must have cost + tradeoff (permanent M1 guarantee)
+ *   4. money-separation  — Spearman rank–affiliate correlation + no commercial fields in scoring
  *
  * Guards run AFTER the decision and NEVER alter it (Observer, not Salesman).
  * Governance must never block a user's decision — all errors caught internally.
+ * Determinism is probed async at 5% sampling rate (G.5) via saveDeterminismProbe.
  */
 
 // Severity weights for integrityScore calculation
@@ -51,7 +53,23 @@ function evaluateGovernanceDrift(_decision, _trace, ctx) {
   };
 }
 
-// ── Guard 2: Sacrifice always shown ──────────────────────────────────────────
+// ── Guard 2: Catalog truth ────────────────────────────────────────────────────
+
+function evaluateCatalogTruth(_decision, _trace, ctx) {
+  const total = ctx?.catalogTruth?.total ?? 0;
+  const passed = total >= 3;
+  return {
+    id: 'catalog-truth',
+    severity: 'high',
+    passed,
+    evidence: {
+      publishedEntityCount: total,
+      minRequired: 3,
+    },
+  };
+}
+
+// ── Guard 3: Sacrifice always shown ──────────────────────────────────────────
 
 function evaluateSacrifice(decision) {
   const cards = Array.isArray(decision?.cards) ? decision.cards : [];
@@ -70,7 +88,7 @@ function evaluateSacrifice(decision) {
   };
 }
 
-// ── Guard 3: Money-separation ─────────────────────────────────────────────────
+// ── Guard 4: Money-separation ─────────────────────────────────────────────────
 
 function evaluateMoneySeparation(decision) {
   const cards = Array.isArray(decision?.cards) ? decision.cards : [];
@@ -111,7 +129,7 @@ function evaluateMoneySeparation(decision) {
 
 // ── Registry + runAll ─────────────────────────────────────────────────────────
 
-const EVALUATORS = [evaluateGovernanceDrift, evaluateSacrifice, evaluateMoneySeparation];
+const EVALUATORS = [evaluateGovernanceDrift, evaluateCatalogTruth, evaluateSacrifice, evaluateMoneySeparation];
 
 /**
  * Run all evaluators and return an IntegrityCertificate.

@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { sendWelcomeEmail } from "../../../../packages/email-service/src/index.js";
+import { sendTelegramAlert } from "../monitoring/telegram.js";
 import { getValidDomains } from "../registry.js";
 
 export default async function apiRoutes(fastify, { isProd }) {
@@ -32,6 +33,21 @@ export default async function apiRoutes(fastify, { isProd }) {
       const { getDomainController } = await import("../registry.js");
       const controller = getDomainController(domain);
       const result = await controller.runPipeline(request.body);
+
+      // Instant governance alert — fire-and-forget, never blocks response
+      const cert = result?.integrityCertificate;
+      if (cert && !cert.overallPassed) {
+        const failedIds = cert.guards
+          .filter(g => !g.passed)
+          .map(g => `• ${g.id} (${g.severity})`)
+          .join('\n');
+        sendTelegramAlert(
+          `⚠️ *انتهاك نزاهة — MajorLogic*\n\n` +
+          `النزاهة: ${cert.integrityScore}% | قرار: \`${cert.decisionRunId ?? 'unknown'}\`\n\n` +
+          `حراس فاشلة:\n${failedIds}`
+        );
+      }
+
       return reply.send(result);
     } catch (err) {
       request.log.error({ err, domain }, "Decision run failed");
