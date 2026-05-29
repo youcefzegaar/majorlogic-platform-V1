@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import ExplainabilityPanel from './ExplainabilityPanel';
+import Icon from '../shared/Icon';
 
 export default function ExplanationPhase({ selectedCard, explanationTab, setExplanationTab, onFinalSummary, onBackToCards }) {
   const { t } = useTranslation();
