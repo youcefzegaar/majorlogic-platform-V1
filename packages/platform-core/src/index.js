@@ -19,6 +19,7 @@ export async function executeUniversalPipeline({
   publishedEntities,
   catalogVersion = null,
   publishRunId = null,
+  catalogFreshness = null,  // M13: { publishedAt, ageHours, isStale, slaHours }
   repository = null,
   domainPack = null,
   aiProvider = null   // optional: { generate(prompt) → string } — enables AI narratives
@@ -156,5 +157,6 @@ export async function executeUniversalPipeline({
     trust,
     growth,
     integrityCertificate,
+    catalogFreshness,
   };
 }

@@ -185,7 +185,8 @@ export function useDecisionEngine() {
   const [detectedConflicts, setDetectedConflicts] = useState([]);
   const [decisionMetadata, setDecisionMetadata] = useState({
     relaxedConstraint: null,
-    integrityScore: 1.0
+    integrityScore: 1.0,
+    catalogFreshness: null,
   });
   const [decisionRunId, setDecisionRunId_] = useState(null);
 
@@ -469,6 +470,7 @@ export function useDecisionEngine() {
         relaxedConstraint: result.decision?.relaxedConstraint || null,
         integrityScore: rawIntegrity <= 1.0 ? Math.round(rawIntegrity * 100) : Math.round(rawIntegrity),
         irHash: result.decision?.governance?.irHash ?? null,
+        catalogFreshness: result.catalogFreshness ?? null,
       });
       setDetectedConflicts(localConflicts);
       const runId = result.decision?.decisionRunId ?? null;

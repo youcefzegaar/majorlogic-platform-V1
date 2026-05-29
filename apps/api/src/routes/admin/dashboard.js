@@ -141,7 +141,7 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
     const repository = await getRepository();
     if (!repository) return sendError(reply, unavailable("Database is not available", "db_offline"));
 
-    const [overview, certStats, feedbackStats] = await Promise.all([
+    const [overview, certStats, feedbackStats, freshness] = await Promise.all([
       repository.getAdminOverview({ domainId: DEFAULT_DOMAIN }),
       repository.getCertificateStats({ sinceDays: 7 }).catch(() => null),
       repository.pool.query(`
@@ -151,6 +151,7 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
         FROM ml_telemetry.user_feedback
         WHERE received_at >= NOW() - INTERVAL '7 days'
       `).catch(() => ({ rows: [{}] })),
+      repository.getCatalogFreshness({ domainId: DEFAULT_DOMAIN }).catch(() => null),
     ]);
 
     const fb = feedbackStats?.rows?.[0] ?? {};
@@ -177,6 +178,14 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
           count7d: fb.count_7d ?? 0,
           avgScore7d: fb.avg_score_7d ?? null,
           provisional: (fb.count_7d ?? 0) < 10,
+        },
+        catalog: {
+          entityCount: freshness?.entityCount ?? null,
+          oldestPublishedAt: freshness?.oldestPublishedAt ?? null,
+          newestPublishedAt: freshness?.newestPublishedAt ?? null,
+          oldestAgeHours: freshness?.oldestAgeHours ?? null,
+          isStale: freshness?.isStale ?? null,
+          slaHours: freshness?.slaHours ?? 24,
         },
         operations: {
           uptime: process.uptime(),

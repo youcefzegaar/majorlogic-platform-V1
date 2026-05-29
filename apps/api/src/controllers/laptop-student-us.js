@@ -233,10 +233,11 @@ export async function runPipeline(profile) {
 
     const result = await executeUniversalPipeline({
       profile,
-      domainPack:       laptopStudentUsDomainPack,
-      publishedEntities:publishedCatalogState.entities,
-      catalogVersion:   publishedCatalogState.catalogVersion,
-      publishRunId:     publishedCatalogState.publishRunId,
+      domainPack:        laptopStudentUsDomainPack,
+      publishedEntities: publishedCatalogState.entities,
+      catalogVersion:    publishedCatalogState.catalogVersion,
+      publishRunId:      publishedCatalogState.publishRunId,
+      catalogFreshness:  publishedCatalogState.freshness ?? null,
       decisionConfig,
       repository,
       aiProvider

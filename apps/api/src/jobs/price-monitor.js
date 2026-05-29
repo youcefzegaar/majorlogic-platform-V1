@@ -8,6 +8,7 @@
  */
 
 import { sendPriceDropAlert } from "../../../../packages/email-service/src/index.js";
+import { sendTelegramAlert } from "../monitoring/telegram.js";
 
 const DROP_THRESHOLD = 0.03; // 3% price drop triggers alert
 
@@ -112,6 +113,16 @@ async function processUserAlerts(repository, cache, results) {
 
 export async function runPriceMonitor(repository) {
   const results = { checked: 0, alerted: 0, errors: 0 };
+
+  // M13.3: Alert if catalog is stale before processing price alerts
+  try {
+    const domainId = process.env.DEFAULT_DOMAIN ?? "laptop-student-us";
+    const freshness = await repository.getCatalogFreshness({ domainId });
+    if (freshness.isStale) {
+      const ageStr = freshness.oldestAgeHours != null ? `${Math.round(freshness.oldestAgeHours)}h` : '?';
+      sendTelegramAlert(`⚠️ *MajorLogic — بيانات الكتالوج قديمة*\n\nأقدم سجل: ${ageStr} (SLA: ${freshness.slaHours}h)\nعدد المنتجات: ${freshness.entityCount ?? '?'}\n\nالأسعار المُرسَلة قد لا تعكس الواقع — تحقق من pipeline.`);
+    }
+  } catch { /* non-fatal — continue regardless */ }
 
   // Load both lead sets to know which domains to cache
   const [growthLeads, userAlerts] = await Promise.all([

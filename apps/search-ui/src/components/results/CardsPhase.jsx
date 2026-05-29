@@ -41,6 +41,23 @@ export default function CardsPhase({
 
       <TrustPanel irHash={decisionMetadata.irHash ?? null} />
 
+      {decisionMetadata.catalogFreshness?.isStale && (
+        <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.4)', borderRadius: 10, padding: '10px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--accent-warning, #f59e0b)' }}>
+          <Icon name="clock" />
+          <span>
+            {t('cards.stale_data_warning', 'Prices may be outdated')}
+            {decisionMetadata.catalogFreshness.publishedAt && (
+              <> — {t('cards.data_as_of', 'data as of')} {new Date(decisionMetadata.catalogFreshness.publishedAt).toLocaleDateString()}</>
+            )}
+          </span>
+        </div>
+      )}
+      {!decisionMetadata.catalogFreshness?.isStale && decisionMetadata.catalogFreshness?.publishedAt && (
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8, textAlign: 'right' }}>
+          {t('cards.data_as_of', 'Data as of')} {new Date(decisionMetadata.catalogFreshness.publishedAt).toLocaleDateString()}
+        </div>
+      )}
+
       <div className="cards-layout">
         <div className="cards-main">
           {decisionMetadata.relaxedConstraint === 'within_budget' && (

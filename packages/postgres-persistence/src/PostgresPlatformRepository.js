@@ -45,6 +45,7 @@ export class PostgresPlatformRepository {
   completePublishRun(...args)             { return this._catalog.completePublishRun(...args); }
   publishEntities(...args)                { return this._catalog.publishEntities(...args); }
   getPublishedEntitySnapshot(...args)     { return this._catalog.getPublishedEntitySnapshot(...args); }
+  getCatalogFreshness(...args)            { return this._catalog.getCatalogFreshness(...args); }
   createPipelineRun(...args)              { return this._catalog.createPipelineRun(...args); }
   updatePipelineRunStatus(...args)        { return this._catalog.updatePipelineRunStatus(...args); }
   createPipelineStage(...args)            { return this._catalog.createPipelineStage(...args); }

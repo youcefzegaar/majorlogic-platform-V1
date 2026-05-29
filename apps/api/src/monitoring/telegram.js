@@ -111,6 +111,12 @@ export async function sendDailyReport(report) {
     ? `• متوسط الرضا: ${report.feedback.avgScore7d.toFixed(1)}/5 (${report.feedback.count7d} تقييم)${report.feedback.provisional ? '\n  ' + provisional('') : ''}`
     : '• لا تقييمات بعد';
 
+  const catalogLine = report.catalog?.isStale
+    ? `🗄️ *الكتالوج* — ⚠️ *بيانات قديمة (${report.catalog.oldestAgeHours != null ? Math.round(report.catalog.oldestAgeHours) + 'h' : '?'} > SLA ${report.catalog.slaHours}h)*`
+    : report.catalog?.entityCount != null
+      ? `🗄️ *الكتالوج* — ${report.catalog.entityCount} منتج ✅ (${report.catalog.oldestAgeHours != null ? Math.round(report.catalog.oldestAgeHours) + 'h' : '?'} منذ آخر نشر)`
+      : '';
+
   const message = `📊 *MajorLogic — Daily Integrity Report*
 ⏰ ${ts}
 
@@ -118,6 +124,8 @@ export async function sendDailyReport(report) {
 • القرارات (7 أيام): ${report.decisions.total}
 ${integrityLine}
 ${sacrificeLine}
+
+${catalogLine}
 
 ⚙️ *العمليات*
 • Uptime: ${Math.floor(report.operations.uptime / 3600)}h | RAM: ${report.operations.memoryMb}MB

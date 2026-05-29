@@ -32,7 +32,9 @@
     "no_results_body": "Adjust your requirements and try again.",
     "renewed_gem": "Hidden Gem — Renewed Opportunity",
     "renewed_gem_sub": "This device exceeds your budget at retail, but its certified-renewed price fits — and it outperforms your hero pick.",
-    "devices_analyzed": "{count, plural, one {# device} other {# devices}} analyzed"
+    "devices_analyzed": "{count, plural, one {# device} other {# devices}} analyzed",
+    "stale_data_warning": "Prices may be outdated",
+    "data_as_of": "data as of"
   },
   "explanation": {
     "tab_decision": "The Decision",

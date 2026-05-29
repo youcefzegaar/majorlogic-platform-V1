@@ -128,6 +128,32 @@ export class CatalogRepository {
     );
   }
 
+  // M13: Returns oldest/newest published_at + stale flag for the domain's current catalog.
+  // slaHours defaults to CATALOG_FRESHNESS_SLA_HOURS env var, falling back to 24.
+  async getCatalogFreshness({ domainId, slaHours = null }) {
+    const sla = slaHours ?? Number(process.env.CATALOG_FRESHNESS_SLA_HOURS ?? 24);
+    const result = await this.pool.query(
+      `SELECT
+         COUNT(*)::int                         AS entity_count,
+         MIN(published_at)                     AS oldest_published_at,
+         MAX(published_at)                     AS newest_published_at,
+         EXTRACT(EPOCH FROM (NOW() - MIN(published_at))) / 3600 AS oldest_age_hours
+       FROM ml_catalog.published_entities
+       WHERE domain_id = $1`,
+      [domainId]
+    );
+    const row = result.rows[0] ?? {};
+    const oldestAgeHours = row.oldest_age_hours != null ? parseFloat(row.oldest_age_hours) : null;
+    return {
+      entityCount: row.entity_count ?? 0,
+      oldestPublishedAt: row.oldest_published_at ?? null,
+      newestPublishedAt: row.newest_published_at ?? null,
+      oldestAgeHours,
+      slaHours: sla,
+      isStale: oldestAgeHours != null ? oldestAgeHours > sla : true,
+    };
+  }
+
   async createPipelineStage({ id, runId, stageName }) {
     await this.pool.query(
       `insert into ml_catalog.pipeline_stages (id, run_id, stage_name, status, started_at)

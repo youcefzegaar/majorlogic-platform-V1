@@ -32,7 +32,9 @@
     "no_results_body": "عدّل متطلباتك وحاول مجدداً.",
     "renewed_gem": "فرصة خفية — جهاز مجدَّد",
     "renewed_gem_sub": "هذا الجهاز يتجاوز ميزانيتك بسعره الجديد، لكن سعره المجدَّد يناسبها.",
-    "devices_analyzed": "{count, plural, =0 {لا أجهزة} one {جهاز واحد} two {جهازان} few {# أجهزة} many {# جهازاً} other {# جهاز}} تم تحليله"
+    "devices_analyzed": "{count, plural, =0 {لا أجهزة} one {جهاز واحد} two {جهازان} few {# أجهزة} many {# جهازاً} other {# جهاز}} تم تحليله",
+    "stale_data_warning": "قد تكون الأسعار غير محدَّثة",
+    "data_as_of": "البيانات بتاريخ"
   },
   "explanation": {
     "tab_decision": "القرار",

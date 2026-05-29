@@ -14,8 +14,9 @@
 import { sendDailyReport } from "../monitoring/telegram.js";
 
 async function buildReport(repository) {
-  const [overview, certStats, feedbackResult] = await Promise.all([
-    repository.getAdminOverview({ domainId: process.env.DEFAULT_DOMAIN ?? "laptop-student-us" }),
+  const domainId = process.env.DEFAULT_DOMAIN ?? "laptop-student-us";
+  const [overview, certStats, feedbackResult, freshness] = await Promise.all([
+    repository.getAdminOverview({ domainId }),
     repository.getCertificateStats({ sinceDays: 7 }).catch(() => null),
     repository.pool.query(`
       SELECT
@@ -24,6 +25,7 @@ async function buildReport(repository) {
       FROM ml_telemetry.user_feedback
       WHERE received_at >= NOW() - INTERVAL '7 days'
     `).catch(() => ({ rows: [{}] })),
+    repository.getCatalogFreshness({ domainId }).catch(() => null),
   ]);
 
   const fb = feedbackResult?.rows?.[0] ?? {};
@@ -46,6 +48,12 @@ async function buildReport(repository) {
       count7d: fb.count_7d ?? 0,
       avgScore7d: fb.avg_score_7d ?? null,
       provisional: (fb.count_7d ?? 0) < 10,
+    },
+    catalog: {
+      entityCount: freshness?.entityCount ?? null,
+      oldestAgeHours: freshness?.oldestAgeHours ?? null,
+      isStale: freshness?.isStale ?? null,
+      slaHours: freshness?.slaHours ?? 24,
     },
     operations: {
       uptime: process.uptime(),
