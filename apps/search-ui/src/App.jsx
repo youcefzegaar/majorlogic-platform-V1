@@ -20,6 +20,7 @@ import AuthModal from './components/auth/AuthModal';
 import MyDecisions from './components/account/MyDecisions';
 import ConstitutionPage from './components/shared/ConstitutionPage';
 import SettingsModal from './components/account/SettingsModal';
+import Icon from './components/shared/Icon';
 
 export default function App() {
   const [theme, setTheme] = useState('dark');

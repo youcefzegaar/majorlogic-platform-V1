@@ -214,7 +214,10 @@
     "new_decision": "新决策",
     "my_decisions": "我的决策",
     "saved": "已保存",
-    "settings": "设置"
+    "constitution": "我们的理念",
+    "settings": "设置",
+    "privacy": "隐私",
+    "terms": "条款"
   },
   "intake": {
     "goal_title": "您想达成什么目标？",

@@ -214,7 +214,10 @@
     "new_decision": "नया निर्णय",
     "my_decisions": "मेरे निर्णय",
     "saved": "सहेजे गए",
-    "settings": "सेटिंग्स"
+    "constitution": "हमारा दर्शन",
+    "settings": "सेटिंग्स",
+    "privacy": "गोपनीयता",
+    "terms": "शर्तें"
   },
   "intake": {
     "goal_title": "आप क्या हासिल करने की कोशिश कर रहे हैं?",

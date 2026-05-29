@@ -1,10 +1,10 @@
 import {
   AlertTriangle, ArrowDown, ArrowLeft, ArrowRight, ArrowUp,
   Bell, Bookmark, Brain, Check, CheckCheck, CheckCircle,
-  Edit, ExternalLink, History, Info, Menu, Moon,
+  Edit, ExternalLink, History, Info, LogOut, Menu, Moon,
   PieChart, Plus, PlusCircle, RotateCcw, RotateCw,
-  Save, Settings, ShoppingCart, Sliders, Store,
-  Sun, Target, Wallet, Wand2, X,
+  Save, Settings, ShieldCheck, ShoppingCart, Sliders, Store,
+  Sun, Target, User, Wallet, Wand2, X,
 } from 'lucide-react';
 
 const MAP = {
@@ -33,10 +33,13 @@ const MAP = {
   'plus':                 Plus,
   'plus-circle':          PlusCircle,
   'save':                 Save,
+  'shield-alt':           ShieldCheck,
   'shopping-cart':        ShoppingCart,
+  'sign-out-alt':         LogOut,
   'sliders-h':            Sliders,
   'store':                Store,
   'sun':                  Sun,
+  'user':                 User,
   'sync-alt':             RotateCw,
   'times':                X,
   'undo':                 RotateCcw,

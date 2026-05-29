@@ -216,7 +216,10 @@
     "new_decision": "قرار جديد",
     "my_decisions": "قراراتي",
     "saved": "المحفوظات",
-    "settings": "الإعدادات"
+    "constitution": "فلسفتنا",
+    "settings": "الإعدادات",
+    "privacy": "الخصوصية",
+    "terms": "الشروط"
   },
   "intake": {
     "goal_title": "ما الذي تحاول تحقيقه؟",

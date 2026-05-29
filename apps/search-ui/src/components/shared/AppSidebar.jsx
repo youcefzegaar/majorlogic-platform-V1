@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LANGUAGES } from '../../i18n/languages.js';
 import { useAuthStore } from '../../stores/authStore';
+import Icon from './Icon';
 
 export default function AppSidebar({ phase, onNewDecision, onMyDecisions, onConstitution, onSettings, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme, sidebarOpen, onClose }) {
   const { t } = useTranslation();

@@ -214,7 +214,10 @@
     "new_decision": "Nouvelle décision",
     "my_decisions": "Mes décisions",
     "saved": "Sauvegardés",
-    "settings": "Paramètres"
+    "constitution": "Notre Philosophie",
+    "settings": "Paramètres",
+    "privacy": "Confidentialité",
+    "terms": "Conditions"
   },
   "intake": {
     "goal_title": "Qu'essayez-vous d'accomplir ?",

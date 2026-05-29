@@ -216,7 +216,10 @@
     "new_decision": "New Decision",
     "my_decisions": "My Decisions",
     "saved": "Saved",
-    "settings": "Settings"
+    "constitution": "Our Philosophy",
+    "settings": "Settings",
+    "privacy": "Privacy",
+    "terms": "Terms"
   },
   "intake": {
     "goal_title": "What are you trying to achieve?",
