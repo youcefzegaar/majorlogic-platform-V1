@@ -163,6 +163,7 @@ export async function getUsersRepository() {
     listDecisions:          (...args) => repo.listUserDecisions(...args),
     getDecision:            (...args) => repo.getUserDecision(...args),
     deleteDecision:         (...args) => repo.deleteUserDecision(...args),
+    updateUser:             (...args) => repo.updateUser(...args),
     upsertPriceAlert:       (...args) => repo.upsertPriceAlert(...args),
     listPriceAlerts:        (...args) => repo.listPriceAlerts(...args),
     deletePriceAlert:       (...args) => repo.deletePriceAlert(...args),

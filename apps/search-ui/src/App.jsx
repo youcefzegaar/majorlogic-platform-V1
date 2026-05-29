@@ -19,6 +19,7 @@ import OwnershipPhase from './components/results/OwnershipPhase';
 import AuthModal from './components/auth/AuthModal';
 import MyDecisions from './components/account/MyDecisions';
 import ConstitutionPage from './components/shared/ConstitutionPage';
+import SettingsModal from './components/account/SettingsModal';
 
 export default function App() {
   const [theme, setTheme] = useState('dark');
@@ -29,6 +30,7 @@ export default function App() {
   const [ownershipChoice, setOwnershipChoice] = useState(null);
   const [showMyDecisions, setShowMyDecisions] = useState(false);
   const [showConstitution, setShowConstitution] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const {
     phase, setPhase,
@@ -102,6 +104,7 @@ export default function App() {
         onNewDecision={() => { setPhase(0); closeSidebar(); }}
         onMyDecisions={() => setShowMyDecisions(true)}
         onConstitution={() => setShowConstitution(true)}
+        onSettings={() => setShowSettings(true)}
         lang={lang} setLang={setLang}
         langMenuOpen={langMenuOpen} setLangMenuOpen={setLangMenuOpen}
         theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -216,6 +219,11 @@ export default function App() {
       {/* M12: Constitution page overlay */}
       {showConstitution && (
         <ConstitutionPage onClose={() => setShowConstitution(false)} />
+      )}
+
+      {/* M10: Settings modal */}
+      {showSettings && (
+        <SettingsModal onClose={() => setShowSettings(false)} />
       )}
     </div>
   );

@@ -94,6 +94,26 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  updateAccount: async ({ currentPassword, newPassword, displayName, locale }) => {
+    const csrf = getCsrfToken();
+    try {
+      const res = await fetch(`${apiUrl}/auth/account`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+        body: JSON.stringify({ currentPassword, newPassword, displayName, locale }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        set({ user: data.user });
+        return { success: true };
+      }
+      return { success: false, error: data.message || data.error || 'Update failed' };
+    } catch (err) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
   logout: async () => {
     try {
       await fetch(`${apiUrl}/auth/logout`, {

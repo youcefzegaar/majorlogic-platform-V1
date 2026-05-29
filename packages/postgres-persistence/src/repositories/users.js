@@ -179,6 +179,25 @@ export class UsersRepository {
     return result.rowCount > 0;
   }
 
+  async updateUser({ userId, passwordHash = null, displayName = null, locale = null }) {
+    const sets = [];
+    const vals = [];
+    let i = 1;
+    if (passwordHash !== null) { sets.push(`password_hash = $${i++}`); vals.push(passwordHash); }
+    if (displayName !== null)  { sets.push(`display_name = $${i++}`);  vals.push(displayName); }
+    if (locale !== null)       { sets.push(`locale = $${i++}`);         vals.push(locale); }
+    if (!sets.length) return null;
+    vals.push(userId);
+    const result = await this.pool.query(
+      `UPDATE ml_users.users
+       SET ${sets.join(', ')}, updated_at = NOW()
+       WHERE id = $${i}
+       RETURNING id, email, display_name, locale, updated_at`,
+      vals
+    );
+    return result.rows[0] || null;
+  }
+
   async getAllActivePriceAlerts() {
     const result = await this.pool.query(
       `SELECT pa.id, pa.user_id, u.email, pa.entity_id,

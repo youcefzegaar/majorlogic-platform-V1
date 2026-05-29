@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LANGUAGES } from '../../i18n/languages.js';
 import { useAuthStore } from '../../stores/authStore';
 
-export default function AppSidebar({ phase, onNewDecision, onMyDecisions, onConstitution, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme, sidebarOpen, onClose }) {
+export default function AppSidebar({ phase, onNewDecision, onMyDecisions, onConstitution, onSettings, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme, sidebarOpen, onClose }) {
   const { t } = useTranslation();
   const currentLang = SUPPORTED_LANGUAGES.find(l => l.code === lang) ?? SUPPORTED_LANGUAGES[0];
   const { user, setShowAuthModal, setAuthModalMode, logout } = useAuthStore();
@@ -33,8 +33,9 @@ export default function AppSidebar({ phase, onNewDecision, onMyDecisions, onCons
         <div className="nav-item" onClick={() => { onConstitution?.(); onClose?.(); }}>
           <Icon name="shield-alt" /><span>{t('nav.constitution', 'Our Constitution')}</span>
         </div>
-        {/* WIRED IN M10 — requires settings page */}
-        <div className="nav-item"><Icon name="cog" /><span>{t('nav.settings')}</span></div>
+        <div className="nav-item" onClick={() => { onSettings?.(); onClose?.(); }}>
+          <Icon name="cog" /><span>{t('nav.settings', 'Settings')}</span>
+        </div>
       </nav>
       <div className="sidebar-footer">
         {/* User account row */}
@@ -113,6 +114,15 @@ export default function AppSidebar({ phase, onNewDecision, onMyDecisions, onCons
               <span>Sign in</span>
             </button>
           )}
+        </div>
+
+        <div style={{ padding: '0 12px 10px', fontSize: '0.7rem', color: 'var(--text-muted)', display: 'flex', gap: 12 }}>
+          <a href="/privacy" target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)' }}>
+            {t('nav.privacy', 'Privacy')}
+          </a>
+          <a href="/terms" target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)' }}>
+            {t('nav.terms', 'Terms')}
+          </a>
         </div>
 
         <div className="sidebar-tools">

@@ -185,6 +185,66 @@ export default async function userAuthRoutes(fastify, opts) {
     return reply.status(204).send();
   });
 
+  // ── PUT /auth/account ────────────────────────────────────────────────────────
+
+  fastify.put("/auth/account", { config: authRateLimit }, async (request, reply) => {
+    const rawToken = request.cookies?.[COOKIE_NAME];
+    if (!rawToken) {
+      return reply.status(401).send({ error: "unauthorized", message: "Authentication required." });
+    }
+
+    const repo = await getUsersRepository();
+    if (!repo) {
+      return reply.status(503).send({ error: "service_unavailable", message: "Database unavailable." });
+    }
+
+    const tokenHash = hashToken(rawToken);
+    const user = await repo.getUserBySessionToken(tokenHash);
+    if (!user) {
+      reply.clearCookie(COOKIE_NAME, { path: "/" });
+      return reply.status(401).send({ error: "unauthorized", message: "Session expired." });
+    }
+
+    const { currentPassword, newPassword, displayName, locale } = request.body || {};
+
+    // Validate password change
+    let passwordHash = null;
+    if (newPassword !== undefined) {
+      if (typeof newPassword !== "string" || newPassword.length < 8) {
+        return reply.status(400).send({ error: "validation_error", message: "New password must be at least 8 characters." });
+      }
+      if (!currentPassword) {
+        return reply.status(400).send({ error: "validation_error", message: "Current password is required to set a new one." });
+      }
+      const currentUser = await repo.getUserByEmail(user.email);
+      const isValid = await bcrypt.compare(currentPassword, currentUser?.password_hash ?? "");
+      if (!isValid) {
+        return reply.status(401).send({ error: "wrong_password", message: "Current password is incorrect." });
+      }
+      passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+    }
+
+    const updated = await repo.updateUser({
+      userId: user.id,
+      passwordHash,
+      displayName: displayName ?? null,
+      locale: locale ?? null,
+    });
+
+    if (!updated) {
+      return reply.status(400).send({ error: "nothing_changed", message: "No fields to update." });
+    }
+
+    return reply.send({
+      user: {
+        id:          updated.id,
+        email:       user.email,
+        displayName: updated.display_name,
+        locale:      updated.locale,
+      },
+    });
+  });
+
   // ── GET /auth/me ─────────────────────────────────────────────────────────────
 
   fastify.get("/auth/me", async (request, reply) => {

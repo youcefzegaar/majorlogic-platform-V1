@@ -50,17 +50,39 @@ jobs:
           echo "status=$STATUS" >> $GITHUB_OUTPUT
           echo "فحص الحالة: $STATUS"
 
+      - name: فحص الفشل المتكرر
+        if: steps.health.outputs.status != '200'
+        id: recurrence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Check the previous completed run of this workflow — if it also failed → escalate
+          PREV_CONCLUSION=$(gh api \
+            "/repos/${{ github.repository }}/actions/workflows/telegram-alert.yml/runs?status=completed&per_page=2" \
+            --jq '.workflow_runs[1].conclusion // "unknown"' 2>/dev/null || echo "unknown")
+          echo "previous_conclusion=$PREV_CONCLUSION" >> $GITHUB_OUTPUT
+          echo "فشل سابق: $PREV_CONCLUSION"
+
       - name: إرسال تنبيه إذا كانت المنصة متوقفة
         if: steps.health.outputs.status != '200'
         run: |
-          MESSAGE="🔴 *MajorLogic — المنصة لا تستجيب*
+          PREV="${{ steps.recurrence.outputs.previous_conclusion }}"
+          if [ "$PREV" = "failure" ]; then
+            ICON="🚨"
+            SEVERITY="*تكرّر الفشل — تدخل يدوي مطلوب*"
+            EXTRA="⛔ هذا الفشل الثاني أو أكثر على التوالي. تحقق من Railway dashboard وأعد التشغيل يدوياً إذا لم يُعالَج."
+          else
+            ICON="🔴"
+            SEVERITY="المنصة لا تستجيب"
+            EXTRA="🔄 *Railway auto-restart مُفعَّل* (ON\_FAILURE × 5). إذا تكرّر الفشل → تدخل يدوي."
+          fi
 
-          ⏰ الوقت: $(date -u '+%Y-%m-%d %H:%M UTC')
+          MESSAGE="$ICON *MajorLogic — $SEVERITY*
+
+          ⏰ $(date -u '+%Y-%m-%d %H:%M UTC')
           📊 كود الاستجابة: \`${{ steps.health.outputs.status }}\`
 
-          🔄 *Railway auto-restart مُفعَّل* (ON\_FAILURE × 5 retries).
-          إذا استمر الفشل بعد دقائق → تحقق من Railway dashboard للاطلاع على سجل الإعادات.
-          تدخل يدوي مطلوب فقط إذا تكررت الإعادات أو بقيت المنصة متوقفة.
+          $EXTRA
 
           🔗 [Railway Dashboard](https://railway.app/dashboard)"
 

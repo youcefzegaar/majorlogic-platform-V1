@@ -117,6 +117,7 @@ export class PostgresPlatformRepository {
   listUserDecisions(...args)              { return this._users.listDecisions(...args); }
   getUserDecision(...args)                { return this._users.getDecision(...args); }
   deleteUserDecision(...args)             { return this._users.deleteDecision(...args); }
+  updateUser(...args)                     { return this._users.updateUser(...args); }
   upsertPriceAlert(...args)               { return this._users.upsertPriceAlert(...args); }
   listPriceAlerts(...args)                { return this._users.listPriceAlerts(...args); }
   deletePriceAlert(...args)               { return this._users.deletePriceAlert(...args); }
