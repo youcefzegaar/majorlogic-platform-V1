@@ -36,6 +36,12 @@ export class MigrationsRepository {
       "database/migrations/0027_domain_ownership_configs.sql",
       "database/migrations/0028_fix_gemini_model.sql",
       "database/migrations/0029_fix_gemini_model_v2.sql",
+      "database/migrations/0030_user_accounts.sql",
+      "database/migrations/0031_shared_links.sql",
+      "database/migrations/0032_feedback_user_id.sql",
+      "database/migrations/0033_integrity_certificates.sql",
+      "database/migrations/0034_nurture_extended.sql",
+      "database/migrations/0035_lead_decision_run.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 
