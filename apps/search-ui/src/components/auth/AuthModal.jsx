@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
+
+const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
 
 export default function AuthModal() {
   const { t } = useTranslation();
@@ -19,6 +21,7 @@ export default function AuthModal() {
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const dialogRef = useRef(null);
 
   // Reset form when modal mode changes or modal closes
   useEffect(() => {
@@ -28,6 +31,32 @@ export default function AuthModal() {
     setAuthError(null);
     setIsSubmitting(false);
   }, [authModalMode, showAuthModal, setAuthError]);
+
+  // Focus-trap: move focus into dialog on open, restore on close
+  useEffect(() => {
+    if (!showAuthModal) return;
+    const prev = document.activeElement;
+    const firstFocusable = dialogRef.current?.querySelector(FOCUSABLE);
+    firstFocusable?.focus();
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') { setShowAuthModal(false); return; }
+      if (e.key !== 'Tab') return;
+      const focusable = [...(dialogRef.current?.querySelectorAll(FOCUSABLE) || [])];
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey ? document.activeElement === first : document.activeElement === last) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      prev?.focus();
+    };
+  }, [showAuthModal, setShowAuthModal]);
 
   if (!showAuthModal) return null;
 
@@ -99,6 +128,7 @@ export default function AuthModal() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="auth-modal-title"
+        ref={dialogRef}
       >
         {/* Close button */}
         <button
