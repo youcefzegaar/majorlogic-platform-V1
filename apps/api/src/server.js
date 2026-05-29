@@ -15,8 +15,11 @@ import fastifyCookie from "@fastify/cookie";
 import fastifyRateLimit from "@fastify/rate-limit";
 
 import { loadEnvFile } from "../../../scripts/env.js";
-import { loadJsonSync } from "./db/repository.js";
+import { loadJsonSync, getRepository } from "./db/repository.js";
 import { validateEnv } from "./config/validate-env.js";
+import { scheduleDailyReport } from "./jobs/daily-report.js";
+import { schedulePriceMonitor } from "./jobs/price-monitor.js";
+import { runEmailNurture } from "./jobs/email-nurture.js";
 
 import adminRoutes from "./routes/admin/index.js";
 import apiRoutes from "./routes/api.js";
@@ -206,6 +209,22 @@ const start = async () => {
     await fastify.listen({ port, host: "0.0.0.0" });
     fastify.log.info(`MajorLogic API running on http://localhost:${port}`);
     alertStartup(port);
+
+    // ── Background Jobs ───────────────────────────────────────────────────────
+    // Fire-and-forget — job failures never crash the server
+    const repo = await getRepository();
+    if (repo) {
+      scheduleDailyReport(repo);
+      schedulePriceMonitor(repo);
+      // Email nurture: run once at startup, then daily at same time tomorrow
+      const MS_PER_DAY = 24 * 60 * 60 * 1000;
+      setTimeout(() => {
+        runEmailNurture(repo).catch(err => fastify.log.error({ err }, '[EmailNurture] Job error'));
+        setInterval(() => {
+          runEmailNurture(repo).catch(err => fastify.log.error({ err }, '[EmailNurture] Job error'));
+        }, MS_PER_DAY);
+      }, 2 * 60_000); // 2 minutes after startup
+    }
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

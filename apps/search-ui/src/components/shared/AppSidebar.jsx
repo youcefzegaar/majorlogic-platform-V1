@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LANGUAGES } from '../../i18n/languages.js';
 import { useAuthStore } from '../../stores/authStore';
 
-export default function AppSidebar({ phase, onNewDecision, onMyDecisions, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme, sidebarOpen, onClose }) {
+export default function AppSidebar({ phase, onNewDecision, onMyDecisions, onConstitution, lang, setLang, langMenuOpen, setLangMenuOpen, theme, toggleTheme, sidebarOpen, onClose }) {
   const { t } = useTranslation();
   const currentLang = SUPPORTED_LANGUAGES.find(l => l.code === lang) ?? SUPPORTED_LANGUAGES[0];
   const { user, setShowAuthModal, setAuthModalMode, logout } = useAuthStore();
@@ -30,6 +30,9 @@ export default function AppSidebar({ phase, onNewDecision, onMyDecisions, lang, 
         <div className={`nav-item ${phase === 0 ? 'active' : ''}`} onClick={onNewDecision}><Icon name="plus-circle" /><span>{t('nav.new_decision')}</span></div>
         <div className="nav-item" onClick={handleMyDecisionsClick}><Icon name="history" /><span>{t('nav.my_decisions')}</span></div>
         <div className="nav-item" onClick={handleMyDecisionsClick}><Icon name="bookmark" /><span>{t('nav.saved')}</span></div>
+        <div className="nav-item" onClick={() => { onConstitution?.(); onClose?.(); }}>
+          <Icon name="shield-alt" /><span>{t('nav.constitution', 'Our Constitution')}</span>
+        </div>
         {/* WIRED IN M10 — requires settings page */}
         <div className="nav-item"><Icon name="cog" /><span>{t('nav.settings')}</span></div>
       </nav>

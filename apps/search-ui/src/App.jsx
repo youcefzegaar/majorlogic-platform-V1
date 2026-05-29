@@ -18,6 +18,7 @@ import SummaryPhase from './components/results/SummaryPhase';
 import OwnershipPhase from './components/results/OwnershipPhase';
 import AuthModal from './components/auth/AuthModal';
 import MyDecisions from './components/account/MyDecisions';
+import ConstitutionPage from './components/shared/ConstitutionPage';
 
 export default function App() {
   const [theme, setTheme] = useState('dark');
@@ -27,6 +28,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [ownershipChoice, setOwnershipChoice] = useState(null);
   const [showMyDecisions, setShowMyDecisions] = useState(false);
+  const [showConstitution, setShowConstitution] = useState(false);
 
   const {
     phase, setPhase,
@@ -99,6 +101,7 @@ export default function App() {
         phase={phase}
         onNewDecision={() => { setPhase(0); closeSidebar(); }}
         onMyDecisions={() => setShowMyDecisions(true)}
+        onConstitution={() => setShowConstitution(true)}
         lang={lang} setLang={setLang}
         langMenuOpen={langMenuOpen} setLangMenuOpen={setLangMenuOpen}
         theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -208,6 +211,11 @@ export default function App() {
           }}
           onClose={() => setShowMyDecisions(false)}
         />
+      )}
+
+      {/* M12: Constitution page overlay */}
+      {showConstitution && (
+        <ConstitutionPage onClose={() => setShowConstitution(false)} />
       )}
     </div>
   );

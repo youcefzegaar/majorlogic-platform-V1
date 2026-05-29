@@ -120,4 +120,8 @@ export class PostgresPlatformRepository {
   upsertPriceAlert(...args)               { return this._users.upsertPriceAlert(...args); }
   listPriceAlerts(...args)                { return this._users.listPriceAlerts(...args); }
   deletePriceAlert(...args)               { return this._users.deletePriceAlert(...args); }
+  getAllActivePriceAlerts(...args)         { return this._users.getAllActivePriceAlerts(...args); }
+  updatePriceAlertCurrentPrice(...args)   { return this._users.updatePriceAlertCurrentPrice(...args); }
+  getUserFeedback(...args)                { return this._telemetry.getUserFeedback(...args); }
+  deleteUserFeedback(...args)             { return this._telemetry.deleteUserFeedback(...args); }
 }

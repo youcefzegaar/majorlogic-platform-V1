@@ -41,6 +41,26 @@ export class TelemetryRepository {
     return result.rows;
   }
 
+  async getUserFeedback(userId) {
+    const result = await this.pool.query(
+      `SELECT id, decision_run_id, score, comment, tags, received_at
+       FROM ml_telemetry.user_feedback
+       WHERE user_id = $1
+       ORDER BY received_at DESC`,
+      [userId]
+    );
+    return result.rows;
+  }
+
+  async deleteUserFeedback(id, userId) {
+    const result = await this.pool.query(
+      `DELETE FROM ml_telemetry.user_feedback
+       WHERE id = $1 AND user_id = $2`,
+      [id, userId]
+    );
+    return result.rowCount > 0;
+  }
+
   async saveReviewObservations({ runId, sourceName, productName, rawData, sentimentScore, extractedSignals }) {
     await this.pool.query(
       `INSERT INTO public.external_review_observations

@@ -166,5 +166,7 @@ export async function getUsersRepository() {
     upsertPriceAlert:       (...args) => repo.upsertPriceAlert(...args),
     listPriceAlerts:        (...args) => repo.listPriceAlerts(...args),
     deletePriceAlert:       (...args) => repo.deletePriceAlert(...args),
+    getUserFeedback:        (...args) => repo.getUserFeedback(...args),
+    deleteUserFeedback:     (...args) => repo.deleteUserFeedback(...args),
   };
 }

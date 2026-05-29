@@ -213,4 +213,29 @@ export default async function userDecisionsRoutes(fastify, _opts) {
     await repo.revokeSharedLink(decision.id, user.id);
     return reply.status(204).send();
   });
+
+  // ── GET /user/feedback ───────────────────────────────────────────────────────
+
+  fastify.get("/user/feedback", async (request, reply) => {
+    const auth = await requireUser(request, reply);
+    if (!auth) return;
+    const { user, repo } = auth;
+
+    const items = await repo.getUserFeedback(user.id);
+    return reply.send({ feedback: items });
+  });
+
+  // ── DELETE /user/feedback/:id ────────────────────────────────────────────────
+
+  fastify.delete("/user/feedback/:id", async (request, reply) => {
+    const auth = await requireUser(request, reply);
+    if (!auth) return;
+    const { user, repo } = auth;
+
+    const deleted = await repo.deleteUserFeedback(request.params.id, user.id);
+    if (!deleted) {
+      return reply.status(404).send({ error: "not_found", message: "Feedback not found or not yours." });
+    }
+    return reply.status(204).send();
+  });
 }

@@ -179,6 +179,25 @@ export class UsersRepository {
     return result.rowCount > 0;
   }
 
+  async getAllActivePriceAlerts() {
+    const result = await this.pool.query(
+      `SELECT pa.id, pa.user_id, u.email, pa.entity_id,
+              pa.domain, pa.target_price, pa.current_price, pa.active, pa.created_at
+       FROM ml_users.price_alerts pa
+       JOIN ml_users.users u ON u.id = pa.user_id
+       WHERE pa.active = TRUE
+       ORDER BY pa.created_at ASC`
+    );
+    return result.rows;
+  }
+
+  async updatePriceAlertCurrentPrice(id, currentPrice) {
+    await this.pool.query(
+      `UPDATE ml_users.price_alerts SET current_price = $2 WHERE id = $1`,
+      [id, currentPrice]
+    );
+  }
+
   // ─────────────────────────────────────────────
   // Shared Links
   // ─────────────────────────────────────────────
