@@ -1086,6 +1086,183 @@ body {
     margin-left: 8px;
 }
 
+/* ── M2: Semantic Aura ─────────────────────────────────────────────────────── */
+.decision-card-image--aura {
+    padding: 0;
+    background: linear-gradient(145deg, #0d1b2a 0%, #1b2838 40%, #0a1628 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-aura-glow {
+    position: absolute;
+    top: 20%; left: 50%;
+    transform: translateX(-50%);
+    width: 70%; height: 60%;
+    background: radial-gradient(ellipse, var(--card-aura-soft, rgba(100,160,255,0.08)) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.card-product-img {
+    width: 85%;
+    max-height: 170px;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 24px rgba(0,0,0,0.6));
+    position: relative;
+    z-index: 1;
+}
+
+.card-img-fade {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(13,27,42,0.95), transparent);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Aura accent line on left edge of card */
+.decision-card[style*="--card-aura-line"] {
+    border-left: 3px solid var(--card-aura-line, var(--border));
+}
+
+/* ── M2: Transparency Badge ────────────────────────────────────────────────── */
+.transparency-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.tb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-subtle, var(--border));
+    border-radius: 10px;
+    padding: 2px 6px;
+    white-space: nowrap;
+}
+
+.tb-dot { font-size: 8px; }
+
+.tb-affiliate {
+    color: var(--accent-warning);
+    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.06);
+}
+
+/* ── M2: Trade-off Lens ────────────────────────────────────────────────────── */
+.tradeoff-lens {
+    margin: 10px 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tradeoff-lens--clean {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.tl-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 32px;
+    align-items: center;
+    gap: 6px;
+}
+
+.tl-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tl-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.tl-fill {
+    height: 100%;
+    background: var(--card-aura-hue, var(--aura-balanced));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.tl-pct {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+/* ── M2: Card inline-style → token classes ─────────────────────────────────── */
+.card-ai-voice {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 8px 0 12px;
+    font-style: italic;
+    border-left: 2px solid var(--card-aura-line, var(--accent-info));
+    padding-left: 10px;
+}
+
+.card-key-pro {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--accent-success);
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 20px;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+}
+
+.card-key-flaw {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(244, 63, 94, 0.04);
+    border: 1px solid rgba(244, 63, 94, 0.15);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.card-key-flaw__icon {
+    color: var(--accent-danger);
+    margin-right: 5px;
+}
+
+/* ── M2: Confidence ring badge (CardsPhase header) ─────────────────────────── */
+.confidence-badge__label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.confidence-badge__pct {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
 .judgment-rating {
     display: flex;
     align-items: center;

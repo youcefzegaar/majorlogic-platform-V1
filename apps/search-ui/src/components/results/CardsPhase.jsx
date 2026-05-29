@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import HeroCard from './HeroCard';
 import ZeroResultsView from './ZeroResultsView';
 import Icon from '../shared/Icon';
+import ConfidenceRing from '../shared/ConfidenceRing';
 
 export default function CardsPhase({
   cards, noResults, decisionMetadata, analysisSummary,
@@ -31,17 +32,9 @@ export default function CardsPhase({
           <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>{t('cards.subtitle')}</p>
         </div>
         <div className="confidence-badge">
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{t('cards.confidence')}</span>
-          <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--accent-success)' }}>
-            {analysisSummary.confidence >= 80
-              ? t('cards.confidence_high')
-              : analysisSummary.confidence >= 60
-                ? t('cards.confidence_medium')
-                : t('cards.confidence_low')}
-          </span>
-          <div style={{ width: 24, height: 24, borderRadius: '50%', border: `3px solid ${analysisSummary.confidence >= 80 ? 'var(--accent-success)' : analysisSummary.confidence >= 60 ? 'var(--accent-warning)' : 'var(--accent-danger)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: `${analysisSummary.confidence >= 80 ? 'var(--accent-success)' : analysisSummary.confidence >= 60 ? 'var(--accent-warning)' : 'var(--accent-danger)'}` }}></div>
-          </div>
+          <span className="confidence-badge__label">{t('cards.confidence')}</span>
+          <ConfidenceRing pct={analysisSummary.confidence} />
+          <span className="confidence-badge__pct">{analysisSummary.confidence}%</span>
         </div>
       </div>
 

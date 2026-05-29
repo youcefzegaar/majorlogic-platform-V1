@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import Icon from '../shared/Icon';
+import ConfidenceRing from '../shared/ConfidenceRing';
+import { deriveAura } from '../../lib/deriveAura';
 
 function resolveIdentityStatement(card) {
   const fs = card.fitStates;
@@ -14,6 +16,77 @@ function resolveIdentityStatement(card) {
   return null;
 }
 
+function TransparencyBadge({ card }) {
+  const conf = card.decision_confidence;
+  const confPct = conf != null ? (conf <= 1 ? Math.round(conf * 100) : Math.round(conf)) : null;
+  const integrity = card.integrityScore ?? null;
+  const sourceCount = card.intelligence?.sourceCount ?? null;
+  const isAffiliate = card.purchaseLinks?.isAffiliate;
+
+  const hasAny = confPct != null || integrity != null || sourceCount != null || isAffiliate;
+  if (!hasAny) return null;
+
+  return (
+    <div className="transparency-badge">
+      {confPct != null && (
+        <span className="tb-item" title={`Confidence: ${confPct}%`}>
+          <ConfidenceRing pct={confPct} size={16} />
+          <span>{confPct}%</span>
+        </span>
+      )}
+      {integrity != null && (
+        <span className="tb-item tb-integrity" title="Decision integrity">
+          <span className="tb-dot">◆</span>
+          <span>{integrity}%</span>
+        </span>
+      )}
+      {sourceCount != null && (
+        <span className="tb-item tb-sources" title="Review sources">
+          <span className="tb-dot">◎</span>
+          <span>{sourceCount}</span>
+        </span>
+      )}
+      {isAffiliate && (
+        <span className="tb-item tb-affiliate" title="Affiliate link disclosed">
+          <span>§</span>
+        </span>
+      )}
+    </div>
+  );
+}
+
+function TradeoffLens({ sacrificeVector }) {
+  const { t } = useTranslation();
+  const sacrifices = Object.values(sacrificeVector || {}).slice(0, 3);
+
+  if (sacrifices.length === 0) {
+    return (
+      <div className="tradeoff-lens tradeoff-lens--clean">
+        <span style={{ color: 'var(--accent-success)' }}>✓</span>
+        <span>{t('no_cost_data')}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="tradeoff-lens">
+      {sacrifices.map((s, i) => {
+        const pct = Math.round((s.severity ?? 0.3) * 100);
+        const label = (s.meaning ?? '').replace(/_/g, ' ') || 'trade-off';
+        return (
+          <div key={i} className="tl-row">
+            <div className="tl-label" title={label}>{label}</div>
+            <div className="tl-track">
+              <div className="tl-fill" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="tl-pct">{pct}%</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, onDetails }) {
   const { t } = useTranslation();
   const identityStatement = resolveIdentityStatement(card);
@@ -25,65 +98,38 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
   const keyFlaw = card.flaws?.[0] ?? null;
   const keyPro  = card.topPros?.[0] ?? null;
 
+  const dims = {
+    performance: card.traceScores?.performance_score ?? 0,
+    portability: card.traceScores?.portability_score ?? 0,
+    value:       card.traceScores?.value_score       ?? 0,
+    display:     card.traceScores?.display_score     ?? 0,
+  };
+  const aura = deriveAura(dims);
+
   return (
     <div
       className={`decision-card ${isSelected ? 'recommended' : ''}`}
+      style={{ '--card-aura-soft': aura.soft, '--card-aura-line': aura.line, '--card-aura-hue': aura.hue }}
       onClick={() => onSelect(type)}
     >
-      <div
-        className="decision-card-image"
-        style={{
-          padding: 0,
-          background: 'linear-gradient(145deg, #0d1b2a 0%, #1b2838 40%, #0a1628 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '200px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            top: '20%', left: '50%',
-            transform: 'translateX(-50%)',
-            width: '70%', height: '60%',
-            background: 'radial-gradient(ellipse, rgba(100,160,255,0.08) 0%, transparent 70%)',
-            pointerEvents: 'none',
-          }}
-        />
+      <div className="decision-card-image decision-card-image--aura">
+        <div className="card-aura-glow" />
         {card.image ? (
           <img
             src={card.image}
             alt={card.name}
-            style={{
-              width: '85%',
-              maxHeight: '170px',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.6))',
-              position: 'relative',
-              zIndex: 1,
-            }}
+            className="card-product-img"
           />
         ) : (
           <span style={{ fontSize: 64 }}>{card.icon}</span>
         )}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0, left: 0, right: 0,
-            height: '40%',
-            background: 'linear-gradient(to top, rgba(13,27,42,0.95), transparent)',
-            pointerEvents: 'none',
-            zIndex: 2,
-          }}
-        />
+        <div className="card-img-fade" />
       </div>
 
       <div className="decision-card-body">
         <div className="decision-card-header">
           <span className={`decision-card-badge ${card.badgeClass}`}>{card.badge}</span>
+          <TransparencyBadge card={card} />
         </div>
         <div className="decision-card-name">{card.name}</div>
         <div className="decision-card-price">
@@ -92,57 +138,25 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
         </div>
 
         {aiVoice && (
-          <div
-            style={{
-              fontSize: 13,
-              color: 'var(--text-secondary)',
-              lineHeight: 1.6,
-              margin: '8px 0 12px',
-              fontStyle: 'italic',
-              borderLeft: '2px solid var(--accent-info)',
-              paddingLeft: 10,
-            }}
-          >
+          <div className="card-ai-voice">
             {aiVoice}
           </div>
         )}
 
         {keyPro && (
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              fontSize: 11,
-              color: 'var(--accent-success)',
-              background: 'rgba(16, 185, 129, 0.08)',
-              border: '1px solid rgba(16, 185, 129, 0.2)',
-              borderRadius: 20,
-              padding: '3px 10px',
-              marginBottom: 10,
-            }}
-          >
+          <div className="card-key-pro">
             <span>✓</span> {keyPro}
           </div>
         )}
 
         {keyFlaw && (
-          <div
-            style={{
-              fontSize: 11,
-              color: 'var(--text-muted)',
-              background: 'rgba(244, 63, 94, 0.04)',
-              border: '1px solid rgba(244, 63, 94, 0.15)',
-              borderRadius: 6,
-              padding: '6px 10px',
-              marginBottom: 12,
-              lineHeight: 1.5,
-            }}
-          >
-            <span style={{ color: 'var(--accent-danger)', marginRight: 5 }}>⚠</span>
+          <div className="card-key-flaw">
+            <span className="card-key-flaw__icon">⚠</span>
             {keyFlaw}
           </div>
         )}
+
+        <TradeoffLens sacrificeVector={card.sacrificeVector} />
 
         <div className="card-actions">
           <button

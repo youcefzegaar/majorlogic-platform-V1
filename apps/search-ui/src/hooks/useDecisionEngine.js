@@ -435,6 +435,7 @@ export function useDecisionEngine() {
             tcoEstimate:           card.tcoEstimate ?? ownershipStrategy?.tco ?? null,
             fitStates:             card.fitStates ?? result.decision?.fitStates ?? null,
             traceScores:           card.trace?.scores ?? {},
+            explanation:           card.explanation ?? null,
 
             // ─── Response-level governance (identical for all cards in this decision) ─
             integrityScore: (() => {
