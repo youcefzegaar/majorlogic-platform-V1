@@ -64,6 +64,7 @@ export class PostgresPlatformRepository {
   saveTelemetryClick(...args)             { return this._telemetry.saveTelemetryClick(...args); }
   logAffiliateClick(...args)              { return this._telemetry.logAffiliateClick(...args); }
   saveFeedback(...args)                   { return this._telemetry.saveFeedback(...args); }
+  listFeedback(...args)                   { return this._telemetry.listFeedback(...args); }
   saveReviewObservations(...args)         { return this._telemetry.saveReviewObservations(...args); }
   createAcquisitionRun(...args)           { return this._telemetry.createAcquisitionRun(...args); }
   completeAcquisitionRun(...args)         { return this._telemetry.completeAcquisitionRun(...args); }

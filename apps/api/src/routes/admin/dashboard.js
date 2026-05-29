@@ -135,4 +135,16 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
     });
     return reply.send({ success: true, events: rows, total });
   });
+
+  fastify.get("/feedback", async (request, reply) => {
+    const { limit = 50, offset = 0 } = request.query;
+    const { getRepository } = await import("../../db/repository.js");
+    const repository = await getRepository();
+    if (!repository) return sendError(reply, unavailable("Database is not available", "db_offline"));
+    const items = await repository.listFeedback({
+      limit:  Math.min(parseInt(limit)  || 50, 200),
+      offset: parseInt(offset) || 0,
+    });
+    return reply.send({ success: true, feedback: items });
+  });
 }

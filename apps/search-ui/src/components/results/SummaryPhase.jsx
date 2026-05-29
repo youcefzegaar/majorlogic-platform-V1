@@ -146,6 +146,7 @@ function DecisionCertificate({ selectedCard }) {
 function FollowUpSection({ decisionRunId }) {
   const { t } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const [satisfaction, setSatisfaction] = useState(null);
   const [regret, setRegret] = useState(null);
 
@@ -155,6 +156,7 @@ function FollowUpSection({ decisionRunId }) {
       await fetch(`${apiUrl}/api/v1/laptop-student-us/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           decisionRunId: decisionRunId || 'anonymous',
           score: satisfaction,
@@ -166,6 +168,8 @@ function FollowUpSection({ decisionRunId }) {
     }
     setSubmitted(true);
   };
+
+  if (dismissed) return null;
 
   if (submitted) {
     return (
@@ -195,8 +199,17 @@ function FollowUpSection({ decisionRunId }) {
       borderRadius: 12,
       marginTop: 24,
     }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 4 }}>
-        {t('summary.followup_section')}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+          {t('summary.followup_section')}
+        </div>
+        <button
+          onClick={() => setDismissed(true)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 16, lineHeight: 1, padding: '0 2px' }}
+          aria-label="Dismiss"
+        >
+          ×
+        </button>
       </div>
       <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
         {t('summary.followup_title')}

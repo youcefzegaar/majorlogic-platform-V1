@@ -1,11 +1,11 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  ShieldAlert, 
-  Activity, 
+import {
+  ShieldAlert,
+  Activity,
   ChevronRight,
   RefreshCw,
-  AlertTriangle
+  MessageSquare
 } from 'lucide-react';
 import { adminService } from '../../api/apiClient';
 import { useAppStore } from '../../stores/appStore';
@@ -16,8 +16,13 @@ const InterventionFeed = () => {
     queryKey: ['interventions-data'],
     queryFn: adminService.getInterventions,
   });
+  const { data: feedbackData } = useQuery({
+    queryKey: ['feedback-data'],
+    queryFn: () => adminService.getFeedback({ limit: 20 }),
+  });
 
   const interventions = interventionsData?.interventions || [];
+  const feedbackItems = feedbackData?.feedback || [];
 
   return (
     <div className="page-content">
@@ -91,6 +96,54 @@ const InterventionFeed = () => {
             )}
           </tbody>
         </table>
+      </div>
+      <div style={{ marginTop: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+          <MessageSquare size={20} />
+          <h2 style={{ fontSize: '1.3rem', margin: 0 }}>User Feedback</h2>
+        </div>
+        <div className="card">
+          <table className="table-container">
+            <thead>
+              <tr>
+                <th>Received</th>
+                <th>Decision Run</th>
+                <th>Score</th>
+                <th>Tags</th>
+                <th>Comment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {feedbackItems.length > 0 ? feedbackItems.map((fb, i) => (
+                <tr key={i}>
+                  <td style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>
+                    {new Date(fb.received_at).toLocaleString()}
+                  </td>
+                  <td>
+                    <code style={{ fontSize: '0.8rem' }}>{fb.decision_run_id?.slice(0, 8) ?? '—'}</code>
+                  </td>
+                  <td>
+                    <span style={{ fontWeight: 700, color: fb.score >= 4 ? 'var(--success)' : fb.score <= 2 ? 'var(--danger)' : 'var(--warning)' }}>
+                      {fb.score}/5
+                    </span>
+                  </td>
+                  <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    {(fb.tags || []).join(', ') || '—'}
+                  </td>
+                  <td style={{ fontSize: '0.85rem', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {fb.comment || '—'}
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-tertiary)' }}>
+                    No feedback received yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

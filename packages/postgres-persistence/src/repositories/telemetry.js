@@ -22,12 +22,23 @@ export class TelemetryRepository {
     );
   }
 
-  async saveFeedback({ decisionRunId, score, comment, tags }) {
+  async saveFeedback({ decisionRunId, score, comment = null, tags = null, userId = null }) {
     await this.pool.query(
-      `INSERT INTO ml_telemetry.user_feedback (id, decision_run_id, score, comment, tags)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [randomUUID(), decisionRunId, score, comment, tags]
+      `INSERT INTO ml_telemetry.user_feedback (id, decision_run_id, score, comment, tags, user_id)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [randomUUID(), decisionRunId, score, comment, tags, userId]
     );
+  }
+
+  async listFeedback({ limit = 50, offset = 0 } = {}) {
+    const result = await this.pool.query(
+      `SELECT id, decision_run_id, score, comment, tags, user_id, received_at
+       FROM ml_telemetry.user_feedback
+       ORDER BY received_at DESC
+       LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
+    return result.rows;
   }
 
   async saveReviewObservations({ runId, sourceName, productName, rawData, sentimentScore, extractedSignals }) {

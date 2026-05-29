@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import DecisionTrust from '../shared/DecisionTrust';
 import Icon from '../shared/Icon';
+import { useDecisionStore } from '../../stores/decisionStore';
 
 const GATE_NAMES = {
   specs_performance: 'performance',
@@ -134,10 +135,30 @@ function LayerL0({ explanation, traceScores, priorities, intent }) {
 // ── Reason row (used in L1) ────────────────────────────────────────────────
 function ReasonRow({ reason, idx }) {
   const [open, setOpen] = useState(false);
+  const [vote, setVote] = useState(null); // 'helpful' | 'unhelpful' | null
+  const { decisionRunId } = useDecisionStore();
   const delta = reason.delta;
   const deltaColor = delta == null ? 'var(--text-muted)'
     : delta >= 0 ? 'var(--accent-success)'
     : 'var(--accent-warning)';
+
+  const dimKey = reason.dimKey || `reason_${idx}`;
+
+  const handleVote = async (value) => {
+    if (vote !== null) return; // one vote per reason per session
+    setVote(value);
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
+    fetch(`${apiUrl}/api/v1/laptop-student-us/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        decisionRunId: decisionRunId || 'anonymous',
+        score: value === 'helpful' ? 5 : 2,
+        tags: [`reason:${dimKey}:${value}`],
+      }),
+    }).catch(() => {});
+  };
 
   return (
     <div
@@ -147,44 +168,79 @@ function ReasonRow({ reason, idx }) {
         border: '1px solid var(--border)',
         borderRadius: 8,
         marginBottom: 8,
-        cursor: reason.evidence?.length > 0 ? 'pointer' : 'default',
       }}
-      onClick={() => reason.evidence?.length > 0 && setOpen(!open)}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 3 }}>
-            {reason.claim}
-          </div>
-          {reason.consequence && (
-            <div style={{ fontSize: 11, color: deltaColor, lineHeight: 1.5 }}>
-              {reason.consequence}
+      <div
+        style={{ cursor: reason.evidence?.length > 0 ? 'pointer' : 'default' }}
+        onClick={() => reason.evidence?.length > 0 && setOpen(!open)}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 3 }}>
+              {reason.claim}
             </div>
+            {reason.consequence && (
+              <div style={{ fontSize: 11, color: deltaColor, lineHeight: 1.5 }}>
+                {reason.consequence}
+              </div>
+            )}
+          </div>
+          {delta != null && (
+            <span style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: deltaColor,
+              flexShrink: 0,
+            }}>
+              {delta > 0 ? `+${delta}` : delta}
+            </span>
+          )}
+          {reason.evidence?.length > 0 && (
+            <Icon name={open ? 'arrow-up' : 'arrow-down'} size={12} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
           )}
         </div>
-        {delta != null && (
-          <span style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: deltaColor,
-            flexShrink: 0,
-          }}>
-            {delta > 0 ? `+${delta}` : delta}
-          </span>
-        )}
-        {reason.evidence?.length > 0 && (
-          <Icon name={open ? 'arrow-up' : 'arrow-down'} size={12} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+        {open && reason.evidence?.length > 0 && (
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', display: 'flex', gap: 16 }}>
+            {reason.evidence.map((ev, i) => (
+              <div key={i} style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>{ev.k}:</span> {ev.v}
+              </div>
+            ))}
+          </div>
         )}
       </div>
-      {open && reason.evidence?.length > 0 && (
-        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', display: 'flex', gap: 16 }}>
-          {reason.evidence.map((ev, i) => (
-            <div key={i} style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>{ev.k}:</span> {ev.v}
-            </div>
-          ))}
-        </div>
-      )}
+
+      {/* Per-reason 👍/👎 — non-blocking, one vote per session */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Helpful?</span>
+        <button
+          onClick={() => handleVote('helpful')}
+          disabled={vote !== null}
+          style={{
+            background: vote === 'helpful' ? 'rgba(16,185,129,0.15)' : 'transparent',
+            border: 'none', cursor: vote === null ? 'pointer' : 'default',
+            fontSize: 14, padding: '2px 6px', borderRadius: 4,
+            opacity: vote !== null && vote !== 'helpful' ? 0.3 : 1,
+          }}
+          aria-label="Helpful"
+        >
+          👍
+        </button>
+        <button
+          onClick={() => handleVote('unhelpful')}
+          disabled={vote !== null}
+          style={{
+            background: vote === 'unhelpful' ? 'rgba(239,68,68,0.15)' : 'transparent',
+            border: 'none', cursor: vote === null ? 'pointer' : 'default',
+            fontSize: 14, padding: '2px 6px', borderRadius: 4,
+            opacity: vote !== null && vote !== 'unhelpful' ? 0.3 : 1,
+          }}
+          aria-label="Not helpful"
+        >
+          👎
+        </button>
+        {vote && <span style={{ fontSize: 10, color: 'var(--accent-success)' }}>✓</span>}
+      </div>
     </div>
   );
 }

@@ -5,9 +5,11 @@ export const useDecisionStore = create((set) => ({
   selectedCardType: 'hero',
   explanationTab: 'decision',
   cameFromExplanation: false,
+  decisionRunId: null,
 
   setPhase: (phase) => set({ phase }),
   setSelectedCardType: (selectedCardType) => set({ selectedCardType }),
   setExplanationTab: (explanationTab) => set({ explanationTab }),
   setCameFromExplanation: (cameFromExplanation) => set({ cameFromExplanation }),
+  setDecisionRunId: (decisionRunId) => set({ decisionRunId }),
 }));

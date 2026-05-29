@@ -186,6 +186,7 @@ export function useDecisionEngine() {
     relaxedConstraint: null,
     integrityScore: 1.0
   });
+  const [decisionRunId, setDecisionRunId_] = useState(null);
 
   const runDecision = async ({ major, lang, budgetMax, priorities, goal }) => {
     setIsAnalyzing(true);
@@ -478,6 +479,8 @@ export function useDecisionEngine() {
         irHash: result.decision?.governance?.irHash ?? null,
       });
       setDetectedConflicts(localConflicts);
+      const runId = result.decision?.decisionRunId ?? null;
+      setDecisionRunId_(runId);
 
       return true;
     } catch (err) {
@@ -500,6 +503,7 @@ export function useDecisionEngine() {
     analysisSummary,
     detectedConflicts,
     decisionMetadata,
+    decisionRunId,
     runDecision
   };
 }

@@ -33,6 +33,7 @@ export default function App() {
     selectedCardType, setSelectedCardType,
     explanationTab, setExplanationTab,
     cameFromExplanation, setCameFromExplanation,
+    setDecisionRunId,
   } = useDecisionStore();
 
   const { checkSession } = useAuthStore();
@@ -67,6 +68,11 @@ export default function App() {
       setTimeout(() => setPhase(1), 200);
     }
   };
+
+  // Mirror decisionRunId from engine state into the store so all feedback components can read it
+  useEffect(() => {
+    if (engine.decisionRunId) setDecisionRunId(engine.decisionRunId);
+  }, [engine.decisionRunId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const applySidebarChanges = async () => {
     setTimeline(prev => [...prev, { date: new Date().toLocaleTimeString(), title: 'Priority Adjustment', desc: 'Updated sliders to refine results.' }]);
