@@ -166,6 +166,55 @@ export default async function apiRoutes(fastify, { isProd }) {
     }
   });
 
+  // ── POST /api/v1/:domain/feedback/regret ──────────────────────────────────
+  // Receives the user's regret-check answer from the day-30 email.
+  // Stores answer linked to decisionRunId and whether sacrifice was shown —
+  // this is the golden metric split (users-who-saw-sacrifice regret less).
+  fastify.post("/api/v1/:domain/feedback/regret", {
+    schema: {
+      body: {
+        type: "object",
+        properties: {
+          decisionRunId: { type: "string", minLength: 1, maxLength: 80 },
+          answer: { type: "string", enum: ["happy", "surprised", "regret"] },
+        },
+        required: ["decisionRunId", "answer"],
+        additionalProperties: false,
+      }
+    }
+  }, async (request, reply) => {
+    const { domain } = request.params;
+    if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
+    const { decisionRunId, answer } = request.body;
+    try {
+      const { getRepository } = await import("../db/repository.js");
+      const repository = await getRepository();
+      if (!repository) return reply.status(503).send({ error: "db_offline" });
+
+      // Look up whether the sacrifice guard passed for this decision.
+      // If the certificate doesn't exist yet, sacrificeShown stays null (provisional).
+      let sacrificeShown = null;
+      try {
+        const certRow = await repository.pool.query(
+          `SELECT guards_json->'sacrifice'->>'passed' AS sacrifice_passed
+           FROM ml_governance.integrity_certificates
+           WHERE decision_run_id = $1
+           LIMIT 1`,
+          [decisionRunId]
+        );
+        if (certRow.rows[0]?.sacrifice_passed != null) {
+          sacrificeShown = certRow.rows[0].sacrifice_passed === 'true';
+        }
+      } catch { /* certificate lookup is best-effort */ }
+
+      await repository.saveRegretAnswer({ decisionRunId, domainId: domain, answer, sacrificeShown });
+      return reply.send({ status: "received" });
+    } catch (err) {
+      request.log.error({ err, decisionRunId, answer }, "Regret answer save failed");
+      return reply.status(500).send({ error: "regret_save_failed" });
+    }
+  });
+
   fastify.post("/api/v1/:domain/decision/simulate", {
     schema: {
       body: {

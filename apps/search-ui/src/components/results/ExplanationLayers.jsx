@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Icon from '../shared/Icon';
 import { useDecisionStore } from '../../stores/decisionStore';
+import { API_URL as apiUrl } from '../../lib/apiUrl.js';
 
 // ── L0 — "Just the answer" ─────────────────────────────────────────────────
 export function LayerL0({ explanation, traceScores, priorities, intent }) {
@@ -85,7 +86,6 @@ export function ReasonRow({ reason, idx }) {
   const handleVote = async (value) => {
     if (vote !== null) return;
     setVote(value);
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
     fetch(`${apiUrl}/api/v1/laptop-student-us/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

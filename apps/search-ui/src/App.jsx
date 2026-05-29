@@ -8,6 +8,7 @@ import { useDecisionEngine } from './hooks/useDecisionEngine';
 import { useDecisionStore } from './stores/decisionStore';
 import { useAuthStore } from './stores/authStore';
 
+import { API_URL } from './lib/apiUrl.js';
 import AppSidebar from './components/shared/AppSidebar';
 import ProgressBar from './components/shared/ProgressBar';
 import IntakePhase from './components/intake/IntakePhase';
@@ -47,6 +48,23 @@ export default function App() {
   const engine = useDecisionEngine();
 
   useEffect(() => { checkSession(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Regret-check landing: email links contain ?regret_check=1&ref=<runId>&answer=happy|surprised|regret
+  // Post the answer to the API then strip the params from the URL (clean history).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('regret_check') !== '1') return;
+    const ref    = params.get('ref');
+    const answer = params.get('answer');
+    if (!ref || !['happy', 'surprised', 'regret'].includes(answer)) return;
+    const domain = import.meta.env.VITE_DEFAULT_DOMAIN || 'laptop-student-us';
+    fetch(`${API_URL}/api/v1/${domain}/feedback/regret`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ decisionRunId: ref, answer }),
+    }).catch(() => {}); // fire-and-forget — never block the user
+    window.history.replaceState({}, '', window.location.pathname);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
 

@@ -85,7 +85,11 @@ export async function csrfPlugin(fastify) {
           path:     "/",
           httpOnly: false,      // security: must be readable by the SPA JS
           secure:   isProd,
-          sameSite: "strict",
+          // Match session cookie SameSite — "none" for cross-origin prod deployments.
+          // The double-submit CSRF pattern remains secure: attacker on evil.com
+          // cannot read this cookie from a different origin (CORS/SOP), so they
+          // cannot forge the matching X-CSRF-Token header.
+          sameSite: isProd ? "none" : "strict",
           maxAge:   86400,      // 24 hours
         });
       }

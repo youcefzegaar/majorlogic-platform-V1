@@ -95,20 +95,65 @@ describe('governance-evaluator', () => {
     expect(cert.overallPassed).toBe(false);
   });
 
+  it('sacrifice guard fails when cost/tradeoff text is synthetic (C2 — content check)', () => {
+    // Simulates what buildExplanation returns when trace.sacrifices is empty
+    const syntheticDecision = makeDecision({ cards: [
+      {
+        cardType: 'hero', entityId: 'x', score: 80,
+        bestOffer: { isAffiliate: false }, traceScores: {},
+        explanation: {
+          cost:     { text: 'Our data did not surface a dominant trade-off — verify the details that matter to you before committing.', severity: 'none' },
+          tradeoff: { text: 'Our data did not surface a prominent weakness — verify the details that matter to you.', severity: 'none' },
+        },
+      },
+      { cardType: 'alt', entityId: 'y', score: 70, bestOffer: { isAffiliate: false }, traceScores: {}, explanation: { cost: null, tradeoff: null } },
+    ]});
+    const cert = runAll(syntheticDecision, null, validCtx);
+    const sacrificeGuard = cert.guards.find(g => g.id === 'sacrifice');
+    expect(sacrificeGuard.passed).toBe(false);
+    expect(sacrificeGuard.evidence.costSynthetic).toBe(true);
+    expect(cert.overallPassed).toBe(false);
+  });
+
   it('integrityScore is computed correctly from severity weights', () => {
-    // Guards: sacrifice=critical(40), money-sep=critical(40), drift=high(20), catalog-truth=high(20)
-    // total = 120. When only drift fails: earned = 40+40+20 = 100 → score = 83%
+    // 5 guards: sacrifice=critical(40), money-sep=critical(40), drift=high(20),
+    //           catalog-truth=high(20), determinism=high(20) → total = 140
+    // When only drift fails: earned = 40+40+20+20 = 120 → score = 86%
     const decision = makeDecision();
     const cert = runAll(decision, null, {
       ...validCtx,
-      governance: { ok: false, violations: ['drift'], warnings: [] }, // high guard fails
+      governance: { ok: false, violations: ['drift'], warnings: [] },
     });
 
-    // critical + catalog-truth guards pass (score 100) out of total 120 → 83%
-    expect(cert.integrityScore).toBe(83);
+    expect(cert.integrityScore).toBe(86);
     expect(cert.guardsMap).toHaveProperty('governance-drift');
     expect(cert.guardsMap).toHaveProperty('catalog-truth');
     expect(cert.guardsMap).toHaveProperty('sacrifice');
     expect(cert.guardsMap).toHaveProperty('money-separation');
+    expect(cert.guardsMap).toHaveProperty('determinism');
+  });
+
+  it('determinism guard: passes optimistically when not sampled (sampled: false)', () => {
+    const decision = makeDecision();
+    const cert = runAll(decision, null, validCtx); // no determinismProbe in ctx
+
+    const detGuard = cert.guards.find(g => g.id === 'determinism');
+    expect(detGuard.passed).toBe(true);
+    expect(detGuard.evidence.sampled).toBe(false);
+    expect(detGuard.evidence.irHashInfrastructureActive).toBe(true); // hero has irHash:'abc123'
+  });
+
+  it('determinism guard: fails when sampled probe shows irHash missing', () => {
+    const decision = makeDecision();
+    const cert = runAll(decision, null, {
+      ...validCtx,
+      determinismProbe: { sampled: true, irHashPresent: false, irHash: null },
+    });
+
+    const detGuard = cert.guards.find(g => g.id === 'determinism');
+    expect(detGuard.passed).toBe(false);
+    expect(detGuard.evidence.sampled).toBe(true);
+    expect(detGuard.evidence.irHashPresent).toBe(false);
+    expect(cert.overallPassed).toBe(false);
   });
 });

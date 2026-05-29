@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Icon from '../shared/Icon';
 import { trackClick } from '../../lib/commerce';
+import { API_URL } from '../../lib/apiUrl.js';
 
 export default function FutureProofCard({ selectedCard, timeline, ownershipChoice }) {
   const { t } = useTranslation();
   const [shareState, setShareState] = useState('idle'); // 'idle' | 'copying' | 'copied' | 'error'
 
   const handleShare = async () => {
-    const API_URL = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
     setShareState('copying');
     try {
       const decisionId = selectedCard.savedDecisionId;

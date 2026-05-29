@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { API_URL as apiUrl } from '../../lib/apiUrl.js';
 
 export default function TrustPanel({ irHash }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
 
   return (
     <div className="trust-panel">

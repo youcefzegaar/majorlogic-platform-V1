@@ -4,15 +4,18 @@
  * Contract: { id, severity, evaluate(decision, trace, ctx) → { id, severity, passed, evidence } }
  * runAll(decision, trace, ctx) → IntegrityCertificate
  *
- * Four synchronous guards (fast, non-blocking):
+ * Five guards (four synchronous + one sampled):
  *   1. governance-drift  — wraps enforceGovernance result from ctx
  *   2. catalog-truth     — catalog must have ≥ 3 published entities (ctx.catalogTruth.total)
  *   3. sacrifice         — hero card must have cost + tradeoff (permanent M1 guarantee)
  *   4. money-separation  — Spearman rank–affiliate correlation + no commercial fields in scoring
+ *   5. determinism       — same inputs → same irHash; sampled 5% via ctx.determinismProbe
  *
  * Guards run AFTER the decision and NEVER alter it (Observer, not Salesman).
  * Governance must never block a user's decision — all errors caught internally.
- * Determinism is probed async at 5% sampling rate (G.5) via saveDeterminismProbe.
+ * Determinism: for 5% of requests platform-core computes the probe before runAll and passes
+ * ctx.determinismProbe = { sampled: true, irHashPresent: bool, irHash }. For the other 95%,
+ * the guard passes optimistically with evidence.sampled = false.
  */
 
 // Severity weights for integrityScore calculation
@@ -69,21 +72,50 @@ function evaluateCatalogTruth(_decision, _trace, ctx) {
   };
 }
 
+// Strings that signal the engine found NO real trade-off data.
+// If cost.text matches any of these, the sacrifice is synthetic — not truthful.
+const SYNTHETIC_SACRIFICE_PATTERNS = [
+  /no significant trade-?off/i,
+  /no prominent weakness/i,
+  /without.*significant compromise/i,
+  /meets all your stated.*without/i,
+  /did not surface a dominant trade-?off/i,
+  /لا تسويات جوهرية/,
+  /لا توجد تسويات جوهرية/,
+  /لا توجد نقاط ضعف/,
+  /لم تكشف بياناتنا/,
+];
+
+function isSyntheticSacrificeText(text) {
+  if (typeof text !== 'string' || text.length === 0) return true;
+  return SYNTHETIC_SACRIFICE_PATTERNS.some(re => re.test(text));
+}
+
 // ── Guard 3: Sacrifice always shown ──────────────────────────────────────────
 
 function evaluateSacrifice(decision) {
   const cards = Array.isArray(decision?.cards) ? decision.cards : [];
   const hero = cards.find(c => c.cardType === 'hero') ?? cards[0] ?? null;
-  const hasCost = hero?.explanation?.cost != null;
-  const hasTradeoff = hero?.explanation?.tradeoff != null;
+
+  const cost     = hero?.explanation?.cost;
+  const tradeoff = hero?.explanation?.tradeoff;
+
+  // severity:'none' means buildExplanation found no real sacrifices.
+  // Synthetic text also means the engine had nothing real to show.
+  const costIsReal     = cost != null && cost.severity !== 'none' && !isSyntheticSacrificeText(cost.text);
+  const tradeoffIsReal = tradeoff != null && !isSyntheticSacrificeText(tradeoff.text);
+
   return {
     id: 'sacrifice',
     severity: 'critical',
-    passed: hasCost && hasTradeoff,
+    passed: costIsReal && tradeoffIsReal,
     evidence: {
-      heroCardType: hero?.cardType ?? null,
-      costPresent: hasCost,
-      tradeoffPresent: hasTradeoff,
+      heroCardType:     hero?.cardType ?? null,
+      costPresent:      cost != null,
+      costSeverity:     cost?.severity ?? null,
+      tradeoffPresent:  tradeoff != null,
+      costSynthetic:    cost != null ? isSyntheticSacrificeText(cost.text) : null,
+      tradeoffSynthetic: tradeoff != null ? isSyntheticSacrificeText(tradeoff.text) : null,
     },
   };
 }
@@ -127,9 +159,42 @@ function evaluateMoneySeparation(decision) {
   };
 }
 
+// ── Guard 5: Determinism ──────────────────────────────────────────────────────
+// For 5% of requests, platform-core computes a probe before runAll and passes
+// ctx.determinismProbe = { sampled: true, irHashPresent: bool, irHash }.
+// For the remaining 95%, the guard passes optimistically with sampled: false.
+
+function evaluateDeterminism(decision, _trace, ctx) {
+  const probe = ctx?.determinismProbe;
+
+  if (!probe || !probe.sampled) {
+    const topCard = Array.isArray(decision?.cards) ? decision.cards[0] : null;
+    return {
+      id: 'determinism',
+      severity: 'high',
+      passed: true,
+      evidence: {
+        sampled: false,
+        irHashInfrastructureActive: topCard?.irHash != null,
+      },
+    };
+  }
+
+  return {
+    id: 'determinism',
+    severity: 'high',
+    passed: probe.irHashPresent === true,
+    evidence: {
+      sampled: true,
+      irHashPresent: probe.irHashPresent,
+      irHash: probe.irHash ?? null,
+    },
+  };
+}
+
 // ── Registry + runAll ─────────────────────────────────────────────────────────
 
-const EVALUATORS = [evaluateGovernanceDrift, evaluateCatalogTruth, evaluateSacrifice, evaluateMoneySeparation];
+const EVALUATORS = [evaluateGovernanceDrift, evaluateCatalogTruth, evaluateSacrifice, evaluateMoneySeparation, evaluateDeterminism];
 
 /**
  * Run all evaluators and return an IntegrityCertificate.

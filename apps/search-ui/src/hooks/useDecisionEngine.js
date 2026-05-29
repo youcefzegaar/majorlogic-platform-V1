@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { runDecision as apiRunDecision } from '../../../../packages/api-client/src/index.js';
 import { detectConflicts } from './decision-conflicts.js';
 import { buildProfile, toSlider, resolveImage, buildStabilityDescription } from './decision-profile.js';
+import { API_URL as apiUrl } from '../lib/apiUrl.js';
 
 // ── Re-exported so callers that import toSlider from this module still work ──
 export { toSlider };

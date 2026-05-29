@@ -126,8 +126,10 @@ export class DecisionExplainer {
           severity:   (sacrifices[0].severity ?? 0) > 0.6 ? "high" : (sacrifices[0].severity ?? 0) > 0.3 ? "medium" : "low",
         }
       : {
-          text:       isAr ? "لا تسويات جوهرية — يلبي جميع أولوياتك." : "No significant trade-offs — meets all your stated priorities.",
-          sourceNote: isAr ? "لا قيود مُخففة" : "No relaxed constraints",
+          text:       isAr
+            ? "بياناتنا لم تكشف عن تسوية جوهرية — تحقق من التفاصيل التي تهمك قبل الالتزام."
+            : "Our data did not surface a dominant trade-off — verify the details that matter to you before committing.",
+          sourceNote: isAr ? "لا تضحيات مسجّلة في البيانات" : "No data-confirmed sacrifice",
           severity:   "none",
         };
 
@@ -150,7 +152,14 @@ export class DecisionExplainer {
       irHash:  trace?.irHash ?? null,
     };
 
-    return { headline, reasons, cost, runnerUp, math };
+    // tradeoff: populated so sacrifice guard can check content, not just presence
+    const tradeoffText = renderTradeoffFromTrace(trace, { locale });
+    const tradeoff = {
+      text:     tradeoffText,
+      severity: cost.severity,
+    };
+
+    return { headline, reasons, cost, tradeoff, runnerUp, math };
   }
 
   // ── Micro-explainers (used by ExplainabilityPanel and card narrative context) ──

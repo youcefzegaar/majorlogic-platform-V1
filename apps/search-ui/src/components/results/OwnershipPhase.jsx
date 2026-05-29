@@ -11,6 +11,7 @@ import {
   buildBars,
   buildUrlMap,
 } from './ownership-pricing.js';
+import { API_URL as apiUrl } from '../../lib/apiUrl.js';
 
 export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplanation, onChoiceMade, onNext, onBack }) {
   const { t } = useTranslation();
@@ -47,7 +48,6 @@ export default function OwnershipPhase({ selectedCard, budgetMax, cameFromExplan
   const handleAlert = async () => {
     if (!email.trim()) return;
     setAlertError(null);
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
     try {
       const res = await fetch(`${apiUrl}/api/v1/laptop-student-us/growth/lead`, {
         method: 'POST',

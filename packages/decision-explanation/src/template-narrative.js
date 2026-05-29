@@ -66,8 +66,8 @@ export function buildEnExplanation(name, strengths, sacrifices, confidenceLevel,
     );
   } else {
     parts.push(
-      `Notably, this device meets all your stated requirements without forcing any significant compromises. ` +
-      `That is the best possible outcome — take it.`
+      `Our data did not surface a dominant trade-off for this device against your profile. ` +
+      `That does not mean there is none — verify the details that matter most to you before committing.`
     );
   }
 
@@ -139,8 +139,8 @@ export function buildArExplanation(name, strengths, sacrifices, confidenceLevel,
     );
   } else {
     parts.push(
-      `والجدير بالذكر أن هذا الجهاز يُلبّي جميع متطلباتك دون فرض أي تسويات جوهرية. ` +
-      `هذه أفضل نتيجة ممكنة — استفد منها.`
+      `بياناتنا لم تكشف عن تسوية جوهرية لهذا الجهاز مقابل ملفك الشخصي. ` +
+      `هذا لا يعني غياب التسوية — تحقق من التفاصيل الأهم لك قبل الالتزام.`
     );
   }
 
@@ -231,5 +231,7 @@ export function renderBadNewsFromTrace(trace, domainContext = {}) {
       ? `نقطة ضعف: ${meaning} أقل مما أشرت إليه كأولوية.`
       : `Weakness: ${meaning} scores below your stated priority.`;
   }
-  return isAr ? "لا توجد نقاط ضعف بارزة." : "No prominent weaknesses identified.";
+  return isAr
+    ? "لم تكشف بياناتنا عن نقاط ضعف بارزة — تحقق من التفاصيل التي تهمك."
+    : "Our data did not surface a prominent weakness — verify the details that matter to you.";
 }

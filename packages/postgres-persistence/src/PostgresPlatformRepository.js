@@ -85,6 +85,8 @@ export class PostgresPlatformRepository {
   saveCertificate(...args)               { return this._growth.saveCertificate(...args); }
   getCertificateStats(...args)           { return this._growth.getCertificateStats(...args); }
   saveDeterminismProbe(...args)          { return this._growth.saveDeterminismProbe(...args); }
+  saveRegretAnswer(...args)              { return this._growth.saveRegretAnswer(...args); }
+  getRegretStats(...args)               { return this._growth.getRegretStats(...args); }
 
   // ── commercial ────────────────────────────────────────────────────────────────
   getAffiliateSettings(...args)           { return this._commercial.getAffiliateSettings(...args); }

@@ -46,7 +46,11 @@ export default async function userAuthRoutes(fastify, opts) {
     path:     "/",
     httpOnly: true,
     secure:   isProd,
-    sameSite: "lax",
+    // Cross-origin deployment (SPA on majorlogic.tech, API on railway.app):
+    // "none" lets the browser store + send the cookie on cross-site requests.
+    // "none" requires secure:true (enforced above in prod).
+    // In dev (localhost) lax is fine — no cross-site issue.
+    sameSite: isProd ? "none" : "lax",
     maxAge:   COOKIE_MAX_AGE,
   };
 

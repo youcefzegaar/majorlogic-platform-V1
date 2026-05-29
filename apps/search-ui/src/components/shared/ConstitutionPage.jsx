@@ -13,7 +13,7 @@ const PILLARS = [
     id: 'money',
     icon: '🚫',
     title: 'Money Does Not Rank',
-    body: 'Affiliate commissions, ad revenue, or seller partnerships have zero influence on ranking. We run a statistical correlation test (Spearman rank) on every decision to verify this. If the correlation exceeds our threshold, the run fails our integrity audit.',
+    body: 'Affiliate commissions have zero influence on which laptop we recommend. The ranking engine is money-blind: we statistically verify this on every decision using a Spearman rank correlation test between card positions and affiliate status. If the correlation exceeds 0.3, the run fails our integrity audit. A separate offer layer then ranks stores by price and trust — affiliate is only a last-resort tiebreaker among otherwise-identical offers, never a device-level ranking factor.',
     badge: 'Statistically verified',
     badgeColor: 'var(--success)',
   },

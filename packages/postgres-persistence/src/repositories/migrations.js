@@ -42,6 +42,7 @@ export class MigrationsRepository {
       "database/migrations/0033_integrity_certificates.sql",
       "database/migrations/0034_nurture_extended.sql",
       "database/migrations/0035_lead_decision_run.sql",
+      "database/migrations/0036_regret_answers.sql",
       "database/seeds/0001_domain_registry.sql"
     ];
 

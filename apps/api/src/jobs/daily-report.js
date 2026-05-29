@@ -15,7 +15,7 @@ import { sendDailyReport } from "../monitoring/telegram.js";
 
 async function buildReport(repository) {
   const domainId = process.env.DEFAULT_DOMAIN ?? "laptop-student-us";
-  const [overview, certStats, feedbackResult, freshness] = await Promise.all([
+  const [overview, certStats, feedbackResult, freshness, regretRows] = await Promise.all([
     repository.getAdminOverview({ domainId }),
     repository.getCertificateStats({ sinceDays: 7 }).catch(() => null),
     repository.pool.query(`
@@ -26,6 +26,7 @@ async function buildReport(repository) {
       WHERE received_at >= NOW() - INTERVAL '7 days'
     `).catch(() => ({ rows: [{}] })),
     repository.getCatalogFreshness({ domainId }).catch(() => null),
+    repository.getRegretStats({ domainId, sinceDays: 30 }).catch(() => []),
   ]);
 
   const fb = feedbackResult?.rows?.[0] ?? {};
@@ -59,6 +60,10 @@ async function buildReport(repository) {
       uptime: process.uptime(),
       memoryMb: Math.round(process.memoryUsage().rss / 1024 / 1024),
       node: process.version,
+    },
+    regret: {
+      rows: regretRows ?? [],
+      provisional: (regretRows ?? []).reduce((s, r) => s + r.count, 0) < 10,
     },
   };
 }

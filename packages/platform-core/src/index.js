@@ -81,13 +81,36 @@ export async function executeUniversalPipeline({
   const trust = auditDecision({ catalog, decision, domainPack });
   const growth = buildGrowthArtifacts({ profile, decision, domainPack });
 
-  // G.6: Integrity certificate — runs after commercial routes so bestOffer.isAffiliate is populated
+  // G.5: Determinism probe — compute for 5% of requests BEFORE the certificate so
+  // the result can be included in the integrity certificate (guard 5).
+  // Store asynchronously (fire-and-forget) to never block the user.
+  let determinismProbe = { sampled: false };
+  if (repository && decision.decisionRunId && randomInt(0, 100) < 5) {
+    const topCard = decision.cards?.[0] ?? null;
+    const irHash = topCard?.irHash ?? null;
+    determinismProbe = { sampled: true, irHashPresent: irHash != null, irHash };
+    setImmediate(async () => {
+      try {
+        await repository.saveDeterminismProbe({
+          domainId: ruleset.domainId,
+          decisionRunId: decision.decisionRunId,
+          irHash,
+          topCardEntityId: topCard?.entityId ?? null,
+          topCardScore: topCard?.score ?? null,
+        });
+      } catch { /* non-fatal */ }
+    });
+  }
+
+  // G.6: Integrity certificate — runs after commercial routes so bestOffer.isAffiliate is populated.
+  // Includes determinismProbe result from G.5 (sampled: false for the other 95%).
   let integrityCertificate = null;
   try {
     const { runAll } = await import("../../governance-evaluator/src/index.js");
     const evalCtx = {
       governance,
       catalogTruth: { total: publishedEntities.length },
+      determinismProbe,
     };
     integrityCertificate = runAll(decision, null, evalCtx);
     if (repository && integrityCertificate.decisionRunId) {
@@ -129,22 +152,6 @@ export async function executeUniversalPipeline({
         integrityScore: decision.integrityScore,
         originalExcludedCount: decision.excludedCount,
         recoveredCount: decision.candidateCount
-      });
-    }
-
-    // G.5: Determinism probe — 5% sampling, fire-and-forget, never blocks user
-    if (decision.decisionRunId && randomInt(0, 100) < 5) {
-      setImmediate(async () => {
-        try {
-          const topCard = decision.cards?.[0] ?? null;
-          await repository.saveDeterminismProbe({
-            domainId: ruleset.domainId,
-            decisionRunId: decision.decisionRunId,
-            irHash: topCard?.irHash ?? null,
-            topCardEntityId: topCard?.entityId ?? null,
-            topCardScore: topCard?.score ?? null,
-          });
-        } catch { /* non-fatal — never interrupt user decision */ }
       });
     }
   }

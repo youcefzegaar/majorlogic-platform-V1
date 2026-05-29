@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-
-const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
+import { API_URL as apiUrl } from '../lib/apiUrl.js';
 
 function getCsrfToken() {
   const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/);

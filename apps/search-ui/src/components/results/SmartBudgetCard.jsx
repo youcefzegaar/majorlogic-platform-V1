@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Icon from '../shared/Icon';
 import { trackClick } from '../../lib/commerce';
+import { API_URL as apiUrl } from '../../lib/apiUrl.js';
 
 export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSelectedPurchase }) {
   const [email, setEmail] = useState('');
@@ -36,7 +37,6 @@ export default function SmartBudgetCard({ selectedCard, selectedPurchase, setSel
   const handleSaveAlert = async () => {
     if (!email) return;
     setAlertError(null);
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
     try {
       const res = await fetch(`${apiUrl}/api/v1/laptop-student-us/growth/lead`, {
         method: 'POST',

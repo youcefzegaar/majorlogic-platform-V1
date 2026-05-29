@@ -8,6 +8,9 @@ import { buildCard } from "./card-builder.js";
 
 const CRITICAL_CONS = new Set(["thermal_throttling", "performance_issues"]);
 const MAJOR_CONS    = new Set(["battery_life", "fan_noise", "build_quality"]);
+// Severity mapping for review cons → sacrifice records
+const CON_SEVERITY  = (con) =>
+  CRITICAL_CONS.has(con) ? 0.8 : MAJOR_CONS.has(con) ? 0.5 : 0.2;
 
 /**
  * Penalizes devices with known cons from reviews.
@@ -30,7 +33,23 @@ export function applyReviewPenalty(candidates, entityLookup, logger) {
     if (cappedPenalty > 0) {
       logger.log(`[ReviewPenalty] ${c.entityId}: -${cappedPenalty} pts (cons: ${cons.join(", ")})`);
     }
-    return { ...c, score: Math.max(0, c.score - cappedPenalty) };
+
+    // Inject review cons into trace.sacrifices so the explanation layer can surface them.
+    // Preserve existing kernel-recorded sacrifices; only add cons not already present.
+    const existingSacrifices = c.trace?.sacrifices ?? {};
+    const injectedSacrifices = cons.reduce((acc, con) => {
+      if (!existingSacrifices[con]) {
+        acc[con] = { type: "review_con", severity: CON_SEVERITY(con), meaning: con.replace(/_/g, " ") };
+      }
+      return acc;
+    }, {});
+
+    const hasCons = Object.keys(injectedSacrifices).length > 0;
+    const enrichedTrace = hasCons
+      ? { ...c.trace, sacrifices: { ...existingSacrifices, ...injectedSacrifices } }
+      : c.trace;
+
+    return { ...c, score: Math.max(0, c.score - cappedPenalty), trace: enrichedTrace };
   });
 }
 

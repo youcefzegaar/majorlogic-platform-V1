@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import Icon from '../shared/Icon';
 import { buildGoUrl, trackClick } from '../../lib/commerce';
+import { API_URL as apiUrl } from '../../lib/apiUrl.js';
 
 const MODE_CONFIG = {
   buy_new:                 { path: 'new',          label: 'Buy New' },
-  refurbished_if_verified: { path: 'renewed',      label: 'Certified Renewed' },
+  refurbished_if_verified: { path: 'renewed',      label: 'Amazon Renewed' },
   open_box_with_guardrails:{ path: 'open_box',     label: 'Open Box' },
   light_financing:         { path: 'installments', label: 'Installments' },
 };
@@ -87,14 +88,14 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
     {
       key: 'renewed',
       icon: '🔄',
-      title: 'Certified Renewed',
+      title: 'Amazon Renewed',
       price: `~$${renewedPrice.toLocaleString()}`,
       saving: `Save ~$${(priceUsd - renewedPrice).toLocaleString()} (26%)`,
-      detail: 'Amazon Renewed / manufacturer-certified',
-      pros: ['Tested & inspected', '20–30% cheaper', 'Often includes limited warranty'],
+      detail: "Amazon's renewed program — tested & inspected by third parties. Not certified by MajorLogic.",
+      pros: ['Tested & inspected to work like new', '20–30% cheaper', 'Often includes limited warranty'],
       cons: ['Limited stock', 'May vary in configuration'],
       url: rec.recommendedOffer?.url || amazonRenewedUrl,
-      cta: 'Search Certified Renewed'
+      cta: 'Search Amazon Renewed'
     },
     {
       key: 'open_box',
@@ -126,7 +127,6 @@ export default function OwnershipLayer({ selectedCard, budgetMax }) {
   const handleSaveAlert = async () => {
     if (!email.trim()) return;
     setAlertError(null);
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
     try {
       const res = await fetch(`${apiUrl}/api/v1/laptop-student-us/growth/lead`, {
         method: 'POST',

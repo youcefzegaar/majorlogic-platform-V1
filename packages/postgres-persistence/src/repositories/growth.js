@@ -232,6 +232,32 @@ export class GrowthRepository {
     };
   }
 
+  async saveRegretAnswer({ decisionRunId, domainId, answer, sacrificeShown = null }) {
+    await this.pool.query(
+      `INSERT INTO ml_telemetry.regret_answers
+         (decision_run_id, domain_id, answer, sacrifice_shown)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (decision_run_id) DO NOTHING`,
+      [decisionRunId, domainId, answer, sacrificeShown]
+    );
+  }
+
+  async getRegretStats({ domainId, sinceDays = 30 } = {}) {
+    const result = await this.pool.query(
+      `SELECT
+         answer,
+         sacrifice_shown,
+         COUNT(*)::int AS count
+       FROM ml_telemetry.regret_answers
+       WHERE domain_id = $1
+         AND received_at >= NOW() - ($2 * INTERVAL '1 day')
+       GROUP BY answer, sacrifice_shown
+       ORDER BY sacrifice_shown, answer`,
+      [domainId, sinceDays]
+    );
+    return result.rows;
+  }
+
   async saveDeterminismProbe({ domainId, decisionRunId, irHash, topCardEntityId, topCardScore }) {
     await this.pool.query(
       `INSERT INTO ml_governance.guardrail_events
