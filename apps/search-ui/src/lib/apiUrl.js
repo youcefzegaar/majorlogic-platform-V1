@@ -1,3 +1,1 @@
-import { getPlatformBaseUrl } from '../../../../packages/api-client/src/index.js';
-
-export const API_URL = getPlatformBaseUrl();
+export const API_URL = import.meta.env.VITE_API_URL || 'https://majorlogicapi-production.up.railway.app';
