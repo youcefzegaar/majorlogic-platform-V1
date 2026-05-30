@@ -1,6 +1,6 @@
 import {
   AlertTriangle, ArrowDown, ArrowLeft, ArrowRight, ArrowUp,
-  Bell, Bookmark, Brain, Check, CheckCheck, CheckCircle,
+  Bell, BookOpen, Bookmark, Brain, Check, CheckCheck, CheckCircle,
   Edit, ExternalLink, History, Info, LogOut, Menu, Moon,
   PieChart, Plus, PlusCircle, RotateCcw, RotateCw,
   Save, Settings, ShieldCheck, ShoppingCart, Sliders, Store,
@@ -15,6 +15,7 @@ const MAP = {
   'arrow-up':             ArrowUp,
   'bars':                 Menu,
   'bell':                 Bell,
+  'book-open':            BookOpen,
   'bookmark':             Bookmark,
   'brain':                Brain,
   'bullseye':             Target,
