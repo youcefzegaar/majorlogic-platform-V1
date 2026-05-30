@@ -21,6 +21,34 @@
       "destination": "https://majorlogicapi-production.up.railway.app/go/:path*"
     },
     {
+      "source": "/disclosure",
+      "destination": "https://majorlogicapi-production.up.railway.app/disclosure"
+    },
+    {
+      "source": "/privacy",
+      "destination": "https://majorlogicapi-production.up.railway.app/privacy"
+    },
+    {
+      "source": "/terms",
+      "destination": "https://majorlogicapi-production.up.railway.app/terms"
+    },
+    {
+      "source": "/how-we-work",
+      "destination": "https://majorlogicapi-production.up.railway.app/how-we-work"
+    },
+    {
+      "source": "/share/:token",
+      "destination": "https://majorlogicapi-production.up.railway.app/share/:token"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "https://majorlogicapi-production.up.railway.app/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://majorlogicapi-production.up.railway.app/sitemap.xml"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
