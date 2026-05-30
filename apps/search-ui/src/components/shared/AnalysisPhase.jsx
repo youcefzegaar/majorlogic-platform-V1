@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import DecisionTrace from './DecisionTrace';
 import DecisionTrust from './DecisionTrust';
+import Icon from './Icon';
 
 export default function AnalysisPhase({
   priorities, analysisSummary, detectedConflicts, decisionMetadata,
