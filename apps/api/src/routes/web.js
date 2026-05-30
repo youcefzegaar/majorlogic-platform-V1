@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { renderSearchPage, renderResultsPage } from "../views/templates.js";
-import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure } from "../views/legal.js";
+import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure, renderOurStory } from "../views/legal.js";
 import { renderSeoPage } from "../views/seo-page.js";
 import { getUsersRepository } from "../db/repository.js";
 
@@ -59,6 +59,9 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
   });
   fastify.get("/disclosure", async (_request, reply) => {
     reply.type("text/html; charset=utf-8").send(renderDisclosure());
+  });
+  fastify.get("/our-story", async (_request, reply) => {
+    reply.type("text/html; charset=utf-8").send(renderOurStory());
   });
   fastify.get("/how-we-work", async (_request, reply) => {
     reply.redirect("/disclosure", 301);

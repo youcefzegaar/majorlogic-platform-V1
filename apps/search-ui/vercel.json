@@ -21,6 +21,10 @@
       "destination": "https://majorlogicapi-production.up.railway.app/go/:path*"
     },
     {
+      "source": "/our-story",
+      "destination": "https://majorlogicapi-production.up.railway.app/our-story"
+    },
+    {
       "source": "/disclosure",
       "destination": "https://majorlogicapi-production.up.railway.app/disclosure"
     },
