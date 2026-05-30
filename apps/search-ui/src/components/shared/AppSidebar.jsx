@@ -34,6 +34,9 @@ export default function AppSidebar({ phase, onNewDecision, onMyDecisions, onCons
         <div className="nav-item" onClick={() => { onConstitution?.(); onClose?.(); }}>
           <Icon name="shield-alt" /><span>{t('nav.constitution', 'Our Constitution')}</span>
         </div>
+        <a className="nav-item" href="/our-story" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Icon name="book-open" /><span>{t('nav.our_story', 'Our Story')}</span>
+        </a>
         <div className="nav-item" onClick={() => { onSettings?.(); onClose?.(); }}>
           <Icon name="cog" /><span>{t('nav.settings', 'Settings')}</span>
         </div>
