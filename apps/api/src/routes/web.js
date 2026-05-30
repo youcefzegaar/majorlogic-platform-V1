@@ -1,19 +1,26 @@
 import path from "node:path";
 import fs from "node:fs";
 import { renderSearchPage, renderResultsPage } from "../views/templates.js";
-import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure, renderOurStory } from "../views/legal.js";
+import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure, renderOurStory, renderHowWeWork } from "../views/legal.js";
 import { renderSeoPage } from "../views/seo-page.js";
 import { getUsersRepository } from "../db/repository.js";
 
 // Cache the generated catalog in memory to avoid repeated file reads
 let _catalogCache = null;
 let _catalogCachePath = null;
+let _catalogCacheTime = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 function loadCatalogFile(filePath) {
-  if (_catalogCachePath === filePath && _catalogCache) return _catalogCache;
+  const now = Date.now();
+  if (_catalogCachePath === filePath && _catalogCache && (now - _catalogCacheTime < CACHE_TTL_MS)) {
+    return _catalogCache;
+  }
   try {
     const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
     _catalogCache = Array.isArray(raw) ? raw : Object.values(raw);
     _catalogCachePath = filePath;
+    _catalogCacheTime = now;
   } catch { _catalogCache = []; }
   return _catalogCache;
 }
@@ -61,10 +68,11 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
     reply.type("text/html; charset=utf-8").send(renderDisclosure());
   });
   fastify.get("/our-story", async (_request, reply) => {
+    reply.header("Cache-Control", "no-cache, no-store, must-revalidate");
     reply.type("text/html; charset=utf-8").send(renderOurStory());
   });
   fastify.get("/how-we-work", async (_request, reply) => {
-    reply.redirect("/disclosure", 301);
+    reply.type("text/html; charset=utf-8").send(renderHowWeWork());
   });
 
   // ── SSR Web Routes ────────────────────────────────────────────────────────
