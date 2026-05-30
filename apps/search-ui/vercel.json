@@ -9,6 +9,18 @@
       "destination": "https://majorlogicapi-production.up.railway.app/api/:path*"
     },
     {
+      "source": "/auth/:path*",
+      "destination": "https://majorlogicapi-production.up.railway.app/auth/:path*"
+    },
+    {
+      "source": "/user/:path*",
+      "destination": "https://majorlogicapi-production.up.railway.app/user/:path*"
+    },
+    {
+      "source": "/go/:path*",
+      "destination": "https://majorlogicapi-production.up.railway.app/go/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
