@@ -20,7 +20,8 @@ export default async function adminRoutes(fastify) {
       if (!data) return reply.status(503).send({ error: "database_unavailable" });
       return reply.send(data);
     } catch (err) {
-      return reply.status(500).send({ error: "admin_request_failed", message: err.message });
+      request.log.error({ err, domain }, "Admin dashboard request failed");
+      return reply.status(500).send({ error: "admin_request_failed" });
     }
   });
 }

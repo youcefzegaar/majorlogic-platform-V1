@@ -181,7 +181,6 @@ function evaluateDeterminism(decision, _trace, ctx) {
   const probe = ctx?.determinismProbe;
 
   if (!probe || !probe.sampled) {
-    const topCard = Array.isArray(decision?.cards) ? decision.cards[0] : null;
     return {
       id: 'determinism',
       severity: 'high',
@@ -189,7 +188,7 @@ function evaluateDeterminism(decision, _trace, ctx) {
       passed: false,
       evidence: {
         sampled: false,
-        irHashInfrastructureActive: topCard?.trace?.irHash != null,
+        irHashInfrastructureActive: decision?.governance?.irHash != null,
       },
     };
   }

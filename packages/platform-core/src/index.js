@@ -96,7 +96,7 @@ export async function executeUniversalPipeline({
     let determinismProbe = { sampled: false };
     if (repository && decision.decisionRunId && randomInt(0, 100) < 5) {
       const topCard = decision.cards?.[0] ?? null;
-      const irHash = topCard?.irHash ?? null;
+      const irHash = decision.governance?.irHash ?? null;
       determinismProbe = { sampled: true, irHashPresent: irHash != null, irHash };
       setImmediate(async () => {
         try {

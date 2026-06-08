@@ -46,7 +46,7 @@ export default async function jobRoutes(fastify) {
       return reply.send({ ok: true, job, result });
     } catch (err) {
       request.log.error({ err, job }, "Job failed");
-      return reply.status(500).send({ error: "job_failed", message: err.message });
+      return reply.status(500).send({ error: "job_failed" });
     }
   });
 }

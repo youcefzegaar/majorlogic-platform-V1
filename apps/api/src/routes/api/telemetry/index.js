@@ -19,7 +19,8 @@ export default async function telemetryRoutes(fastify) {
       await repository.saveTelemetryClick({ decisionRunId, entityId, clickType });
       return reply.send({ ok: true, logged: true, entityId });
     } catch (err) {
-      return reply.status(500).send({ error: "telemetry_logging_failed", message: err.message });
+      request.log.error({ err }, "Telemetry click logging failed");
+      return reply.status(500).send({ error: "telemetry_logging_failed" });
     }
   });
 }
