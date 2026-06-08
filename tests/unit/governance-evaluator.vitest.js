@@ -38,7 +38,9 @@ describe('governance-evaluator', () => {
 
     expect(cert.overallPassed).toBe(true);
     expect(cert.integrityScore).toBe(100);
-    expect(cert.guards.every(g => g.passed)).toBe(true);
+    // determinism is not_verified (not sampled) — neutral, not a failure
+    const verifiable = cert.guards.filter(g => g.status !== 'not_verified' && g.status !== 'insufficient_data');
+    expect(verifiable.every(g => g.passed)).toBe(true);
     expect(cert.decisionRunId).toBe('test-run-id');
     expect(typeof cert.evaluatedAt).toBe('string');
   });
@@ -116,16 +118,17 @@ describe('governance-evaluator', () => {
   });
 
   it('integrityScore is computed correctly from severity weights', () => {
-    // 5 guards: sacrifice=critical(40), money-sep=critical(40), drift=high(20),
-    //           catalog-truth=high(20), determinism=high(20) → total = 140
-    // When only drift fails: earned = 40+40+20+20 = 120 → score = 86%
+    // Verifiable guards (not_verified/insufficient_data excluded):
+    //   sacrifice=critical(40), money-sep=critical(40), drift=high(20), catalog-truth=high(20)
+    //   determinism is not_verified → excluded from maxScore
+    // When only drift fails: maxScore=120, earned=100 → score = 83%
     const decision = makeDecision();
     const cert = runAll(decision, null, {
       ...validCtx,
       governance: { ok: false, violations: ['drift'], warnings: [] },
     });
 
-    expect(cert.integrityScore).toBe(86);
+    expect(cert.integrityScore).toBe(83);
     expect(cert.guardsMap).toHaveProperty('governance-drift');
     expect(cert.guardsMap).toHaveProperty('catalog-truth');
     expect(cert.guardsMap).toHaveProperty('sacrifice');
@@ -133,14 +136,16 @@ describe('governance-evaluator', () => {
     expect(cert.guardsMap).toHaveProperty('determinism');
   });
 
-  it('determinism guard: passes optimistically when not sampled (sampled: false)', () => {
+  it('determinism guard: status is not_verified (neutral) when not sampled', () => {
     const decision = makeDecision();
     const cert = runAll(decision, null, validCtx); // no determinismProbe in ctx
 
     const detGuard = cert.guards.find(g => g.id === 'determinism');
-    expect(detGuard.passed).toBe(true);
+    // S2: non-sampled decisions return not_verified (neutral), not passed:true
+    expect(detGuard.status).toBe('not_verified');
+    expect(detGuard.passed).toBe(false);
     expect(detGuard.evidence.sampled).toBe(false);
-    expect(detGuard.evidence.irHashInfrastructureActive).toBe(true); // hero has irHash:'abc123'
+    expect(detGuard.evidence.irHashInfrastructureActive).toBe(false); // hero has irHash at top level, not trace.irHash
   });
 
   it('determinism guard: fails when sampled probe shows irHash missing', () => {
