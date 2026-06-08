@@ -31,7 +31,7 @@ export default async function decisionRoutes(fastify, { isProd }) {
       const cert = result?.integrityCertificate;
       if (cert && !cert.overallPassed) {
         const failedIds = cert.guards
-          .filter(g => !g.passed)
+          .filter(g => g.status !== 'not_verified' && g.status !== 'insufficient_data' && !g.passed)
           .map(g => `• ${g.id} (${g.severity})`)
           .join('\n');
         sendTelegramAlert(
