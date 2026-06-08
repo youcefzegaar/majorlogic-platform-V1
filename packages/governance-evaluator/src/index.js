@@ -136,15 +136,28 @@ function evaluateMoneySeparation(decision) {
     }
   }
 
-  // Spearman: card rank (1=best) vs affiliate boolean (1=is affiliate)
-  let corrValue = 0;
-  if (cards.length >= 2) {
-    const ranks = cards.map((_, i) => i + 1);
-    const affiliateValues = cards.map(c => (c.bestOffer?.isAffiliate ? 1 : 0));
-    corrValue = spearmanCorrelation(ranks, affiliateValues);
+  // Spearman: card rank (1=best) vs affiliate boolean (1=is affiliate).
+  // Requires at least 2 cards — single-card decisions can't be ranked.
+  if (cards.length < 2) {
+    return {
+      id: 'money-separation',
+      severity: 'critical',
+      status: 'insufficient_data',
+      passed: false,
+      evidence: {
+        spearmanCorrelation: null,
+        commercialFieldsInScoring: commercialFieldsFound,
+        cardCount: cards.length,
+        affiliateCardCount: cards.filter(c => c.bestOffer?.isAffiliate).length,
+      },
+    };
   }
 
-  const passed = commercialFieldsFound.length === 0 && Math.abs(corrValue) <= 0.3;
+  const ranks = cards.map((_, i) => i + 1);
+  const affiliateValues = cards.map(c => (c.bestOffer?.isAffiliate ? 1 : 0));
+  const corrValue = spearmanCorrelation(ranks, affiliateValues);
+
+  const passed = commercialFieldsFound.length === 0 && Math.abs(corrValue) <= 0.15;
 
   return {
     id: 'money-separation',
@@ -210,8 +223,8 @@ const EVALUATORS = [evaluateGovernanceDrift, evaluateCatalogTruth, evaluateSacri
 export function runAll(decision, trace, ctx) {
   const guards = EVALUATORS.map(fn => fn(decision, trace, ctx));
 
-  // not_verified guards are neutral — they don't fail overallPassed but earn 0 score.
-  const verifiable = guards.filter(g => g.status !== 'not_verified');
+  // not_verified and insufficient_data guards are neutral — excluded from overallPassed and score.
+  const verifiable = guards.filter(g => g.status !== 'not_verified' && g.status !== 'insufficient_data');
   const overallPassed = verifiable.every(g => g.passed);
 
   const maxScore = verifiable.reduce((s, g) => s + (SEVERITY_WEIGHTS[g.severity] ?? 10), 0);
