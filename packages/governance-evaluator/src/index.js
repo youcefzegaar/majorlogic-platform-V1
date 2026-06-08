@@ -172,18 +172,21 @@ function evaluateDeterminism(decision, _trace, ctx) {
     return {
       id: 'determinism',
       severity: 'high',
-      passed: true,
+      status: 'not_verified',
+      passed: false,
       evidence: {
         sampled: false,
-        irHashInfrastructureActive: topCard?.irHash != null,
+        irHashInfrastructureActive: topCard?.trace?.irHash != null,
       },
     };
   }
 
+  const passed = probe.irHashPresent === true;
   return {
     id: 'determinism',
     severity: 'high',
-    passed: probe.irHashPresent === true,
+    status: passed ? 'verified' : 'failed',
+    passed,
     evidence: {
       sampled: true,
       irHashPresent: probe.irHashPresent,
@@ -206,17 +209,20 @@ const EVALUATORS = [evaluateGovernanceDrift, evaluateCatalogTruth, evaluateSacri
  */
 export function runAll(decision, trace, ctx) {
   const guards = EVALUATORS.map(fn => fn(decision, trace, ctx));
-  const overallPassed = guards.every(g => g.passed);
 
-  const maxScore = guards.reduce((s, g) => s + (SEVERITY_WEIGHTS[g.severity] ?? 10), 0);
-  const earnedScore = guards
+  // not_verified guards are neutral — they don't fail overallPassed but earn 0 score.
+  const verifiable = guards.filter(g => g.status !== 'not_verified');
+  const overallPassed = verifiable.every(g => g.passed);
+
+  const maxScore = verifiable.reduce((s, g) => s + (SEVERITY_WEIGHTS[g.severity] ?? 10), 0);
+  const earnedScore = verifiable
     .filter(g => g.passed)
     .reduce((s, g) => s + (SEVERITY_WEIGHTS[g.severity] ?? 10), 0);
   const integrityScore = maxScore > 0 ? Math.round((earnedScore / maxScore) * 100) : 100;
 
   // guardsMap: keyed by id for efficient DB storage + JSONB querying
   const guardsMap = Object.fromEntries(
-    guards.map(g => [g.id, { passed: g.passed, severity: g.severity, evidence: g.evidence }])
+    guards.map(g => [g.id, { passed: g.passed, status: g.status, severity: g.severity, evidence: g.evidence }])
   );
 
   return {
