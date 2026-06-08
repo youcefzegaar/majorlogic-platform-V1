@@ -93,6 +93,7 @@ async function _doInit() {
         log.error({ err: err.message }, "[DB] Connection error — resetting singleton");
         repositoryInstance = null;
         _initPromise       = null;
+        clearRulesetCache(); // RES-03 fix: invalidate ruleset cache on reconnect
       });
 
       repositoryInstance = repository;

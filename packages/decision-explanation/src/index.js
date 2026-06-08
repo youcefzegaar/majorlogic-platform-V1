@@ -62,7 +62,7 @@ export class DecisionExplainer {
    * Structured explanation for the UI explanation panel (M1).
    * Returns { headline, reasons, cost, runnerUp, math }.
    */
-  buildExplanation(trace, profile, runnerUpCard, locale = "en") {
+  buildExplanation(trace, profile, runnerUpCard, locale = "en", heroScore = null) {
     const isAr = locale === "ar";
     const priorities = profile?.preferences ?? {};
     const scores     = trace?.scores ?? {};
@@ -137,7 +137,7 @@ export class DecisionExplainer {
       ? {
           name:    runnerUpCard.title ?? "Alternative",
           score:   runnerUpCard.score ?? null,
-          margin:  Math.round((runnerUpCard.score ?? 0) - (trace?.overallScore ?? 0)),
+          margin:  Math.round((runnerUpCard.score ?? 0) - (heroScore ?? 0)),
           wonOn:   [],
           lostOn:  [],
           swapHint: isAr

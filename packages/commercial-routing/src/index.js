@@ -20,6 +20,7 @@ export function attachCommercialRoutes({ decision, catalog, domainPack, ownershi
     return { status: decision.status, routes: [], affiliateDisclosure: null };
   }
 
+  const domainId = domainPack?.meta?.domainId ?? catalog?.domainPack?.meta?.domainId ?? "unknown";
   let hasAnyAffiliate = false;
 
   const routes = decision.cards.map((card) => {
@@ -67,7 +68,7 @@ export function attachCommercialRoutes({ decision, catalog, domainPack, ownershi
         commissionRate: offer.commissionRate ?? 0,
         isBestDeal: idx === 0,
         isAffiliate: offer.affiliate === true,
-        buyRoute: `/go/laptop-student-us/${encodeURIComponent(card.entityId)}?seller=${encodeURIComponent(offer.seller)}`
+        buyRoute: `/go/${encodeURIComponent(domainId)}/${encodeURIComponent(card.entityId)}?seller=${encodeURIComponent(offer.seller)}`
       };
     });
 

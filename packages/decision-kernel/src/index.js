@@ -61,7 +61,7 @@ export class DecisionKernel {
 
         return {
           entityId: trace.entityId,
-          score: values.final_score || 0,
+          score: values.final_score ?? 0,
           eligible: trace.isEligible,
           trace
         };
@@ -253,7 +253,9 @@ export class DecisionKernel {
       case "eq": return left === right;
       case "not_equal": return left !== right;
       case "ne": return left !== right;
-      default: return false;
+      default:
+        this.logger.warn(`[KERNEL] Unknown condition operator: "${cond.op}". Treating as false — this may exclude entities silently.`);
+        return false;
     }
   }
 }

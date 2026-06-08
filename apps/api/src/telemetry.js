@@ -14,13 +14,15 @@ try {
     [ATTR_SERVICE_VERSION]: '0.1.0',
   };
 
-  // v2.x uses resourceFromAttributes(); v1.x uses new Resource()
   let resource;
   if (typeof otelResources.resourceFromAttributes === 'function') {
     resource = otelResources.resourceFromAttributes(attrs);
   } else {
-    const Resource = otelResources.Resource ?? otelResources.default?.Resource;
-    resource = typeof Resource === 'function' ? new Resource(attrs) : undefined;
+    // ESM interop fix: the class is usually named Resource directly.
+    const Resource = otelResources.Resource || otelResources.default?.Resource;
+    if (typeof Resource === 'function') {
+      resource = new Resource(attrs);
+    }
   }
 
   const prometheusExporter = new PrometheusExporter({ port: 9464 });

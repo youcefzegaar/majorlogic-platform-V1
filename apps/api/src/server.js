@@ -22,7 +22,7 @@ import { schedulePriceMonitor } from "./jobs/price-monitor.js";
 import { runEmailNurture } from "./jobs/email-nurture.js";
 
 import adminRoutes from "./routes/admin/index.js";
-import apiRoutes from "./routes/api.js";
+import apiRoutes from "./routes/api/index.js";
 import webRoutes from "./routes/web.js";
 import userRoutes from "./routes/user/index.js";
 import { csrfPlugin } from "./middleware/csrf.js";
@@ -55,7 +55,7 @@ fastify.register(fastifyHelmet, {
       defaultSrc:  ["'self'"],
       styleSrc:    ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
       imgSrc:      ["'self'", "data:", "https:"],
-      scriptSrc:   ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      scriptSrc:   ["'self'", "https://cdnjs.cloudflare.com"],
       fontSrc:     ["'self'", "https://cdnjs.cloudflare.com"],
       frameAncestors: ["'none'"],
       baseUri:     ["'self'"],

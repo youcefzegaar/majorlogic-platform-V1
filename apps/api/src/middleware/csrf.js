@@ -89,7 +89,7 @@ export async function csrfPlugin(fastify) {
           // The double-submit CSRF pattern remains secure: attacker on evil.com
           // cannot read this cookie from a different origin (CORS/SOP), so they
           // cannot forge the matching X-CSRF-Token header.
-          sameSite: isProd ? "none" : "strict",
+          sameSite: isProd && process.env.CORS_CREDENTIALS_ENABLED === "true" ? "none" : "lax",
           maxAge:   86400,      // 24 hours
         });
       }

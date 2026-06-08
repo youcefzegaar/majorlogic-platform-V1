@@ -92,7 +92,11 @@ export class DecisionOrchestrator {
         await step(ctx);
       } catch (err) {
         this.logger.error(`[Orchestrator] Pipeline step "${step.name}" failed:`, err);
-        throw { status: "error", step: step.name, message: err.message, cause: err };
+        const pipelineError = new Error(`[Orchestrator] Step "${step.name}" failed: ${err.message}`);
+        pipelineError.status = "error";
+        pipelineError.step = step.name;
+        pipelineError.cause = err;
+        throw pipelineError;
       }
       if (ctx.abort) break;
     }
