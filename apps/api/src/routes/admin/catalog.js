@@ -73,6 +73,16 @@ export default async function catalogRoutes(fastify) {
       }
     }, REBUILD_TIMEOUT_MS);
 
+    proc.on("error", (err) => {
+      clearTimeout(killTimer);
+      if (job.status === "running") {
+        job.status = "error";
+        job.finishedAt = Date.now();
+        job.logs.push(`[error] Process spawn failed: ${err.message}`);
+        fastify.log.error({ domainId, jobId, err }, "[Admin] Catalog rebuild spawn error");
+      }
+    });
+
     proc.on("close", (code) => {
       clearTimeout(killTimer);
       if (job.status === "running") {

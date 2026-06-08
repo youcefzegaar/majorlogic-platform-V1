@@ -12,7 +12,21 @@ export default async function settingsRoutes(fastify) {
     return reply.send({ success: true, settings });
   });
 
-  fastify.post("/affiliate-settings", async (request, reply) => {
+  fastify.post("/affiliate-settings", {
+    schema: {
+      body: {
+        type: "object",
+        properties: {
+          seller:       { type: "string", minLength: 1, maxLength: 100 },
+          affiliateTag: { type: "string", minLength: 1, maxLength: 50 },
+          isActive:     { type: "boolean" },
+          notes:        { type: "string", maxLength: 500 },
+        },
+        required: ["seller", "affiliateTag"],
+        additionalProperties: false,
+      },
+    },
+  }, async (request, reply) => {
     const { seller, affiliateTag, isActive, notes } = request.body;
     const { getRepository } = await import("../../db/repository.js");
     const repository = await getRepository();
