@@ -41,6 +41,18 @@ export class TelemetryRepository {
     return result.rows;
   }
 
+  async getUserFeedbackStats({ sinceDays = 7 } = {}) {
+    const result = await this.pool.query(
+      `SELECT
+         COUNT(*)::int AS count_7d,
+         ROUND(AVG(score), 2)::float AS avg_score_7d
+       FROM ml_telemetry.user_feedback
+       WHERE received_at >= NOW() - ($1 * INTERVAL '1 day')`,
+      [sinceDays]
+    );
+    return result.rows[0] ?? { count_7d: 0, avg_score_7d: null };
+  }
+
   async getUserFeedback(userId) {
     const result = await this.pool.query(
       `SELECT id, decision_run_id, score, comment, tags, received_at

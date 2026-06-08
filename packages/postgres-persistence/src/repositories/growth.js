@@ -194,6 +194,19 @@ export class GrowthRepository {
 
   // ── Integrity certificates ────────────────────────────────────────────────────
 
+  async getSacrificeGuardForRun(decisionRunId) {
+    const result = await this.pool.query(
+      `SELECT guards_json->'sacrifice'->>'passed' AS sacrifice_passed
+       FROM ml_governance.integrity_certificates
+       WHERE decision_run_id = $1
+       LIMIT 1`,
+      [decisionRunId]
+    );
+    const raw = result.rows[0]?.sacrifice_passed;
+    if (raw == null) return null;
+    return raw === 'true';
+  }
+
   async saveCertificate({ decisionRunId, overallPassed, integrityScore, guardsMap }) {
     await this.pool.query(
       `INSERT INTO ml_governance.integrity_certificates

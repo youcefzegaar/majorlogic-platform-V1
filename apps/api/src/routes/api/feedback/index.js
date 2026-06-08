@@ -70,16 +70,7 @@ export default async function feedbackRoutes(fastify) {
 
       let sacrificeShown = null;
       try {
-        const certRow = await repository.pool.query(
-          `SELECT guards_json->'sacrifice'->>'passed' AS sacrifice_passed
-           FROM ml_governance.integrity_certificates
-           WHERE decision_run_id = $1
-           LIMIT 1`,
-          [decisionRunId]
-        );
-        if (certRow.rows[0]?.sacrifice_passed != null) {
-          sacrificeShown = certRow.rows[0].sacrifice_passed === 'true';
-        }
+        sacrificeShown = await repository.getSacrificeGuardForRun(decisionRunId);
       } catch { /* certificate lookup is best-effort */ }
 
       await repository.saveRegretAnswer({ decisionRunId, domainId: domain, answer, sacrificeShown });

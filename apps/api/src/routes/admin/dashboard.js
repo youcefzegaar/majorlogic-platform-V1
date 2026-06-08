@@ -144,17 +144,11 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
     const [overview, certStats, feedbackStats, freshness] = await Promise.all([
       repository.getAdminOverview({ domainId: DEFAULT_DOMAIN }),
       repository.getCertificateStats({ sinceDays: 7 }).catch(() => null),
-      repository.pool.query(`
-        SELECT
-          COUNT(*)::int AS count_7d,
-          ROUND(AVG(score), 2)::float AS avg_score_7d
-        FROM ml_telemetry.user_feedback
-        WHERE received_at >= NOW() - INTERVAL '7 days'
-      `).catch(() => ({ rows: [{}] })),
+      repository.getUserFeedbackStats({ sinceDays: 7 }).catch(() => null),
       repository.getCatalogFreshness({ domainId: DEFAULT_DOMAIN }).catch(() => null),
     ]);
 
-    const fb = feedbackStats?.rows?.[0] ?? {};
+    const fb = feedbackStats ?? {};
 
     return reply.send({
       success: true,

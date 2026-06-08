@@ -18,18 +18,12 @@ async function buildReport(repository) {
   const [overview, certStats, feedbackResult, freshness, regretRows] = await Promise.all([
     repository.getAdminOverview({ domainId }),
     repository.getCertificateStats({ sinceDays: 7 }).catch(() => null),
-    repository.pool.query(`
-      SELECT
-        COUNT(*)::int AS count_7d,
-        ROUND(AVG(score), 2)::float AS avg_score_7d
-      FROM ml_telemetry.user_feedback
-      WHERE received_at >= NOW() - INTERVAL '7 days'
-    `).catch(() => ({ rows: [{}] })),
+    repository.getUserFeedbackStats({ sinceDays: 7 }).catch(() => null),
     repository.getCatalogFreshness({ domainId }).catch(() => null),
     repository.getRegretStats({ domainId, sinceDays: 30 }).catch(() => []),
   ]);
 
-  const fb = feedbackResult?.rows?.[0] ?? {};
+  const fb = feedbackResult ?? {};
 
   return {
     decisions: {
