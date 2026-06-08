@@ -191,10 +191,10 @@ export default async function integrationsRoutes(fastify) {
         if (!key) throw new Error("No API key configured");
         const model = integration.config?.model ?? "gemini-1.5-flash";
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
           {
             method: "POST",
-            headers: { "content-type": "application/json" },
+            headers: { "content-type": "application/json", "x-goog-api-key": key },
             body: JSON.stringify({ contents: [{ parts: [{ text: "ping" }] }] })
           }
         );
