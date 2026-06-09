@@ -24,8 +24,9 @@ export function _stableStringify(val) {
 // Module-level singletons shared across all orchestrator instances in this process
 const narrativeCache = new NarrativeCache();
 export const IR_CACHE_MAX_SIZE = 50;
+export const IR_CACHE_TTL_MS   = 30 * 60 * 1000; // 30 minutes — force recompile after domain config changes
 export function _irCacheSize() { return _irCache.size; }
-const _irCache = new Map();
+const _irCache = new Map(); // key → { ir, cachedAt }
 
 /**
  * Universal Decision Orchestrator
@@ -254,16 +255,21 @@ export class DecisionOrchestrator {
   _getCompiledIR(config, intentId = "general") {
     const cacheKey = `${config.domainId}:${config.version ?? "0"}:${intentId}`;
     if (_irCache.has(cacheKey)) {
-      const ir = _irCache.get(cacheKey);
+      const entry = _irCache.get(cacheKey);
+      if (Date.now() - entry.cachedAt < IR_CACHE_TTL_MS) {
+        // LRU: move to end of insertion order
+        _irCache.delete(cacheKey);
+        _irCache.set(cacheKey, entry);
+        return entry.ir;
+      }
+      // TTL expired — remove stale entry and recompile
       _irCache.delete(cacheKey);
-      _irCache.set(cacheKey, ir);
-      return ir;
     }
     const ir = this.compiler.compile(config);
     if (_irCache.size >= IR_CACHE_MAX_SIZE) {
       _irCache.delete(_irCache.keys().next().value);
     }
-    _irCache.set(cacheKey, ir);
+    _irCache.set(cacheKey, { ir, cachedAt: Date.now() });
     return ir;
   }
 
