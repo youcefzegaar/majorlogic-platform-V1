@@ -1,0 +1,47 @@
+[
+  {
+    "entityId":        "mon-aoc-24g2",
+    "title":           "AOC 24G2 24\" FHD IPS 144Hz",
+    "priceUsd":        179,
+    "resolution_score": 60,
+    "refresh_score":    90,
+    "panel_quality":    72,
+    "value_score":      88
+  },
+  {
+    "entityId":        "mon-lg-27uk850",
+    "title":           "LG 27UK850 27\" 4K IPS USB-C",
+    "priceUsd":        449,
+    "resolution_score": 98,
+    "refresh_score":    40,
+    "panel_quality":    94,
+    "value_score":      65
+  },
+  {
+    "entityId":        "mon-benq-pd2705q",
+    "title":           "BenQ PD2705Q 27\" QHD IPS",
+    "priceUsd":        349,
+    "resolution_score": 82,
+    "refresh_score":    55,
+    "panel_quality":    90,
+    "value_score":      74
+  },
+  {
+    "entityId":        "mon-dell-s2722dz",
+    "title":           "Dell S2722DZ 27\" QHD IPS Webcam",
+    "priceUsd":        299,
+    "resolution_score": 82,
+    "refresh_score":    55,
+    "panel_quality":    80,
+    "value_score":      80
+  },
+  {
+    "entityId":        "mon-asus-vg248qe",
+    "title":           "ASUS VG248QE 24\" FHD TN 144Hz",
+    "priceUsd":        219,
+    "resolution_score": 58,
+    "refresh_score":    92,
+    "panel_quality":    55,
+    "value_score":      78
+  }
+]

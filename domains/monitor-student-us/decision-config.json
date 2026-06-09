@@ -1,0 +1,47 @@
+{
+  "domainId": "monitor-student-us",
+  "version": "1.0.0",
+  "expertIdentity": "Monitor Advisor",
+  "defaultLocale": "en",
+  "profileMapping": {
+    "budgetUsd": "budget"
+  },
+  "atlas": {
+    "en": {
+      "quality_score":          "display quality",
+      "resolution_score":       "resolution sharpness",
+      "refresh_score":          "refresh rate smoothness",
+      "panel_quality":          "panel color accuracy",
+      "value_score":            "price-to-quality value",
+      "reason_within_budget":   "exceeds your budget"
+    }
+  },
+  "gates": {
+    "within_budget": {
+      "node": "Budget Constraint",
+      "condition": {
+        "op": "lte",
+        "left": "priceUsd",
+        "right": "budget"
+      }
+    }
+  },
+  "scores": {
+    "general": {
+      "weights": {
+        "resolution_score": 0.35,
+        "refresh_score":    0.25,
+        "panel_quality":    0.25,
+        "value_score":      0.15
+      },
+      "isFinal": true
+    }
+  },
+  "selectionStrategy": {
+    "cardSlots": [
+      { "type": "hero",      "pickBy": "score" },
+      { "type": "runner_up", "pickBy": "score" }
+    ],
+    "noDuplicates": true
+  }
+}
