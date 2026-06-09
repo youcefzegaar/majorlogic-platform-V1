@@ -8,6 +8,7 @@ import { CognitiveAnalyzer } from "./modules/CognitiveAnalyzer.js";
 import { RecoveryEngine } from "./modules/RecoveryEngine.js";
 import { NarrativeCache } from "./NarrativeCache.js";
 import { selectCards } from "./card-selection.js";
+import { startSpan, endSpan } from "./tracing.js";
 
 // Stable JSON serialization: sorts keys recursively so the hash is independent of
 // object key insertion order. Prevents spurious cache misses when the same profile
@@ -77,6 +78,12 @@ export class DecisionOrchestrator {
 
     this.logger.log(`[Orchestrator] Starting decision pipeline: ${ctx.decisionRunId}`);
 
+    const rootSpan = startSpan('ddvm.run', {
+      'ddvm.decisionRunId': ctx.decisionRunId,
+      'ddvm.domainId':      config.domainId ?? '',
+      'ddvm.entityCount':   entities.length,
+    });
+
     const steps = [
       this._stepIntentResolution.bind(this),
       this._stepConfidenceAnalysis.bind(this),
@@ -89,9 +96,17 @@ export class DecisionOrchestrator {
     ];
 
     for (const step of steps) {
+      const stepName = step.name.replace('bound ', '');
+      const stepSpan = startSpan(`ddvm.step.${stepName}`, {
+        'ddvm.decisionRunId': ctx.decisionRunId,
+        'ddvm.step':          stepName,
+      });
       try {
         await step(ctx);
+        endSpan(stepSpan);
       } catch (err) {
+        endSpan(stepSpan, err);
+        endSpan(rootSpan, err);
         this.logger.error(`[Orchestrator] Pipeline step "${step.name}" failed:`, err);
         const pipelineError = new Error(`[Orchestrator] Step "${step.name}" failed: ${err.message}`);
         pipelineError.status = "error";
@@ -102,7 +117,9 @@ export class DecisionOrchestrator {
       if (ctx.abort) break;
     }
 
-    return this._formatResponse(ctx);
+    const result = this._formatResponse(ctx);
+    endSpan(rootSpan);
+    return result;
   }
 
   // ── PIPELINE STEPS ──────────────────────────────────────────────────────────
