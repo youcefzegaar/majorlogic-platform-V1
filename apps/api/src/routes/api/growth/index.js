@@ -42,7 +42,8 @@ export default async function growthRoutes(fastify) {
       const msg = lead.isDuplicate ? "Updated your preferences. Thanks!" : "Lead captured. Thank you!";
       return reply.send({ ok: true, leadId: lead.id, leadType, isDuplicate: lead.isDuplicate, message: msg });
     } catch (err) {
-      return reply.status(500).send({ error: "lead_capture_failed", message: err.message });
+      request.log.error({ err }, "Lead capture failed");
+      return reply.status(500).send({ error: "lead_capture_failed" });
     }
   });
 
@@ -102,7 +103,8 @@ export default async function growthRoutes(fastify) {
         .header("Content-Disposition", `attachment; filename=leads-${domain}-${Date.now()}.csv`)
         .send([header, ...rows].join("\n"));
     } catch (err) {
-      return reply.status(500).send({ error: "export_failed", message: err.message });
+      request.log.error({ err }, "Leads export failed");
+      return reply.status(500).send({ error: "export_failed" });
     }
   });
 }
