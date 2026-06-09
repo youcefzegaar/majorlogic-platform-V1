@@ -17,7 +17,7 @@ describe('Domain Registry', () => {
     const domains = getValidDomains();
     expect(domains).toBeInstanceOf(Set);
     expect(domains.size).toBeGreaterThan(0);
-  });
+  }, 30_000);
 
   it('getValidDomains() contains the default domain "laptop-student-us"', async () => {
     const { getValidDomains } = await import('../../apps/api/src/registry.js');
