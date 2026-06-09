@@ -1,14 +1,12 @@
 import "./telemetry.js"; // Must be first import — OpenTelemetry SDK init (v3)
 import { initSentry, sentryPlugin } from "./monitoring/sentry.js";
-import { alertServerError, alertStartup } from "./monitoring/telegram.js";
+import { alertStartup } from "./monitoring/telegram.js";
 initSentry(); // before anything else so errors during startup are captured
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
-import cors from "@fastify/cors";
-import fastifyHelmet from "@fastify/helmet";
 import fastifyFormbody from "@fastify/formbody";
 import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
@@ -17,9 +15,6 @@ import fastifyRateLimit from "@fastify/rate-limit";
 import { loadEnvFile } from "../../../scripts/env.js";
 import { loadJsonSync, getRepository } from "./db/repository.js";
 import { validateEnv } from "./config/validate-env.js";
-import { scheduleDailyReport } from "./jobs/daily-report.js";
-import { schedulePriceMonitor } from "./jobs/price-monitor.js";
-import { runEmailNurture } from "./jobs/email-nurture.js";
 
 import adminRoutes from "./routes/admin/index.js";
 import apiRoutes from "./routes/api/index.js";
@@ -27,6 +22,10 @@ import webRoutes from "./routes/web.js";
 import userRoutes from "./routes/user/index.js";
 import { csrfPlugin } from "./middleware/csrf.js";
 import healthPlugin from "./plugins/health.js";
+import { registerSecurity } from "./plugins/security.js";
+import { registerAdminAuth } from "./plugins/admin-auth.js";
+import { registerErrorHandler } from "./plugins/error-handler.js";
+import { startBackgroundJobs } from "./jobs/startup.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
@@ -48,29 +47,7 @@ const fastify = Fastify({
   }
 });
 
-// ── Security Headers ──────────────────────────────────────────────────────────
-fastify.register(fastifyHelmet, {
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc:  ["'self'"],
-      styleSrc:    ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-      imgSrc:      ["'self'", "data:", "https:"],
-      scriptSrc:   ["'self'", "https://cdnjs.cloudflare.com"],
-      fontSrc:     ["'self'", "https://cdnjs.cloudflare.com"],
-      frameAncestors: ["'none'"],
-      baseUri:     ["'self'"],
-    },
-  },
-  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-  frameguard: { action: "deny" },
-  noSniff: true,
-  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-});
-
-// ── CORS ──────────────────────────────────────────────────────────────────────
-// security: in production, only origins listed in ALLOWED_ORIGINS env var are
-// permitted. localhost entries are never included in production to avoid
-// cross-origin leaks from attacker-controlled local pages.
+// ── Security Headers + CORS ───────────────────────────────────────────────────
 const ALLOWED_ORIGINS = isProd
   ? (process.env.ALLOWED_ORIGINS || "").split(",").map(o => o.trim()).filter(Boolean)
   : [
@@ -81,19 +58,7 @@ const ALLOWED_ORIGINS = isProd
       "http://localhost:5175", "http://localhost:5176"
     ];
 
-fastify.register(cors, {
-  origin: (origin, cb) => {
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-      cb(null, true);
-    } else {
-      // security: unknown origin — don't set CORS headers. Don't throw an
-      // Error here because that would trigger the 500 handler for form POSTs
-      // that come through the Vercel proxy with Origin set.
-      cb(null, false);
-    }
-  },
-  credentials: true
-});
+registerSecurity(fastify, { allowedOrigins: ALLOWED_ORIGINS });
 
 // ── Body & Cookies ────────────────────────────────────────────────────────────
 fastify.register(fastifyFormbody);
@@ -138,47 +103,10 @@ fastify.register(fastifyStatic, {
   decorateReply: false,
 });
 
-// ── Admin Auth Hook ───────────────────────────────────────────────────────────
-// Protects /admin/* except: login page, logout, and static SPA assets
-const ADMIN_PUBLIC = ["/admin/login", "/admin/logout"];
-const STATIC_EXT   = /\.(js|css|svg|ico|png|woff2?|map)$/;
-
-fastify.addHook("onRequest", async (req, reply) => {
-  const url = req.raw.url.split("?")[0]; // strip query string
-  if (!url.startsWith("/admin")) return;
-  if (ADMIN_PUBLIC.some(p => url.startsWith(p))) return;
-  if (STATIC_EXT.test(url)) return; // allow SPA asset files through
-
-  try {
-    const token = req.cookies.admin_token;
-    if (!token) throw new Error("No token");
-    req.user = fastify.jwt.verify(token);
-  } catch (err) {
-    req.log.warn({ url }, `[AUTH] Unauthorized: ${err.message}`);
-    return reply.redirect("/admin/login", 302);
-  }
-});
-
-// ── Global Error Handler ──────────────────────────────────────────────────────
-fastify.setErrorHandler((error, request, reply) => {
-  request.log.error(error);
-  if (error.validation) {
-    return reply.status(400).send({ error: "validation_error", details: error.validation });
-  }
-  // Don't alert on expected client errors (rate limit, 4xx)
-  if (!error.statusCode || error.statusCode >= 500) {
-    alertServerError(error, request.method, request.url);
-  }
-  reply.status(500).send({
-    error: "internal_error",
-    message: isProd ? "A server error occurred. Please try again later." : error.message
-  });
-});
-
-// ── Sentry Error Capture ──────────────────────────────────────────────────────
+// ── Auth, Error Handling, Monitoring ─────────────────────────────────────────
+registerAdminAuth(fastify);
+registerErrorHandler(fastify, { isProd });
 fastify.register(sentryPlugin);
-
-// ── Health Checks ─────────────────────────────────────────────────────────────
 fastify.register(healthPlugin);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
@@ -209,22 +137,8 @@ const start = async () => {
     await fastify.listen({ port, host: "0.0.0.0" });
     fastify.log.info(`MajorLogic API running on http://localhost:${port}`);
     alertStartup(port);
-
-    // ── Background Jobs ───────────────────────────────────────────────────────
-    // Fire-and-forget — job failures never crash the server
     const repo = await getRepository();
-    if (repo) {
-      scheduleDailyReport(repo);
-      schedulePriceMonitor(repo);
-      // Email nurture: run once at startup, then daily at same time tomorrow
-      const MS_PER_DAY = 24 * 60 * 60 * 1000;
-      setTimeout(() => {
-        runEmailNurture(repo).catch(err => fastify.log.error({ err }, '[EmailNurture] Job error'));
-        setInterval(() => {
-          runEmailNurture(repo).catch(err => fastify.log.error({ err }, '[EmailNurture] Job error'));
-        }, MS_PER_DAY);
-      }, 2 * 60_000); // 2 minutes after startup
-    }
+    if (repo) startBackgroundJobs(fastify, repo);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
