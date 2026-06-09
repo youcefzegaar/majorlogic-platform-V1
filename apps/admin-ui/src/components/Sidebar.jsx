@@ -10,6 +10,7 @@ import {
   ClipboardList,
   Plug,
   BookOpen,
+  Swords,
 } from 'lucide-react';
 
 const Sidebar = ({ currentPath, setCurrentPath }) => {
@@ -18,7 +19,8 @@ const Sidebar = ({ currentPath, setCurrentPath }) => {
     { id: 'domains',      icon: BrainCircuit,    label: 'Cognitive Domains' },
     { id: 'logic_lab',    icon: FlaskConical,    label: 'Logic Lab' },
     { id: 'telemetry',    icon: Activity,        label: 'Telemetry' },
-    { id: 'ab_tests',     icon: Scale,           label: 'Commercial Integrity' },
+    { id: 'ab_tests',        icon: Scale,    label: 'Commercial Integrity' },
+    { id: 'sacrifice_vector', icon: Swords,   label: 'Sacrifice Vector' },
     { id: 'leads',        icon: Users,           label: 'Growth & Leads' },
     { id: 'affiliate',    icon: Tag,             label: 'Affiliate Tags' },
     { id: 'integrations', icon: Plug,            label: 'Integrations' },

@@ -72,4 +72,5 @@ export const adminService = {
   getOwnershipPresets: () => apiClient.get('/ownership-presets').then(r => r.data),
   getFeedback: (params) => apiClient.get('/feedback', { params }),
   getReport: () => apiClient.get('/report'),
+  getSacrificeReport: (sinceDays = 30) => apiClient.get('/sacrifice-report', { params: { sinceDays } }),
 };

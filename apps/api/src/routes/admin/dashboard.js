@@ -201,4 +201,70 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
     });
     return reply.send({ success: true, feedback: items });
   });
+
+  // ── Sacrifice Vector Report ───────────────────────────────────────────────
+  // Aggregates which constraints have been relaxed (hard sacrifices) and how
+  // often, so the admin can see the platform's trade-off patterns at a glance.
+  fastify.get("/sacrifice-report", async (request, reply) => {
+    const { sinceDays = 30 } = request.query;
+    const { getRepository } = await import("../../db/repository.js");
+    const repository = await getRepository();
+
+    if (!repository) {
+      // Return demo data when DB is unavailable so the UI is always usable
+      return reply.send({
+        success: true,
+        demo: true,
+        report: {
+          domainId:   DEFAULT_DOMAIN,
+          sinceDays:  Number(sinceDays),
+          sampleSize: 0,
+          hardSacrifices: [
+            { constraint: "within_budget",    count: 0, label: "Budget Constraint",    avgIntegrityLoss: 0 },
+            { constraint: "min_ram",          count: 0, label: "RAM Minimum",          avgIntegrityLoss: 0 },
+            { constraint: "seller_trust_gate",count: 0, label: "Seller Trust Gate",    avgIntegrityLoss: 0 },
+          ],
+          topConstraint: null,
+          generatedAt: new Date().toISOString(),
+        }
+      });
+    }
+
+    const limit = Math.min(parseInt(sinceDays) || 30, 365);
+    const interventions = await repository.getRecentInterventions({
+      domainId: DEFAULT_DOMAIN,
+      limit: 500
+    });
+
+    // Aggregate by constraint ID
+    const constraintCounts = {};
+    const constraintLoss   = {};
+    for (const row of interventions) {
+      const key = row.relaxed_constraint ?? "unknown";
+      constraintCounts[key] = (constraintCounts[key] ?? 0) + 1;
+      constraintLoss[key]   = (constraintLoss[key] ?? 0) + (100 - (row.integrity_score ?? 100));
+    }
+
+    const hardSacrifices = Object.entries(constraintCounts)
+      .map(([constraint, count]) => ({
+        constraint,
+        count,
+        label: constraint.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+        avgIntegrityLoss: count > 0 ? Math.round((constraintLoss[constraint] ?? 0) / count) : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    return reply.send({
+      success: true,
+      demo: false,
+      report: {
+        domainId:    DEFAULT_DOMAIN,
+        sinceDays:   limit,
+        sampleSize:  interventions.length,
+        hardSacrifices,
+        topConstraint: hardSacrifices[0]?.constraint ?? null,
+        generatedAt: new Date().toISOString(),
+      }
+    });
+  });
 }

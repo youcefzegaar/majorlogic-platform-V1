@@ -16,6 +16,7 @@ const GrowthLeads             = lazy(() => import('./features/growth/GrowthLeads
 const AffiliateManager        = lazy(() => import('./features/affiliate/AffiliateManager'));
 const LogicLab                = lazy(() => import('./features/governance/LogicLab'));
 const CommercialIntegrity     = lazy(() => import('./features/governance/CommercialIntegrity'));
+const SacrificeVector         = lazy(() => import('./features/governance/SacrificeVector'));
 const AuditLog                = lazy(() => import('./features/governance/AuditLog'));
 const IntegrationsPage        = lazy(() => import('./features/integrations/IntegrationsPage'));
 const SettingsPage            = lazy(() => import('./features/dashboard/SettingsPage'));
@@ -42,6 +43,8 @@ const App = () => {
         return <InterventionFeed />;
       case 'ab_tests':
         return <CommercialIntegrity />;
+      case 'sacrifice_vector':
+        return <SacrificeVector />;
       case 'leads':
         return <GrowthLeads />;
       case 'affiliate':
