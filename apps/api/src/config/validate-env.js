@@ -36,6 +36,14 @@ export function validateEnv() {
     console.error("[FATAL] COOKIE_SECRET is too short (min 32 chars).");
     process.exit(1);
   }
+  if ((process.env.ADMIN_EXPORT_SECRET ?? "").length < 32) {
+    console.error("[FATAL] ADMIN_EXPORT_SECRET is too short (min 32 chars).");
+    process.exit(1);
+  }
+  if ((process.env.ENCRYPTION_KEY ?? "").length < 32) {
+    console.error("[FATAL] ENCRYPTION_KEY is too short (min 32 chars).");
+    process.exit(1);
+  }
 
   // In production, verify ALLOWED_ORIGINS contains at least one https:// entry
   if (isProd) {
