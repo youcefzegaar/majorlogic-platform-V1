@@ -221,8 +221,9 @@
   },
   "intake": {
     "goal_title": "Qu'essayez-vous d'accomplir ?",
-    "goal_subtitle": "Décrivez brièvement votre objectif et vos besoins en détail",
-    "goal_placeholder": "J'ai besoin d'un ordinateur pour la programmation intensive et les grands projets... Mon budget est entre 1 500 $ et 2 500 $.",
+    "goal_subtitle": "Cela personnalise l'explication écrite — votre décision réelle est construite à partir de vos sélections ci-dessous",
+    "goal_placeholder": "Je veux un ordinateur qui tient toute une longue session à la bibliothèque et reste rapide dans mon IDE...",
+    "goal_scope_note": "Influence l'explication, pas le classement.",
     "how_we_work": "Comment nous travaillons :",
     "affiliate_body": "Nous pouvons percevoir une commission lors de vos achats via nos liens. Cela n'influence pas l'algorithme — le classement des appareils est déterminé uniquement par vos priorités et notre moteur de décision.",
     "how_we_guarantee": "Comment nous le garantissons →",

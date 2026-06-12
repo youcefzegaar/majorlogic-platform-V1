@@ -8,6 +8,7 @@
 
 import crypto from "node:crypto";
 import { getUsersRepository } from "../../db/repository.js";
+import { getPublicBaseUrl } from "../../config/validate-env.js";
 
 const COOKIE_NAME = "user_session";
 
@@ -194,7 +195,7 @@ export default async function userDecisionsRoutes(fastify) {
       expiresAt,
     });
 
-    const BASE_URL = process.env.BASE_URL || "https://majorlogic.ai";
+    const BASE_URL = process.env.BASE_URL || getPublicBaseUrl();
     return reply.status(201).send({ shareUrl: `${BASE_URL}/share/${link.token}`, expiresAt: link.expires_at });
   });
 

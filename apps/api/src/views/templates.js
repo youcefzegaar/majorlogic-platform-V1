@@ -1,3 +1,5 @@
+import { getPublicBaseUrl } from "../config/validate-env.js";
+
 export function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -10,8 +12,8 @@ export function escapeHtml(value) {
 export function renderShell({ title, body, pageClass = "", ogParams = null }) {
   const ogTitle = ogParams?.title ?? escapeHtml(title);
   const ogDesc = ogParams?.description ?? "Find your perfect college laptop in 30 seconds with MajorLogic.";
-  const ogUrl = ogParams?.url ?? "https://majorlogic.ai/";
-  const ogImage = "https://majorlogic.ai/public/og-image.jpg"; // Placeholder viral image
+  const ogUrl = ogParams?.url ?? `${getPublicBaseUrl()}/`;
+  const ogImage = `${getPublicBaseUrl()}/public/og-image.jpg`;
   
   return `<!doctype html>
 <html lang="en">

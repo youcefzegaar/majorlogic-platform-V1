@@ -13,6 +13,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnvFile } from "./env.js";
 import { executeUniversalPipeline } from "../packages/platform-core/src/index.js";
+import { getPublicBaseUrl } from "../apps/api/src/config/validate-env.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root      = path.resolve(__dirname, "..");
@@ -74,7 +75,7 @@ const BUDGET_TIERS = [
 
 // ── Pipeline ───────────────────────────────────────────────────────────────
 
-async function generatePage(major, budget, repository, publishedEntities, decisionConfig, domainPack) {
+async function generatePage(major, budget, repository, publishedEntities, decisionConfig, domainPack, criteriaDescription) {
   const { PublishedCatalog }        = await import("../packages/published-catalog/src/index.js");
 
   const profile = {
@@ -125,7 +126,7 @@ async function generatePage(major, budget, repository, publishedEntities, decisi
         majorLabel:  major.label,
         budgetLabel: budget.label,
         h1:          `Best Laptops for ${major.h1Suffix} ${budget.label === "Any Budget" ? "in 2026" : budget.label + " (2026)"}`,
-        description: `We analyzed 13+ laptops using 47 criteria to find the best ${budget.searchModifier} picks for ${major.label} students. Independent, unbiased, affiliate-disclosed.`,
+        description: `We analyzed 13+ laptops ${criteriaDescription} to find the best ${budget.searchModifier} picks for ${major.label} students. Independent, unbiased, affiliate-disclosed.`,
         canonical:   `/laptops/${major.key}${budget.key === "any-budget" ? "" : "/" + budget.key}`
       },
       cards:         result.decision.cards,
@@ -166,6 +167,11 @@ async function run() {
   );
   const decisionConfig = JSON.parse(configRaw);
 
+  // Compute verifiable criteria counts from config
+  const scoringDimensions = (decisionConfig.executionPlan ?? []).filter(n => n.type === "score").length;
+  const fitGates          = (decisionConfig.executionPlan ?? []).filter(n => n.type === "gate").length;
+  const criteriaDescription = `scored across ${scoringDimensions} weighted dimensions and ${fitGates} eligibility gates`;
+
   // Output directory
   const outDir = path.join(root, "domains/laptop-student-us/generated/seo-pages");
   fs.mkdirSync(outDir, { recursive: true });
@@ -175,7 +181,7 @@ async function run() {
 
   for (const major of MAJORS) {
     for (const budget of BUDGET_TIERS) {
-      const page = await generatePage(major, budget, repository, catalogState.entities, decisionConfig, laptopStudentUsDomainPack);
+      const page = await generatePage(major, budget, repository, catalogState.entities, decisionConfig, laptopStudentUsDomainPack, criteriaDescription);
       if (page) {
         const filename = path.join(outDir, `${major.key}__${budget.key}.json`);
         fs.writeFileSync(filename, JSON.stringify(page, null, 2));
@@ -195,13 +201,14 @@ async function run() {
   );
 
   // Generate sitemap.xml
+  const base = getPublicBaseUrl();
   const sitemapUrls = index.map(p =>
-    `  <url><loc>https://majorlogic.ai${p.canonical}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`
+    `  <url><loc>${base}${p.canonical}</loc><lastmod>${p.generatedAt.slice(0, 10)}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`
   ).join("\n");
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://majorlogic.ai/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://majorlogic.ai/search</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>${base}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>${base}/search</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
 ${sitemapUrls}
 </urlset>`;
   const publicDir = path.join(root, "apps/api/public");

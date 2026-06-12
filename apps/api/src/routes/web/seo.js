@@ -1,6 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { renderSeoPage } from "../../views/seo-page.js";
+import { getPublicBaseUrl } from "../../config/validate-env.js";
 
 const SAFE_SLUG = /^[a-z0-9-]{1,80}$/;
 
@@ -39,7 +40,7 @@ export default async function seoRoutes(fastify, { root }) {
   <meta charset="utf-8"/>
   <title>Laptop Guides by Major — MajorLogic</title>
   <meta name="description" content="Find the best laptop for your college major."/>
-  <link rel="canonical" href="https://majorlogic.ai/laptops"/>
+  <link rel="canonical" href="${getPublicBaseUrl()}/laptops"/>
   <style>body{font-family:system-ui,sans-serif;background:#0d0d1a;color:#e0e0e0;max-width:800px;margin:0 auto;padding:32px 20px;}
   a{color:#7C3AED;} h1{color:#fff;} li{margin-bottom:10px;font-size:16px;}</style>
 </head><body>

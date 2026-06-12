@@ -223,8 +223,9 @@
   },
   "intake": {
     "goal_title": "What are you trying to achieve?",
-    "goal_subtitle": "Describe your goal briefly and your needs in detail",
-    "goal_placeholder": "I need a laptop for heavy programming and working on large projects... My budget is between $1,500 and $2,500.",
+    "goal_subtitle": "This personalizes the written explanation — your actual decision is built from your selections below",
+    "goal_placeholder": "I want a laptop that lasts through long library sessions and feels fast in my IDE...",
+    "goal_scope_note": "Influences the explanation, not the ranking.",
     "how_we_work": "How we work:",
     "affiliate_body": "We may earn a commission when you purchase through our links. This does not influence the algorithm — device rankings are determined solely by your priorities and our decision engine.",
     "how_we_guarantee": "How we guarantee this →",

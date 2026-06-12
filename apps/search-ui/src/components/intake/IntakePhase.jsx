@@ -34,6 +34,9 @@ export default function IntakePhase() {
             onChange={(e) => setGoal(e.target.value)}
             placeholder={t('intake.goal_placeholder')}
           ></textarea>
+          <p style={{ fontSize: '12px', color: 'var(--text-muted, #6b7280)', margin: '4px 0 0' }}>
+            {t('intake.goal_scope_note')}
+          </p>
         </div>
         <MajorSelector major={major} setMajor={setMajor} />
         <PreferenceSliders priorities={priorities} setPriorities={setPriorities} />

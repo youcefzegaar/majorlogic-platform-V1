@@ -65,8 +65,6 @@ describe('DecisionKernel — execute', () => {
   // ── Score tests ───────────────────────────────────────────────────────────────
 
   it('final score is weighted sum of metrics', () => {
-    const ir = makeIR();
-    // No gate — score only
     const irScoreOnly = makeIR({
       executionPlan: [
         { id: 'final', type: 'score', weights: { perf: 0.6, battery: 0.4 }, isFinal: true, dependsOn: [] },

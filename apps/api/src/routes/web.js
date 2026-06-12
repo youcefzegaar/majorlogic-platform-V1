@@ -4,6 +4,7 @@ import { renderSearchPage } from "../views/templates.js";
 import { renderResultsPage } from "../views/results-page.js";
 import { renderPrivacyPolicy, renderTermsOfUse, renderDisclosure, renderOurStory, renderHowWeWork } from "../views/legal.js";
 import { getUsersRepository } from "../db/repository.js";
+import { getPublicBaseUrl } from "../config/validate-env.js";
 import seoRoutes from "./web/seo.js";
 
 // Cache the generated catalog in memory to avoid repeated file reads
@@ -31,17 +32,29 @@ export default async function webRoutes(fastify, { root, port, FRONTEND_URL, DEF
   // ── Robots & Sitemap ──────────────────────────────────────────────────────
 
   fastify.get("/robots.txt", async (_request, reply) => {
+    const base = getPublicBaseUrl();
     reply.type("text/plain").send(
-      `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nSitemap: https://majorlogic.ai/sitemap.xml`
+      `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nSitemap: ${base}/sitemap.xml`
     );
   });
 
   fastify.get("/sitemap.xml", async (_request, reply) => {
-    const sitemapPath = path.join(root, "apps/api/public/sitemap.xml");
-    if (!fs.existsSync(sitemapPath)) {
-      return reply.status(404).send("Sitemap not generated yet. Run catalog-build.");
+    const base = getPublicBaseUrl();
+    const indexPath = path.join(root, "domains/laptop-student-us/generated/seo-pages/_index.json");
+    if (!fs.existsSync(indexPath)) {
+      return reply.status(404).send("Sitemap not generated yet. Run generate-seo-pages.");
     }
-    reply.type("application/xml").send(fs.readFileSync(sitemapPath, "utf8"));
+    const { pages = [] } = JSON.parse(fs.readFileSync(indexPath, "utf8"));
+    const urls = [
+      `  <url><loc>${base}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`,
+      `  <url><loc>${base}/search</loc><changefreq>daily</changefreq><priority>0.9</priority></url>`,
+      ...pages.map(p => {
+        const lastmod = p.generatedAt ? `<lastmod>${p.generatedAt.slice(0, 10)}</lastmod>` : "";
+        return `  <url><loc>${base}${p.canonical}</loc>${lastmod}<changefreq>weekly</changefreq><priority>0.8</priority></url>`;
+      })
+    ].join("\n");
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
+    reply.type("application/xml").send(xml);
   });
 
   // ── SPA Redirects ─────────────────────────────────────────────────────────

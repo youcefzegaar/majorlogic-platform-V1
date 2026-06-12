@@ -221,8 +221,9 @@
   },
   "intake": {
     "goal_title": "¿Qué intentas lograr?",
-    "goal_subtitle": "Describe brevemente tu objetivo y tus necesidades en detalle",
-    "goal_placeholder": "Necesito una laptop para programación intensiva y trabajar en proyectos grandes... Mi presupuesto está entre $1,500 y $2,500.",
+    "goal_subtitle": "Esto personaliza la explicación escrita — tu decisión real se construye con las selecciones de abajo",
+    "goal_placeholder": "Quiero una laptop que aguante largas sesiones en la biblioteca y sea rápida en mi IDE...",
+    "goal_scope_note": "Influye en la explicación, no en la clasificación.",
     "how_we_work": "Cómo trabajamos:",
     "affiliate_body": "Podemos ganar una comisión cuando compras a través de nuestros enlaces. Esto no influye en el algoritmo — el ranking de dispositivos se determina únicamente por tus prioridades y nuestro motor de decisión.",
     "how_we_guarantee": "Cómo lo garantizamos →",

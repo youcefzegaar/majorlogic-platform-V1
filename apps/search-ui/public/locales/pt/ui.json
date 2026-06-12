@@ -221,8 +221,9 @@
   },
   "intake": {
     "goal_title": "O que você está tentando alcançar?",
-    "goal_subtitle": "Descreva brevemente seu objetivo e suas necessidades em detalhes",
-    "goal_placeholder": "Preciso de um laptop para programação pesada e trabalho em projetos grandes... Meu orçamento é entre $1.500 e $2.500.",
+    "goal_subtitle": "Isso personaliza a explicação escrita — sua decisão real é construída a partir das suas seleções abaixo",
+    "goal_placeholder": "Quero um laptop que aguente longas sessões na biblioteca e seja rápido no meu IDE...",
+    "goal_scope_note": "Influencia a explicação, não a classificação.",
     "how_we_work": "Como trabalhamos:",
     "affiliate_body": "Podemos ganhar uma comissão quando você compra através de nossos links. Isso não influencia o algoritmo — o ranking dos dispositivos é determinado apenas pelas suas prioridades e nosso motor de decisão.",
     "how_we_guarantee": "Como garantimos isso →",

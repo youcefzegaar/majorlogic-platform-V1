@@ -6,6 +6,7 @@
  */
 
 import { escapeHtml } from "./templates.js";
+import { getPublicBaseUrl } from "../config/validate-env.js";
 
 // ── FAQ content per major ──────────────────────────────────────────────────
 
@@ -77,7 +78,7 @@ export function renderSeoPage(pageData) {
       "position": i + 1,
       "name": card.title,
       "description": card.whyThis ?? "",
-      "url": offer ? `https://majorlogic.ai/go/laptop-student-us/${encodeURIComponent(card.entityId ?? card.title)}` : "",
+      "url": offer ? `${getPublicBaseUrl()}/go/laptop-student-us/${encodeURIComponent(card.entityId ?? card.title)}` : "",
       "offers": offer ? {
         "@type": "Offer",
         "price": offer.priceUsd,
@@ -168,13 +169,13 @@ export function renderSeoPage(pageData) {
   <meta charset="utf-8"/>
   <title>${escapeHtml(meta.h1)} | MajorLogic</title>
   <meta name="description" content="${escapeHtml(meta.description)}"/>
-  <link rel="canonical" href="https://majorlogic.ai${meta.canonical}"/>
+  <link rel="canonical" href="${getPublicBaseUrl()}${meta.canonical}"/>
 
   <!-- Open Graph -->
   <meta property="og:type"        content="website"/>
   <meta property="og:title"       content="${escapeHtml(meta.h1)}"/>
   <meta property="og:description" content="${escapeHtml(meta.description)}"/>
-  <meta property="og:url"         content="https://majorlogic.ai${meta.canonical}"/>
+  <meta property="og:url"         content="${getPublicBaseUrl()}${meta.canonical}"/>
   <meta property="og:site_name"   content="MajorLogic"/>
 
   <!-- Twitter Card -->
@@ -186,7 +187,7 @@ export function renderSeoPage(pageData) {
   <script type="application/ld+json">
   ${JSON.stringify({ "@context": "https://schema.org", "@type": "ItemList",
     "name": meta.h1, "description": meta.description,
-    "url": `https://majorlogic.ai${meta.canonical}`,
+    "url": `${getPublicBaseUrl()}${meta.canonical}`,
     "itemListElement": schemaItems }, null, 2)}
   </script>
   <script type="application/ld+json">

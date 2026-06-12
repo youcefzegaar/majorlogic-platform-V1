@@ -51,8 +51,8 @@ const fastify = Fastify({
 const ALLOWED_ORIGINS = isProd
   ? (process.env.ALLOWED_ORIGINS || "").split(",").map(o => o.trim()).filter(Boolean)
   : [
-      "https://majorlogic.ai",
-      "https://www.majorlogic.ai",
+      "https://majorlogic.tech",
+      "https://www.majorlogic.tech",
       "http://localhost:3010", "http://127.0.0.1:3010",
       "http://localhost:5173", "http://localhost:5174",
       "http://localhost:5175", "http://localhost:5176"

@@ -59,5 +59,14 @@ export function validateEnv() {
     }
   }
 
+  if (isProd && !process.env.PUBLIC_BASE_URL) {
+    console.warn("\x1b[33m[CONFIG] WARNING: PUBLIC_BASE_URL is not set. Defaulting to https://majorlogic.tech\x1b[0m");
+  }
+
   console.log("\x1b[32m[CONFIG] Environment variables validated.\x1b[0m");
+}
+
+/** @returns {string} */
+export function getPublicBaseUrl() {
+  return (process.env.PUBLIC_BASE_URL ?? "https://majorlogic.tech").replace(/\/$/, "");
 }
