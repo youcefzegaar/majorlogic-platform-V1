@@ -267,4 +267,17 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
       }
     });
   });
+
+  // ── Cache Stats ───────────────────────────────────────────────────────────
+  // Returns hit/miss/size for IR cache and Narrative cache.
+  // Used by the Admin UI to monitor the KPI: 95%+ cache hit rate.
+  fastify.get("/cache-stats", async (_request, reply) => {
+    const { irCacheStats, narrativeCacheStats } = await import("../../../../packages/decision-orchestrator/src/index.js");
+    return reply.send({
+      success: true,
+      ir:        irCacheStats(),
+      narrative: narrativeCacheStats(),
+      generatedAt: new Date().toISOString(),
+    });
+  });
 }

@@ -26,8 +26,22 @@ export function _stableStringify(val) {
 const narrativeCache = new NarrativeCache();
 export const IR_CACHE_MAX_SIZE = 50;
 export const IR_CACHE_TTL_MS   = 30 * 60 * 1000; // 30 minutes — force recompile after domain config changes
-export function _irCacheSize() { return _irCache.size; }
 const _irCache = new Map(); // key → { ir, cachedAt }
+let _irHits = 0;
+let _irMisses = 0;
+
+export function _irCacheSize() { return _irCache.size; }
+export function irCacheStats() {
+  const total = _irHits + _irMisses;
+  return {
+    size:    _irCache.size,
+    maxSize: IR_CACHE_MAX_SIZE,
+    hits:    _irHits,
+    misses:  _irMisses,
+    hitRate: total === 0 ? '0.00%' : `${((_irHits / total) * 100).toFixed(2)}%`,
+  };
+}
+export function narrativeCacheStats() { return narrativeCache.stats(); }
 
 /**
  * Universal Decision Orchestrator
@@ -277,11 +291,13 @@ export class DecisionOrchestrator {
         // LRU: move to end of insertion order
         _irCache.delete(cacheKey);
         _irCache.set(cacheKey, entry);
+        _irHits++;
         return entry.ir;
       }
       // TTL expired — remove stale entry and recompile
       _irCache.delete(cacheKey);
     }
+    _irMisses++;
     const ir = this.compiler.compile(config);
     if (_irCache.size >= IR_CACHE_MAX_SIZE) {
       _irCache.delete(_irCache.keys().next().value);

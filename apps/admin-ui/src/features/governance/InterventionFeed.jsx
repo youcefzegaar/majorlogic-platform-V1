@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { adminService } from '../../api/apiClient';
 import { useAppStore } from '../../stores/appStore';
+import CacheStats from './CacheStats';
 
 const InterventionFeed = () => {
   const { navigate } = useAppStore();
@@ -36,7 +37,9 @@ const InterventionFeed = () => {
         </button>
       </div>
 
-      <div className="card">
+      <CacheStats />
+
+      <div style={{ marginTop: 28 }} className="card">
         <table className="table-container">
           <thead>
             <tr>
