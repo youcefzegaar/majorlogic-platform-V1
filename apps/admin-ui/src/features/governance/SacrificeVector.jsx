@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Swords, RefreshCw, Info, TrendingDown, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { adminService } from '../../api/apiClient';
+import TradeoffHeatmap from './TradeoffHeatmap';
 
 // ── Bar ───────────────────────────────────────────────────────────────────────
 const SacrificeBar = ({ label, count, maxCount, avgLoss }) => {
@@ -202,6 +203,9 @@ const SacrificeVector = () => {
           catalog or budget range needs expansion.
         </div>
       </div>
+
+      {/* ── Trade-off Heatmap ── */}
+      <TradeoffHeatmap />
     </div>
   );
 };

@@ -280,4 +280,68 @@ export default async function dashboardRoutes(fastify, { DEFAULT_DOMAIN }) {
       generatedAt: new Date().toISOString(),
     });
   });
+
+  // ── Analytics — trade-offs heatmap ───────────────────────────────────────
+  // Aggregates interventions into (constraint × integrity-bucket) counts.
+  // Powers the Sacrifice Vector heatmap panel in the Admin UI.
+  fastify.get("/analytics", async (request, reply) => {
+    const { sinceDays = 30 } = request.query;
+    const { getRepository } = await import("../../db/repository.js");
+    const repository = await getRepository();
+
+    const BUCKETS = [
+      { label: '≥90',   min: 90,  max: 101 },
+      { label: '80–89', min: 80,  max: 90  },
+      { label: '70–79', min: 70,  max: 80  },
+      { label: '60–69', min: 60,  max: 70  },
+      { label: '<60',   min: 0,   max: 60  },
+    ];
+
+    if (!repository) {
+      return reply.send({
+        success: true,
+        demo: true,
+        heatmap: [],
+        bucketLabels: BUCKETS.map(b => b.label),
+        totalInterventions: 0,
+        generatedAt: new Date().toISOString(),
+      });
+    }
+
+    const limit = Math.min(parseInt(sinceDays) || 30, 365);
+    const interventions = await repository.getRecentInterventions({ domainId: DEFAULT_DOMAIN, limit: 1000 });
+
+    // Group: constraint → bucket → count
+    const byConstraint = {};
+    for (const row of interventions) {
+      const key = row.relaxed_constraint ?? 'unknown';
+      if (!byConstraint[key]) byConstraint[key] = {};
+      const score = row.integrity_score ?? 100;
+      for (const bucket of BUCKETS) {
+        if (score >= bucket.min && score < bucket.max) {
+          byConstraint[key][bucket.label] = (byConstraint[key][bucket.label] ?? 0) + 1;
+          break;
+        }
+      }
+    }
+
+    const heatmap = Object.entries(byConstraint)
+      .map(([constraint, counts]) => ({
+        constraint,
+        label: constraint.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        buckets: BUCKETS.map(b => ({ label: b.label, count: counts[b.label] ?? 0 })),
+        total: Object.values(counts).reduce((s, v) => s + v, 0),
+      }))
+      .sort((a, b) => b.total - a.total);
+
+    return reply.send({
+      success: true,
+      demo: false,
+      heatmap,
+      bucketLabels: BUCKETS.map(b => b.label),
+      totalInterventions: interventions.length,
+      sinceDays: limit,
+      generatedAt: new Date().toISOString(),
+    });
+  });
 }

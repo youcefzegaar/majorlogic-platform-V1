@@ -74,4 +74,5 @@ export const adminService = {
   getReport: () => apiClient.get('/report'),
   getSacrificeReport: (sinceDays = 30) => apiClient.get('/sacrifice-report', { params: { sinceDays } }),
   getCacheStats: () => apiClient.get('/cache-stats'),
+  getAnalytics: (sinceDays = 30) => apiClient.get('/analytics', { params: { sinceDays } }),
 };
