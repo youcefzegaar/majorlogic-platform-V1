@@ -312,7 +312,28 @@ export function useDecisionEngine() {
       const runId = result.decision?.decisionRunId ?? null;
       setDecisionRunId_(runId);
 
-      return true;
+      // Return snapshot so callers (e.g. history persistence) can use the values
+      // without waiting for the next React render cycle.
+      return {
+        cards: newCards,
+        noResults: result.decision?.status === 'no_viable_option'
+          ? { message: result.decision.message || '', suggestions: result.decision.suggestions || [] }
+          : null,
+        analysisSummary: {
+          conflicts: localConflicts.filter(c => c.type !== 'harmony').length,
+          devices: result.trust?.trace?.candidateCount ?? 0,
+          paths: result.decision?.cards?.length ?? 0,
+          confidence: Math.round((result.trust?.decisionConfidenceScore ?? 0.78) * 100),
+        },
+        detectedConflicts: localConflicts,
+        decisionMetadata: {
+          relaxedConstraint: result.decision?.relaxedConstraint || null,
+          integrityScore: (() => { const r = result.decision?.integrityScore ?? 1.0; return r <= 1.0 ? Math.round(r * 100) : Math.round(r); })(),
+          irHash: result.decision?.governance?.irHash ?? null,
+          catalogFreshness: result.catalogFreshness ?? null,
+        },
+        decisionRunId: runId,
+      };
     } catch (err) {
       const isNetworkError = err instanceof TypeError;
       const isAr = lang === 'ar';
@@ -325,6 +346,15 @@ export function useDecisionEngine() {
     }
   };
 
+  const restoreDecision = (snapshot) => {
+    setCards(snapshot.cards ?? {});
+    setNoResults(snapshot.noResults ?? null);
+    setAnalysisSummary(snapshot.analysisSummary ?? { conflicts: 0, devices: 0, paths: 3, confidence: 0 });
+    setDetectedConflicts(snapshot.detectedConflicts ?? []);
+    setDecisionMetadata(snapshot.decisionMetadata ?? { relaxedConstraint: null, integrityScore: 100, catalogFreshness: null });
+    setDecisionRunId_(snapshot.decisionRunId ?? null);
+  };
+
   return {
     isAnalyzing,
     error,
@@ -334,6 +364,7 @@ export function useDecisionEngine() {
     detectedConflicts,
     decisionMetadata,
     decisionRunId,
-    runDecision
+    runDecision,
+    restoreDecision,
   };
 }

@@ -7,6 +7,7 @@ import { useSessionProfile } from './hooks/useSessionProfile';
 import { useDecisionEngine } from './hooks/useDecisionEngine';
 import { useDecisionStore } from './stores/decisionStore';
 import { useAuthStore } from './stores/authStore';
+import { useDecisionHistory } from './hooks/useDecisionHistory';
 
 import { API_URL } from './lib/apiUrl.js';
 import AppSidebar from './components/shared/AppSidebar';
@@ -46,6 +47,7 @@ export default function App() {
 
   const profile = useSessionProfile();
   const engine = useDecisionEngine();
+  const { lastDecision, saveDecision, clearHistory } = useDecisionHistory();
 
   useEffect(() => { checkSession(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -85,11 +87,22 @@ export default function App() {
   const closeSidebar = () => setSidebarOpen(false);
 
   const handleAnalyze = async () => {
-    const success = await engine.runDecision({ ...profile, lang });
-    if (success) {
+    const snapshot = await engine.runDecision({ ...profile, lang });
+    if (snapshot) {
       setTimeline([{ date: new Date().toLocaleTimeString(), title: 'Initial Decision', desc: `Budget $${profile.budgetMax}` }]);
+      saveDecision({
+        ...snapshot,
+        profile: { goal: profile.goal, major: profile.major, priorities: profile.priorities, budgetMin: profile.budgetMin, budgetMax: profile.budgetMax },
+      });
       setTimeout(() => setPhase(1), 200);
     }
+  };
+
+  const handleResume = () => {
+    if (!lastDecision) return;
+    engine.restoreDecision(lastDecision);
+    setTimeline([{ date: new Date().toLocaleTimeString(), title: 'Resumed Session', desc: `Budget $${lastDecision.profile?.budgetMax ?? '—'}` }]);
+    setPhase(2);
   };
 
   // Mirror decisionRunId from engine state into the store so all feedback components can read it
@@ -151,6 +164,22 @@ export default function App() {
         {engine.error && (
           <div style={{ padding: 20, background: 'rgba(244,63,94,0.1)', color: 'var(--accent-danger)', border: '1px solid var(--accent-danger)', borderRadius: 12, marginBottom: 20 }}>
             {engine.error}
+          </div>
+        )}
+
+        {phase === 0 && lastDecision && (
+          <div style={{ margin: '0 0 16px', padding: '12px 16px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+              Continue from your last analysis <span style={{ color: 'var(--text-tertiary)', fontSize: 12 }}>({new Date(lastDecision.savedAt).toLocaleDateString()})</span>
+            </span>
+            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+              <button onClick={handleResume} style={{ fontSize: 13, padding: '5px 14px', borderRadius: 8, background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.35)', color: '#a5b4fc', cursor: 'pointer', fontWeight: 600 }}>
+                Resume
+              </button>
+              <button onClick={clearHistory} style={{ fontSize: 13, padding: '5px 10px', borderRadius: 8, background: 'transparent', border: '1px solid var(--border-subtle)', color: 'var(--text-tertiary)', cursor: 'pointer' }}>
+                Dismiss
+              </button>
+            </div>
           </div>
         )}
 
@@ -228,8 +257,12 @@ export default function App() {
       {showMyDecisions && (
         <MyDecisions
           onLoad={(decision) => {
-            // Future: restore decision state from saved snapshot
-            console.info('Load decision', decision);
+            if (decision?.decisionSnapshot) {
+              engine.restoreDecision({ cards: { [decision.decisionSnapshot.cardType ?? 'hero']: decision.decisionSnapshot } });
+              setSelectedCardType(decision.decisionSnapshot.cardType ?? 'hero');
+              setShowMyDecisions(false);
+              setPhase(2);
+            }
           }}
           onClose={() => setShowMyDecisions(false)}
         />
