@@ -2,11 +2,14 @@ import { useTranslation } from 'react-i18next';
 import DecisionTrace from './DecisionTrace';
 import DecisionTrust from './DecisionTrust';
 import Icon from './Icon';
+import { useAppContext } from '../../contexts/AppContext';
 
-export default function AnalysisPhase({
-  priorities, analysisSummary, detectedConflicts, decisionMetadata,
-  budgetMin, budgetMax, onViewCards, onAdjustPriorities
-}) {
+export default function AnalysisPhase() {
+  const { profile, engine, setPhase } = useAppContext();
+  const { priorities, budgetMin, budgetMax } = profile;
+  const { analysisSummary, detectedConflicts, decisionMetadata } = engine;
+  const onViewCards = () => setPhase(2);
+  const onAdjustPriorities = () => setPhase(0);
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
   const conflictCount = detectedConflicts.filter(c => c.type !== 'harmony').length;

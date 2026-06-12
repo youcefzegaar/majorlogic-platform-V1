@@ -8,6 +8,7 @@ import { useDecisionEngine } from './hooks/useDecisionEngine';
 import { useDecisionStore } from './stores/decisionStore';
 import { useAuthStore } from './stores/authStore';
 import { useDecisionHistory } from './hooks/useDecisionHistory';
+import { AppContext } from './contexts/AppContext';
 
 import { API_URL } from './lib/apiUrl.js';
 import AppSidebar from './components/shared/AppSidebar';
@@ -129,7 +130,31 @@ export default function App() {
 
   const selectedCard = engine.cards[selectedCardType];
 
+  const ctxValue = {
+    // profile
+    profile,
+    // engine
+    engine,
+    // navigation
+    phase, setPhase,
+    selectedCardType, setSelectedCardType,
+    selectedCard,
+    explanationTab, setExplanationTab,
+    cameFromExplanation, setCameFromExplanation,
+    // handlers
+    handleAnalyze,
+    handleResume,
+    confirmCard,
+    confirmFromExplanation,
+    applySidebarChanges,
+    // history
+    lastDecision, saveDecision, clearHistory,
+    // ui
+    lang,
+  };
+
   return (
+    <AppContext.Provider value={ctxValue}>
     <div className="app-container">
       <AppSidebar
         phase={phase}
@@ -183,27 +208,9 @@ export default function App() {
           </div>
         )}
 
-        {phase === 0 && (
-          <IntakePhase
-            goal={profile.goal} setGoal={profile.setGoal}
-            major={profile.major} setMajor={profile.setMajor}
-            priorities={profile.priorities} setPriorities={profile.setPriorities}
-            budgetMin={profile.budgetMin} setBudgetMin={profile.setBudgetMin}
-            budgetMax={profile.budgetMax} setBudgetMax={profile.setBudgetMax}
-            isAnalyzing={engine.isAnalyzing} onAnalyze={handleAnalyze}
-          />
-        )}
+        {phase === 0 && <IntakePhase />}
 
-        {phase === 1 && (
-          <AnalysisPhase
-            priorities={profile.priorities}
-            analysisSummary={engine.analysisSummary}
-            detectedConflicts={engine.detectedConflicts}
-            decisionMetadata={engine.decisionMetadata}
-            budgetMin={profile.budgetMin} budgetMax={profile.budgetMax}
-            onViewCards={() => setPhase(2)} onAdjustPriorities={() => setPhase(0)}
-          />
-        )}
+        {phase === 1 && <AnalysisPhase />}
 
         {phase === 2 && (
           <CardsPhase
@@ -278,5 +285,6 @@ export default function App() {
         <SettingsModal onClose={() => setShowSettings(false)} />
       )}
     </div>
+    </AppContext.Provider>
   );
 }

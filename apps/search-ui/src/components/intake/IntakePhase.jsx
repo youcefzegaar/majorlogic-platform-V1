@@ -4,15 +4,14 @@ import BudgetSelector from './BudgetSelector';
 import PreferenceSliders from './PreferenceSliders';
 import Icon from '../shared/Icon';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useAppContext } from '../../contexts/AppContext';
 
-export default function IntakePhase({
-  goal, setGoal,
-  major, setMajor,
-  priorities, setPriorities,
-  budgetMin, setBudgetMin,
-  budgetMax, setBudgetMax,
-  isAnalyzing, onAnalyze
-}) {
+export default function IntakePhase() {
+  const { profile, engine, handleAnalyze } = useAppContext();
+  const { goal, setGoal, major, setMajor, priorities, setPriorities, budgetMin, setBudgetMin, budgetMax, setBudgetMax } = profile;
+  const isAnalyzing = engine.isAnalyzing;
+  const onAnalyze = handleAnalyze;
+
   const { t } = useTranslation();
   const [, setDraft] = useLocalStorage('ml_draft_v1', null);
   const saveDraft = () => setDraft({ goal, major, priorities, budgetMin, budgetMax });
