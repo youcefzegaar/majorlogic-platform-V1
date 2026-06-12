@@ -45,7 +45,23 @@ export default async function userDecisionsRoutes(fastify) {
 
   // ── POST /user/decisions ─────────────────────────────────────────────────────
 
-  fastify.post("/user/decisions", async (request, reply) => {
+  fastify.post("/user/decisions", {
+    schema: {
+      body: {
+        type: "object",
+        required: ["domain", "title", "profileSnapshot", "decisionSnapshot"],
+        additionalProperties: false,
+        properties: {
+          domain:           { type: "string", minLength: 1, maxLength: 100 },
+          irHash:           { type: "string", maxLength: 100 },
+          title:            { type: "string", minLength: 1, maxLength: 200 },
+          profileSnapshot:  { type: "object", additionalProperties: true, maxProperties: 50 },
+          decisionSnapshot: { type: "object", additionalProperties: true, maxProperties: 100 },
+          notes:            { type: "string", maxLength: 2000 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const auth = await requireUser(request, reply);
     if (!auth) return;
     const { user, repo } = auth;
@@ -122,7 +138,21 @@ export default async function userDecisionsRoutes(fastify) {
 
   // ── POST /user/price-alerts ──────────────────────────────────────────────────
 
-  fastify.post("/user/price-alerts", async (request, reply) => {
+  fastify.post("/user/price-alerts", {
+    schema: {
+      body: {
+        type: "object",
+        required: ["entityId"],
+        additionalProperties: false,
+        properties: {
+          entityId:     { type: "string", minLength: 1, maxLength: 100 },
+          domain:       { type: "string", minLength: 1, maxLength: 100 },
+          targetPrice:  { type: "number", minimum: 0, maximum: 100000, nullable: true },
+          currentPrice: { type: "number", minimum: 0, maximum: 100000, nullable: true },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const auth = await requireUser(request, reply);
     if (!auth) return;
     const { user, repo } = auth;

@@ -3,7 +3,22 @@ import { getValidDomains } from "../../../registry.js";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 export default async function growthRoutes(fastify) {
-  fastify.post("/:domain/growth/lead", async (request, reply) => {
+  fastify.post("/:domain/growth/lead", {
+    schema: {
+      body: {
+        type: "object",
+        required: ["email", "leadType"],
+        additionalProperties: false,
+        properties: {
+          email:          { type: "string", format: "email", maxLength: 254 },
+          leadType:       { type: "string", enum: ["save_results", "price_alert", "interstitial_gate"] },
+          optedIn:        { type: "boolean", default: false },
+          decisionRunId:  { type: "string", maxLength: 100, nullable: true },
+          trackingData:   { type: "object", additionalProperties: true, maxProperties: 20 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const { domain } = request.params;
     if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
     const { email, leadType, optedIn = false, trackingData = {}, decisionRunId: leadDecisionRunId = null } = request.body;

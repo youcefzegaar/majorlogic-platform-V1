@@ -100,7 +100,20 @@ export default async function authRoutes(fastify) {
   // ── Password (JSON API for React SPA) ────────────────────────────────────
   // Shape { success, errors[] } is intentional — consumed by the admin SPA form.
 
-  fastify.post("/account/password/json", async (request, reply) => {
+  fastify.post("/account/password/json", {
+    schema: {
+      body: {
+        type: "object",
+        required: ["currentPassword", "newPassword", "confirmPassword"],
+        additionalProperties: false,
+        properties: {
+          currentPassword: { type: "string", minLength: 1, maxLength: 128 },
+          newPassword:     { type: "string", minLength: 12, maxLength: 128 },
+          confirmPassword: { type: "string", minLength: 12, maxLength: 128 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const { currentPassword, newPassword, confirmPassword } = request.body;
     const username = request.user?.username;
 

@@ -20,7 +20,21 @@ export default async function integrationsRoutes(fastify) {
     return reply.send({ success: true, integrations });
   });
 
-  fastify.post("/integrations/:slug", async (request, reply) => {
+  fastify.post("/integrations/:slug", {
+    schema: {
+      body: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          credentials: { type: "object", additionalProperties: true, maxProperties: 20 },
+          config:      { type: "object", additionalProperties: true, maxProperties: 30 },
+          is_active:   { type: "boolean" },
+          name:        { type: "string", minLength: 1, maxLength: 100 },
+          description: { type: "string", maxLength: 500 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const { slug } = request.params;
     const { credentials, config, is_active, name, description } = request.body;
     const { getRepository } = await import("../../db/repository.js");
@@ -32,7 +46,24 @@ export default async function integrationsRoutes(fastify) {
     return reply.send({ success: true });
   });
 
-  fastify.post("/integrations", async (request, reply) => {
+  fastify.post("/integrations", {
+    schema: {
+      body: {
+        type: "object",
+        required: ["slug", "name"],
+        additionalProperties: false,
+        properties: {
+          slug:        { type: "string", minLength: 1, maxLength: 50, pattern: "^[a-z0-9_-]+$" },
+          name:        { type: "string", minLength: 1, maxLength: 100 },
+          description: { type: "string", maxLength: 500 },
+          category:    { type: "string", maxLength: 50 },
+          icon_emoji:  { type: "string", maxLength: 10 },
+          credentials: { type: "object", additionalProperties: true, maxProperties: 20 },
+          config:      { type: "object", additionalProperties: true, maxProperties: 30 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const { slug, name, description, category, icon_emoji, credentials, config } = request.body;
     if (!slug || !name) return sendError(reply, badRequest("slug and name are required", "missing_fields"));
     const { getRepository } = await import("../../db/repository.js");

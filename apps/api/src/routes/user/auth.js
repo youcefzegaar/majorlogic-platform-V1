@@ -71,7 +71,22 @@ export default async function userAuthRoutes(fastify, opts) {
 
   // ── POST /auth/register ──────────────────────────────────────────────────────
 
-  fastify.post("/auth/register", { config: authRateLimit }, async (request, reply) => {
+  fastify.post("/auth/register", {
+    config: authRateLimit,
+    schema: {
+      body: {
+        type: "object",
+        required: ["email", "password"],
+        additionalProperties: false,
+        properties: {
+          email:       { type: "string", format: "email", maxLength: 254 },
+          password:    { type: "string", minLength: 8, maxLength: 128 },
+          displayName: { type: "string", minLength: 1, maxLength: 100 },
+          locale:      { type: "string", minLength: 2, maxLength: 10 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const { email, password, displayName, locale } = request.body || {};
 
     if (!isValidEmail(email)) {
@@ -125,7 +140,20 @@ export default async function userAuthRoutes(fastify, opts) {
 
   // ── POST /auth/login ─────────────────────────────────────────────────────────
 
-  fastify.post("/auth/login", { config: authRateLimit }, async (request, reply) => {
+  fastify.post("/auth/login", {
+    config: authRateLimit,
+    schema: {
+      body: {
+        type: "object",
+        required: ["email", "password"],
+        additionalProperties: false,
+        properties: {
+          email:    { type: "string", format: "email", maxLength: 254 },
+          password: { type: "string", minLength: 1, maxLength: 128 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const { email, password } = request.body || {};
 
     if (!isValidEmail(email) || typeof password !== "string") {
@@ -191,7 +219,21 @@ export default async function userAuthRoutes(fastify, opts) {
 
   // ── PUT /auth/account ────────────────────────────────────────────────────────
 
-  fastify.put("/auth/account", { config: authRateLimit }, async (request, reply) => {
+  fastify.put("/auth/account", {
+    config: authRateLimit,
+    schema: {
+      body: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          currentPassword: { type: "string", minLength: 1, maxLength: 128 },
+          newPassword:     { type: "string", minLength: 8, maxLength: 128 },
+          displayName:     { type: "string", minLength: 1, maxLength: 100 },
+          locale:          { type: "string", minLength: 2, maxLength: 10 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const rawToken = request.cookies?.[COOKIE_NAME];
     if (!rawToken) {
       return reply.status(401).send({ error: "unauthorized", message: "Authentication required." });

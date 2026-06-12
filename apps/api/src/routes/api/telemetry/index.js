@@ -2,7 +2,19 @@ import { getValidDomains } from "../../../registry.js";
 
 export default async function telemetryRoutes(fastify) {
   fastify.post("/:domain/telemetry/click", {
-    config: { rateLimit: { max: 30, timeWindow: "1 minute" } }
+    config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+    schema: {
+      body: {
+        type: "object",
+        required: ["decisionRunId", "entityId"],
+        additionalProperties: false,
+        properties: {
+          decisionRunId: { type: "string", minLength: 1, maxLength: 100 },
+          entityId:      { type: "string", minLength: 1, maxLength: 100 },
+          clickType:     { type: "string", enum: ["buy_now_clicked", "learn_more_clicked", "affiliate_clicked"], default: "buy_now_clicked" },
+        },
+      },
+    },
   }, async (request, reply) => {
     const { domain } = request.params;
     if (!getValidDomains().has(domain)) return reply.status(400).send({ error: "invalid_domain" });
