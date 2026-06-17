@@ -5,9 +5,32 @@
  * Isolated here so the AI integration can be changed without touching template logic.
  */
 
+import { renderTradeoffFromTrace, renderBadNewsFromTrace } from "./template-narrative.js";
+
+// Extracts factual tokens from a deterministic text string, using trace data to identify
+// named entities (score dimensions, sacrifice meanings). Only these data-derived tokens
+// are checked — template prose words like "lowest" or "performing" are ignored.
+function extractFactualTokens(deterministicText, trace) {
+  if (!deterministicText) return [];
+  const tokens = new Set();
+  for (const n of (deterministicText.match(/\d+/g) ?? [])) tokens.add(n);
+  const textLower = deterministicText.toLowerCase();
+  for (const key of Object.keys(trace?.scores ?? {})) {
+    const name = key.replace(/^(specs_|score_)|_score$/g, "").replace(/_/g, " ").trim().toLowerCase();
+    if (name.length >= 4 && textLower.includes(name)) tokens.add(name);
+  }
+  for (const s of Object.values(trace?.sacrifices ?? {})) {
+    const name = ((s.meaning ?? "").replace(/_/g, " ")).trim().toLowerCase();
+    if (name.length >= 4 && textLower.includes(name)) tokens.add(name);
+  }
+  return [...tokens];
+}
+
 /**
  * Calls the AI provider to generate a structured { story, tradeoff, badNews } narrative.
  * Falls back through 3 parsing strategies to handle malformed AI responses.
+ * Post-validates tradeoff/badNews against deterministic anchors; logs narrative_drift and
+ * substitutes the deterministic text for any field missing factual tokens.
  *
  * @param {object} trace
  * @param {string} name - entity title
@@ -15,17 +38,23 @@
  * @param {{ aiProvider, logger }} deps
  */
 export async function renderWithAI(trace, name, context, { aiProvider, logger }) {
-  const prompt = buildPrompt(trace, name, context);
+  const locale = context.locale ?? "en";
+  const deterministicTradeoff = renderTradeoffFromTrace(trace, { locale });
+  const deterministicBadNews  = renderBadNewsFromTrace(trace, { locale });
+
+  const prompt = buildPrompt(trace, name, context, { deterministicTradeoff, deterministicBadNews });
   logger.log(`[CognitiveRenderer] Sending prompt for "${name}" (Confidence: ${context.confidence?.score}%)`);
 
   const raw = await aiProvider.generate(prompt);
   const cleanedJson = raw.replace(/```json/g, "").replace(/```/g, "").trim();
 
+  let aiResult = null;
+
   // Strategy 1: direct JSON.parse (handles clean responses)
   try {
     const parsed = JSON.parse(cleanedJson);
     if (parsed && typeof parsed === "object") {
-      return {
+      aiResult = {
         story:    typeof parsed.story    === "string" && parsed.story.trim()    ? parsed.story.trim()    : null,
         tradeoff: typeof parsed.tradeoff === "string" && parsed.tradeoff.trim() ? parsed.tradeoff.trim() : null,
         badNews:  typeof parsed.badNews  === "string" && parsed.badNews.trim()  ? parsed.badNews.trim()  : null,
@@ -35,23 +64,47 @@ export async function renderWithAI(trace, name, context, { aiProvider, logger })
 
   // Strategy 2: regex-based field extraction.
   // Handles product names with embedded quotes (e.g. MacBook Air M3 13") that break JSON.parse.
-  logger.warn("[CognitiveRenderer] JSON.parse failed — attempting regex extraction");
-  try {
-    const extractField = (fieldName) => {
-      const safe = fieldName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const re = new RegExp(`"${safe}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`);
-      const m = cleanedJson.match(re);
-      return m ? m[1].replace(/\\"/g, '"').replace(/\\n/g, "\n").replace(/\\\\/g, "\\").trim() : null;
-    };
-    const story    = extractField("story");
-    const tradeoff = extractField("tradeoff");
-    const badNews  = extractField("badNews");
-    if (story) return { story, tradeoff, badNews };
-  } catch { /* fall through */ }
+  if (!aiResult) {
+    logger.warn("[CognitiveRenderer] JSON.parse failed — attempting regex extraction");
+    try {
+      const extractField = (fieldName) => {
+        const safe = fieldName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const re = new RegExp(`"${safe}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`);
+        const m = cleanedJson.match(re);
+        return m ? m[1].replace(/\\"/g, '"').replace(/\\n/g, "\n").replace(/\\\\/g, "\\").trim() : null;
+      };
+      const story    = extractField("story");
+      const tradeoff = extractField("tradeoff");
+      const badNews  = extractField("badNews");
+      if (story) aiResult = { story, tradeoff, badNews };
+    } catch { /* fall through */ }
+  }
 
   // Strategy 3: raw text as story — last resort
-  logger.warn("[CognitiveRenderer] Regex extraction failed — using raw as plain story");
-  return { story: cleanedJson.length > 10 ? cleanedJson : null, tradeoff: null, badNews: null };
+  if (!aiResult) {
+    logger.warn("[CognitiveRenderer] Regex extraction failed — using raw as plain story");
+    aiResult = { story: cleanedJson.length > 10 ? cleanedJson : null, tradeoff: null, badNews: null };
+  }
+
+  // Drift validation: AI may rephrase but must preserve all factual tokens from deterministic anchors.
+  const validateField = (fieldKey, deterministic) => {
+    const aiText = aiResult[fieldKey] ?? "";
+    const tokens = extractFactualTokens(deterministic, trace);
+    if (tokens.length === 0 || !aiText) return deterministic;
+    const aiLower = aiText.toLowerCase();
+    const missing = tokens.filter(t => !aiLower.includes(t.toLowerCase()));
+    if (missing.length > 0) {
+      logger.warn(`[CognitiveRenderer] narrative_drift: ${fieldKey} missing tokens [${missing.join(", ")}] — using deterministic text`);
+      return deterministic;
+    }
+    return aiText;
+  };
+
+  return {
+    story:    aiResult.story,
+    tradeoff: validateField("tradeoff", deterministicTradeoff),
+    badNews:  validateField("badNews",  deterministicBadNews),
+  };
 }
 
 /**
@@ -68,7 +121,7 @@ export async function renderWithAI(trace, name, context, { aiProvider, logger })
  *   - Slot role (hero / smart_budget / future_proof)
  *   - Integrity score (how much was compromised in recovery)
  */
-export function buildPrompt(trace, name, context) {
+export function buildPrompt(trace, name, context, anchors = {}) {
   const {
     expertIdentity = "Expert",
     locale = "en",
@@ -240,6 +293,11 @@ ${compromiseRule}
 
 ${budgetRule}
 ${intentRule}
+
+ANCHORED FACTS — verified by the decision engine from real trace data.
+Rephrase these for tone and flow. Preserve every factual element (dimension names, numeric scores, gate names). Do NOT soften, omit, or contradict them:
+  Tradeoff: ${anchors.deterministicTradeoff ?? "(none)"}
+  Bad News: ${anchors.deterministicBadNews ?? "(none)"}
 
 RESPONSE FORMAT — return ONLY this JSON object, no extra text:
 {
