@@ -1,0 +1,11 @@
+{
+  "name": "@majorlogic/catalog-intelligence",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Agent interface contracts for catalog intelligence — stubs today, ML models tomorrow",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./contracts": "./src/contracts.js"
+  }
+}
