@@ -6,6 +6,22 @@
  * Falls back to silent no-op if SMTP not configured (dev mode).
  */
 
+import { createHmac } from "node:crypto";
+
+const UNSUB_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+// Builds a signed unsubscribe URL that encodes email + leadType + expiry.
+// Token format: base64url(payload).hmac — verifiable without DB lookup.
+export function buildUnsubscribeUrl(email, leadType) {
+  // Use API_BASE_URL (Railway) so the link hits the API directly, not the SPA.
+  const apiBase = process.env.API_BASE_URL ?? "https://majorlogicapi-production.up.railway.app";
+  const secret  = process.env.COOKIE_SECRET ?? "dev-fallback";
+  const expires = Date.now() + UNSUB_TTL_MS;
+  const payload = Buffer.from(`${email}:${leadType}:${expires}`).toString("base64url");
+  const sig     = createHmac("sha256", secret).update(payload).digest("hex").slice(0, 32);
+  return `${apiBase}/unsubscribe?t=${payload}.${sig}`;
+}
+
 let transporter = null;
 
 async function getTransporter() {
@@ -44,6 +60,8 @@ async function send({ to, subject, html }) {
 // ── Templates ──────────────────────────────────────────────
 
 export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
+  const siteUrl   = process.env.FRONTEND_URL ?? "https://majorlogic.tech";
+  const unsubUrl  = buildUnsubscribeUrl(email, leadType);
   const msgs = {
     save_results: {
       subject: "📚 Your MajorLogic Results Are Saved",
@@ -51,11 +69,11 @@ export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
         <h2>Your laptop shortlist is ready</h2>
         <p>We've saved your personalized results. Return anytime to review your top picks for <strong>${metadata.segment ?? "your major"}</strong>.</p>
         <p style="margin-top:24px;">
-          <a href="https://majorlogic.ai/web/results" style="background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">
+          <a href="${siteUrl}" style="background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">
             View My Results →
           </a>
         </p>
-        <p style="color:#888;font-size:12px;margin-top:32px;">You're receiving this because you requested it. No spam, ever. <a href="#">Unsubscribe</a>.</p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">You're receiving this because you requested it. No spam, ever. <a href="${unsubUrl}">Unsubscribe</a>.</p>
       `
     },
     price_alert: {
@@ -63,7 +81,7 @@ export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
       body: `
         <h2>We're on price watch for you!</h2>
         <p>As soon as <strong>${metadata.entityId ?? "your saved laptop"}</strong> drops in price, you'll be the first to know.</p>
-        <p style="color:#888;font-size:12px;margin-top:32px;">Unsubscribe anytime. No spam, ever. <a href="#">Unsubscribe</a>.</p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">No spam, ever. <a href="${unsubUrl}">Unsubscribe from price alerts</a>.</p>
       `
     },
     interstitial_gate: {
@@ -77,7 +95,7 @@ export async function sendWelcomeEmail({ email, leadType, metadata = {} }) {
           <li>Check keyboard and trackpad for wobble</li>
           <li>Verify serial number on manufacturer website</li>
         </ol>
-        <p style="color:#888;font-size:12px;margin-top:32px;">Happy with your purchase? Share MajorLogic with a classmate. <a href="#">Unsubscribe</a>.</p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">Happy with your purchase? Share MajorLogic with a classmate. <a href="${unsubUrl}">Unsubscribe</a>.</p>
       `
     }
   };
@@ -144,8 +162,9 @@ export async function sendRegretCheckEmail({ email, decisionRunId = null }) {
 }
 
 export async function sendNurtureEmail({ email, sequenceDay, metadata = {} }) {
-  const segment = metadata.segment ?? "your major";
-  const siteUrl = process.env.FRONTEND_URL ?? "https://majorlogic.tech";
+  const segment  = metadata.segment ?? "your major";
+  const siteUrl  = process.env.FRONTEND_URL ?? "https://majorlogic.tech";
+  const unsubUrl = buildUnsubscribeUrl(email, "save_results");
 
   const templates = {
     3: {
@@ -159,7 +178,7 @@ export async function sendNurtureEmail({ email, sequenceDay, metadata = {} }) {
             Re-Run My Analysis →
           </a>
         </p>
-        <p style="color:#888;font-size:12px;margin-top:32px;">You signed up for MajorLogic results. <a href="#">Unsubscribe</a>.</p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">You signed up for MajorLogic results. <a href="${unsubUrl}">Unsubscribe</a>.</p>
       `
     },
     7: {
@@ -177,7 +196,7 @@ export async function sendNurtureEmail({ email, sequenceDay, metadata = {} }) {
             See My Recommendation →
           </a>
         </p>
-        <p style="color:#888;font-size:12px;margin-top:32px;">You signed up for MajorLogic results. <a href="#">Unsubscribe</a>.</p>
+        <p style="color:#888;font-size:12px;margin-top:32px;">You signed up for MajorLogic results. <a href="${unsubUrl}">Unsubscribe</a>.</p>
       `
     }
   };
@@ -202,6 +221,7 @@ export async function sendNurtureEmail({ email, sequenceDay, metadata = {} }) {
 }
 
 export async function sendPriceDropAlert({ email, entityId, oldPrice, newPrice, buyUrl }) {
+  const unsubUrl = buildUnsubscribeUrl(email, "price_alert");
   return send({
     to: email,
     subject: `🔥 Price Drop Alert — ${entityId} just got cheaper!`,
@@ -212,7 +232,7 @@ export async function sendPriceDropAlert({ email, entityId, oldPrice, newPrice, 
         <h2>Price Drop Detected!</h2>
         <p>The laptop you're watching just dropped from <s>$${oldPrice}</s> to <strong style="color:#16a34a;">$${newPrice}</strong>.</p>
         ${buyUrl ? `<p><a href="${buyUrl}" style="background:#7C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">Buy Now →</a></p>` : ""}
-        <p style="color:#888;font-size:12px;margin-top:32px;"><a href="#">Unsubscribe from price alerts</a></p>
+        <p style="color:#888;font-size:12px;margin-top:32px;"><a href="${unsubUrl}">Unsubscribe from price alerts</a></p>
       </body></html>
     `
   });

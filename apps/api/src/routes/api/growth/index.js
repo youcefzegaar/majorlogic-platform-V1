@@ -2,6 +2,27 @@ import { sendWelcomeEmail } from "../../../../../../packages/email-service/src/i
 import { getValidDomains } from "../../../registry.js";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
+// Verifies a signed unsubscribe token produced by buildUnsubscribeUrl().
+// Returns { email, leadType } on success, null on invalid/expired token.
+function verifyUnsubToken(token) {
+  try {
+    const dot = token.lastIndexOf(".");
+    if (dot < 0) return null;
+    const payload = token.slice(0, dot);
+    const sig     = token.slice(dot + 1);
+    const secret  = process.env.COOKIE_SECRET ?? "dev-fallback";
+    const expected = createHmac("sha256", secret).update(payload).digest("hex").slice(0, 32);
+    if (sig.length !== expected.length) return null;
+    if (!timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+    const decoded = Buffer.from(payload, "base64url").toString("utf8");
+    const [email, leadType, expiresStr] = decoded.split(":");
+    if (!email || !leadType || Date.now() > Number(expiresStr)) return null;
+    return { email, leadType };
+  } catch {
+    return null;
+  }
+}
+
 export default async function growthRoutes(fastify) {
   fastify.post("/:domain/growth/lead", {
     schema: {
@@ -122,4 +143,43 @@ export default async function growthRoutes(fastify) {
       return reply.status(500).send({ error: "export_failed" });
     }
   });
+
+  // Unsubscribe — verifies HMAC token, sets opted_in=false, returns HTML confirmation.
+  // Linked from every outbound email footer (CAN-SPAM / GDPR compliance).
+  fastify.get("/unsubscribe", {
+    config: { rateLimit: { max: 20, timeWindow: "1 minute" } }
+  }, async (request, reply) => {
+    const { t: token } = request.query;
+    const parsed = token ? verifyUnsubToken(token) : null;
+
+    if (!parsed) {
+      return reply
+        .header("Content-Type", "text/html; charset=utf-8")
+        .status(400)
+        .send(unsubHtml("Invalid or expired link", "This unsubscribe link has expired or is invalid. Please contact us if you need help."));
+    }
+
+    try {
+      const { getRepository } = await import("../../../db/repository.js");
+      const repository = await getRepository();
+      if (repository) {
+        await repository.unsubscribeEmail({ email: parsed.email, leadType: parsed.leadType });
+      }
+    } catch (err) {
+      request.log.warn({ err }, "[Unsubscribe] DB update failed — continuing");
+    }
+
+    return reply
+      .header("Content-Type", "text/html; charset=utf-8")
+      .send(unsubHtml("You've been unsubscribed", `<strong>${parsed.email}</strong> has been removed from <em>${parsed.leadType}</em> emails. You won't hear from us on this topic again.`));
+  });
+}
+
+function unsubHtml(title, body) {
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${title}</title>
+  <style>body{font-family:system-ui,sans-serif;max-width:520px;margin:80px auto;padding:32px;color:#1a1a2e;text-align:center}
+  h1{font-size:1.4rem;margin-bottom:16px}p{color:#555;line-height:1.6}</style></head>
+  <body><h1>${title}</h1><p>${body}</p>
+  <p style="margin-top:40px"><a href="https://majorlogic.tech" style="color:#7C3AED">← Back to MajorLogic</a></p>
+  </body></html>`;
 }

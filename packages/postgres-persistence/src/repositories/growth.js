@@ -192,6 +192,23 @@ export class GrowthRepository {
     );
   }
 
+  async unsubscribeEmail({ email, leadType = null }) {
+    const normalized = email.toLowerCase().trim();
+    if (leadType) {
+      await this.pool.query(
+        `UPDATE ml_growth.leads SET opted_in = false
+         WHERE email = $1 AND lead_type = $2`,
+        [normalized, leadType]
+      );
+    } else {
+      // Unsubscribe from all lead types for this email
+      await this.pool.query(
+        `UPDATE ml_growth.leads SET opted_in = false WHERE email = $1`,
+        [normalized]
+      );
+    }
+  }
+
   // ── Integrity certificates ────────────────────────────────────────────────────
 
   async getSacrificeGuardForRun(decisionRunId) {
