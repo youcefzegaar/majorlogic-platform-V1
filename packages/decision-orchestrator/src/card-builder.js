@@ -109,6 +109,7 @@ export async function buildCard(cardType, kernelResult, rawEntity, template, int
   card.story   = story;
   card.tradeoff = card.tradeoff || tradeoff;
   if (aiBadNews) card.badNews = aiBadNews;
+  card.priceCapturedAt = rawEntity.market?.bestOffer?.capturedAt ?? rawEntity.publishedAt ?? null;
 
   if (rawEntity.fitStates && rawEntity.fitStates[context.segment]) {
     card.fitState = rawEntity.fitStates[context.segment].state;

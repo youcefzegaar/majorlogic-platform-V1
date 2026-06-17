@@ -32,7 +32,8 @@
     "no_results_body": "调整您的需求后重试。",
     "renewed_gem": "隐藏宝藏 — 翻新机会",
     "renewed_gem_sub": "该设备零售价超出您的预算，但其认证翻新价格合适 — 且性能超过您的首选。",
-    "devices_analyzed": "已分析 {count} 台设备"
+    "devices_analyzed": "已分析 {count} 台设备",
+    "price_as_of": "价格截至 {{date}}"
   },
   "explanation": {
     "tab_decision": "决策",

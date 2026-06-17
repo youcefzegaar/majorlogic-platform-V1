@@ -32,7 +32,8 @@
     "no_results_body": "Ajustez vos critères et réessayez.",
     "renewed_gem": "Pépite cachée — Occasion certifiée",
     "renewed_gem_sub": "Cet appareil dépasse votre budget au prix neuf, mais son prix reconditionné certifié convient — et il surpasse votre choix principal.",
-    "devices_analyzed": "{count, plural, one {# appareil} other {# appareils}} analysé{count, plural, one {} other {s}}"
+    "devices_analyzed": "{count, plural, one {# appareil} other {# appareils}} analysé{count, plural, one {} other {s}}",
+    "price_as_of": "prix au {{date}}"
   },
   "explanation": {
     "tab_decision": "La décision",

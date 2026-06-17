@@ -117,6 +117,11 @@ export async function sendDailyReport(report) {
       ? `🗄️ *الكتالوج* — ${report.catalog.entityCount} منتج ✅ (${report.catalog.oldestAgeHours != null ? Math.round(report.catalog.oldestAgeHours) + 'h' : '?'} منذ آخر نشر)`
       : '';
 
+  const pr = report.priceRefresh;
+  const pricesLine = pr
+    ? `💰 *الأسعار* — ${pr.refreshed} محدّث، ${pr.stale} قديم، ${pr.failed} فشل`
+    : '';
+
   const message = `📊 *MajorLogic — Daily Integrity Report*
 ⏰ ${ts}
 
@@ -126,7 +131,7 @@ ${integrityLine}
 ${sacrificeLine}
 
 ${catalogLine}
-
+${pricesLine ? pricesLine + '\n' : ''}
 ⚙️ *العمليات*
 • Uptime: ${Math.floor(report.operations.uptime / 3600)}h | RAM: ${report.operations.memoryMb}MB
 

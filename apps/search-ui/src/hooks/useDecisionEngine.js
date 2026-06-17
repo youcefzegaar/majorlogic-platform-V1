@@ -200,6 +200,8 @@ export function useDecisionEngine() {
               gained,
               lost
             },
+            priceCapturedAt: card.priceCapturedAt ?? null,
+            priceStale: card.priceStale ?? false,
             sacrificeVector: card.sacrifices || {},
             excluded: excludedList,
             stability: {

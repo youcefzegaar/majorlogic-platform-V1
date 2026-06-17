@@ -11,7 +11,18 @@
  * Figures marked [provisional] when sample size < 30.
  */
 
+import { readFileSync } from "fs";
+import { join } from "path";
 import { sendDailyReport } from "../monitoring/telegram.js";
+
+function loadPriceRefreshLog() {
+  try {
+    const logPath = join(process.cwd(), "domains/laptop-student-us/generated/price-refresh-log.json");
+    return JSON.parse(readFileSync(logPath, "utf8"));
+  } catch {
+    return null;
+  }
+}
 
 async function buildReport(repository) {
   const domainId = process.env.DEFAULT_DOMAIN ?? "laptop-student-us";
@@ -59,6 +70,7 @@ async function buildReport(repository) {
       rows: regretRows ?? [],
       provisional: (regretRows ?? []).reduce((s, r) => s + r.count, 0) < 10,
     },
+    priceRefresh: loadPriceRefreshLog(),
   };
 }
 

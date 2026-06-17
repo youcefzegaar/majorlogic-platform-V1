@@ -34,7 +34,8 @@
     "renewed_gem_sub": "This device exceeds your budget at retail, but its certified-renewed price fits — and it outperforms your hero pick.",
     "devices_analyzed": "{count, plural, one {# device} other {# devices}} analyzed",
     "stale_data_warning": "Prices may be outdated",
-    "data_as_of": "data as of"
+    "data_as_of": "data as of",
+    "price_as_of": "price as of {{date}}"
   },
   "explanation": {
     "tab_decision": "The Decision",

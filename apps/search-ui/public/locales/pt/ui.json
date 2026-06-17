@@ -32,7 +32,8 @@
     "no_results_body": "Ajuste seus requisitos e tente novamente.",
     "renewed_gem": "Gema oculta — Oportunidade renovada",
     "renewed_gem_sub": "Este dispositivo excede seu orçamento no varejo, mas seu preço recondicionado certificado se encaixa — e supera sua escolha principal.",
-    "devices_analyzed": "{count, plural, one {# dispositivo} other {# dispositivos}} analisados"
+    "devices_analyzed": "{count, plural, one {# dispositivo} other {# dispositivos}} analisados",
+    "price_as_of": "preço em {{date}}"
   },
   "explanation": {
     "tab_decision": "A decisão",

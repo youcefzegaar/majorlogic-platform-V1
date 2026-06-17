@@ -133,8 +133,15 @@ export default function HeroCard({ type, card, isSelected, onSelect, onConfirm, 
         </div>
         <div className="decision-card-name">{card.name}</div>
         <div className="decision-card-price">
-          {card.price}{' '}
+          {card.priceStale ? `~${card.price}` : card.price}{' '}
           {card.originalPrice && <span className="original">{card.originalPrice}</span>}
+          {card.priceCapturedAt && (
+            <span className="price-date" style={{ fontSize: '11px', color: 'var(--text-muted, #6b7280)', marginLeft: '6px', fontWeight: 400 }}>
+              {t('results.price_as_of', {
+                date: new Intl.DateTimeFormat(card.locale || 'en', { month: 'short', day: 'numeric' }).format(new Date(card.priceCapturedAt))
+              })}
+            </span>
+          )}
         </div>
 
         {aiVoice && (
