@@ -10,6 +10,7 @@
  * in-memory and require no external infrastructure.
  */
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { createHmac } from 'node:crypto';
 import Fastify from 'fastify';
 
 // ── Minimal stub controller ───────────────────────────────────────────────────
@@ -43,9 +44,11 @@ const STUB_PIPELINE_RESULT = {
 
 // ── Stub repository ───────────────────────────────────────────────────────────
 const stubRepo = {
-  saveTelemetryClick: vi.fn().mockResolvedValue(undefined),
-  saveGrowthLead:     vi.fn().mockResolvedValue({ id: 'lead-1', isDuplicate: false }),
+  saveTelemetryClick:  vi.fn().mockResolvedValue(undefined),
+  saveGrowthLead:      vi.fn().mockResolvedValue({ id: 'lead-1', isDuplicate: false }),
   getPublishedEntities: vi.fn().mockResolvedValue([]),
+  getGrowthLeads:      vi.fn().mockResolvedValue([]),
+  unsubscribeEmail:    vi.fn().mockResolvedValue(undefined),
 };
 
 // ── Mock registry + db modules ────────────────────────────────────────────────
@@ -62,9 +65,13 @@ vi.mock('../../apps/api/src/db/repository.js', () => ({
 }));
 
 // ── Email service stub (fire-and-forget — don't let it throw) ────────────────
-vi.mock('../../packages/email-service/src/index.js', () => ({
-  sendWelcomeEmail: vi.fn().mockResolvedValue(undefined),
-}));
+vi.mock('../../packages/email-service/src/index.js', async (importOriginal) => {
+  const real = await importOriginal();
+  return {
+    ...real,
+    sendWelcomeEmail: vi.fn().mockResolvedValue(undefined),
+  };
+});
 
 // ── Monitoring stub ───────────────────────────────────────────────────────────
 vi.mock('../../apps/api/src/monitoring/telegram.js', () => ({
@@ -284,5 +291,97 @@ describe('POST /api/v1/:domain/growth/lead', () => {
     });
     expect(res.statusCode).toBe(400);
     expect(res.json().error).toBe('invalid_domain');
+  });
+});
+
+// ── GET /unsubscribe ──────────────────────────────────────────────────────────
+
+describe('GET /api/v1/unsubscribe', () => {
+  const TEST_SECRET = 'test-cookie-secret-32-chars-long!!';
+
+  function buildToken(email, leadType, ttlMs = 30 * 24 * 60 * 60 * 1000) {
+    const expires = Date.now() + ttlMs;
+    const payload = Buffer.from(`${email}:${leadType}:${expires}`).toString('base64url');
+    const sig     = createHmac('sha256', TEST_SECRET).update(payload).digest('hex').slice(0, 32);
+    return `${payload}.${sig}`;
+  }
+
+  it('returns 400 HTML when no token is supplied', async () => {
+    const res = await fastify.inject({ method: 'GET', url: '/api/v1/unsubscribe' });
+    expect(res.statusCode).toBe(400);
+    expect(res.headers['content-type']).toMatch(/text\/html/);
+    expect(res.payload).toMatch(/invalid|expired/i);
+  });
+
+  it('returns 400 HTML when token is tampered', async () => {
+    const token   = buildToken('user@example.com', 'price_alert');
+    const bad     = token.slice(0, -4) + 'xxxx';
+    const res = await fastify.inject({ method: 'GET', url: `/api/v1/unsubscribe?t=${bad}` });
+    expect(res.statusCode).toBe(400);
+    expect(res.headers['content-type']).toMatch(/text\/html/);
+  });
+
+  it('returns 200 HTML and calls unsubscribeEmail with a valid token', async () => {
+    process.env.COOKIE_SECRET = TEST_SECRET;
+    const token = buildToken('alice@test.io', 'save_results');
+    stubRepo.unsubscribeEmail.mockClear();
+
+    const res = await fastify.inject({ method: 'GET', url: `/api/v1/unsubscribe?t=${token}` });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toMatch(/text\/html/);
+    expect(res.payload).toMatch(/alice@test\.io/);
+    expect(stubRepo.unsubscribeEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ email: 'alice@test.io', leadType: 'save_results' })
+    );
+  });
+});
+
+// ── GET /growth/leads/export ──────────────────────────────────────────────────
+
+describe('GET /api/v1/:domain/growth/leads/export', () => {
+  const EXPORT_SECRET = 'test-export-secret-for-integration';
+
+  function buildExportToken(secret, ttlMs = 60 * 60 * 1000) {
+    const expires = String(Date.now() + ttlMs);
+    const sig     = createHmac('sha256', secret).update(expires).digest('hex');
+    return `${expires}.${sig}`;
+  }
+
+  it('returns 401 when no token is provided', async () => {
+    process.env.ADMIN_EXPORT_SECRET = EXPORT_SECRET;
+    const res = await fastify.inject({
+      method: 'GET',
+      url:    '/api/v1/laptop-student-us/growth/leads/export',
+    });
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error).toBe('unauthorized');
+  });
+
+  it('returns 503 when ADMIN_EXPORT_SECRET is not configured', async () => {
+    delete process.env.ADMIN_EXPORT_SECRET;
+    const res = await fastify.inject({
+      method: 'GET',
+      url:    '/api/v1/laptop-student-us/growth/leads/export',
+    });
+    expect(res.statusCode).toBe(503);
+    expect(res.json().error).toBe('export_not_configured');
+    process.env.ADMIN_EXPORT_SECRET = EXPORT_SECRET;
+  });
+
+  it('returns CSV with correct headers when token is valid', async () => {
+    process.env.ADMIN_EXPORT_SECRET = EXPORT_SECRET;
+    const token = buildExportToken(EXPORT_SECRET);
+    stubRepo.getGrowthLeads.mockResolvedValueOnce([
+      { id: '1', email: 'lead@test.io', lead_type: 'save_results', opted_in: true, metadata: {}, created_at: '2026-01-01T00:00:00Z' },
+    ]);
+
+    const res = await fastify.inject({
+      method: 'GET',
+      url:    `/api/v1/laptop-student-us/growth/leads/export?token=${token}`,
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toMatch(/text\/csv/);
+    expect(res.payload).toMatch(/id,email,lead_type/);
+    expect(res.payload).toMatch(/lead@test\.io/);
   });
 });
