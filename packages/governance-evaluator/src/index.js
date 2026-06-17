@@ -172,7 +172,42 @@ function evaluateMoneySeparation(decision) {
   };
 }
 
-// ── Guard 5: Determinism ──────────────────────────────────────────────────────
+// ── Guard 5: Bad-news integrity ───────────────────────────────────────────────
+// If the hero card was accepted despite a gate_violation sacrifice (e.g. after
+// constraint relaxation), its badNews must be a real, non-synthetic string.
+
+function evaluateBadNewsIntegrity(decision) {
+  const cards = Array.isArray(decision?.cards) ? decision.cards : [];
+  const hero = cards.find(c => c.cardType === 'hero') ?? cards[0] ?? null;
+
+  const sacrifices = Object.values(hero?.sacrifices ?? {});
+  const gateViolations = sacrifices.filter(s => s.type === 'gate_violation').length;
+
+  if (gateViolations === 0) {
+    return {
+      id: 'bad-news-integrity',
+      severity: 'critical',
+      passed: true,
+      evidence: { gateViolations: 0 },
+    };
+  }
+
+  const badNews = hero?.badNews ?? null;
+  const passed = !isSyntheticSacrificeText(badNews ?? '');
+
+  return {
+    id: 'bad-news-integrity',
+    severity: 'critical',
+    passed,
+    evidence: {
+      gateViolations,
+      badNewsPresent: badNews != null && badNews.length > 0,
+      badNewsSynthetic: !passed,
+    },
+  };
+}
+
+// ── Guard 6: Determinism ──────────────────────────────────────────────────────
 // For 5% of requests, platform-core computes a probe before runAll and passes
 // ctx.determinismProbe = { sampled: true, irHashPresent: bool, irHash }.
 // For the remaining 95%, the guard passes optimistically with sampled: false.
@@ -209,7 +244,7 @@ function evaluateDeterminism(decision, _trace, ctx) {
 
 // ── Registry + runAll ─────────────────────────────────────────────────────────
 
-const EVALUATORS = [evaluateGovernanceDrift, evaluateCatalogTruth, evaluateSacrifice, evaluateMoneySeparation, evaluateDeterminism];
+const EVALUATORS = [evaluateGovernanceDrift, evaluateCatalogTruth, evaluateSacrifice, evaluateBadNewsIntegrity, evaluateMoneySeparation, evaluateDeterminism];
 
 /**
  * Run all evaluators and return an IntegrityCertificate.

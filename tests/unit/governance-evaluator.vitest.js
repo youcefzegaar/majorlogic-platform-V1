@@ -119,16 +119,17 @@ describe('governance-evaluator', () => {
 
   it('integrityScore is computed correctly from severity weights', () => {
     // Verifiable guards (not_verified/insufficient_data excluded):
-    //   sacrifice=critical(40), money-sep=critical(40), drift=high(20), catalog-truth=high(20)
+    //   sacrifice=critical(40), bad-news-integrity=critical(40),
+    //   money-sep=critical(40), drift=high(20), catalog-truth=high(20)
     //   determinism is not_verified → excluded from maxScore
-    // When only drift fails: maxScore=120, earned=100 → score = 83%
+    // When only drift fails: maxScore=160, earned=140 → score = 88%
     const decision = makeDecision();
     const cert = runAll(decision, null, {
       ...validCtx,
       governance: { ok: false, violations: ['drift'], warnings: [] },
     });
 
-    expect(cert.integrityScore).toBe(83);
+    expect(cert.integrityScore).toBe(88);
     expect(cert.guardsMap).toHaveProperty('governance-drift');
     expect(cert.guardsMap).toHaveProperty('catalog-truth');
     expect(cert.guardsMap).toHaveProperty('sacrifice');
