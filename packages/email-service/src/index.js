@@ -19,7 +19,7 @@ export function buildUnsubscribeUrl(email, leadType) {
   const expires = Date.now() + UNSUB_TTL_MS;
   const payload = Buffer.from(`${email}:${leadType}:${expires}`).toString("base64url");
   const sig     = createHmac("sha256", secret).update(payload).digest("hex").slice(0, 32);
-  return `${apiBase}/unsubscribe?t=${payload}.${sig}`;
+  return `${apiBase}/api/v1/unsubscribe?t=${payload}.${sig}`;
 }
 
 let transporter = null;
