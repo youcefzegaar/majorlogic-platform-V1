@@ -111,7 +111,7 @@ fastify.register(healthPlugin);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 fastify.register(adminRoutes, { prefix: "/admin", DEFAULT_DOMAIN });
-fastify.register(apiRoutes,   { isProd });
+fastify.register(apiRoutes,   { prefix: "/api/v1", isProd });
 fastify.register(webRoutes,   { root, port, FRONTEND_URL, DEFAULT_DOMAIN, defaultProfile });
 fastify.register(userRoutes,  { isProd });
 
